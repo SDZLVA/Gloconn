@@ -10,6 +10,11 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Glooconn brand blues — travel-inspired, distinct from Booking.com */
+  --color-brand-50: #eff6ff;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
 }
 
 @media (prefers-color-scheme: dark) {

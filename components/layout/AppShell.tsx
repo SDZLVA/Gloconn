@@ -1,17 +1,28 @@
-/**
- * AppShell wraps every page in a responsive container.
- * Padding grows on larger screens (mobile → tablet → desktop).
- */
+import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+
 type AppShellProps = {
   children: React.ReactNode;
 };
 
+/**
+ * AppShell — the main layout wrapper used on every page.
+ *
+ * Structure (top to bottom):
+ * 1. Navbar  — sticky navigation bar
+ * 2. Main    — page content (grows to fill available space)
+ * 3. Footer  — always at the bottom of the screen on short pages
+ */
 export function AppShell({ children }: AppShellProps) {
   return (
     <div className="flex min-h-full flex-1 flex-col">
-      <div className="mx-auto w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8">
+      <Navbar />
+
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         {children}
-      </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }
