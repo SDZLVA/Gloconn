@@ -1,6 +1,13 @@
+import { HeroSection } from "@/components/home/HeroSection";
+
 /**
- * Home page — UI will be added in a later step.
+ * Home page — welcome hero with a search card (UI only for now).
  */
 export default function Home() {
-  return <div className="flex flex-1 flex-col" />;
+  return (
+    <HeroSection
+      title="Discover your next journey"
+      subtitle="Find destinations, plan trips, and explore the world — all in one place."
+    />
+  );
 }
