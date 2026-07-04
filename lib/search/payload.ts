@@ -7,8 +7,9 @@ export function buildSearchData(form: SearchFormState): SearchData {
 
   return {
     destination: form.destination.trim(),
+    tripType: form.tripType,
     departureDate: form.departureDate,
-    returnDate: form.returnDate,
+    returnDate: form.tripType === "one-way" ? null : form.returnDate,
     budget: budgetValue ? Number(budgetValue) : null,
     travelers: { ...form.travelers },
     totalGuests: getTotalGuests(form.travelers),

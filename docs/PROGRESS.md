@@ -101,6 +101,17 @@ A week-by-week record of completed work. Update this file at the end of each dev
 
 **Files added:** `lib/destinations.ts`, `lib/destinations/recentSearches.ts`, `lib/search/travelers.ts`, `hooks/useRecentDestinationSearches.ts`, `components/ui/Autocomplete.tsx`, `components/ui/NumberStepper.tsx`, `components/search/DestinationAutocomplete.tsx`, `components/search/TravelersSelector.tsx`
 
+### Travel calendar
+
+- Replaced native `<input type="date">` fields with `TravelDatesSelector` dropdown
+- Added reusable `TravelCalendar` UI component (range/single selection, past dates disabled)
+- Added round-trip / one-way trip type toggle
+- Added `lib/calendar/` date utilities and `TripType` to search form state
+- Updated validation (return date required only for round-trip)
+- Updated all documentation
+
+**Files added:** `lib/calendar/dates.ts`, `lib/calendar/index.ts`, `lib/search/dates.ts`, `components/ui/TravelCalendar.tsx`, `components/search/TravelDatesSelector.tsx`
+
 ---
 
 ## Week 2 — Core pages (not started)

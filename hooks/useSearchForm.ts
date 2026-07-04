@@ -12,6 +12,7 @@ import {
   type SearchFormErrors,
   type SearchFormState,
   type TravelersState,
+  type TripType,
 } from "@/types/search";
 
 /**
@@ -46,6 +47,21 @@ export function useSearchForm() {
     clearError("travelers");
   }
 
+  function updateTripType(tripType: TripType) {
+    setForm((current) => ({
+      ...current,
+      tripType,
+      returnDate: tripType === "one-way" ? "" : current.returnDate,
+    }));
+    clearError("returnDate");
+  }
+
+  function updateDates(departureDate: string, returnDate: string) {
+    setForm((current) => ({ ...current, departureDate, returnDate }));
+    clearError("departureDate");
+    clearError("returnDate");
+  }
+
   function handleSearch() {
     const nextErrors = validateSearchForm(form);
     setErrors(nextErrors);
@@ -58,5 +74,13 @@ export function useSearchForm() {
     logSearchData(form);
   }
 
-  return { form, errors, updateField, updateTravelers, handleSearch };
+  return {
+    form,
+    errors,
+    updateField,
+    updateTravelers,
+    updateTripType,
+    updateDates,
+    handleSearch,
+  };
 }

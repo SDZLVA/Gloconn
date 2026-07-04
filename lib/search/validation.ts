@@ -16,11 +16,12 @@ export function validateSearchForm(form: SearchFormState): SearchFormErrors {
     errors.departureDate = "Please choose a departure date.";
   }
 
-  if (!form.returnDate) {
+  if (form.tripType === "round-trip" && !form.returnDate) {
     errors.returnDate = "Please choose a return date.";
   }
 
   if (
+    form.tripType === "round-trip" &&
     form.departureDate &&
     form.returnDate &&
     form.returnDate < form.departureDate

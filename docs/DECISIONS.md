@@ -329,3 +329,24 @@ TravelersState = { adults, children, infants, rooms }
 - `lib/destinations/recentSearches.ts` handles browser persistence
 - `useRecentDestinationSearches` hook loads recents when the dropdown opens
 - Replace localStorage with user account history when auth exists
+
+---
+
+## ADR-018: Custom travel calendar (no date library)
+
+**Decision:** Replace native `<input type="date">` with a custom `TravelCalendar` in `components/ui/` and a `TravelDatesSelector` wrapper in `components/search/`.
+
+**Context:** Search card improvement — travel UIs use visual calendars with range selection and trip type toggles.
+
+**Rationale:**
+- No external date library needed (keeps dependencies minimal)
+- `TravelCalendar` is domain-agnostic — parent controls mode (`single` | `range`)
+- Past dates disabled via `minDate` (defaults to today)
+- Round-trip shows two months; one-way shows one
+- `TripType` added to form state; return date optional for one-way
+
+**Consequences:**
+- `lib/calendar/` holds ISO date formatting and month grid helpers
+- `formatTravelDatesSummary()` builds the trigger label
+- Validation requires return date only when `tripType === "round-trip"`
+- `SearchData.returnDate` is `null` for one-way trips

@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.2.0 (Search card improvements — autocomplete & travelers)
+**Current version:** 0.2.0 (Search card improvements — autocomplete, travelers & calendar)
 
 ---
 
@@ -39,15 +39,18 @@ Gloconn/
 │   ├── search/             # Search form feature
 │   │   ├── DestinationAutocomplete.tsx
 │   │   ├── SearchCard.tsx
+│   │   ├── TravelDatesSelector.tsx
 │   │   ├── TravelersSelector.tsx
 │   │   └── TravelStyleSelector.tsx
-│   └── ui/                 # Generic reusable UI (Button, Card, Autocomplete, …)
+│   └── ui/                 # Generic reusable UI (Button, Card, TravelCalendar, …)
 ├── hooks/                  # Custom React hooks (useSearchForm, useRecentDestinationSearches)
 ├── lib/
+│   ├── calendar/           # Date helpers for the travel calendar
 │   ├── destinations.ts     # Mock destination data for autocomplete
 │   ├── destinations/       # Recent-search persistence (localStorage)
 │   ├── search/             # Search feature logic (split by responsibility)
-│   │   ├── constants.ts    # Travel style options
+│   │   ├── constants.ts    # Travel style and trip type options
+│   │   ├── dates.ts        # Travel dates summary label
 │   │   ├── travelers.ts    # Travelers summary, limits, helpers
 │   │   ├── validation.ts   # Form validation
 │   │   ├── payload.ts      # Build and log search data
@@ -78,7 +81,7 @@ Gloconn/
 
 ### Search form (UI + client logic, no API)
 - **Destination** — autocomplete with mock suggestions, recent searches, and popular destinations (keyboard + mouse accessible)
-- **Departure / Return** — date fields with validation (return ≥ departure)
+- **Dates** — travel calendar with round-trip / one-way toggle, range selection, past dates disabled
 - **Travelers & rooms** — dropdown selector with Adults, Children, Infants, and Rooms steppers
 - **Budget** — optional max spend in €
 - **Travel style** — Budget / Standard / Luxury radio group
@@ -89,6 +92,7 @@ Gloconn/
 ### Reusable UI primitives
 - `Button`, `Card`, `InputField`, `FormField` (label + error)
 - `Autocomplete` — generic accessible combobox (keyboard navigation, listbox)
+- `TravelCalendar` — reusable date picker with single or range selection
 - `NumberStepper` — +/- counter for bounded numeric values
 - `SectionHeading` — consistent titles for heroes, cards, and sections
 - `BrandLogo` — shared Glooconn wordmark for navbar and footer

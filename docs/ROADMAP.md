@@ -46,7 +46,7 @@ This roadmap outlines planned development phases. Dates are approximate and will
 | Mock destination dataset | High | `lib/destinations.ts` ✅ (autocomplete); expand for Destinations page |
 | Search → results data flow | High | Pass validated form data to results page |
 | Local storage for saved trips | Medium | Browser-only persistence before backend |
-| Date picker improvements | Medium | Better UX than native `<input type="date">` |
+| Date picker improvements | Medium | ✅ Custom `TravelCalendar` component |
 
 ---
 

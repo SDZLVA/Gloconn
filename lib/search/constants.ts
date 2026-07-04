@@ -1,4 +1,10 @@
-import type { TravelStyle } from "@/types/search";
+import type { TravelStyle, TripType } from "@/types/search";
+
+/** Labels for round-trip vs one-way in the dates selector. */
+export const TRIP_TYPE_OPTIONS = [
+  { value: "round-trip", label: "Round-trip" },
+  { value: "one-way", label: "One-way" },
+] as const satisfies ReadonlyArray<{ value: TripType; label: string }>;
 
 /** Labels for each travel style option in the search form. */
 export const TRAVEL_STYLE_OPTIONS = [

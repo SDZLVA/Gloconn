@@ -56,10 +56,12 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `HeroSection` | `components/home/` | Home page hero |
 | `SearchCard` | `components/search/` | Trip search form (layout only) |
 | `DestinationAutocomplete` | `components/search/` | Destination field — recent, popular, and filtered mock suggestions |
+| `TravelDatesSelector` | `components/search/` | Round-trip / one-way dates picker with calendar dropdown |
 | `TravelersSelector` | `components/search/` | Adults / Children / Infants / Rooms picker |
 | `TravelStyleSelector` | `components/search/` | Budget / Standard / Luxury picker |
 | `Button`, `Card`, `InputField` | `components/ui/` | Generic UI primitives |
 | `Autocomplete` | `components/ui/` | Reusable accessible combobox (sections, keyboard navigation) |
+| `TravelCalendar` | `components/ui/` | Reusable date picker — single or range, disables past dates |
 | `NumberStepper` | `components/ui/` | Reusable +/- numeric counter |
 | `SectionHeading` | `components/ui/` | Reusable title + description for sections |
 | `FormLabel`, `FormError` | `components/ui/FormField.tsx` | Shared form helpers |
@@ -74,15 +76,18 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `buildSearchData` | `lib/search/payload.ts` | Converts form strings to typed payload |
 | `logSearchData` | `lib/search/payload.ts` | Console.log on successful search |
 | `formatTravelersSummary` | `lib/search/travelers.ts` | Builds travelers trigger label |
+| `formatTravelDatesSummary` | `lib/search/dates.ts` | Builds dates trigger label |
 | `TRAVELERS_LIMITS` | `lib/search/travelers.ts` | Min/max for adults, children, infants, rooms |
 | `TRAVEL_STYLE_OPTIONS` | `lib/search/constants.ts` | Travel style labels and values |
+| `TRIP_TYPE_OPTIONS` | `lib/search/constants.ts` | Round-trip / one-way labels |
 | `MOCK_DESTINATIONS` | `lib/destinations.ts` | Static destination list for autocomplete |
 | `getPopularDestinations` | `lib/destinations.ts` | Curated popular destinations for empty field |
 | `filterDestinations` | `lib/destinations.ts` | Client-side ranked destination filtering |
 | Recent search helpers | `lib/destinations/recentSearches.ts` | localStorage read/write for recent picks |
+| Calendar date helpers | `lib/calendar/` | ISO formatting, month grids, range checks |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
 | `focusRing`, etc. | `lib/styles.ts` | Shared Tailwind class strings |
-| Search types | `types/search.ts` | `SearchFormState`, `TravelersState`, `TravelStyle`, etc. |
+| Search types | `types/search.ts` | `SearchFormState`, `TravelersState`, `TripType`, `TravelStyle`, etc. |
 
 **Import convention:** Use `@/lib/search` and `@/types` — not the inner files directly from components (unless you are editing the search module itself).
 
@@ -92,15 +97,16 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 
 1. User fills fields in `SearchCard`
 2. **Destination** — type to filter mock suggestions; empty field shows recent searches and popular destinations; pick with mouse or arrow keys + Enter; selections persist in localStorage
-3. **Travelers** — click trigger to open panel; adjust Adults, Children, Infants, Rooms with steppers; click Done
-4. User clicks **Search** button
-5. `useSearchForm.handleSearch()` runs
-6. `validateSearchForm()` checks required fields
-7. If invalid → red error messages appear under fields
-8. If valid → `logSearchData()` prints to browser console (F12)
-9. **No API calls, no navigation** (yet)
+3. **Dates** — click trigger to open calendar; choose Round-trip or One-way; pick departure (and return for round-trip) on the calendar; past dates are disabled; click Done
+4. **Travelers** — click trigger to open panel; adjust Adults, Children, Infants, Rooms with steppers; click Done
+5. User clicks **Search** button
+6. `useSearchForm.handleSearch()` runs
+7. `validateSearchForm()` checks required fields
+8. If invalid → red error messages appear under fields
+9. If valid → `logSearchData()` prints to browser console (F12)
+10. **No API calls, no navigation** (yet)
 
-Required fields: Destination, Departure, Return, Travelers (≥1 adult, ≥1 room), Travel style.  
+Required fields: Destination, Departure, Return (round-trip only), Travelers (≥1 adult, ≥1 room), Travel style.  
 Optional: Budget.  
 Return date must be ≥ departure date.  
 Infants cannot exceed adults.

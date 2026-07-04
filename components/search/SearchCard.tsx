@@ -1,6 +1,7 @@
 "use client";
 
 import { DestinationAutocomplete } from "@/components/search/DestinationAutocomplete";
+import { TravelDatesSelector } from "@/components/search/TravelDatesSelector";
 import { TravelStyleSelector } from "@/components/search/TravelStyleSelector";
 import { TravelersSelector } from "@/components/search/TravelersSelector";
 import { Button } from "@/components/ui/Button";
@@ -21,8 +22,15 @@ type SearchCardProps = {
  * Form state and validation live in useSearchForm; this file handles layout only.
  */
 export function SearchCard({ className }: SearchCardProps) {
-  const { form, errors, updateField, updateTravelers, handleSearch } =
-    useSearchForm();
+  const {
+    form,
+    errors,
+    updateField,
+    updateTravelers,
+    updateTripType,
+    updateDates,
+    handleSearch,
+  } = useSearchForm();
 
   return (
     <Card hoverable className={cn("w-full max-w-3xl p-6 sm:p-8", className)}>
@@ -41,24 +49,16 @@ export function SearchCard({ className }: SearchCardProps) {
           className="sm:col-span-2"
         />
 
-        <InputField
-          id="search-departure-date"
-          label="Departure"
-          type="date"
-          value={form.departureDate}
-          onChange={(value) => updateField("departureDate", value)}
-          error={errors.departureDate}
+        <TravelDatesSelector
+          tripType={form.tripType}
+          departureDate={form.departureDate}
+          returnDate={form.returnDate}
+          onTripTypeChange={updateTripType}
+          onDatesChange={updateDates}
+          departureError={errors.departureDate}
+          returnError={errors.returnDate}
           required
-        />
-
-        <InputField
-          id="search-return-date"
-          label="Return"
-          type="date"
-          value={form.returnDate}
-          onChange={(value) => updateField("returnDate", value)}
-          error={errors.returnDate}
-          required
+          className="sm:col-span-2"
         />
 
         <TravelersSelector

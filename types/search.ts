@@ -5,6 +5,9 @@
 /** Budget, Standard, or Luxury — chosen in the search card. */
 export type TravelStyle = "budget" | "standard" | "luxury";
 
+/** Round-trip or one-way — chosen in the travel dates selector. */
+export type TripType = "round-trip" | "one-way";
+
 /** Adults, children, infants, and rooms for the travelers selector. */
 export type TravelersState = {
   adults: number;
@@ -16,6 +19,7 @@ export type TravelersState = {
 /** Raw form values stored in React state. */
 export type SearchFormState = {
   destination: string;
+  tripType: TripType;
   departureDate: string;
   returnDate: string;
   budget: string;
@@ -33,8 +37,9 @@ export type SearchFormErrors = Partial<
 /** Clean search payload produced after successful validation. */
 export type SearchData = {
   destination: string;
+  tripType: TripType;
   departureDate: string;
-  returnDate: string;
+  returnDate: string | null;
   budget: number | null;
   travelers: TravelersState;
   totalGuests: number;
@@ -52,6 +57,7 @@ export const INITIAL_TRAVELERS: TravelersState = {
 /** Default values when the search form first loads. */
 export const INITIAL_SEARCH_FORM: SearchFormState = {
   destination: "",
+  tripType: "round-trip",
   departureDate: "",
   returnDate: "",
   budget: "",

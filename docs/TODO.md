@@ -45,7 +45,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 - [ ] Add favicon and Open Graph metadata
 - [ ] Add static assets to `public/` (logo, placeholder images)
-- [ ] Improve date input UX (custom date picker component)
+- [x] Improve date input UX (custom date picker component)
 - [ ] Add loading states for future API calls
 - [ ] Add unit tests for `lib/search/validation.ts`
 - [ ] Set up GitHub Actions for CI (lint + build on PR)
@@ -73,6 +73,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [x] Destination autocomplete with mock data
 - [x] Travelers selector (Adults, Children, Infants, Rooms)
 - [x] Reusable Autocomplete and NumberStepper components
+- [x] Travel calendar with round-trip / one-way and range selection
 
 ---
 
