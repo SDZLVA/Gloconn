@@ -34,3 +34,7 @@ export {
   RESULT_TYPE_LABELS,
   SORT_OPTIONS,
 } from "@/types/results";
+
+export type { AuthFormState, AuthUser } from "@/types/auth";
+
+export type { SavedTrip, SavedTripRow } from "@/types/trips";

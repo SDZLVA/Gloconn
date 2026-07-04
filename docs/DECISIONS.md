@@ -376,3 +376,33 @@ TravelersSelector (search/) → wraps PassengersSelector with "Travelers & rooms
 - `lib/search/travelers.ts` re-exports from `passengers.ts` for backward compatibility
 - `TravelersState` is a type alias for `PassengersState`
 - Responsive panel scrolls on small viewports (`max-h` + `overflow-y-auto`)
+
+---
+
+## ADR-020: Supabase for authentication and saved trips
+
+**Decision:** Use Supabase Auth + PostgreSQL for user accounts and saved trips.
+
+**Context:** Phase 4 required Google login, email login, protected routes, user profile, and saved trips. The project needed a backend without adding multiple services.
+
+**Rationale:**
+- One provider covers OAuth (Google), email/password, sessions, and a database
+- `@supabase/ssr` integrates cleanly with Next.js App Router middleware and cookies
+- Row Level Security keeps each user's trips private
+- Aligns with options already listed in the roadmap
+
+**Structure:**
+```
+lib/auth/           → server/client Supabase helpers, session, middleware
+lib/trips/          → saved trip queries and server actions
+middleware.ts       → refresh session + protect /my-trips and /profile
+app/login, signup   → email + Google sign-in
+app/auth/callback   → OAuth / email confirmation handler
+supabase/schema.sql → saved_trips table + RLS policies
+```
+
+**Consequences:**
+- Requires `.env.local` with `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- Google OAuth must be configured in the Supabase dashboard
+- `saved_trips.search_data` stores the existing `SearchData` JSON shape
+- Recent destination searches still use localStorage (ADR-017) until migrated

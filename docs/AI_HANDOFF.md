@@ -14,8 +14,8 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | Week 2 in progress — search results page live |
-| APIs | None connected |
+| Stage | Week 2+ — auth and saved trips live |
+| APIs | Supabase Auth + PostgreSQL (`saved_trips`) |
 
 ---
 
@@ -40,10 +40,12 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 ### Live routes
 - `/` — Home page with `HeroSection` + `SearchCard`
 - `/search/results` — Search results with mock hotels, flights, buses, trains (filters + sorting)
+- `/login`, `/signup` — Google and email authentication
+- `/profile` — Protected user profile
+- `/my-trips` — Protected saved trips list
 
 ### Nav links (pages NOT built yet — will 404)
 - `/destinations`
-- `/my-trips`
 - `/about`
 
 ### Key components

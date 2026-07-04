@@ -50,15 +50,17 @@ This roadmap outlines planned development phases. Dates are approximate and will
 
 ---
 
-## Phase 4 — Backend and auth (Week 6+)
+## Phase 4 — Backend and auth (Week 6+) 🚧 In progress
 
 **Goal:** User accounts and server-side data.
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| Database selection and setup | High | TBD (e.g. PostgreSQL, Supabase) |
-| User authentication | High | Sign up, login, sessions |
-| Save trips to user account | High | Replace local storage |
+| Database selection and setup | High | ✅ Supabase PostgreSQL |
+| User authentication | High | ✅ Google + email via Supabase |
+| Save trips to user account | High | ✅ `saved_trips` table + save button on results |
+| User profile page | High | ✅ `/profile` |
+| Protected routes | High | ✅ Middleware for `/my-trips`, `/profile` |
 | Destination API or CMS | Medium | Dynamic destination content |
 
 ---

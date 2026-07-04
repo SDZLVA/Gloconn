@@ -153,7 +153,23 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
-## Architecture improvements (post–Week 1)
+## Authentication and saved trips
+
+**Dates:** July 2026
+
+### Changes
+
+- Added Supabase authentication (Google OAuth + email/password)
+- Protected `/my-trips` and `/profile` via `middleware.ts`
+- Built login, signup, profile, and my-trips pages
+- Saved trips stored in Supabase `saved_trips` table with Row Level Security
+- Save trip button on search results page
+- Navbar user menu with sign in / profile / sign out
+
+**Packages added:** `@supabase/supabase-js`, `@supabase/ssr`
+
+**Files added:** `lib/auth/`, `lib/trips/`, `middleware.ts`, `app/login/`, `app/signup/`, `app/profile/`, `app/my-trips/`, `app/auth/`, `components/auth/`, `components/trips/`, `hooks/useAuth.ts`, `supabase/schema.sql`, `.env.example`
+
 
 **Branch:** `cursor/architecture-improvements`
 

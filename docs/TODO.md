@@ -26,8 +26,9 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 ## 🟡 Medium priority — Week 2–3
 
 - [ ] **My Trips page** (`app/my-trips/page.tsx`)
-  - Placeholder UI: "No trips saved yet"
-  - Prepare structure for future trip cards
+  - [x] Protected route with Supabase auth
+  - [x] List saved trips from database
+  - [x] Save trip from search results page
 
 - [ ] **Custom 404 page** (`app/not-found.tsx`)
   - Branded not-found page with link back to Home

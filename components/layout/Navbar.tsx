@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { UserMenu } from "@/components/auth/UserMenu";
 import { BrandLogo } from "@/components/layout/BrandLogo";
 import { NavLinkItem } from "@/components/layout/NavLinkItem";
 import { PageContainer } from "@/components/layout/PageContainer";
@@ -32,17 +33,20 @@ export function Navbar() {
         >
           <BrandLogo onNavigate={closeMobileMenu} />
 
-          <ul className="hidden items-center gap-1 md:flex">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <NavLinkItem
-                  href={link.href}
-                  label={link.label}
-                  isActive={pathname === link.href}
-                />
-              </li>
-            ))}
-          </ul>
+          <div className="hidden items-center gap-3 md:flex">
+            <ul className="flex items-center gap-1">
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <NavLinkItem
+                    href={link.href}
+                    label={link.label}
+                    isActive={pathname === link.href}
+                  />
+                </li>
+              ))}
+            </ul>
+            <UserMenu />
+          </div>
 
           <button
             type="button"
@@ -96,6 +100,15 @@ export function Navbar() {
                 />
               </li>
             ))}
+            <li className="border-t border-slate-100 pt-3">
+              <NavLinkItem
+                href="/login"
+                label="Sign in"
+                isActive={pathname === "/login"}
+                onNavigate={closeMobileMenu}
+                variant="stack"
+              />
+            </li>
           </ul>
         </div>
       )}

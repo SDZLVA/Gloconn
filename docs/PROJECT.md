@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.3.0 (Search results page — hotels, flights, buses, trains)
+**Current version:** 0.4.0 (Authentication — Google & email login, saved trips)
 
 ---
 
@@ -21,7 +21,9 @@ Glooconn is a travel planning web application that helps users discover destinat
 | Linting | ESLint + eslint-config-next | 9.x |
 | Font | Geist Sans / Geist Mono (via next/font) | — |
 
-No backend, database, or third-party API integrations are connected yet.
+| Auth & database | Supabase | — |
+
+Supabase handles Google OAuth, email/password auth, session cookies, and the `saved_trips` table.
 
 ---
 

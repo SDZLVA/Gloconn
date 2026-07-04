@@ -3,7 +3,7 @@
 Travel planning web application — discover destinations, plan trips, and manage travel in one place.
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
-**Version:** 0.3.0 (Search results page — hotels, flights, buses, trains)
+**Version:** 0.4.0 (Authentication — Google & email login, saved trips)
 
 ## Tech stack
 
@@ -13,6 +13,7 @@ Travel planning web application — discover destinations, plan trips, and manag
 | Language | TypeScript 5 |
 | UI | React 19 |
 | Styling | Tailwind CSS 4 |
+| Auth & database | Supabase (`@supabase/supabase-js`, `@supabase/ssr`) |
 | Linting | ESLint + eslint-config-next |
 
 ## Getting started
@@ -23,6 +24,16 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+### Authentication setup (Supabase)
+
+1. Create a free project at [supabase.com](https://supabase.com).
+2. Copy `.env.example` to `.env.local` and fill in your project URL and anon key.
+3. In Supabase **Authentication → Providers**, enable **Google** (optional) and **Email**.
+4. Add `http://localhost:3000/auth/callback` to **Redirect URLs** in Auth settings.
+5. Run the SQL in `supabase/schema.sql` in the Supabase SQL editor (creates `saved_trips` table).
+
+Without `.env.local`, the app runs but sign-in and saved trips are disabled.
 
 ### Windows note
 
@@ -49,22 +60,15 @@ Gloconn/
 ├── components/
 │   ├── home/               # Home page sections
 │   ├── layout/             # Shell, navbar, footer, brand
+│   ├── auth/               # Login forms, Google sign-in, user menu
 │   ├── search/             # Search form feature
-│   │   ├── DestinationAutocomplete.tsx
-│   │   ├── SearchCard.tsx
-│   │   ├── TravelersSelector.tsx
-│   │   └── TravelStyleSelector.tsx
 │   ├── results/            # Search results cards, filters, sorting
+│   ├── trips/              # Saved trips list and save button
 │   └── ui/                 # Reusable UI primitives
-│       ├── Autocomplete.tsx
-│       ├── NumberStepper.tsx
-│       ├── PassengersSelector.tsx
-│       └── …
-├── hooks/                  # Custom React hooks
+├── hooks/                  # Custom React hooks (useAuth, useSearchForm, …)
 ├── lib/
-│   ├── destinations.ts     # Mock destination data (autocomplete)
-│   ├── results/            # Mock results, filter, and sort helpers
-│   ├── search/             # Search validation, payload, params, passengers
+│   ├── auth/               # Supabase clients, session helpers, middleware
+│   ├── trips/              # Saved trips queries and server actions
 │   ├── navigation.ts       # Nav and footer link config
 │   ├── styles.ts           # Shared Tailwind class strings
 │   └── utils.ts            # General helpers (e.g. cn)
@@ -89,9 +93,10 @@ Gloconn/
 
 ## Current status
 
-- **Live routes:** `/` (home), `/search/results` (mock hotels, flights, buses, trains)
-- **Search card:** Destination autocomplete, passengers & rooms selector, dates, budget, travel style → navigates to results
-- **Planned routes:** `/destinations`, `/my-trips`, `/about`
-- **Backend / APIs:** None yet
+- **Live routes:** `/`, `/search/results`, `/login`, `/signup`, `/profile`, `/my-trips`
+- **Auth:** Google OAuth and email/password via Supabase; protected `/profile` and `/my-trips`
+- **Search card:** Destination autocomplete, passengers & rooms, dates, budget, travel style → results
+- **Saved trips:** Save from search results; view and remove on My Trips
+- **Planned routes:** `/destinations`, `/about`
 
 See [docs/TODO.md](./docs/TODO.md) for next tasks.
