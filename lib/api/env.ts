@@ -1,21 +1,17 @@
 /**
- * Centralized API and provider environment configuration.
- * All external API keys and feature flags are read here — never in UI components.
+ * API environment — backward-compatible re-export from centralized config.
+ * @deprecated Prefer `getAppConfig()` from `@/lib/config`.
  */
 
-export type ApiEnv = {
-  /** When true (default), mock providers are used instead of external APIs. */
-  useMockProviders: boolean;
-};
+import { getAppConfig, type ApiEnv } from "@/lib/config";
+
+export type { ApiEnv };
 
 /**
  * Reads API-related environment variables.
  * Defaults to mock providers so local development works without API keys.
  */
 export function getApiEnv(): ApiEnv {
-  const raw = process.env.USE_MOCK_PROVIDERS;
-
-  return {
-    useMockProviders: raw === undefined ? true : raw !== "false",
-  };
+  const { providers } = getAppConfig();
+  return { useMockProviders: providers.useMockProviders };
 }

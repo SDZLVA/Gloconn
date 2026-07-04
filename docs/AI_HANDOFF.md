@@ -97,7 +97,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | Mock provider classes | `lib/providers/*/mock/provider.ts` | `MockHotelsProvider`, `MockFlightsProvider`, etc. |
 | `searchDestinations` | `lib/services/destinationService.ts` | Autocomplete via active provider |
 | `useServiceQuery` | `hooks/useServiceQuery.ts` | Loading / success / error for async services |
-| API env, errors, validation | `lib/api/` | `ApiError`, `ServiceResult`, `runService`, `toJsonResponse`, `validateSearchRequest` |
+| API env, errors, validation | `lib/api/` | `ApiError`, `ServiceResult`, `runService`, `getAppConfig`, `validateAppConfig` |
 | Provider interfaces | `lib/providers/core/types.ts` | `DestinationProvider`, `HotelsProvider`, `FlightsProvider`, `TransportProvider`, … |
 | Legacy search provider | `lib/providers/types.ts` | `SearchProvider` (deprecated monolithic mock) |
 | Mock providers | `lib/providers/*/mock/` | Default implementations (no external APIs) |
@@ -151,6 +151,28 @@ Component
 Future Route Handler
   → toJsonResponse(result)      → { ok: true, data } | { ok: false, error: { code, message } }
 ```
+
+### Environment variables
+
+**How to manage env vars:**
+
+1. Copy `.env.example` → `.env.local` (`.env.local` is gitignored — never commit it)
+2. Leave `USE_MOCK_PROVIDERS=true` for local dev — no travel API keys needed
+3. Add Supabase vars only when testing auth / saved trips
+4. Read config via `getAppConfig()` from `@/lib/config` — never `process.env` in components
+
+| Variable | Required? | Client-safe? | Purpose |
+|----------|-----------|--------------|---------|
+| `USE_MOCK_PROVIDERS` | No (default `true`) | No | Mock vs real travel providers |
+| `NEXT_PUBLIC_SITE_URL` | No | Yes | OAuth redirect base URL |
+| `NEXT_PUBLIC_SUPABASE_*` | No | Yes | Auth + saved trips (warns if missing) |
+| `DESTINATIONS_PROVIDER` etc. | No | No | Per-domain provider name |
+| `AMADEUS_API_KEY` etc. | When provider active | **Never** | Server-only API credentials |
+
+**Rules:**
+- `NEXT_PUBLIC_` only for values safe in the browser
+- API keys (Amadeus, Booking, Omio, Google) — no `NEXT_PUBLIC_` prefix
+- `.env.example` is the committed template; put real secrets only in `.env.local`
 | Calendar date helpers | `lib/calendar/` | ISO formatting, month grids, range checks |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
 | `focusRing`, etc. | `lib/styles.ts` | Shared Tailwind class strings |

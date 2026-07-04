@@ -5,6 +5,7 @@
  * `@/lib/providers/hotels` or `@/lib/providers/core/registry`.
  */
 
+import { getAppConfig } from "@/lib/config";
 import { getProviderConfig } from "@/lib/providers/core/config";
 import { mockDestinationProvider } from "@/lib/providers/destinations/mock";
 import { mockFlightsProvider } from "@/lib/providers/flights/mock";
@@ -48,9 +49,18 @@ export function getProviderRegistry(): ProviderRegistry {
   const { useMockProviders } = getProviderConfig();
 
   if (!useMockProviders) {
-    console.warn(
-      "[Glooconn] USE_MOCK_PROVIDERS=false but no external providers are configured yet. Using mock adapters.",
-    );
+    const { validation } = getAppConfig();
+
+    if (!validation.isValid) {
+      console.error(
+        "[Glooconn] Configuration errors — external providers cannot start:",
+        validation.errors.map((issue) => issue.message).join(" "),
+      );
+    } else {
+      console.warn(
+        "[Glooconn] USE_MOCK_PROVIDERS=false but no external provider implementations are registered yet. Using mock adapters.",
+      );
+    }
   }
 
   registry = createMockRegistry();

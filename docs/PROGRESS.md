@@ -277,6 +277,22 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
+## Centralized environment configuration
+
+**Branch:** `cursor/api-foundation`
+
+### Changes
+
+- Added `lib/config/` — `getAppConfig()`, `loadAppConfig()`, `validateAppConfig()`
+- Typed sections: `app`, `supabase`, `providers`, `apiKeys`, `validation`
+- Per-domain provider env vars: `DESTINATIONS_PROVIDER`, `HOTELS_PROVIDER`, etc.
+- Placeholder API key slots: Amadeus, Booking, Omio, Google Maps (no real keys)
+- `lib/api/env.ts` and `lib/auth/env.ts` delegate to centralized config
+- Expanded `.env.example` with documentation and future key placeholders
+- Server logs config warnings/errors once on first `getAppConfig()` call
+
+---
+
 **Branch:** `cursor/architecture-improvements`
 
 ### Changes

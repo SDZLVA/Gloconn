@@ -582,3 +582,42 @@ UI → lib/services (destinationService, searchService)
 - Validation errors include optional `field` for form mapping
 - UI continues using `getApiErrorMessage()` — no component changes required
 - Provider throws are mapped to `PROVIDER_ERROR` with a safe user message
+
+---
+
+## ADR-028: Centralized environment configuration
+
+**Decision:** Read all environment variables through `lib/config/`. Validate on load; expose typed `AppConfig` via `getAppConfig()`.
+
+**Structure:**
+```
+lib/config/
+  types.ts     → AppConfig, ProvidersConfig, ApiKeysConfig
+  parse.ts     → readEnv, readBooleanEnv, readProviderName
+  load.ts      → loadAppConfig()
+  validate.ts  → validateAppConfig() — errors + warnings
+  index.ts     → getAppConfig() (cached), resetAppConfig()
+```
+
+**Variable groups:**
+| Group | Prefix | Examples |
+|-------|--------|----------|
+| Browser-safe | `NEXT_PUBLIC_` | `NEXT_PUBLIC_SITE_URL`, Supabase URL/anon key |
+| Provider flags | none | `USE_MOCK_PROVIDERS`, `HOTELS_PROVIDER` |
+| API keys | none (server-only) | `AMADEUS_API_KEY`, `GOOGLE_MAPS_API_KEY` |
+
+**Validation:**
+- `USE_MOCK_PROVIDERS=true` (default) — no API keys required; Supabase missing → warning only
+- `USE_MOCK_PROVIDERS=false` — errors when a non-mock provider is selected but its API keys are missing
+- Warnings logged once on server startup via `getAppConfig()`
+
+**Rationale:**
+- Single source of truth — `lib/api/env.ts` and `lib/auth/env.ts` delegate here
+- `.env.example` documents all future keys without real values
+- Prepares for Amadeus, Booking, Omio, Google Maps without wiring them yet
+- Beginner-friendly: copy `.env.example` → `.env.local`, set `USE_MOCK_PROVIDERS=true`
+
+**Consequences:**
+- Never read `process.env` in components or providers — use `getAppConfig()`
+- API keys must never use `NEXT_PUBLIC_` prefix
+- `.env.local` is gitignored; `.env.example` is committed as the template

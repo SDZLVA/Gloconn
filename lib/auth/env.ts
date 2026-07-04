@@ -1,21 +1,12 @@
 /**
- * Supabase environment variables.
- * Centralized so every auth module reads the same values.
+ * Supabase environment — backward-compatible re-export from centralized config.
+ * @deprecated Prefer `getAppConfig().supabase` from `@/lib/config`.
  */
 
-export type SupabaseEnv = {
-  url: string;
-  anonKey: string;
-  isConfigured: boolean;
-};
+import { getAppConfig, type SupabaseConfig } from "@/lib/config";
+
+export type SupabaseEnv = SupabaseConfig;
 
 export function getSupabaseEnv(): SupabaseEnv {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
-
-  return {
-    url,
-    anonKey,
-    isConfigured: Boolean(url && anonKey),
-  };
+  return getAppConfig().supabase;
 }

@@ -1,20 +1,23 @@
 /**
  * Provider selection configuration.
  *
- * Today only mock adapters exist. When external APIs are added, extend this
- * module to read per-domain env vars (e.g. HOTELS_PROVIDER=booking).
+ * Provider names and mock flag come from environment variables.
+ * See `.env.example` and `lib/config/`.
  */
 
-import { getApiEnv } from "@/lib/api/env";
+import { getAppConfig } from "@/lib/config";
+import type { ProviderName } from "@/lib/config/types";
 
 export type ProviderConfig = {
-  /** When true, mock adapters are used (default for local development). */
   useMockProviders: boolean;
+  destinations: ProviderName;
+  hotels: ProviderName;
+  flights: ProviderName;
+  transport: ProviderName;
 };
 
 /** Reads which provider implementations should be active. */
 export function getProviderConfig(): ProviderConfig {
-  return {
-    useMockProviders: getApiEnv().useMockProviders,
-  };
+  const { providers } = getAppConfig();
+  return providers;
 }

@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.6.1 (centralized error handling — ApiError, ServiceResult, ApiResponse)
+**Current version:** 0.6.2 (centralized environment configuration)
 
 ---
 
@@ -52,7 +52,11 @@ Gloconn/
 │   └── ui/                 # Generic reusable UI (Button, Card, BudgetSlider, TravelCalendar, …)
 ├── hooks/                  # Custom React hooks (useSearchForm, useRecentDestinationSearches)
 ├── lib/
-│   ├── api/                # Env, errors, types, validation, HTTP responses
+│   ├── config/             # Centralized env config (getAppConfig)
+│   │   ├── load.ts         # Reads process.env into typed AppConfig
+│   │   ├── validate.ts     # Required keys + warnings
+│   │   └── parse.ts        # readEnv, readBooleanEnv helpers
+│   ├── api/                # Env re-exports, errors, types, validation, HTTP responses
 │   │   ├── errors.ts       # ApiError + factories (validation, provider, unknown)
 │   │   ├── types.ts        # ServiceResult, ServiceState, runService()
 │   │   ├── responses.ts    # ApiResponse, toJsonResponse() for Route Handlers

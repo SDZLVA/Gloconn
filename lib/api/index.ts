@@ -5,6 +5,17 @@
 
 export { getApiEnv, type ApiEnv } from "@/lib/api/env";
 export {
+  getAppConfig,
+  loadAppConfig,
+  logConfigWarnings,
+  resetAppConfig,
+  validateAppConfig,
+  type AppConfig,
+  type ConfigIssue,
+  type ConfigValidation,
+  type ProvidersConfig,
+} from "@/lib/config";
+export {
   ApiError,
   createNotFoundError,
   createProviderError,
