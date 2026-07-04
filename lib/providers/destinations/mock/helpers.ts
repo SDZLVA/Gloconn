@@ -19,26 +19,55 @@ export function destinationToAutocompleteOption(destination: Destination) {
   };
 }
 
-function scoreDestination(destination: Destination, query: string): number {
-  const name = destination.name.toLowerCase();
-  const country = destination.country.toLowerCase();
-  const region = destination.region.toLowerCase();
+/** Max suggestions shown while the user types (keeps the dropdown scannable). */
+export const DESTINATION_SEARCH_LIMIT = 10;
 
-  if (name === query) return 100;
-  if (name.startsWith(query)) return 80;
+/**
+ * Normalizes user input for search — trim, lowercase, strip accents.
+ * "  PARIS  " and "parís" both become "paris".
+ */
+export function normalizeSearchText(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "");
+}
+
+function destinationSearchFields(destination: Destination): string[] {
+  return [
+    destination.id,
+    destination.name,
+    destination.country,
+    destination.region,
+    formatDestinationLabel(destination),
+  ].map(normalizeSearchText);
+}
+
+function scoreDestination(destination: Destination, query: string): number {
+  const [id, name, country, region, label] = destinationSearchFields(destination);
+
+  if (name === query || label === query) return 100;
+  if (name.startsWith(query) || label.startsWith(query)) return 80;
+  if (id.startsWith(query.replace(/\s+/g, "-"))) return 75;
   if (country.startsWith(query)) return 60;
-  if (name.includes(query)) return 40;
+  if (name.includes(query) || label.includes(query)) return 40;
   if (country.includes(query)) return 30;
   if (region.includes(query)) return 20;
+  if (id.includes(query.replace(/\s+/g, "-"))) return 15;
   return 0;
 }
 
 /**
- * Filters destinations by query (name, country, or region).
- * Case-insensitive; returns all destinations when query is empty.
+ * Filters mock destinations as the user types.
+ * Case- and accent-insensitive; matches name, country, region, and full label.
+ * Returns all destinations when the query is empty.
  */
-export function filterDestinations(query: string): Destination[] {
-  const normalized = query.trim().toLowerCase();
+export function filterDestinations(
+  query: string,
+  limit = DESTINATION_SEARCH_LIMIT,
+): Destination[] {
+  const normalized = normalizeSearchText(query);
   if (!normalized) {
     return MOCK_DESTINATIONS;
   }
@@ -52,6 +81,7 @@ export function filterDestinations(query: string): Destination[] {
       (a, b) =>
         b.score - a.score || a.destination.name.localeCompare(b.destination.name),
     )
+    .slice(0, limit)
     .map(({ destination }) => destination);
 }
 
@@ -68,7 +98,9 @@ export function resolveDestinationIdFromLabel(destination: string): string {
   }
 
   const exact = MOCK_DESTINATIONS.find(
-    (item) => formatDestinationLabel(item).toLowerCase() === trimmed.toLowerCase(),
+    (item) =>
+      normalizeSearchText(formatDestinationLabel(item)) ===
+      normalizeSearchText(trimmed),
   );
   if (exact) {
     return exact.id;
@@ -92,16 +124,16 @@ export function getDestinationsByIds(ids: string[]): Destination[] {
 
 /** Finds a destination by its display label. */
 export function findDestinationByLabel(label: string): Destination | null {
-  const normalized = label.trim().toLowerCase();
+  const normalized = normalizeSearchText(label);
   if (!normalized) {
     return null;
   }
 
   return (
-    MOCK_DESTINATIONS.find(
-      (destination) =>
-        formatDestinationLabel(destination).toLowerCase() === normalized ||
-        destination.name.toLowerCase() === normalized,
-    ) ?? null
+    MOCK_DESTINATIONS.find((destination) => {
+      const formatted = normalizeSearchText(formatDestinationLabel(destination));
+      const name = normalizeSearchText(destination.name);
+      return formatted === normalized || name === normalized;
+    }) ?? null
   );
 }

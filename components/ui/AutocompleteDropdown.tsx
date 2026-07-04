@@ -52,16 +52,15 @@ export function AutocompleteDropdown({
       role="listbox"
       aria-label={`${ariaLabel} suggestions`}
       className={cn(
-        "absolute top-full z-20 mt-1 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-200/60",
+        "autocomplete-dropdown absolute top-full z-20 mt-1 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-200/60",
         "max-h-[min(18rem,50vh)] sm:max-h-72",
         className,
       )}
     >
       {flatOptions.length === 0 ? (
         <li
-          role="option"
-          aria-selected={false}
-          aria-disabled="true"
+          role="status"
+          aria-live="polite"
           className="px-4 py-3 text-sm text-slate-500"
         >
           {noResultsMessage}

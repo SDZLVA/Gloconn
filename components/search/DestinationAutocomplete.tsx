@@ -52,14 +52,11 @@ export function DestinationAutocomplete({
   const sections = useMemo(() => {
     if (isSearching) {
       const matches = filterDestinations(query);
-      if (matches.length === 0) {
-        return [];
-      }
 
       return [
         {
           id: "matches",
-          heading: "Suggestions",
+          heading: matches.length > 0 ? "Suggestions" : "",
           options: matches.map(destinationToAutocompleteOption),
         },
       ] satisfies AutocompleteSection[];
@@ -116,7 +113,7 @@ export function DestinationAutocomplete({
       onListOpen={reloadRecent}
       error={error}
       required={required}
-      noResultsMessage="No destinations match your search."
+      noResultsMessage="No destinations found"
       className={className}
     />
   );
