@@ -25,6 +25,9 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 ## 🟡 Medium priority — Week 2–3
 
+- [ ] **Split mock search provider** into `hotels/`, `flights/`, `ground/` mock implementations
+- [ ] **Implement searchOrchestrator** — parallel provider calls + merge
+
 - [ ] **My Trips page** (`app/my-trips/page.tsx`)
   - [x] Protected route with Supabase auth
   - [x] List saved trips from database

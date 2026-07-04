@@ -70,11 +70,20 @@ Gloconn/
 │   ├── api/                # Env, errors, types, validation
 │   ├── auth/               # Supabase clients, session helpers, middleware
 │   ├── providers/          # Provider adapters (mock + future external APIs)
+│   │   ├── core/           # Registry, config, base interfaces (stubs)
+│   │   ├── destinations/ # mock + google-maps slot
+│   │   ├── search/         # Monolithic mock (active until split)
+│   │   ├── hotels/         # mock + booking slot
+│   │   ├── flights/        # mock + amadeus slot
+│   │   └── ground/         # mock + omio slot
 │   ├── services/           # Service layer — UI entry point for travel data
 │   ├── trips/              # Saved trips queries and server actions
 │   ├── navigation.ts       # Nav and footer link config
 │   ├── styles.ts           # Shared Tailwind class strings
 │   └── utils.ts            # General helpers (e.g. cn)
+├── app/api/                # Route Handler slots (stubs — no routes yet)
+│   ├── destinations/
+│   └── search/
 ├── types/
 │   ├── search.ts           # Search-related types
 │   ├── results.ts          # Search result types

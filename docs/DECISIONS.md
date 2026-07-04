@@ -444,3 +444,34 @@ hooks/useServiceQuery.ts → loading state for async service calls
 - `lib/destinations.ts` and `lib/results/` remain as backward-compatible re-exports
 - New providers are registered in `lib/providers/destinations/index.ts` and `lib/providers/search/index.ts`
 - External API keys live in server env only (never `NEXT_PUBLIC_*`)
+
+---
+
+## ADR-022: Scalable provider folder structure
+
+**Decision:** Scaffold per-domain provider folders (hotels, flights, ground) plus `providers/core/`, `app/api/`, and planned orchestrator files — without implementing business logic yet.
+
+**Context:** Backend architecture design (July 2026) requires splitting the monolithic mock search provider and preparing slots for Amadeus, Booking, Omio, and Google Maps.
+
+**Structure:**
+```
+lib/providers/core/       → registry, config, base types (stubs)
+lib/providers/hotels/     → mock/, booking/, types, mappers
+lib/providers/flights/    → mock/, amadeus/, types, mappers
+lib/providers/ground/     → mock/, omio/, types, mappers
+lib/providers/destinations/google-maps/  → future slot
+lib/services/searchOrchestrator.ts       → stub
+lib/api/cache.ts                         → stub
+app/api/destinations/, app/api/search/   → Route Handler slots
+types/search-response.ts                 → stub
+```
+
+**Rationale:**
+- Folders document where future code lives before implementation
+- UI and existing mock providers remain unchanged
+- Each external API gets an isolated folder with types + mappers + provider
+
+**Consequences:**
+- Existing `lib/providers/search/` stays active until mock data is split
+- Stub files export `{}` — no runtime behavior change
+- Next implementation phase: split mock into hotels/flights/ground providers

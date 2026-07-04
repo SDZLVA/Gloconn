@@ -43,7 +43,7 @@ This roadmap outlines planned development phases. Dates are approximate and will
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| API foundation (providers + services) | High | ✅ Mock providers, env, errors, validation, loading states |
+| API foundation (providers + services) | High | ✅ Mock providers; ✅ folder scaffold for multi-provider |
 | Mock destination dataset | High | ✅ In mock provider; expand for Destinations page |
 | Search → results data flow | High | ✅ Via `searchService` with URL params |
 | Local storage for saved trips | Medium | ✅ Supabase `saved_trips` (replaces browser-only plan) |

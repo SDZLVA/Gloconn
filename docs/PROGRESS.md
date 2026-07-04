@@ -191,6 +191,20 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
+## Provider folder scaffold
+
+**Branch:** `cursor/api-foundation`
+
+### Changes
+
+- Scaffolded `lib/providers/core/`, `hotels/`, `flights/`, `ground/` with future provider slots
+- Added `lib/providers/destinations/google-maps/` placeholder
+- Added stub files: `searchOrchestrator.ts`, `lib/api/cache.ts`, `types/search-response.ts`
+- Added `app/api/destinations/` and `app/api/search/` Route Handler slots
+- No business logic, UI changes, or API connections
+
+---
+
 **Branch:** `cursor/architecture-improvements`
 
 ### Changes

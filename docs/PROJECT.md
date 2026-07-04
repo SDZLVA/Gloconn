@@ -52,9 +52,15 @@ Gloconn/
 │   └── ui/                 # Generic reusable UI (Button, Card, BudgetSlider, TravelCalendar, …)
 ├── hooks/                  # Custom React hooks (useSearchForm, useRecentDestinationSearches)
 ├── lib/
-│   ├── api/                # Env, errors, types, validation for services
+│   ├── api/                # Env, errors, types, validation, cache (planned)
 │   ├── auth/               # Supabase clients, session helpers, middleware
 │   ├── providers/          # Provider adapters (mock + future external APIs)
+│   │   ├── core/           # Registry, config, base interfaces (planned)
+│   │   ├── destinations/   # mock ✅, google-maps (planned)
+│   │   ├── search/         # Monolithic mock search provider ✅ (to split)
+│   │   ├── hotels/         # mock, booking (planned)
+│   │   ├── flights/        # mock, amadeus (planned)
+│   │   └── ground/         # mock, omio (planned)
 │   ├── services/           # Service layer — UI calls these, not providers
 │   ├── trips/              # Saved trip queries and server actions
 │   ├── budget/             # Currency options, limits, and budget formatting
@@ -78,7 +84,11 @@ Gloconn/
 │   ├── search.ts           # Search-related types and defaults
 │   ├── results.ts          # Search result types (hotel, flight, bus, train)
 │   ├── destination.ts      # Destination domain type
+│   ├── search-response.ts  # SearchResponse wrapper (planned)
 │   └── index.ts            # Re-exports (import from @/types)
+├── app/api/                # HTTP Route Handlers (planned, scaffold only)
+│   ├── destinations/       # GET autocomplete
+│   └── search/             # POST search
 ├── docs/                   # Project documentation (this folder)
 └── public/                 # Static assets (reserved for future use)
 ```

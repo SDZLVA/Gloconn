@@ -152,10 +152,18 @@ hooks/                → custom React hooks
 lib/search/           → search validation, payload, constants
 lib/api/              → env, errors, types, validation for services
 lib/providers/        → provider adapters (mock + future external APIs)
+  core/               → registry, config, base interfaces (stubs)
+  destinations/       → mock ✅, google-maps (planned)
+  search/             → monolithic mock ✅ (to split into hotels/flights/ground)
+  hotels/             → mock, booking (planned)
+  flights/            → mock, amadeus (planned)
+  ground/             → mock, omio (planned)
 lib/services/         → service layer — UI calls these for travel data
+app/api/              → Route Handler slots (destinations, search) — stubs only
 lib/                  → other plain TS modules (navigation, styles, utils)
 types/search.ts       → search-related types
 types/destination.ts  → destination domain type
+types/search-response.ts → SearchResponse wrapper (stub)
 types/index.ts        → re-exports all types
 docs/                 → project documentation
 ```
