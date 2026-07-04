@@ -37,20 +37,22 @@ This roadmap outlines planned development phases. Dates are approximate and will
 
 ---
 
-## Phase 3 — Data and persistence (Week 4–5)
+## Phase 3 — Data and persistence (Week 4–5) 🚧 In progress
 
-**Goal:** Replace mock data and console logging with real application flow.
+**Goal:** Replace direct mock access with a provider-based service layer.
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| Mock destination dataset | High | `lib/destinations.ts` ✅ (autocomplete); expand for Destinations page |
-| Search → results data flow | High | Pass validated form data to results page |
-| Local storage for saved trips | Medium | Browser-only persistence before backend |
+| API foundation (providers + services) | High | ✅ Mock providers, env, errors, validation, loading states |
+| Mock destination dataset | High | ✅ In mock provider; expand for Destinations page |
+| Search → results data flow | High | ✅ Via `searchService` with URL params |
+| Local storage for saved trips | Medium | ✅ Supabase `saved_trips` (replaces browser-only plan) |
 | Date picker improvements | Medium | ✅ Custom `TravelCalendar` component |
+| Connect external travel APIs | Low | Out of scope until foundation is stable |
 
 ---
 
-## Phase 4 — Backend and auth (Week 6+) 🚧 In progress
+## Phase 4 — Backend and auth (Week 6+) ✅ Complete
 
 **Goal:** User accounts and server-side data.
 
@@ -65,12 +67,16 @@ This roadmap outlines planned development phases. Dates are approximate and will
 
 ---
 
-## Phase 5 — Advanced features (Future)
+## Phase 5 — External APIs (Future)
 
-**Goal:** Features that differentiate Glooconn.
+**Goal:** Connect real travel data providers behind the existing service layer.
 
 | Item | Notes |
 |------|-------|
+| Destinations API | Google Places, GeoNames, or CMS — swap mock destination provider |
+| Hotels / flights API | Amadeus, Duffel, or affiliate APIs — swap mock search provider |
+| Ground transport API | Omio or similar for buses and trains |
+| Caching and rate limiting | Protect Route Handlers and provider quotas |
 | Budget-aware trip suggestions | Use budget + travel style from search |
 | Interactive maps | Destination locations |
 | Trip sharing | Share itineraries with others |

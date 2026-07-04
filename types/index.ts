@@ -38,3 +38,5 @@ export {
 export type { AuthFormState, AuthUser } from "@/types/auth";
 
 export type { SavedTrip, SavedTripRow } from "@/types/trips";
+
+export type { Destination } from "@/types/destination";

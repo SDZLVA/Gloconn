@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.4.0 (Authentication — Google & email login, saved trips)
+**Current version:** 0.5.0 (API foundation — provider adapters, services, mock-first architecture)
 
 ---
 
@@ -52,11 +52,16 @@ Gloconn/
 │   └── ui/                 # Generic reusable UI (Button, Card, BudgetSlider, TravelCalendar, …)
 ├── hooks/                  # Custom React hooks (useSearchForm, useRecentDestinationSearches)
 ├── lib/
+│   ├── api/                # Env, errors, types, validation for services
+│   ├── auth/               # Supabase clients, session helpers, middleware
+│   ├── providers/          # Provider adapters (mock + future external APIs)
+│   ├── services/           # Service layer — UI calls these, not providers
+│   ├── trips/              # Saved trip queries and server actions
 │   ├── budget/             # Currency options, limits, and budget formatting
 │   ├── calendar/           # Date helpers for the travel calendar
-│   ├── destinations.ts     # Mock destination data for autocomplete
+│   ├── destinations.ts     # Backward-compatible destination re-exports
 │   ├── destinations/       # Recent-search persistence (localStorage)
-│   ├── results/            # Mock results data, filter, and sort helpers
+│   ├── results/            # Mock result data, filter, and sort helpers
 │   ├── search/             # Search feature logic (split by responsibility)
 │   │   ├── constants.ts    # Travel style and trip type options
 │   │   ├── dates.ts        # Travel dates summary label
@@ -72,6 +77,7 @@ Gloconn/
 ├── types/
 │   ├── search.ts           # Search-related types and defaults
 │   ├── results.ts          # Search result types (hotel, flight, bus, train)
+│   ├── destination.ts      # Destination domain type
 │   └── index.ts            # Re-exports (import from @/types)
 ├── docs/                   # Project documentation (this folder)
 └── public/                 # Static assets (reserved for future use)
@@ -91,8 +97,8 @@ Gloconn/
 - Hero section with `SectionHeading`, subtitle, and centered search card
 - Modern travel-themed design (brand blues, soft gradients, rounded cards)
 
-### Search form (UI + client logic, no API)
-- **Destination** — autocomplete with mock suggestions, recent searches, and popular destinations (keyboard + mouse accessible)
+### Search form (UI + client logic, mock provider)
+- **Destination** — autocomplete via `destinationService` (mock provider by default)
 - **Dates** — travel calendar with round-trip / one-way toggle, range selection, past dates disabled
 - **Travelers & rooms** — dropdown selector with Adults, Children, Infants, and Rooms steppers
 - **Budget** — optional slider with EUR / USD / GBP selector, live formatted value, min €500 and max €10,000
@@ -101,8 +107,9 @@ Gloconn/
 - Required-field validation on Search click
 - Successful searches navigate to `/search/results` with URL query params
 
-### Search results (mock data, no API)
+### Search results (mock provider via service layer)
 - **Route:** `/search/results` — reads search criteria from URL query params
+- **Data:** Loaded through `searchService.searchTrips()` with loading and error states
 - **Cards:** Hotel, flight, bus, and train result cards with modern layout
 - **Filters:** Sidebar with transport type, price range, and minimum rating
 - **Sorting:** Price, rating, and duration options
@@ -128,7 +135,9 @@ Gloconn/
 | `/` | ✅ Live | Home page with hero and search card |
 | `/search/results` | ✅ Live | Search results with mock hotels, flights, buses, trains |
 | `/destinations` | ⏳ Planned | Destination browsing (nav link exists, page not built) |
-| `/my-trips` | ⏳ Planned | User trip management (nav link exists, page not built) |
+| `/my-trips` | ✅ Live | Saved trips list (protected, Supabase) |
+| `/profile` | ✅ Live | User profile (protected) |
+| `/login`, `/signup` | ✅ Live | Google and email authentication |
 | `/about` | ⏳ Planned | About Glooconn (nav link exists, page not built) |
 
 ---

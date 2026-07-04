@@ -1,4 +1,6 @@
-import { MOCK_DESTINATIONS, type Destination } from "@/lib/destinations";
+import { MOCK_DESTINATIONS } from "@/lib/providers/destinations/mock/data";
+import { findDestinationByLabel as findDestinationByLabelHelper } from "@/lib/providers/destinations/mock/helpers";
+import type { Destination } from "@/types/destination";
 
 const STORAGE_KEY = "glooconn-recent-destinations";
 const MAX_RECENT = 5;
@@ -57,16 +59,7 @@ export function addRecentDestinationId(destinationId: string): string[] {
 
 /** Finds a mock destination by its autocomplete label (e.g. "Paris, France"). */
 export function findDestinationByLabel(label: string): Destination | undefined {
-  const normalized = label.trim().toLowerCase();
-  if (!normalized) {
-    return undefined;
-  }
-
-  return MOCK_DESTINATIONS.find(
-    (destination) =>
-      `${destination.name}, ${destination.country}`.toLowerCase() === normalized ||
-      destination.name.toLowerCase() === normalized,
-  );
+  return findDestinationByLabelHelper(label) ?? undefined;
 }
 
 /** Saves a matching destination to recent searches (e.g. after form submit). */

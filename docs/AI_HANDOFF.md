@@ -14,8 +14,8 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | Week 2+ — auth and saved trips live |
-| APIs | Supabase Auth + PostgreSQL (`saved_trips`) |
+| Stage | Week 2+ — auth, saved trips, and API foundation live |
+| APIs | Supabase Auth + PostgreSQL; travel data via mock providers (default) |
 
 ---
 
@@ -88,8 +88,14 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `buildSearchData` | `lib/search/payload.ts` | Converts form strings to typed payload |
 | `buildResultsUrl` | `lib/search/params.ts` | Builds `/search/results?...` from form state |
 | `parseSearchParams` | `lib/search/params.ts` | Reads URL params back into `SearchData` |
-| `getResultsForSearch` | `lib/results/` | Returns mock results for destination + travel style |
+| `getResultsForSearch` | `lib/results/` | **Deprecated** — use `searchTrips` from `@/lib/services` |
 | `filterResults`, `sortResults` | `lib/results/` | Client-side filter and sort helpers |
+| `searchTrips` | `lib/services/searchService.ts` | Validated search via active provider |
+| `searchDestinations` | `lib/services/destinationService.ts` | Autocomplete via active provider |
+| `useServiceQuery` | `hooks/useServiceQuery.ts` | Loading / success / error for async services |
+| API env, errors, validation | `lib/api/` | `getApiEnv`, `ApiError`, `ServiceResult`, `validateSearchRequest` |
+| Provider interfaces | `lib/providers/types.ts` | `DestinationProvider`, `SearchProvider` |
+| Mock providers | `lib/providers/*/mock/` | Default implementations (no external APIs) |
 | `formatPassengersSummary` | `lib/search/passengers.ts` | Builds passengers trigger label |
 | `validatePassengers` | `lib/search/passengers.ts` | Validates adults, children, infants, rooms |
 | `formatTravelersSummary` | `lib/search/travelers.ts` | Alias for `formatPassengersSummary` |
@@ -124,8 +130,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 8. `validateSearchForm()` checks required fields
 9. If invalid → red error messages appear under fields
 10. If valid → `router.push(buildResultsUrl(form))` navigates to `/search/results`
-11. Results page reads URL params and shows mock hotels, flights, buses, and trains
-12. **No API calls** — all data is mock
+11. Results page calls `searchTrips()` via `useServiceQuery` — mock provider by default
+12. **No external travel APIs** — mock provider returns static data through the service layer
 
 Required fields: Destination, Departure, Return (round-trip only), Travelers (≥1 adult, ≥1 room), Travel style.  
 Optional: Budget.  
@@ -144,8 +150,12 @@ components/search/    → search feature (NOT generic ui)
 components/ui/        → generic reusable components only
 hooks/                → custom React hooks
 lib/search/           → search validation, payload, constants
+lib/api/              → env, errors, types, validation for services
+lib/providers/        → provider adapters (mock + future external APIs)
+lib/services/         → service layer — UI calls these for travel data
 lib/                  → other plain TS modules (navigation, styles, utils)
 types/search.ts       → search-related types
+types/destination.ts  → destination domain type
 types/index.ts        → re-exports all types
 docs/                 → project documentation
 ```
@@ -200,7 +210,7 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 
 | If working on… | Read these first |
 |----------------|------------------|
-| Search form | `hooks/useSearchForm.ts`, `lib/search/`, `components/search/SearchCard.tsx` |
+| Search form / results | `hooks/useSearchForm.ts`, `lib/search/`, `lib/services/`, `components/search/SearchCard.tsx` |
 | Navigation | `lib/navigation.ts`, `components/layout/Navbar.tsx` |
 | New page | `app/layout.tsx`, `components/layout/AppShell.tsx`, an existing page |
 | Styling | `app/globals.css`, `lib/styles.ts` |
@@ -210,7 +220,8 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 
 ## What NOT to do
 
-- ❌ Do not add API integrations without being asked
+- ❌ Do not call provider modules directly from UI — use `@/lib/services`
+- ❌ Do not add external API integrations without being asked
 - ❌ Do not install UI libraries (shadcn, MUI) without approval
 - ❌ Do not refactor unrelated code during a feature task
 - ❌ Do not remove console logging until search results page replaces it

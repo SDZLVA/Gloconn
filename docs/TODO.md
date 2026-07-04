@@ -45,10 +45,13 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 ## 🟢 Low priority — Backlog
 
+- [ ] Connect first external destination provider (behind `USE_MOCK_PROVIDERS=false`)
+- [ ] Connect first external search provider (hotels or flights)
+- [ ] Add unit tests for `lib/api/validation.ts`
 - [ ] Add favicon and Open Graph metadata
 - [ ] Add static assets to `public/` (logo, placeholder images)
 - [x] Improve date input UX (custom date picker component)
-- [ ] Add loading states for future API calls
+- [x] Loading states for API calls (service layer + UI)
 - [ ] Add unit tests for `lib/search/validation.ts`
 - [ ] Set up GitHub Actions for CI (lint + build on PR)
 - [ ] Update root `README.md` with Glooconn-specific content

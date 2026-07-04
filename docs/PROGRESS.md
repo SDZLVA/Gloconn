@@ -170,6 +170,26 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 **Files added:** `lib/auth/`, `lib/trips/`, `middleware.ts`, `app/login/`, `app/signup/`, `app/profile/`, `app/my-trips/`, `app/auth/`, `components/auth/`, `components/trips/`, `hooks/useAuth.ts`, `supabase/schema.sql`, `.env.example`
 
+---
+
+## API foundation
+
+**Branch:** `cursor/api-foundation`
+
+### Changes
+
+- Added `lib/api/` — centralized env (`USE_MOCK_PROVIDERS`), `ApiError`, `ServiceResult` / `ServiceState`, and `validateSearchRequest`
+- Added `lib/providers/` — `DestinationProvider` and `SearchProvider` interfaces; mock implementations as first providers
+- Added `lib/services/` — `destinationService` and `searchService` as the UI entry point for travel data
+- Added `hooks/useServiceQuery.ts` — reusable loading / success / error state for async services
+- Moved `Destination` type to `types/destination.ts`
+- Wired `DestinationAutocomplete` and `SearchResultsPage` through services (loading and error UI)
+- Kept `lib/destinations.ts` and `lib/results/index.ts` as backward-compatible re-exports
+- Updated `.env.example` with `USE_MOCK_PROVIDERS`
+
+**No external APIs connected** — mock provider remains the default.
+
+---
 
 **Branch:** `cursor/architecture-improvements`
 

@@ -241,17 +241,27 @@ lib/search/
 
 ---
 
-## Pending decisions (to resolve in Week 2+)
+## Pending decisions (to resolve in future phases)
 
 | Topic | Options under consideration |
 |-------|----------------------------|
-| Search results routing | URL query params vs. Next.js `useRouter` state |
-| Mock data location | `lib/destinations.ts` ✅ (in use for autocomplete) |
 | State management at scale | React Context vs. Zustand vs. server state |
-| Database | Supabase vs. PlanetScale vs. local JSON (prototype) |
-| Authentication | NextAuth.js vs. Clerk vs. custom |
+| First destination API | Google Places vs. GeoNames vs. CMS |
+| First search API | Amadeus vs. Duffel vs. affiliate APIs |
+| Caching layer | Next.js cache vs. Redis |
 
 Record new decisions in this file as they are made.
+
+---
+
+## Resolved (formerly pending)
+
+| Topic | Decision |
+|-------|----------|
+| Search results routing | URL query params ✅ |
+| Mock data location | Mock providers in `lib/providers/` ✅ |
+| Database | Supabase ✅ (ADR-020) |
+| Authentication | Supabase Auth ✅ (ADR-020) |
 
 ---
 
@@ -406,3 +416,31 @@ supabase/schema.sql → saved_trips table + RLS policies
 - Google OAuth must be configured in the Supabase dashboard
 - `saved_trips.search_data` stores the existing `SearchData` JSON shape
 - Recent destination searches still use localStorage (ADR-017) until migrated
+
+---
+
+## ADR-021: Provider adapter architecture (API foundation)
+
+**Decision:** Introduce a three-layer API architecture: `lib/api` → `lib/providers` → `lib/services`. UI calls services only; services call providers; providers map external data to Glooconn domain types.
+
+**Context:** Travel data was read directly from mock files in components. External APIs (Amadeus, Booking.com, Omio, Google Places) will be added in future phases.
+
+**Structure:**
+```
+lib/api/           → env, errors, ServiceResult/ServiceState, validation
+lib/providers/     → DestinationProvider, SearchProvider interfaces + mock adapters
+lib/services/      → destinationService, searchService (UI entry point)
+hooks/useServiceQuery.ts → loading state for async service calls
+```
+
+**Rationale:**
+- UI stays on `SearchData` and `SearchResult` — providers are swappable
+- Mock data is the first provider implementation (`USE_MOCK_PROVIDERS=true` by default)
+- Mirrors the successful `lib/auth/` pattern (centralized env, clear boundaries)
+- Beginner-friendly: one file per concern, well-commented
+
+**Consequences:**
+- `DestinationAutocomplete` and `SearchResultsPage` use services, not mock files directly
+- `lib/destinations.ts` and `lib/results/` remain as backward-compatible re-exports
+- New providers are registered in `lib/providers/destinations/index.ts` and `lib/providers/search/index.ts`
+- External API keys live in server env only (never `NEXT_PUBLIC_*`)

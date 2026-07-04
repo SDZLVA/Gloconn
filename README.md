@@ -3,7 +3,7 @@
 Travel planning web application — discover destinations, plan trips, and manage travel in one place.
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
-**Version:** 0.4.0 (Authentication — Google & email login, saved trips)
+**Version:** 0.5.0 (API foundation — provider adapters, services, mock-first)
 
 ## Tech stack
 
@@ -67,7 +67,10 @@ Gloconn/
 │   └── ui/                 # Reusable UI primitives
 ├── hooks/                  # Custom React hooks (useAuth, useSearchForm, …)
 ├── lib/
+│   ├── api/                # Env, errors, types, validation
 │   ├── auth/               # Supabase clients, session helpers, middleware
+│   ├── providers/          # Provider adapters (mock + future external APIs)
+│   ├── services/           # Service layer — UI entry point for travel data
 │   ├── trips/              # Saved trips queries and server actions
 │   ├── navigation.ts       # Nav and footer link config
 │   ├── styles.ts           # Shared Tailwind class strings
@@ -96,6 +99,7 @@ Gloconn/
 - **Live routes:** `/`, `/search/results`, `/login`, `/signup`, `/profile`, `/my-trips`
 - **Auth:** Google OAuth and email/password via Supabase; protected `/profile` and `/my-trips`
 - **Search card:** Destination autocomplete, passengers & rooms, dates, budget, travel style → results
+- **API foundation:** Mock providers behind `lib/services`; `USE_MOCK_PROVIDERS=true` by default
 - **Saved trips:** Save from search results; view and remove on My Trips
 - **Planned routes:** `/destinations`, `/about`
 

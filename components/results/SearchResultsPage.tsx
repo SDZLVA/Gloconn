@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { filterResults } from "@/lib/results/filter";
-import { getResultsForSearch } from "@/lib/results";
 import { sortResults } from "@/lib/results/sort";
+import { getApiErrorMessage } from "@/lib/api";
+import { searchTrips } from "@/lib/services/searchService";
+import { useServiceQuery } from "@/hooks/useServiceQuery";
 import {
   MobileFilterToggle,
   ResultsFilterSidebar,
@@ -12,6 +14,7 @@ import { ResultsList } from "@/components/results/ResultsList";
 import { ResultsSortBar } from "@/components/results/ResultsSortBar";
 import { ResultsSummaryBar } from "@/components/results/ResultsSummaryBar";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 import type { SearchData } from "@/types/search";
 import {
@@ -41,16 +44,18 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const [sortBy, setSortBy] = useState<SortOption>("price-asc");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const allResults = useMemo(
-    () =>
-      getResultsForSearch(
-        search.destination ?? "",
-        search.travelStyle ?? "standard",
-      ),
-    [search.destination, search.travelStyle],
+  const resultsState = useServiceQuery(
+    () => searchTrips(search),
+    [search],
   );
 
+  const allResults = resultsState.data ?? [];
+
   const priceRange = useMemo(() => {
+    if (allResults.length === 0) {
+      return { min: 0, max: 10_000 };
+    }
+
     const prices = allResults.map((result) => result.price);
     return {
       min: Math.min(...prices),
@@ -85,13 +90,15 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
 
   const activeFilterCount = countActiveFilters(filters, defaultFilters);
   const destination = search.destination || "your destination";
+  const isLoading = resultsState.status === "loading";
+  const hasError = resultsState.status === "error" && resultsState.error;
 
   return (
     <div className="space-y-6">
       <SectionHeading
         as="h1"
         title={`Results for ${destination}`}
-        description="Compare hotels, flights, buses, and trains — all mock data for now."
+        description="Compare hotels, flights, buses, and trains — powered by the mock provider."
       />
 
       <ResultsSummaryBar search={search} />
@@ -120,9 +127,30 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
           <ResultsSortBar
             sortBy={sortBy}
             onSortChange={setSortBy}
-            resultCount={sorted.length}
+            resultCount={isLoading ? 0 : sorted.length}
           />
-          <ResultsList results={sorted} />
+
+          {isLoading && (
+            <Card className="p-8 text-center">
+              <p className="text-lg font-semibold text-slate-900">Loading results…</p>
+              <p className="mt-2 text-sm text-slate-600">
+                Searching for the best options at your destination.
+              </p>
+            </Card>
+          )}
+
+          {hasError && (
+            <Card className="p-8 text-center">
+              <p className="text-lg font-semibold text-slate-900">
+                Could not load results
+              </p>
+              <p className="mt-2 text-sm text-slate-600">
+                {getApiErrorMessage(resultsState.error!)}
+              </p>
+            </Card>
+          )}
+
+          {!isLoading && !hasError && <ResultsList results={sorted} />}
         </div>
       </div>
     </div>
