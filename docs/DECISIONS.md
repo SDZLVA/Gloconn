@@ -511,15 +511,15 @@ types/search-response.ts                 → stub
 - Legacy `SearchProvider` kept until monolithic mock is split
 
 **Consequences:**
-- Registry will expose `getHotelsProvider()`, `getFlightsProvider()`, etc. (not implemented yet)
-- Mock implementations in `hotels/mock/`, `flights/mock/`, `ground/mock/` will implement these interfaces next
-- `searchOrchestrator` will call all search providers in parallel
+- Registry exposes `getHotelsProvider()`, `getFlightsProvider()`, etc. via `lib/providers/core/registry.ts`
+- Mock implementations in `hotels/mock/`, `flights/mock/`, `ground/mock/` implement these interfaces
+- `searchOrchestrator` in the service layer calls all search providers in parallel
 
 ---
 
 ## ADR-025: Mock provider classes and orchestration
 
-**Decision:** Split the monolithic mock search adapter into class-based providers per domain (`MockHotelsProvider`, `MockFlightsProvider`, `MockTransportProvider`) with shared logic in `lib/providers/mock/shared.ts` and parallel orchestration in `lib/providers/orchestrate.ts`.
+**Decision:** Split the monolithic mock search adapter into class-based providers per domain (`MockHotelsProvider`, `MockFlightsProvider`, `MockTransportProvider`) with shared logic in `lib/providers/mock/shared.ts`.
 
 **Rationale:**
 - Each class implements one interface — mirrors how Amadeus/Booking/Omio adapters will be added
@@ -528,6 +528,31 @@ types/search-response.ts                 → stub
 - UI still calls `searchService.searchTrips()` — never imports mock modules
 
 **Consequences:**
-- `lib/providers/search/mock/` is deprecated but delegates to orchestrator
-- `SearchData` → `SearchRequest` conversion happens in `toSearchRequest()` before provider calls
+- `lib/providers/search/mock/` is deprecated but delegates to domain providers
+- `SearchData` → `SearchRequest` conversion happens in `lib/api/searchMappers.ts`
 - Restaurants and attractions providers remain unimplemented (no mock data yet)
+
+---
+
+## ADR-026: Service layer with provider injection
+
+**Decision:** Formalize `lib/services/` as the only UI entry point for travel data. Services receive providers through a simple context (`getServiceProviders()`) backed by the central registry. Tests can call `setServiceProviders()` to inject fakes.
+
+**Structure:**
+```
+UI → lib/services (destinationService, searchService)
+       → lib/services/context.ts (getServiceProviders)
+       → lib/providers/core/registry.ts (get*Provider)
+       → Mock*Provider classes (implement interfaces)
+```
+
+**Rationale:**
+- UI never imports mock data or provider modules
+- Provider selection lives in one registry — not duplicated across domain folders
+- `setServiceProviders()` is beginner-friendly DI without a framework
+- Search orchestration lives in `lib/services/searchOrchestrator.ts` (service coordinates, providers only search)
+
+**Consequences:**
+- `lib/api/searchMappers.ts` holds shared `toSearchRequest` / `mergeSearchResults` (no mock imports)
+- Recent destinations resolve IDs via `destinationService.getDestinationsByIds()`
+- External APIs plug in by extending the registry when `USE_MOCK_PROVIDERS=false`

@@ -3,6 +3,11 @@
  * Single place for destination filtering and travel-style pricing logic.
  */
 
+import { CATALOG_SEARCH_DESTINATION } from "@/lib/api/searchMappers";
+import {
+  mergeSearchResults,
+  toSearchRequest,
+} from "@/lib/api/searchMappers";
 import { resolveDestinationIdFromLabel } from "@/lib/providers/destinations/mock/helpers";
 import { MOCK_BUSES } from "@/lib/results/mockBuses";
 import { MOCK_FLIGHTS } from "@/lib/results/mockFlights";
@@ -17,7 +22,6 @@ import type {
   SearchResult,
   TrainResult,
 } from "@/types/results";
-import type { SearchData } from "@/types/search";
 
 /** Items returned per category when no destination-specific results exist. */
 const FALLBACK_PER_CATEGORY = 2;
@@ -48,22 +52,7 @@ export function mockDelay<T>(value: T): Promise<T> {
   });
 }
 
-/** Converts validated SearchData into the canonical SearchRequest model. */
-export function toSearchRequest(search: SearchData): SearchRequest {
-  return {
-    destination: search.destination,
-    tripType: search.tripType,
-    departureDate: search.departureDate,
-    returnDate: search.returnDate,
-    budget:
-      search.budget !== null && search.budgetCurrency !== null
-        ? { amount: search.budget, currency: search.budgetCurrency }
-        : null,
-    travelers: search.travelers,
-    totalGuests: search.totalGuests,
-    travelStyle: search.travelStyle,
-  };
-}
+export { mergeSearchResults, toSearchRequest } from "@/lib/api/searchMappers";
 
 /** Adjusts prices based on budget / standard / luxury preference. */
 export function applyTravelStyleMultiplier<T extends { price: number }>(
@@ -88,6 +77,10 @@ export function filterByDestination<T extends { destinationId: string }>(
   items: T[],
   destinationLabel: string,
 ): T[] {
+  if (destinationLabel === CATALOG_SEARCH_DESTINATION) {
+    return items;
+  }
+
   const destinationId = resolveDestinationIdFromLabel(destinationLabel);
   const matched = items.filter((item) => item.destinationId === destinationId);
 
@@ -152,21 +145,6 @@ export function searchMockTransport(request: SearchRequest): {
     request.travelStyle,
   );
   return { buses, trains };
-}
-
-/** Merges domain results into the SearchResult union used by the UI. */
-export function mergeSearchResults(
-  hotels: Hotel[],
-  flights: Flight[],
-  buses: Bus[],
-  trains: Train[],
-): SearchResult[] {
-  return [
-    ...hotels.map((hotel) => ({ ...hotel, type: "hotel" as const })),
-    ...flights.map((flight) => ({ ...flight, type: "flight" as const })),
-    ...buses.map((bus) => ({ ...bus, type: "bus" as const })),
-    ...trains.map((train) => ({ ...train, type: "train" as const })),
-  ];
 }
 
 /** Legacy combined mock search — used by sync helpers in lib/results. */

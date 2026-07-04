@@ -75,7 +75,7 @@ export function useSearchForm() {
       return;
     }
 
-    rememberDestinationByLabel(form.destination);
+    void rememberDestinationByLabel(form.destination);
     router.push(buildResultsUrl(form));
   }
 

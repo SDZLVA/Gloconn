@@ -8,7 +8,7 @@ import {
   serviceSuccess,
   type ServiceResult,
 } from "@/lib/api/types";
-import { getDestinationProvider } from "@/lib/providers/destinations";
+import { getServiceProviders } from "@/lib/services/context";
 import type { Destination } from "@/types/destination";
 
 /** Searches destinations for autocomplete suggestions. */
@@ -16,8 +16,8 @@ export async function searchDestinations(
   query: string,
 ): Promise<ServiceResult<Destination[]>> {
   try {
-    const provider = getDestinationProvider();
-    const data = await provider.searchDestinations(query);
+    const { destinations } = getServiceProviders();
+    const data = await destinations.searchDestinations(query);
     return serviceSuccess(data);
   } catch (error) {
     return serviceFailure(toApiError(error, "Could not load destination suggestions."));
@@ -27,8 +27,8 @@ export async function searchDestinations(
 /** Returns curated popular destinations for the empty autocomplete state. */
 export async function getPopularDestinations(): Promise<ServiceResult<Destination[]>> {
   try {
-    const provider = getDestinationProvider();
-    const data = await provider.getPopularDestinations();
+    const { destinations } = getServiceProviders();
+    const data = await destinations.getPopularDestinations();
     return serviceSuccess(data);
   } catch (error) {
     return serviceFailure(toApiError(error, "Could not load popular destinations."));
@@ -40,8 +40,8 @@ export async function getDestinationById(
   id: string,
 ): Promise<ServiceResult<Destination | null>> {
   try {
-    const provider = getDestinationProvider();
-    const data = await provider.getDestinationById(id);
+    const { destinations } = getServiceProviders();
+    const data = await destinations.getDestinationById(id);
     return serviceSuccess(data);
   } catch (error) {
     return serviceFailure(toApiError(error, "Could not load destination."));
@@ -53,10 +53,32 @@ export async function resolveDestinationId(
   destinationLabel: string,
 ): Promise<ServiceResult<string>> {
   try {
-    const provider = getDestinationProvider();
-    const data = await provider.resolveDestinationId(destinationLabel);
+    const { destinations } = getServiceProviders();
+    const data = await destinations.resolveDestinationId(destinationLabel);
     return serviceSuccess(data);
   } catch (error) {
     return serviceFailure(toApiError(error, "Could not resolve destination."));
+  }
+}
+
+/** Resolves multiple destination ids in parallel (e.g. recent searches). */
+export async function getDestinationsByIds(
+  ids: string[],
+): Promise<ServiceResult<Destination[]>> {
+  if (ids.length === 0) {
+    return serviceSuccess([]);
+  }
+
+  try {
+    const { destinations } = getServiceProviders();
+    const results = await Promise.all(
+      ids.map((id) => destinations.getDestinationById(id)),
+    );
+    const data = results.filter(
+      (destination): destination is Destination => destination !== null,
+    );
+    return serviceSuccess(data);
+  } catch (error) {
+    return serviceFailure(toApiError(error, "Could not load destinations."));
   }
 }

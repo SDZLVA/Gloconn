@@ -246,6 +246,22 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
+## Service layer with provider injection
+
+**Branch:** `cursor/api-foundation`
+
+### Changes
+
+- Added `lib/services/context.ts` — `getServiceProviders()`, `setServiceProviders()` for simple DI
+- Centralized provider selection in `lib/providers/core/registry.ts` and `config.ts`
+- Moved search orchestration to `lib/services/searchOrchestrator.ts`
+- Added `lib/api/searchMappers.ts` — `toSearchRequest`, `mergeSearchResults`, catalog search
+- Services call provider interfaces only — no direct mock data imports
+- Recent destinations resolve stored IDs via `destinationService.getDestinationsByIds()`
+- Removed `lib/providers/orchestrate.ts` (orchestration now lives in services)
+
+---
+
 **Branch:** `cursor/architecture-improvements`
 
 ### Changes

@@ -9,7 +9,6 @@ import { useRecentDestinationSearches } from "@/hooks/useRecentDestinationSearch
 import { useServiceQuery } from "@/hooks/useServiceQuery";
 import { getApiErrorMessage } from "@/lib/api";
 import { destinationToAutocompleteOption } from "@/lib/destinations";
-import { findDestinationById } from "@/lib/destinations";
 import {
   getPopularDestinations,
   searchDestinations,
@@ -110,7 +109,11 @@ export function DestinationAutocomplete({
       : undefined;
 
   function handleSelect(option: { id: string; label: string }) {
-    const destination = findDestinationById(option.id);
+    const destination =
+      searchState.data?.find((item) => item.id === option.id) ??
+      recentDestinations.find((item) => item.id === option.id) ??
+      popularState.data?.find((item) => item.id === option.id);
+
     if (destination) {
       addRecent(destination);
     }

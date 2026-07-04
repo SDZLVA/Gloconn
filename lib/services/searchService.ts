@@ -10,8 +10,8 @@ import {
 } from "@/lib/api/types";
 import { validateSearchRequest } from "@/lib/api/validation";
 import {
-  getAllOrchestratedResults,
-  orchestrateSearch,
+  getAllTripSearchResults,
+  orchestrateTripSearch,
 } from "@/lib/services/searchOrchestrator";
 import type { SearchResult } from "@/types/results";
 import type { SearchData, TravelStyle } from "@/types/search";
@@ -26,7 +26,7 @@ export async function searchTrips(
   }
 
   try {
-    const data = await orchestrateSearch(validation.data);
+    const data = await orchestrateTripSearch(validation.data);
     return serviceSuccess(data);
   } catch (error) {
     return serviceFailure(toApiError(error, "Could not load search results."));
@@ -54,10 +54,10 @@ export async function searchByDestination(
   });
 }
 
-/** Returns the full mock results pool (used for price range defaults). */
+/** Returns the full results catalog via active providers (price-range defaults). */
 export async function getAllSearchResults(): Promise<ServiceResult<SearchResult[]>> {
   try {
-    const data = await getAllOrchestratedResults();
+    const data = await getAllTripSearchResults();
     return serviceSuccess(data);
   } catch (error) {
     return serviceFailure(toApiError(error, "Could not load results."));

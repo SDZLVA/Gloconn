@@ -1,9 +1,20 @@
 /**
- * Per-domain provider selection from environment variables.
+ * Provider selection configuration.
  *
- * Planned: read DESTINATIONS_PROVIDER, HOTELS_PROVIDER, FLIGHTS_PROVIDER,
- * GROUND_PROVIDER when USE_MOCK_PROVIDERS=false.
- * Not implemented yet — see lib/providers/core/registry.ts.
+ * Today only mock adapters exist. When external APIs are added, extend this
+ * module to read per-domain env vars (e.g. HOTELS_PROVIDER=booking).
  */
 
-export {};
+import { getApiEnv } from "@/lib/api/env";
+
+export type ProviderConfig = {
+  /** When true, mock adapters are used (default for local development). */
+  useMockProviders: boolean;
+};
+
+/** Reads which provider implementations should be active. */
+export function getProviderConfig(): ProviderConfig {
+  return {
+    useMockProviders: getApiEnv().useMockProviders,
+  };
+}

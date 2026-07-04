@@ -1,6 +1,4 @@
-import { MOCK_DESTINATIONS } from "@/lib/providers/destinations/mock/data";
-import { findDestinationByLabel as findDestinationByLabelHelper } from "@/lib/providers/destinations/mock/helpers";
-import type { Destination } from "@/types/destination";
+import { resolveDestinationId } from "@/lib/services/destinationService";
 
 const STORAGE_KEY = "glooconn-recent-destinations";
 const MAX_RECENT = 5;
@@ -32,13 +30,6 @@ export function readRecentDestinationIds(): string[] {
   }
 }
 
-/** Resolves recent IDs to full destination objects, skipping unknown IDs. */
-export function getRecentDestinations(ids = readRecentDestinationIds()): Destination[] {
-  return ids
-    .map((id) => MOCK_DESTINATIONS.find((destination) => destination.id === id))
-    .filter((destination): destination is Destination => destination !== undefined);
-}
-
 /** Saves a destination to recent searches (deduped, capped). Returns the updated ID list. */
 export function addRecentDestinationId(destinationId: string): string[] {
   if (!isBrowser()) {
@@ -57,15 +48,10 @@ export function addRecentDestinationId(destinationId: string): string[] {
   return next;
 }
 
-/** Finds a mock destination by its autocomplete label (e.g. "Paris, France"). */
-export function findDestinationByLabel(label: string): Destination | undefined {
-  return findDestinationByLabelHelper(label) ?? undefined;
-}
-
 /** Saves a matching destination to recent searches (e.g. after form submit). */
-export function rememberDestinationByLabel(label: string): void {
-  const destination = findDestinationByLabel(label);
-  if (destination) {
-    addRecentDestinationId(destination.id);
+export async function rememberDestinationByLabel(label: string): Promise<void> {
+  const result = await resolveDestinationId(label);
+  if (result.success && result.data) {
+    addRecentDestinationId(result.data);
   }
 }

@@ -91,7 +91,9 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `getResultsForSearch` | `lib/results/` | **Deprecated** — use `searchTrips` from `@/lib/services` |
 | `filterResults`, `sortResults` | `lib/results/` | Client-side filter and sort helpers |
 | `searchTrips` | `lib/services/searchService.ts` | Validated search via orchestrator + domain providers |
-| `orchestrateTripSearch` | `lib/providers/orchestrate.ts` | Parallel hotels / flights / transport calls |
+| `orchestrateTripSearch` | `lib/services/searchOrchestrator.ts` | Parallel hotels / flights / transport calls |
+| `getServiceProviders` | `lib/services/context.ts` | Returns injected or registry-backed providers |
+| Provider registry | `lib/providers/core/registry.ts` | Central `get*Provider()` selection |
 | Mock provider classes | `lib/providers/*/mock/provider.ts` | `MockHotelsProvider`, `MockFlightsProvider`, etc. |
 | `searchDestinations` | `lib/services/destinationService.ts` | Autocomplete via active provider |
 | `useServiceQuery` | `hooks/useServiceQuery.ts` | Loading / success / error for async services |
@@ -110,7 +112,30 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `MOCK_DESTINATIONS` | `lib/destinations.ts` | Static destination list for autocomplete |
 | `getPopularDestinations` | `lib/destinations.ts` | Curated popular destinations for empty field |
 | `filterDestinations` | `lib/destinations.ts` | Client-side ranked destination filtering |
-| Recent search helpers | `lib/destinations/recentSearches.ts` | localStorage read/write for recent picks |
+| Recent search helpers | `lib/destinations/recentSearches.ts` | localStorage read/write; resolves IDs via destination service |
+
+### Request flow (UI → provider)
+
+```
+SearchResultsPage
+  → useServiceQuery(() => searchTrips(search))
+    → searchService.searchTrips()
+      → validateSearchRequest()          [lib/api/validation]
+      → searchOrchestrator.orchestrateTripSearch()
+        → getServiceProviders()        [lib/services/context]
+          → getProviderRegistry()      [lib/providers/core/registry]
+        → Promise.all([
+             providers.hotels.search(request),
+             providers.flights.search(request),
+             providers.transport.search(request),
+           ])
+        → mergeSearchResults()         [lib/api/searchMappers]
+      → ServiceResult<SearchResult[]>
+    → useServiceQuery sets loading / data / error
+  → filterResults() + sortResults() in the browser
+```
+
+Destination autocomplete follows the same pattern: `searchDestinations()` → `getServiceProviders().destinations` → `MockDestinationProvider`.
 | Calendar date helpers | `lib/calendar/` | ISO formatting, month grids, range checks |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
 | `focusRing`, etc. | `lib/styles.ts` | Shared Tailwind class strings |
@@ -163,6 +188,9 @@ lib/providers/        → provider adapters (mock + future external APIs)
   flights/            → mock, amadeus (planned)
   ground/             → mock, omio (planned)
 lib/services/         → service layer — UI calls these for travel data
+  context.ts          → getServiceProviders / setServiceProviders (simple DI)
+  searchOrchestrator  → parallel provider calls + merge
+lib/providers/core/   → registry + config (selects active adapters)
 app/api/              → Route Handler slots (destinations, search) — stubs only
 lib/                  → other plain TS modules (navigation, styles, utils)
 types/models/         → shared domain models (import from @/types)

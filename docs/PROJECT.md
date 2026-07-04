@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.5.0 (API foundation — provider adapters, services, mock-first architecture)
+**Current version:** 0.6.0 (service layer — provider injection, orchestration, mock-first)
 
 ---
 
@@ -55,15 +55,18 @@ Gloconn/
 │   ├── api/                # Env, errors, types, validation, cache (planned)
 │   ├── auth/               # Supabase clients, session helpers, middleware
 │   ├── providers/          # Provider adapters (mock + future external APIs)
-│   │   ├── core/           # BaseProvider, domain interfaces, registry (planned)
+│   │   ├── core/           # BaseProvider, domain interfaces, registry, config
 │   │   ├── destinations/   # mock ✅, google-maps (planned)
-│   │   ├── search/         # Monolithic mock search provider ✅ (to split)
+│   │   ├── search/         # Deprecated monolithic mock search provider
 │   │   ├── hotels/         # mock ✅, booking (planned)
 │   │   ├── flights/        # mock ✅, amadeus (planned)
-│   │   └── ground/         # mock ✅, omio (planned)
-│   │   ├── mock/           # Shared mock helpers (filter, pricing, merge)
-│   │   ├── orchestrate.ts  # Parallel domain provider calls
+│   │   ├── ground/         # mock ✅, omio (planned)
+│   │   └── mock/           # Shared mock helpers (filter, pricing)
 │   ├── services/           # Service layer — UI calls these, not providers
+│   │   ├── context.ts      # getServiceProviders / setServiceProviders (DI)
+│   │   ├── destinationService.ts
+│   │   ├── searchService.ts
+│   │   └── searchOrchestrator.ts  # Parallel domain provider calls
 │   ├── trips/              # Saved trip queries and server actions
 │   ├── budget/             # Currency options, limits, and budget formatting
 │   ├── calendar/           # Date helpers for the travel calendar

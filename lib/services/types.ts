@@ -1,8 +1,21 @@
 /**
- * Internal service-layer types (not part of the UI contract).
- *
- * Planned: SearchContext — enriched SearchData with resolved placeId, locale, currency.
- * Not implemented yet — see lib/services/searchOrchestrator.ts.
+ * Service-layer types — internal contracts, not part of the UI API.
  */
 
-export {};
+import type {
+  DestinationProvider,
+  FlightsProvider,
+  HotelsProvider,
+  TransportProvider,
+} from "@/lib/providers/core/types";
+
+/**
+ * Provider dependencies injected into services.
+ * Mirrors the registry shape so tests can pass mock implementations.
+ */
+export type ServiceProviders = {
+  destinations: DestinationProvider;
+  hotels: HotelsProvider;
+  flights: FlightsProvider;
+  transport: TransportProvider;
+};

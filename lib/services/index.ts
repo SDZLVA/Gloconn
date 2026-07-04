@@ -4,6 +4,7 @@
 
 export {
   getDestinationById,
+  getDestinationsByIds,
   getPopularDestinations,
   resolveDestinationId,
   searchDestinations,
@@ -14,3 +15,11 @@ export {
   searchByDestination,
   searchTrips,
 } from "@/lib/services/searchService";
+
+export {
+  getServiceProviders,
+  resetServiceProviders,
+  setServiceProviders,
+} from "@/lib/services/context";
+
+export type { ServiceProviders } from "@/lib/services/types";
