@@ -1,4 +1,4 @@
-import { SearchCard } from "@/components/ui/SearchCard";
+import { SearchCard } from "@/components/search/SearchCard";
 import { cn } from "@/lib/utils";
 
 type HeroSectionProps = {

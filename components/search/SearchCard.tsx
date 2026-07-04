@@ -1,21 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { TravelStyleSelector } from "@/components/search/TravelStyleSelector";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { InputField } from "@/components/ui/InputField";
-import { SearchButton } from "@/components/ui/SearchButton";
-import { TravelStyleSelector } from "@/components/ui/TravelStyleSelector";
-import { logSearchData } from "@/lib/logSearchData";
-import {
-  isSearchFormValid,
-  validateSearchForm,
-} from "@/lib/validateSearchForm";
+import { useSearchForm } from "@/hooks/useSearchForm";
 import { cn } from "@/lib/utils";
-import {
-  INITIAL_SEARCH_FORM,
-  type SearchFormErrors,
-  type SearchFormState,
-} from "@/types/search";
 
 type SearchCardProps = {
   className?: string;
@@ -24,44 +14,10 @@ type SearchCardProps = {
 /**
  * SearchCard — the trip search panel on the home page hero.
  *
- * Stores form values in React state, validates on Search click,
- * and logs the result to the console when validation passes.
+ * Form state and validation live in useSearchForm; this file handles layout only.
  */
 export function SearchCard({ className }: SearchCardProps) {
-  const [form, setForm] = useState<SearchFormState>(INITIAL_SEARCH_FORM);
-  const [errors, setErrors] = useState<SearchFormErrors>({});
-
-  /** Updates one field and clears its error message. */
-  function updateField<K extends keyof SearchFormState>(
-    field: K,
-    value: SearchFormState[K],
-  ) {
-    setForm((current) => ({ ...current, [field]: value }));
-
-    if (errors[field]) {
-      setErrors((current) => {
-        const next = { ...current };
-        delete next[field];
-        return next;
-      });
-    }
-  }
-
-  /**
-   * handleSearch — runs when the Search button is clicked.
-   * 1. Validate all fields
-   * 2. If valid, print search data to the browser console
-   */
-  function handleSearch() {
-    const nextErrors = validateSearchForm(form);
-    setErrors(nextErrors);
-
-    if (!isSearchFormValid(nextErrors)) {
-      return;
-    }
-
-    logSearchData(form);
-  }
+  const { form, errors, updateField, handleSearch } = useSearchForm();
 
   return (
     <Card hoverable className={cn("w-full max-w-3xl p-6 sm:p-8", className)}>
@@ -138,7 +94,13 @@ export function SearchCard({ className }: SearchCardProps) {
       </div>
 
       <div className="mt-8 flex justify-end border-t border-slate-100 pt-6">
-        <SearchButton onClick={handleSearch} />
+        <Button
+          type="button"
+          className="w-full sm:w-auto sm:min-w-[140px]"
+          onClick={handleSearch}
+        >
+          Search
+        </Button>
       </div>
     </Card>
   );

@@ -1,16 +1,11 @@
 import { cn } from "@/lib/utils";
+import { focusRing } from "@/lib/styles";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  /** Visual style — "primary" is the main blue action button. */
   variant?: "primary" | "secondary";
 };
 
-/**
- * Button — a reusable styled button used across the app.
- *
- * Pass `type="button"` when the button is not submitting a form
- * (prevents accidental page reloads).
- */
+/** Button — a reusable styled button used across the app. */
 export function Button({
   variant = "primary",
   className,
@@ -20,7 +15,8 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold tracking-wide motion-safe:transition-all motion-safe:duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-700 disabled:cursor-not-allowed disabled:opacity-60",
+        "inline-flex items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold tracking-wide motion-safe:transition-all motion-safe:duration-200 disabled:cursor-not-allowed disabled:opacity-60",
+        focusRing,
         variant === "primary" &&
           "bg-brand-700 text-white shadow-md shadow-brand-700/20 motion-safe:hover:-translate-y-0.5 motion-safe:hover:bg-brand-800 motion-safe:hover:shadow-lg motion-safe:active:translate-y-0",
         variant === "secondary" &&

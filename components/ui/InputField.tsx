@@ -1,7 +1,7 @@
+import { FormError, FormLabel } from "@/components/ui/FormField";
 import { cn } from "@/lib/utils";
 
 type InputFieldProps = {
-  /** Matches the input's `id` — links the label to the field for accessibility. */
   id: string;
   label: string;
   placeholder?: string;
@@ -18,7 +18,6 @@ type InputFieldProps = {
  * InputField — a reusable labeled input used in forms and search cards.
  *
  * Controlled component: the parent owns the value via `value` and `onChange`.
- * Pass `error` to show a validation message below the field.
  */
 export function InputField({
   id,
@@ -34,16 +33,9 @@ export function InputField({
 }: InputFieldProps) {
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <label htmlFor={id} className="text-sm font-semibold tracking-wide text-slate-800">
+      <FormLabel htmlFor={id} required={required}>
         {label}
-        {required && (
-          <span className="text-red-500" aria-hidden="true">
-            {" "}
-            *
-          </span>
-        )}
-        {required && <span className="sr-only"> (required)</span>}
-      </label>
+      </FormLabel>
       <input
         id={id}
         type={type}
@@ -61,11 +53,7 @@ export function InputField({
             : "border-slate-200 motion-safe:hover:border-slate-300 focus:border-brand-700 focus:ring-brand-100",
         )}
       />
-      {error && (
-        <p id={`${id}-error`} className="text-sm font-medium text-red-600" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <FormError id={`${id}-error`} message={error} />}
     </div>
   );
 }

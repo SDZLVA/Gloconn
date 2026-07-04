@@ -1,5 +1,6 @@
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { PageContainer } from "@/components/layout/PageContainer";
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -18,8 +19,8 @@ export function AppShell({ children }: AppShellProps) {
     <div className="flex min-h-full flex-1 flex-col">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-        {children}
+      <main className="flex-1">
+        <PageContainer className="py-8 sm:py-10 lg:py-12">{children}</PageContainer>
       </main>
 
       <Footer />
