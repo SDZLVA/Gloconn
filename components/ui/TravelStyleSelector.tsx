@@ -1,13 +1,12 @@
 import { cn } from "@/lib/utils";
+import type { TravelStyle } from "@/types/search";
 
 /** The three travel style options shown in the search card. */
 export const TRAVEL_STYLES = [
   { value: "budget", label: "Budget" },
   { value: "standard", label: "Standard" },
   { value: "luxury", label: "Luxury" },
-] as const;
-
-export type TravelStyle = (typeof TRAVEL_STYLES)[number]["value"];
+] as const satisfies ReadonlyArray<{ value: TravelStyle; label: string }>;
 
 type TravelStyleSelectorProps = {
   value: TravelStyle;

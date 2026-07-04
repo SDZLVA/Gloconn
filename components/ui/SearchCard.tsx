@@ -1,60 +1,42 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/Button";
 import { InputField } from "@/components/ui/InputField";
+import { SearchButton } from "@/components/ui/SearchButton";
+import { TravelStyleSelector } from "@/components/ui/TravelStyleSelector";
+import { logSearchData } from "@/lib/logSearchData";
 import {
-  TravelStyleSelector,
-  type TravelStyle,
-} from "@/components/ui/TravelStyleSelector";
+  isSearchFormValid,
+  validateSearchForm,
+} from "@/lib/validateSearchForm";
 import { cn } from "@/lib/utils";
+import {
+  INITIAL_SEARCH_FORM,
+  type SearchFormErrors,
+  type SearchFormState,
+} from "@/types/search";
 
 type SearchCardProps = {
   className?: string;
 };
 
-/** All fields the user can fill in on the search card. */
-type SearchFormState = {
-  destination: string;
-  departureDate: string;
-  returnDate: string;
-  budget: string;
-  travelers: string;
-  travelStyle: TravelStyle;
-};
-
-/** Validation error messages keyed by field name. */
-type FormErrors = Partial<Record<keyof SearchFormState, string>>;
-
-/** Starting values when the page first loads. */
-const INITIAL_FORM: SearchFormState = {
-  destination: "",
-  departureDate: "",
-  returnDate: "",
-  budget: "",
-  travelers: "1",
-  travelStyle: "standard",
-};
-
 /**
  * SearchCard — the trip search panel on the home page hero.
  *
- * Uses React state to store what the user types.
- * Validates required fields when Search is clicked (no API calls yet).
+ * Stores form values in React state, validates on Search click,
+ * and logs the result to the console when validation passes.
  */
 export function SearchCard({ className }: SearchCardProps) {
-  const [form, setForm] = useState<SearchFormState>(INITIAL_FORM);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [submitMessage, setSubmitMessage] = useState<string | null>(null);
+  const [form, setForm] = useState<SearchFormState>(INITIAL_SEARCH_FORM);
+  const [errors, setErrors] = useState<SearchFormErrors>({});
 
-  /** Updates one field in state when the user types or selects an option. */
+  /** Updates one field and clears its error message. */
   function updateField<K extends keyof SearchFormState>(
     field: K,
     value: SearchFormState[K],
   ) {
     setForm((current) => ({ ...current, [field]: value }));
 
-    // Clear the error for this field as soon as the user fixes it.
     if (errors[field]) {
       setErrors((current) => {
         const next = { ...current };
@@ -62,60 +44,22 @@ export function SearchCard({ className }: SearchCardProps) {
         return next;
       });
     }
-
-    setSubmitMessage(null);
   }
 
-  /** Checks required fields and returns error messages. */
-  function validate(formData: SearchFormState): FormErrors {
-    const nextErrors: FormErrors = {};
-
-    if (!formData.destination.trim()) {
-      nextErrors.destination = "Please enter a destination.";
-    }
-
-    if (!formData.departureDate) {
-      nextErrors.departureDate = "Please choose a departure date.";
-    }
-
-    if (!formData.returnDate) {
-      nextErrors.returnDate = "Please choose a return date.";
-    }
-
-    if (
-      formData.departureDate &&
-      formData.returnDate &&
-      formData.returnDate < formData.departureDate
-    ) {
-      nextErrors.returnDate = "Return date must be on or after departure.";
-    }
-
-    const travelerCount = Number(formData.travelers);
-    if (!formData.travelers || Number.isNaN(travelerCount) || travelerCount < 1) {
-      nextErrors.travelers = "Enter at least 1 traveler.";
-    }
-
-    if (!formData.travelStyle) {
-      nextErrors.travelStyle = "Please select a travel style.";
-    }
-
-    return nextErrors;
-  }
-
-  /** Runs when the user clicks Search — validates only, no API yet. */
+  /**
+   * handleSearch — runs when the Search button is clicked.
+   * 1. Validate all fields
+   * 2. If valid, print search data to the browser console
+   */
   function handleSearch() {
-    const nextErrors = validate(form);
+    const nextErrors = validateSearchForm(form);
     setErrors(nextErrors);
 
-    if (Object.keys(nextErrors).length > 0) {
-      setSubmitMessage(null);
+    if (!isSearchFormValid(nextErrors)) {
       return;
     }
 
-    // Success message for now — real search will be added later.
-    setSubmitMessage(
-      `Ready to search for ${form.destination} (${form.travelStyle} style).`,
-    );
+    logSearchData(form);
   }
 
   return (
@@ -192,23 +136,8 @@ export function SearchCard({ className }: SearchCardProps) {
         />
       </div>
 
-      {submitMessage && (
-        <p
-          className="mt-4 rounded-lg bg-brand-50 px-3 py-2 text-sm text-brand-800"
-          role="status"
-        >
-          {submitMessage}
-        </p>
-      )}
-
       <div className="mt-5 flex justify-end">
-        <Button
-          type="button"
-          className="w-full sm:w-auto sm:min-w-[140px]"
-          onClick={handleSearch}
-        >
-          Search
-        </Button>
+        <SearchButton onClick={handleSearch} />
       </div>
     </div>
   );
