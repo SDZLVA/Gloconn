@@ -1,6 +1,10 @@
 /**
  * Destination helpers — backward-compatible re-exports.
- * New code should import services from `@/lib/services` and types from `@/types/destination`.
+ *
+ * @deprecated New code should use:
+ * - `@/lib/services` for data fetching
+ * - `@/types/destination` for types
+ * - `destinationToAutocompleteOption` below for UI formatting only
  */
 
 export type { Destination } from "@/types/destination";

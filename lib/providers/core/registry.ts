@@ -1,16 +1,14 @@
 /**
  * Central provider registry — single place that picks active adapters.
- *
- * Domain folders re-export these getters so callers can import from
- * `@/lib/providers/hotels` or `@/lib/providers/core/registry`.
  */
 
 import { getAppConfig } from "@/lib/config";
-import { getProviderConfig } from "@/lib/providers/core/config";
-import { mockDestinationProvider } from "@/lib/providers/destinations/mock";
-import { mockFlightsProvider } from "@/lib/providers/flights/mock";
-import { mockTransportProvider } from "@/lib/providers/ground/mock";
-import { mockHotelsProvider } from "@/lib/providers/hotels/mock";
+import {
+  createDestinationProvider,
+  createFlightsProvider,
+  createHotelsProvider,
+  createTransportProvider,
+} from "@/lib/providers/core/factories";
 import type {
   DestinationProvider,
   FlightsProvider,
@@ -18,6 +16,7 @@ import type {
   TransportProvider,
 } from "@/lib/providers/core/types";
 
+/** Active provider instances for all travel domains. */
 export type ProviderRegistry = {
   destinations: DestinationProvider;
   hotels: HotelsProvider;
@@ -27,43 +26,34 @@ export type ProviderRegistry = {
 
 let registry: ProviderRegistry | null = null;
 
-/** Builds the default mock registry (only option until external APIs are wired). */
-function createMockRegistry(): ProviderRegistry {
+function createProviderRegistry(): ProviderRegistry {
   return {
-    destinations: mockDestinationProvider,
-    hotels: mockHotelsProvider,
-    flights: mockFlightsProvider,
-    transport: mockTransportProvider,
+    destinations: createDestinationProvider(),
+    hotels: createHotelsProvider(),
+    flights: createFlightsProvider(),
+    transport: createTransportProvider(),
   };
 }
 
 /**
  * Returns the active provider registry.
- * Selection is driven by `USE_MOCK_PROVIDERS` — see `lib/providers/core/config.ts`.
+ * Selection is driven by env vars — see `lib/providers/core/factories.ts`.
  */
 export function getProviderRegistry(): ProviderRegistry {
   if (registry) {
     return registry;
   }
 
-  const { useMockProviders } = getProviderConfig();
+  const { validation } = getAppConfig();
 
-  if (!useMockProviders) {
-    const { validation } = getAppConfig();
-
-    if (!validation.isValid) {
-      console.error(
-        "[Glooconn] Configuration errors — external providers cannot start:",
-        validation.errors.map((issue) => issue.message).join(" "),
-      );
-    } else {
-      console.warn(
-        "[Glooconn] USE_MOCK_PROVIDERS=false but no external provider implementations are registered yet. Using mock adapters.",
-      );
-    }
+  if (!validation.isValid) {
+    console.error(
+      "[Glooconn] Configuration errors:",
+      validation.errors.map((issue) => issue.message).join(" "),
+    );
   }
 
-  registry = createMockRegistry();
+  registry = createProviderRegistry();
   return registry;
 }
 
@@ -88,7 +78,7 @@ export function getTransportProvider(): TransportProvider {
   return getProviderRegistry().transport;
 }
 
-/** Returns whether mock adapters are active (default true). */
+/** Returns whether mock adapters are forced by configuration. */
 export function useMockProviders(): boolean {
-  return getProviderConfig().useMockProviders;
+  return getAppConfig().providers.useMockProviders;
 }

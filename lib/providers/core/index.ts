@@ -1,8 +1,20 @@
-/**
- * Provider core — base types, interfaces, and registry.
- */
+export {
+  createDestinationProvider,
+  createFlightsProvider,
+  createHotelsProvider,
+  createTransportProvider,
+} from "@/lib/providers/core/factories";
 
-export type { BaseProvider } from "@/lib/providers/core/base";
+export {
+  getDestinationProvider,
+  getFlightsProvider,
+  getHotelsProvider,
+  getProviderRegistry,
+  getTransportProvider,
+  resetProviderRegistry,
+  useMockProviders,
+  type ProviderRegistry,
+} from "@/lib/providers/core/registry";
 
 export type {
   AttractionsProvider,

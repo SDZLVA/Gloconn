@@ -30,6 +30,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [x] **Service layer with provider injection** — `context.ts`, central registry, UI uses services only
 - [x] **Centralized error handling** — `ApiError` factories, `ServiceResult`, `ApiResponse`, `runService()`
 - [x] **Centralized environment configuration** — `lib/config/`, `.env.example`, validation
+- [x] **API foundation review** — provider factories, Amadeus stub, `docs/API_FOUNDATION.md`
 
 - [ ] **My Trips page** (`app/my-trips/page.tsx`)
   - [x] Protected route with Supabase auth

@@ -94,6 +94,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `orchestrateTripSearch` | `lib/services/searchOrchestrator.ts` | Parallel hotels / flights / transport calls |
 | `getServiceProviders` | `lib/services/context.ts` | Returns injected or registry-backed providers |
 | Provider registry | `lib/providers/core/registry.ts` | Central `get*Provider()` selection |
+| Provider factories | `lib/providers/core/factories.ts` | Env-based mock vs external selection |
+| Amadeus flights stub | `lib/providers/flights/amadeus/` | Swap point for real flight API |
 | Mock provider classes | `lib/providers/*/mock/provider.ts` | `MockHotelsProvider`, `MockFlightsProvider`, etc. |
 | `searchDestinations` | `lib/services/destinationService.ts` | Autocomplete via active provider |
 | `useServiceQuery` | `hooks/useServiceQuery.ts` | Loading / success / error for async services |
@@ -286,7 +288,7 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 
 | If working on… | Read these first |
 |----------------|------------------|
-| Search form / results | `hooks/useSearchForm.ts`, `lib/search/`, `lib/services/`, `components/search/SearchCard.tsx` |
+| Search form / results | `docs/API_FOUNDATION.md`, `lib/services/`, `hooks/useSearchForm.ts` |
 | Navigation | `lib/navigation.ts`, `components/layout/Navbar.tsx` |
 | New page | `app/layout.tsx`, `components/layout/AppShell.tsx`, an existing page |
 | Styling | `app/globals.css`, `lib/styles.ts` |
@@ -317,6 +319,7 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 | [PROGRESS.md](./PROGRESS.md) | What was completed each week |
 | [TODO.md](./TODO.md) | What to build next |
 | [DECISIONS.md](./DECISIONS.md) | Why things are built this way |
+| [API_FOUNDATION.md](./API_FOUNDATION.md) | API layers, provider swap guide |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | This file — start here |
 
 ---

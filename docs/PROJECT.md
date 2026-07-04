@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.6.2 (centralized environment configuration)
+**Current version:** 0.7.0 (API foundation review — provider factories, Amadeus stub, docs)
 
 ---
 
@@ -63,11 +63,11 @@ Gloconn/
 │   │   └── validation.ts   # validateSearchRequest()
 │   ├── auth/               # Supabase clients, session helpers, middleware
 │   ├── providers/          # Provider adapters (mock + future external APIs)
-│   │   ├── core/           # BaseProvider, domain interfaces, registry, config
-│   │   ├── destinations/   # mock ✅, google-maps (planned)
-│   │   ├── search/         # Deprecated monolithic mock search provider
+│   │   ├── core/           # Interfaces, registry, factories (provider selection)
+│   │   ├── destinations/ # mock ✅, google-maps (planned)
+│   │   ├── search/         # Deprecated monolithic provider
 │   │   ├── hotels/         # mock ✅, booking (planned)
-│   │   ├── flights/        # mock ✅, amadeus (planned)
+│   │   ├── flights/        # mock ✅, amadeus/ stub ✅
 │   │   ├── ground/         # mock ✅, omio (planned)
 │   │   └── mock/           # Shared mock helpers (filter, pricing)
 │   ├── services/           # Service layer — UI calls these, not providers
@@ -206,4 +206,5 @@ See `PROJECT_RULES.md` in the project root for AI and developer guidelines. Key 
 | [PROGRESS.md](./PROGRESS.md) | Week-by-week completed work |
 | [TODO.md](./TODO.md) | Active and upcoming tasks |
 | [DECISIONS.md](./DECISIONS.md) | Architecture and design decisions |
+| [API_FOUNDATION.md](./API_FOUNDATION.md) | API layers, provider swap guide, naming |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | Context for AI assistants continuing the project |

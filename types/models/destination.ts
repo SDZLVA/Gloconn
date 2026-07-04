@@ -30,4 +30,10 @@ export type Destination = {
    * section of the autocomplete empty state.
    */
   popular?: boolean;
+
+  /**
+   * Primary airport IATA code (e.g. "CDG" for Paris).
+   * Used by flight providers such as Amadeus.
+   */
+  iataCode?: string;
 };

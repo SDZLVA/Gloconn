@@ -293,6 +293,24 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
+## API foundation review
+
+**Branch:** `cursor/api-foundation`
+
+### Changes
+
+- Added `lib/providers/core/factories.ts` — per-domain provider selection from env
+- Added `lib/providers/flights/amadeus/` — `AmadeusFlightsProvider` stub (swap point)
+- Consolidated `ServiceProviders` → re-export of `ProviderRegistry`
+- Deduplicated orchestration (`searchAllDomains`, destination id enrichment)
+- Deprecated `mockSearchProvider` delegates to service orchestrator
+- Removed dead `lib/providers/search/mock/search.ts`
+- Added `docs/API_FOUNDATION.md` — architecture reference and Amadeus swap guide
+- Extended models: `Destination.iataCode`, `SearchRequest.origin`
+- Updated all docs for accuracy (removed stale `app/api/` claims where needed)
+
+---
+
 **Branch:** `cursor/architecture-improvements`
 
 ### Changes

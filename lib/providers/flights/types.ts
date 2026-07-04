@@ -1,6 +1,8 @@
 /**
- * Provider-internal types for flight adapters (e.g. Amadeus offer shapes).
- * Never imported by UI.
+ * Amadeus-specific response shapes — never imported by UI.
  */
 
-export {};
+export type AmadeusFlightOffer = {
+  id: string;
+  // Extend when implementing the client
+};

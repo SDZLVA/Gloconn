@@ -3,6 +3,13 @@
  */
 
 export {
+  createDestinationProvider,
+  createFlightsProvider,
+  createHotelsProvider,
+  createTransportProvider,
+} from "@/lib/providers/core/factories";
+
+export {
   getDestinationProvider,
   getFlightsProvider,
   getHotelsProvider,

@@ -442,7 +442,7 @@ hooks/useServiceQuery.ts → loading state for async service calls
 **Consequences:**
 - `DestinationAutocomplete` and `SearchResultsPage` use services, not mock files directly
 - `lib/destinations.ts` and `lib/results/` remain as backward-compatible re-exports
-- New providers are registered in `lib/providers/destinations/index.ts` and `lib/providers/search/index.ts`
+- New providers are registered in `lib/providers/core/factories.ts`
 - External API keys live in server env only (never `NEXT_PUBLIC_*`)
 
 ---
@@ -621,3 +621,28 @@ lib/config/
 - Never read `process.env` in components or providers — use `getAppConfig()`
 - API keys must never use `NEXT_PUBLIC_` prefix
 - `.env.local` is gitignored; `.env.example` is committed as the template
+
+---
+
+## ADR-029: API foundation review and provider factories
+
+**Decision:** Complete API foundation review with per-domain provider factories, Amadeus flights stub, deduplicated orchestration, and consolidated documentation in `docs/API_FOUNDATION.md`.
+
+**Changes:**
+- `lib/providers/core/factories.ts` — `createFlightsProvider()` etc. honor env-based selection
+- `lib/providers/flights/amadeus/` — stub `AmadeusFlightsProvider` (swap point for real API)
+- `ServiceProviders` re-exports `ProviderRegistry` (one type, not two)
+- `searchOrchestrator` — shared `searchAllDomains()`, enriches `destinationId`
+- Deprecated `mockSearchProvider` delegates to service orchestrator (no duplicated logic)
+- Removed dead `search/mock/search.ts`
+- Extended `Destination.iataCode` and `SearchRequest.origin` for flight APIs
+
+**Rationale:**
+- Swapping mock → Amadeus requires only factory + adapter implementation — no UI/service changes
+- Single registry type reduces confusion
+- Central review doc prevents doc drift across ADRs
+
+**Consequences:**
+- `lib/results/mock*.ts` remain as mock data source (move to providers planned)
+- `app/api/` routes still planned — use `toJsonResponse` when added
+- Amadeus stub delegates to mock until `client.ts` is implemented

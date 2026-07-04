@@ -48,4 +48,10 @@ export type SearchRequest = {
 
   /** Price tier preference for result ranking and filtering. */
   travelStyle: TravelStyle;
+
+  /**
+   * Origin city or airport code (IATA) for flight searches.
+   * Optional until the search form collects a departure city.
+   */
+  origin?: string;
 };
