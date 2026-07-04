@@ -5,4 +5,10 @@
 
 export { TRAVEL_STYLE_OPTIONS } from "@/lib/search/constants";
 export { buildSearchData, logSearchData } from "@/lib/search/payload";
+export {
+  formatTravelersSummary,
+  getTotalGuests,
+  TRAVELERS_FIELD_CONFIG,
+  TRAVELERS_LIMITS,
+} from "@/lib/search/travelers";
 export { hasSearchFormErrors, validateSearchForm } from "@/lib/search/validation";

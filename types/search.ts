@@ -5,18 +5,30 @@
 /** Budget, Standard, or Luxury — chosen in the search card. */
 export type TravelStyle = "budget" | "standard" | "luxury";
 
-/** Raw form values stored in React state (all strings except travelStyle). */
+/** Adults, children, infants, and rooms for the travelers selector. */
+export type TravelersState = {
+  adults: number;
+  children: number;
+  infants: number;
+  rooms: number;
+};
+
+/** Raw form values stored in React state. */
 export type SearchFormState = {
   destination: string;
   departureDate: string;
   returnDate: string;
   budget: string;
-  travelers: string;
+  travelers: TravelersState;
   travelStyle: TravelStyle;
 };
 
 /** Validation error messages keyed by field name. */
-export type SearchFormErrors = Partial<Record<keyof SearchFormState, string>>;
+export type SearchFormErrors = Partial<
+  Record<keyof Omit<SearchFormState, "travelers">, string>
+> & {
+  travelers?: string;
+};
 
 /** Clean search payload produced after successful validation. */
 export type SearchData = {
@@ -24,8 +36,17 @@ export type SearchData = {
   departureDate: string;
   returnDate: string;
   budget: number | null;
-  travelers: number;
+  travelers: TravelersState;
+  totalGuests: number;
   travelStyle: TravelStyle;
+};
+
+/** Default traveler counts when the search form first loads. */
+export const INITIAL_TRAVELERS: TravelersState = {
+  adults: 2,
+  children: 0,
+  infants: 0,
+  rooms: 1,
 };
 
 /** Default values when the search form first loads. */
@@ -34,6 +55,6 @@ export const INITIAL_SEARCH_FORM: SearchFormState = {
   departureDate: "",
   returnDate: "",
   budget: "",
-  travelers: "1",
+  travelers: INITIAL_TRAVELERS,
   travelStyle: "standard",
 };

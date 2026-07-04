@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | Week 1 complete + architecture refactor |
+| Stage | Week 1 complete + search card improvements |
 | APIs | None connected |
 
 ---
@@ -55,8 +55,12 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `Footer` | `components/layout/` | Site footer |
 | `HeroSection` | `components/home/` | Home page hero |
 | `SearchCard` | `components/search/` | Trip search form (layout only) |
+| `DestinationAutocomplete` | `components/search/` | Destination field with mock suggestions |
+| `TravelersSelector` | `components/search/` | Adults / Children / Infants / Rooms picker |
 | `TravelStyleSelector` | `components/search/` | Budget / Standard / Luxury picker |
 | `Button`, `Card`, `InputField` | `components/ui/` | Generic UI primitives |
+| `Autocomplete` | `components/ui/` | Reusable accessible combobox |
+| `NumberStepper` | `components/ui/` | Reusable +/- numeric counter |
 | `SectionHeading` | `components/ui/` | Reusable title + description for sections |
 | `FormLabel`, `FormError` | `components/ui/FormField.tsx` | Shared form helpers |
 
@@ -68,10 +72,14 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `validateSearchForm` | `lib/search/validation.ts` | Required-field validation |
 | `buildSearchData` | `lib/search/payload.ts` | Converts form strings to typed payload |
 | `logSearchData` | `lib/search/payload.ts` | Console.log on successful search |
+| `formatTravelersSummary` | `lib/search/travelers.ts` | Builds travelers trigger label |
+| `TRAVELERS_LIMITS` | `lib/search/travelers.ts` | Min/max for adults, children, infants, rooms |
 | `TRAVEL_STYLE_OPTIONS` | `lib/search/constants.ts` | Travel style labels and values |
+| `MOCK_DESTINATIONS` | `lib/destinations.ts` | Static destination list for autocomplete |
+| `filterDestinations` | `lib/destinations.ts` | Client-side destination filtering |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
 | `focusRing`, etc. | `lib/styles.ts` | Shared Tailwind class strings |
-| Search types | `types/search.ts` | `SearchFormState`, `TravelStyle`, etc. |
+| Search types | `types/search.ts` | `SearchFormState`, `TravelersState`, `TravelStyle`, etc. |
 
 **Import convention:** Use `@/lib/search` and `@/types` — not the inner files directly from components (unless you are editing the search module itself).
 
@@ -80,16 +88,19 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 ## Search form behavior (do not break)
 
 1. User fills fields in `SearchCard`
-2. User clicks **Search** button
-3. `useSearchForm.handleSearch()` runs
-4. `validateSearchForm()` checks required fields
-5. If invalid → red error messages appear under fields
-6. If valid → `logSearchData()` prints to browser console (F12)
-7. **No API calls, no navigation** (yet)
+2. **Destination** — type to filter mock suggestions; pick with mouse or arrow keys + Enter
+3. **Travelers** — click trigger to open panel; adjust Adults, Children, Infants, Rooms with steppers; click Done
+4. User clicks **Search** button
+5. `useSearchForm.handleSearch()` runs
+6. `validateSearchForm()` checks required fields
+7. If invalid → red error messages appear under fields
+8. If valid → `logSearchData()` prints to browser console (F12)
+9. **No API calls, no navigation** (yet)
 
-Required fields: Destination, Departure date, Return date, Travelers, Travel style.  
+Required fields: Destination, Departure, Return, Travelers (≥1 adult, ≥1 room), Travel style.  
 Optional: Budget.  
-Return date must be ≥ departure date.
+Return date must be ≥ departure date.  
+Infants cannot exceed adults.
 
 ---
 
@@ -130,7 +141,7 @@ docs/                 → project documentation
 
 When the user asks to continue development, likely next tasks are:
 
-1. **Destinations page** — `app/destinations/page.tsx` + mock data in `lib/destinations.ts`
+1. **Destinations page** — `app/destinations/page.tsx` + expand `lib/destinations.ts`
 2. **Search results** — navigate after valid search, show mock results
 3. **About page** — static content page
 4. **My Trips page** — empty state placeholder

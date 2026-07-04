@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.1.0 (Week 1 foundation + architecture improvements)
+**Current version:** 0.2.0 (Search card improvements — autocomplete & travelers)
 
 ---
 
@@ -36,12 +36,18 @@ Gloconn/
 ├── components/
 │   ├── home/               # Home page sections (HeroSection)
 │   ├── layout/             # Site shell (AppShell, Navbar, Footer, BrandLogo)
-│   ├── search/             # Search form feature (SearchCard, TravelStyleSelector)
-│   └── ui/                 # Generic reusable UI (Button, Card, SectionHeading, …)
+│   ├── search/             # Search form feature
+│   │   ├── DestinationAutocomplete.tsx
+│   │   ├── SearchCard.tsx
+│   │   ├── TravelersSelector.tsx
+│   │   └── TravelStyleSelector.tsx
+│   └── ui/                 # Generic reusable UI (Button, Card, Autocomplete, …)
 ├── hooks/                  # Custom React hooks (useSearchForm)
 ├── lib/
+│   ├── destinations.ts     # Mock destination data for autocomplete
 │   ├── search/             # Search feature logic (split by responsibility)
 │   │   ├── constants.ts    # Travel style options
+│   │   ├── travelers.ts    # Travelers summary, limits, helpers
 │   │   ├── validation.ts   # Form validation
 │   │   ├── payload.ts      # Build and log search data
 │   │   └── index.ts        # Public exports for the search feature
@@ -70,13 +76,19 @@ Gloconn/
 - Modern travel-themed design (brand blues, soft gradients, rounded cards)
 
 ### Search form (UI + client logic, no API)
-- Fields: Destination, Departure date, Return date, Budget (optional), Number of travelers, Travel style (Budget / Standard / Luxury)
+- **Destination** — autocomplete with mock destination suggestions (keyboard + mouse accessible)
+- **Departure / Return** — date fields with validation (return ≥ departure)
+- **Travelers & rooms** — dropdown selector with Adults, Children, Infants, and Rooms steppers
+- **Budget** — optional max spend in €
+- **Travel style** — Budget / Standard / Luxury radio group
 - React state management via `useSearchForm` hook
 - Required-field validation on Search click
 - Successful searches log formatted data to the browser console
 
 ### Reusable UI primitives
 - `Button`, `Card`, `InputField`, `FormField` (label + error)
+- `Autocomplete` — generic accessible combobox (keyboard navigation, listbox)
+- `NumberStepper` — +/- counter for bounded numeric values
 - `SectionHeading` — consistent titles for heroes, cards, and sections
 - `BrandLogo` — shared Glooconn wordmark for navbar and footer
 

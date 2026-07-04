@@ -1,6 +1,8 @@
 "use client";
 
+import { DestinationAutocomplete } from "@/components/search/DestinationAutocomplete";
 import { TravelStyleSelector } from "@/components/search/TravelStyleSelector";
+import { TravelersSelector } from "@/components/search/TravelersSelector";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { InputField } from "@/components/ui/InputField";
@@ -15,10 +17,12 @@ type SearchCardProps = {
 /**
  * SearchCard — the trip search panel on the home page hero.
  *
+ * Fields: destination (autocomplete), dates, travelers & rooms, budget, travel style.
  * Form state and validation live in useSearchForm; this file handles layout only.
  */
 export function SearchCard({ className }: SearchCardProps) {
-  const { form, errors, updateField, handleSearch } = useSearchForm();
+  const { form, errors, updateField, updateTravelers, handleSearch } =
+    useSearchForm();
 
   return (
     <Card hoverable className={cn("w-full max-w-3xl p-6 sm:p-8", className)}>
@@ -29,10 +33,7 @@ export function SearchCard({ className }: SearchCardProps) {
       />
 
       <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
-        <InputField
-          id="search-destination"
-          label="Destination"
-          placeholder="Where do you want to go?"
+        <DestinationAutocomplete
           value={form.destination}
           onChange={(value) => updateField("destination", value)}
           error={errors.destination}
@@ -42,7 +43,7 @@ export function SearchCard({ className }: SearchCardProps) {
 
         <InputField
           id="search-departure-date"
-          label="Departure date"
+          label="Departure"
           type="date"
           value={form.departureDate}
           onChange={(value) => updateField("departureDate", value)}
@@ -52,11 +53,18 @@ export function SearchCard({ className }: SearchCardProps) {
 
         <InputField
           id="search-return-date"
-          label="Return date"
+          label="Return"
           type="date"
           value={form.returnDate}
           onChange={(value) => updateField("returnDate", value)}
           error={errors.returnDate}
+          required
+        />
+
+        <TravelersSelector
+          value={form.travelers}
+          onChange={updateTravelers}
+          error={errors.travelers}
           required
         />
 
@@ -68,18 +76,6 @@ export function SearchCard({ className }: SearchCardProps) {
           value={form.budget}
           onChange={(value) => updateField("budget", value)}
           min={0}
-        />
-
-        <InputField
-          id="search-travelers"
-          label="Number of travelers"
-          type="number"
-          placeholder="How many people?"
-          value={form.travelers}
-          onChange={(value) => updateField("travelers", value)}
-          error={errors.travelers}
-          required
-          min={1}
         />
 
         <TravelStyleSelector

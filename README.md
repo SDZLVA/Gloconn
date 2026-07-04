@@ -3,7 +3,7 @@
 Travel planning web application — discover destinations, plan trips, and manage travel in one place.
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
-**Version:** 0.1.0 (Week 1 foundation + architecture pass)
+**Version:** 0.2.0 (Search card improvements — autocomplete & travelers)
 
 ## Tech stack
 
@@ -50,10 +50,18 @@ Gloconn/
 │   ├── home/               # Home page sections
 │   ├── layout/             # Shell, navbar, footer, brand
 │   ├── search/             # Search form feature
+│   │   ├── DestinationAutocomplete.tsx
+│   │   ├── SearchCard.tsx
+│   │   ├── TravelersSelector.tsx
+│   │   └── TravelStyleSelector.tsx
 │   └── ui/                 # Reusable UI primitives
+│       ├── Autocomplete.tsx
+│       ├── NumberStepper.tsx
+│       └── …
 ├── hooks/                  # Custom React hooks
 ├── lib/
-│   ├── search/             # Search validation, payload, constants
+│   ├── destinations.ts     # Mock destination data (autocomplete)
+│   ├── search/             # Search validation, payload, travelers, constants
 │   ├── navigation.ts       # Nav and footer link config
 │   ├── styles.ts           # Shared Tailwind class strings
 │   └── utils.ts            # General helpers (e.g. cn)
@@ -77,7 +85,8 @@ Gloconn/
 
 ## Current status
 
-- **Live route:** `/` (home page with search form)
+- **Live route:** `/` (home page with enhanced search card)
+- **Search card:** Destination autocomplete, travelers & rooms selector, dates, budget, travel style
 - **Planned routes:** `/destinations`, `/my-trips`, `/about`
 - **Backend / APIs:** None yet
 

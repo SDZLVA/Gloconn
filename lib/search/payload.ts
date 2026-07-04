@@ -1,3 +1,4 @@
+import { getTotalGuests } from "@/lib/search/travelers";
 import type { SearchData, SearchFormState } from "@/types/search";
 
 /** Converts raw form strings into a typed search payload. */
@@ -9,7 +10,8 @@ export function buildSearchData(form: SearchFormState): SearchData {
     departureDate: form.departureDate,
     returnDate: form.returnDate,
     budget: budgetValue ? Number(budgetValue) : null,
-    travelers: Number(form.travelers),
+    travelers: { ...form.travelers },
+    totalGuests: getTotalGuests(form.travelers),
     travelStyle: form.travelStyle,
   };
 }

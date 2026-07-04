@@ -10,6 +10,7 @@ import {
   INITIAL_SEARCH_FORM,
   type SearchFormErrors,
   type SearchFormState,
+  type TravelersState,
 } from "@/types/search";
 
 /**
@@ -21,12 +22,7 @@ export function useSearchForm() {
   const [form, setForm] = useState<SearchFormState>(INITIAL_SEARCH_FORM);
   const [errors, setErrors] = useState<SearchFormErrors>({});
 
-  function updateField<K extends keyof SearchFormState>(
-    field: K,
-    value: SearchFormState[K],
-  ) {
-    setForm((current) => ({ ...current, [field]: value }));
-
+  function clearError(field: keyof SearchFormErrors) {
     if (errors[field]) {
       setErrors((current) => {
         const next = { ...current };
@@ -34,6 +30,19 @@ export function useSearchForm() {
         return next;
       });
     }
+  }
+
+  function updateField<K extends keyof SearchFormState>(
+    field: K,
+    value: SearchFormState[K],
+  ) {
+    setForm((current) => ({ ...current, [field]: value }));
+    clearError(field);
+  }
+
+  function updateTravelers(travelers: TravelersState) {
+    setForm((current) => ({ ...current, travelers }));
+    clearError("travelers");
   }
 
   function handleSearch() {
@@ -47,5 +56,5 @@ export function useSearchForm() {
     logSearchData(form);
   }
 
-  return { form, errors, updateField, handleSearch };
+  return { form, errors, updateField, updateTravelers, handleSearch };
 }

@@ -85,9 +85,24 @@ A week-by-week record of completed work. Update this file at the end of each dev
 
 ---
 
-## Week 2 — (Not started)
+## Week 2 — Search card improvements
 
-Planned focus: Destinations page, search results page, About page placeholder.
+**Branch:** `cursor/search-card-improvements`
+
+### Changes
+
+- Added destination autocomplete with mock data (`lib/destinations.ts`)
+- Added reusable `Autocomplete` and `NumberStepper` UI components
+- Replaced single travelers number input with `TravelersSelector` (Adults, Children, Infants, Rooms)
+- Updated search types, validation, and payload for structured travelers data
+- Renamed date labels to "Departure" and "Return"
+- Updated all documentation
+
+**Files added:** `lib/destinations.ts`, `lib/search/travelers.ts`, `components/ui/Autocomplete.tsx`, `components/ui/NumberStepper.tsx`, `components/search/DestinationAutocomplete.tsx`, `components/search/TravelersSelector.tsx`
+
+---
+
+## Week 2 — Core pages (not started)
 
 See [TODO.md](./TODO.md) for the active task list.
 

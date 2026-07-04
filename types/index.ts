@@ -7,7 +7,8 @@ export type {
   SearchData,
   SearchFormErrors,
   SearchFormState,
+  TravelersState,
   TravelStyle,
 } from "@/types/search";
 
-export { INITIAL_SEARCH_FORM } from "@/types/search";
+export { INITIAL_SEARCH_FORM, INITIAL_TRAVELERS } from "@/types/search";

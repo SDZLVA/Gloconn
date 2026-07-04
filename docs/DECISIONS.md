@@ -246,9 +246,67 @@ lib/search/
 | Topic | Options under consideration |
 |-------|----------------------------|
 | Search results routing | URL query params vs. Next.js `useRouter` state |
-| Mock data location | `lib/destinations.ts` vs. `data/destinations.json` |
+| Mock data location | `lib/destinations.ts` ✅ (in use for autocomplete) |
 | State management at scale | React Context vs. Zustand vs. server state |
 | Database | Supabase vs. PlanetScale vs. local JSON (prototype) |
 | Authentication | NextAuth.js vs. Clerk vs. custom |
 
 Record new decisions in this file as they are made.
+
+---
+
+## ADR-014: Mock destination autocomplete (no API)
+
+**Decision:** Use a static `lib/destinations.ts` list with client-side filtering for destination autocomplete.
+
+**Context:** Search card improvement — users expect destination suggestions while typing.
+
+**Rationale:**
+- No backend or third-party API yet
+- Same mock data will power the Destinations page later
+- Generic `Autocomplete` UI component stays reusable for other fields
+
+**Consequences:**
+- Users can type freely or pick from suggestions
+- `DestinationAutocomplete` wraps `Autocomplete` with Glooconn destination data
+- Replace filtering with API calls when backend is ready
+
+---
+
+## ADR-015: Structured travelers selector
+
+**Decision:** Replace the single "Number of travelers" input with a dropdown containing Adults, Children, Infants, and Rooms steppers.
+
+**Context:** Search card improvement — travel booking UIs typically separate guest types.
+
+**Structure:**
+```
+TravelersState = { adults, children, infants, rooms }
+```
+
+**Rationale:**
+- Matches real travel search UX (Booking.com-style)
+- `NumberStepper` is reusable for other counters
+- Validation rules: min 1 adult, min 1 room, infants ≤ adults
+
+**Consequences:**
+- `SearchData` includes `travelers` object and `totalGuests` count
+- `formatTravelersSummary()` builds trigger button label (e.g. "2 Adults · 1 Room")
+- `lib/search/travelers.ts` holds limits, labels, and helpers
+
+---
+
+## ADR-016: Generic Autocomplete component
+
+**Decision:** Build a reusable `Autocomplete` in `components/ui/` rather than a destination-only input.
+
+**Context:** Destination field needs combobox behavior with keyboard navigation.
+
+**Rationale:**
+- Parent passes `options` — component has no domain knowledge
+- Full a11y: `role="combobox"`, `aria-expanded`, arrow keys, Enter, Escape
+- `DestinationAutocomplete` in `components/search/` wires mock data
+
+**Consequences:**
+- Future fields (airport, hotel) can reuse `Autocomplete`
+- Feature-specific wrappers live in `components/search/` or other feature folders

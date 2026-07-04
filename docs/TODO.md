@@ -32,7 +32,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
   - Branded not-found page with link back to Home
 
 - [ ] **Mock destination dataset**
-  - Create `lib/destinations.ts` with typed destination data
+  - Expand `lib/destinations.ts` with images and descriptions for the Destinations page
   - Reuse on Destinations page and Search results
 
 - [ ] **Merge open PR branches to main**
@@ -70,6 +70,9 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [x] Project structure refactor
 - [x] Documentation folder (`docs/`)
 - [x] Architecture refactor (split lib/search, types, shared UI components)
+- [x] Destination autocomplete with mock data
+- [x] Travelers selector (Adults, Children, Infants, Rooms)
+- [x] Reusable Autocomplete and NumberStepper components
 
 ---
 
