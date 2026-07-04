@@ -6,6 +6,7 @@ import {
   logSearchData,
   validateSearchForm,
 } from "@/lib/search";
+import { rememberDestinationByLabel } from "@/lib/destinations/recentSearches";
 import {
   INITIAL_SEARCH_FORM,
   type SearchFormErrors,
@@ -53,6 +54,7 @@ export function useSearchForm() {
       return;
     }
 
+    rememberDestinationByLabel(form.destination);
     logSearchData(form);
   }
 

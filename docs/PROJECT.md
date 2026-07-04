@@ -42,9 +42,10 @@ Gloconn/
 │   │   ├── TravelersSelector.tsx
 │   │   └── TravelStyleSelector.tsx
 │   └── ui/                 # Generic reusable UI (Button, Card, Autocomplete, …)
-├── hooks/                  # Custom React hooks (useSearchForm)
+├── hooks/                  # Custom React hooks (useSearchForm, useRecentDestinationSearches)
 ├── lib/
 │   ├── destinations.ts     # Mock destination data for autocomplete
+│   ├── destinations/       # Recent-search persistence (localStorage)
 │   ├── search/             # Search feature logic (split by responsibility)
 │   │   ├── constants.ts    # Travel style options
 │   │   ├── travelers.ts    # Travelers summary, limits, helpers
@@ -76,7 +77,7 @@ Gloconn/
 - Modern travel-themed design (brand blues, soft gradients, rounded cards)
 
 ### Search form (UI + client logic, no API)
-- **Destination** — autocomplete with mock destination suggestions (keyboard + mouse accessible)
+- **Destination** — autocomplete with mock suggestions, recent searches, and popular destinations (keyboard + mouse accessible)
 - **Departure / Return** — date fields with validation (return ≥ departure)
 - **Travelers & rooms** — dropdown selector with Adults, Children, Infants, and Rooms steppers
 - **Budget** — optional max spend in €

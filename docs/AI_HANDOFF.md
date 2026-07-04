@@ -55,11 +55,11 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `Footer` | `components/layout/` | Site footer |
 | `HeroSection` | `components/home/` | Home page hero |
 | `SearchCard` | `components/search/` | Trip search form (layout only) |
-| `DestinationAutocomplete` | `components/search/` | Destination field with mock suggestions |
+| `DestinationAutocomplete` | `components/search/` | Destination field — recent, popular, and filtered mock suggestions |
 | `TravelersSelector` | `components/search/` | Adults / Children / Infants / Rooms picker |
 | `TravelStyleSelector` | `components/search/` | Budget / Standard / Luxury picker |
 | `Button`, `Card`, `InputField` | `components/ui/` | Generic UI primitives |
-| `Autocomplete` | `components/ui/` | Reusable accessible combobox |
+| `Autocomplete` | `components/ui/` | Reusable accessible combobox (sections, keyboard navigation) |
 | `NumberStepper` | `components/ui/` | Reusable +/- numeric counter |
 | `SectionHeading` | `components/ui/` | Reusable title + description for sections |
 | `FormLabel`, `FormError` | `components/ui/FormField.tsx` | Shared form helpers |
@@ -69,6 +69,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | Module | Location | Purpose |
 |--------|----------|---------|
 | `useSearchForm` | `hooks/useSearchForm.ts` | Form state, validation trigger, submit |
+| `useRecentDestinationSearches` | `hooks/useRecentDestinationSearches.ts` | Recent destination list (localStorage) |
 | `validateSearchForm` | `lib/search/validation.ts` | Required-field validation |
 | `buildSearchData` | `lib/search/payload.ts` | Converts form strings to typed payload |
 | `logSearchData` | `lib/search/payload.ts` | Console.log on successful search |
@@ -76,7 +77,9 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `TRAVELERS_LIMITS` | `lib/search/travelers.ts` | Min/max for adults, children, infants, rooms |
 | `TRAVEL_STYLE_OPTIONS` | `lib/search/constants.ts` | Travel style labels and values |
 | `MOCK_DESTINATIONS` | `lib/destinations.ts` | Static destination list for autocomplete |
-| `filterDestinations` | `lib/destinations.ts` | Client-side destination filtering |
+| `getPopularDestinations` | `lib/destinations.ts` | Curated popular destinations for empty field |
+| `filterDestinations` | `lib/destinations.ts` | Client-side ranked destination filtering |
+| Recent search helpers | `lib/destinations/recentSearches.ts` | localStorage read/write for recent picks |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
 | `focusRing`, etc. | `lib/styles.ts` | Shared Tailwind class strings |
 | Search types | `types/search.ts` | `SearchFormState`, `TravelersState`, `TravelStyle`, etc. |
@@ -88,7 +91,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 ## Search form behavior (do not break)
 
 1. User fills fields in `SearchCard`
-2. **Destination** — type to filter mock suggestions; pick with mouse or arrow keys + Enter
+2. **Destination** — type to filter mock suggestions; empty field shows recent searches and popular destinations; pick with mouse or arrow keys + Enter; selections persist in localStorage
 3. **Travelers** — click trigger to open panel; adjust Adults, Children, Infants, Rooms with steppers; click Done
 4. User clicks **Search** button
 5. `useSearchForm.handleSearch()` runs

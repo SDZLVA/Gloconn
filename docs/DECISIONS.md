@@ -310,3 +310,22 @@ TravelersState = { adults, children, infants, rooms }
 **Consequences:**
 - Future fields (airport, hotel) can reuse `Autocomplete`
 - Feature-specific wrappers live in `components/search/` or other feature folders
+
+---
+
+## ADR-017: Recent searches and popular destinations in autocomplete
+
+**Decision:** Show grouped sections (Recent searches, Popular destinations) when the destination field is empty; filter ranked mock results while typing. Persist recent picks in `localStorage` (no API).
+
+**Context:** Destination autocomplete improvement — users expect quick picks and memory of prior searches.
+
+**Rationale:**
+- Matches professional travel search UX (Booking.com-style)
+- `Autocomplete` gains optional `sections` prop for reuse elsewhere
+- Recent list syncs on select and successful form submit
+- Popular destinations are flagged on mock data (`popular: true`)
+
+**Consequences:**
+- `lib/destinations/recentSearches.ts` handles browser persistence
+- `useRecentDestinationSearches` hook loads recents when the dropdown opens
+- Replace localStorage with user account history when auth exists

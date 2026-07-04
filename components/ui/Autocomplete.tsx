@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { FormError, FormLabel } from "@/components/ui/FormField";
 import { cn } from "@/lib/utils";
 
@@ -10,38 +10,52 @@ export type AutocompleteOption = {
   description?: string;
 };
 
+export type AutocompleteSection = {
+  id: string;
+  heading: string;
+  options: AutocompleteOption[];
+};
+
 type AutocompleteProps = {
   id?: string;
   label: string;
   placeholder?: string;
   value: string;
-  options: AutocompleteOption[];
+  /** Flat option list — use when you do not need grouped sections. */
+  options?: AutocompleteOption[];
+  /** Grouped sections (Recent, Popular, etc.). Takes precedence over `options`. */
+  sections?: AutocompleteSection[];
   onChange: (value: string) => void;
   onSelect?: (option: AutocompleteOption) => void;
   error?: string;
   required?: boolean;
   noResultsMessage?: string;
   className?: string;
+  /** Called when the suggestion list opens (focus or typing). */
+  onListOpen?: () => void;
 };
 
 /**
  * Autocomplete — accessible combobox with keyboard navigation.
  *
  * Filters options as the user types. Supports arrow keys, Enter, Escape,
- * and click-to-select. No external API — parent supplies the options list.
+ * and click-to-select. Optional grouped sections for richer dropdowns.
+ * No external API — parent supplies the options list.
  */
 export function Autocomplete({
   id: idProp,
   label,
   placeholder,
   value,
-  options,
+  options = [],
+  sections,
   onChange,
   onSelect,
   error,
   required = false,
   noResultsMessage = "No matches found.",
   className,
+  onListOpen,
 }: AutocompleteProps) {
   const generatedId = useId();
   const inputId = idProp ?? generatedId;
@@ -50,13 +64,52 @@ export function Autocomplete({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   const [isOpen, setIsOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
-  const showList = isOpen && (options.length > 0 || value.trim().length > 0);
+  const resolvedSections = useMemo<AutocompleteSection[]>(() => {
+    if (sections && sections.length > 0) {
+      return sections.filter((section) => section.options.length > 0);
+    }
+
+    if (options.length === 0) {
+      return [];
+    }
+
+    return [{ id: "default", heading: "", options }];
+  }, [options, sections]);
+
+  const flatOptions = useMemo(
+    () => resolvedSections.flatMap((section) => section.options),
+    [resolvedSections],
+  );
+
+  const listItems = useMemo(() => {
+    const items: Array<
+      | { type: "heading"; id: string; label: string }
+      | { type: "option"; option: AutocompleteOption; index: number }
+    > = [];
+
+    let index = 0;
+    for (const section of resolvedSections) {
+      if (section.heading) {
+        items.push({ type: "heading", id: section.id, label: section.heading });
+      }
+      for (const option of section.options) {
+        items.push({ type: "option", option, index });
+        index += 1;
+      }
+    }
+
+    return items;
+  }, [resolvedSections]);
+
+  const showList = isOpen && (flatOptions.length > 0 || value.trim().length > 0);
 
   function openList() {
+    onListOpen?.();
     setIsOpen(true);
     setHighlightedIndex(-1);
   }
@@ -70,7 +123,7 @@ export function Autocomplete({
     onChange(option.label);
     onSelect?.(option);
     closeList();
-    inputRef.current?.focus();
+    document.getElementById(inputId)?.focus();
   }
 
   function handleInputChange(nextValue: string) {
@@ -92,21 +145,21 @@ export function Autocomplete({
       case "ArrowDown": {
         event.preventDefault();
         setHighlightedIndex((current) =>
-          current < options.length - 1 ? current + 1 : 0,
+          current < flatOptions.length - 1 ? current + 1 : 0,
         );
         break;
       }
       case "ArrowUp": {
         event.preventDefault();
         setHighlightedIndex((current) =>
-          current > 0 ? current - 1 : options.length - 1,
+          current > 0 ? current - 1 : flatOptions.length - 1,
         );
         break;
       }
       case "Enter": {
         event.preventDefault();
-        if (highlightedIndex >= 0 && options[highlightedIndex]) {
-          selectOption(options[highlightedIndex]);
+        if (highlightedIndex >= 0 && flatOptions[highlightedIndex]) {
+          selectOption(flatOptions[highlightedIndex]);
         }
         break;
       }
@@ -136,6 +189,17 @@ export function Autocomplete({
     return () => document.removeEventListener("mousedown", handlePointerDown);
   }, []);
 
+  useEffect(() => {
+    if (highlightedIndex < 0 || !listRef.current) {
+      return;
+    }
+
+    const highlighted = listRef.current.querySelector<HTMLElement>(
+      `[data-option-index="${highlightedIndex}"]`,
+    );
+    highlighted?.scrollIntoView({ block: "nearest" });
+  }, [highlightedIndex]);
+
   const activeDescendant =
     highlightedIndex >= 0 ? `${inputId}-option-${highlightedIndex}` : undefined;
 
@@ -145,40 +209,50 @@ export function Autocomplete({
         {label}
       </FormLabel>
 
-      <input
-        ref={inputRef}
-        id={inputId}
-        type="text"
-        role="combobox"
-        autoComplete="off"
-        value={value}
-        placeholder={placeholder}
-        required={required}
-        aria-expanded={showList}
-        aria-controls={listboxId}
-        aria-activedescendant={activeDescendant}
-        aria-autocomplete="list"
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errorId : undefined}
-        onChange={(event) => handleInputChange(event.target.value)}
-        onFocus={openList}
-        onKeyDown={handleKeyDown}
-        className={cn(
-          "w-full rounded-xl border bg-white px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 motion-safe:transition-all motion-safe:duration-200 focus:outline-none focus:ring-2 sm:text-sm",
-          error
-            ? "border-red-300 focus:border-red-500 focus:ring-red-100"
-            : "border-slate-200 motion-safe:hover:border-slate-300 focus:border-brand-700 focus:ring-brand-100",
-        )}
-      />
+      <div className="relative">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"
+        >
+          <SearchIcon />
+        </span>
+
+        <input
+          ref={inputRef}
+          id={inputId}
+          type="text"
+          role="combobox"
+          autoComplete="off"
+          value={value}
+          placeholder={placeholder}
+          required={required}
+          aria-expanded={showList}
+          aria-controls={listboxId}
+          aria-activedescendant={activeDescendant}
+          aria-autocomplete="list"
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          onChange={(event) => handleInputChange(event.target.value)}
+          onFocus={openList}
+          onKeyDown={handleKeyDown}
+          className={cn(
+            "w-full rounded-xl border bg-white py-3 pl-10 pr-4 text-base text-slate-900 placeholder:text-slate-400 motion-safe:transition-all motion-safe:duration-200 focus:outline-none focus:ring-2 sm:text-sm",
+            error
+              ? "border-red-300 focus:border-red-500 focus:ring-red-100"
+              : "border-slate-200 motion-safe:hover:border-slate-300 focus:border-brand-700 focus:ring-brand-100",
+          )}
+        />
+      </div>
 
       {showList && (
         <ul
+          ref={listRef}
           id={listboxId}
           role="listbox"
           aria-label={`${label} suggestions`}
-          className="absolute top-full z-20 mt-1 max-h-60 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-200/60"
+          className="absolute top-full z-20 mt-1 max-h-72 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-200/60"
         >
-          {options.length === 0 ? (
+          {flatOptions.length === 0 ? (
             <li
               role="option"
               aria-selected={false}
@@ -188,18 +262,31 @@ export function Autocomplete({
               {noResultsMessage}
             </li>
           ) : (
-            options.map((option, index) => {
-              const isHighlighted = index === highlightedIndex;
+            listItems.map((item) => {
+              if (item.type === "heading") {
+                return (
+                  <li
+                    key={`heading-${item.id}`}
+                    role="presentation"
+                    className="px-4 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-slate-400"
+                  >
+                    {item.label}
+                  </li>
+                );
+              }
+
+              const isHighlighted = item.index === highlightedIndex;
 
               return (
                 <li
-                  key={option.id}
-                  id={`${inputId}-option-${index}`}
+                  key={item.option.id}
+                  id={`${inputId}-option-${item.index}`}
                   role="option"
+                  data-option-index={item.index}
                   aria-selected={isHighlighted}
-                  onMouseEnter={() => setHighlightedIndex(index)}
+                  onMouseEnter={() => setHighlightedIndex(item.index)}
                   onMouseDown={(event) => event.preventDefault()}
-                  onClick={() => selectOption(option)}
+                  onClick={() => selectOption(item.option)}
                   className={cn(
                     "cursor-pointer px-4 py-2.5 text-sm motion-safe:transition-colors motion-safe:duration-150",
                     isHighlighted
@@ -207,10 +294,10 @@ export function Autocomplete({
                       : "text-slate-700 hover:bg-slate-50",
                   )}
                 >
-                  <span className="font-medium">{option.label}</span>
-                  {option.description && (
+                  <span className="font-medium">{item.option.label}</span>
+                  {item.option.description && (
                     <span className="mt-0.5 block text-xs text-slate-500">
-                      {option.description}
+                      {item.option.description}
                     </span>
                   )}
                 </li>
@@ -222,5 +309,23 @@ export function Autocomplete({
 
       {error && <FormError id={errorId} message={error} />}
     </div>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="size-4"
+      aria-hidden="true"
+    >
+      <path
+        fillRule="evenodd"
+        d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z"
+        clipRule="evenodd"
+      />
+    </svg>
   );
 }

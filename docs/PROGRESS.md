@@ -92,13 +92,14 @@ A week-by-week record of completed work. Update this file at the end of each dev
 ### Changes
 
 - Added destination autocomplete with mock data (`lib/destinations.ts`)
+- Added recent searches (localStorage) and popular destinations sections
 - Added reusable `Autocomplete` and `NumberStepper` UI components
 - Replaced single travelers number input with `TravelersSelector` (Adults, Children, Infants, Rooms)
 - Updated search types, validation, and payload for structured travelers data
 - Renamed date labels to "Departure" and "Return"
 - Updated all documentation
 
-**Files added:** `lib/destinations.ts`, `lib/search/travelers.ts`, `components/ui/Autocomplete.tsx`, `components/ui/NumberStepper.tsx`, `components/search/DestinationAutocomplete.tsx`, `components/search/TravelersSelector.tsx`
+**Files added:** `lib/destinations.ts`, `lib/destinations/recentSearches.ts`, `lib/search/travelers.ts`, `hooks/useRecentDestinationSearches.ts`, `components/ui/Autocomplete.tsx`, `components/ui/NumberStepper.tsx`, `components/search/DestinationAutocomplete.tsx`, `components/search/TravelersSelector.tsx`
 
 ---
 
