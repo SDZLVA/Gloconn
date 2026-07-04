@@ -311,6 +311,28 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
+## Search card — provider-ready fields & layout
+
+**Branch:** `cursor/api-foundation`
+
+### Provider-ready form fields
+
+- Added `destinationId`, `origin`, `originId`, and `productTypes` to form state and URL params
+- Added `OriginAutocomplete`, `SearchProductSelector`, and `SearchCardContainer` (URL hydration)
+- Orchestrator respects `productTypes` and skips destination re-resolution when `destinationId` is set
+- Mock destinations include IATA codes; added Milan
+- Edit search on results prefills the home page form via URL params
+
+### Responsive layout pass
+
+- Grouped fields into sections: **Where**, **When**, **Trip details**, **Preferences**
+- Origin and destination side-by-side on large screens; travelers and budget side-by-side on medium+
+- Consistent section spacing, subtle dividers, wider card (`max-w-4xl`)
+- Semantic `<form>` with `aria-label` and section `role="group"` headings
+- Updated `docs/PROJECT.md`, `docs/AI_HANDOFF.md`, `docs/PROGRESS.md`
+
+---
+
 **Branch:** `cursor/architecture-improvements`
 
 ### Changes

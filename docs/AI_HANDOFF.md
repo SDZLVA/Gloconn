@@ -57,7 +57,10 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `Navbar` | `components/layout/` | Sticky nav, mobile menu |
 | `Footer` | `components/layout/` | Site footer |
 | `HeroSection` | `components/home/` | Home page hero |
-| `SearchCard` | `components/search/` | Trip search form (layout only) |
+| `SearchCard` | `components/search/` | Trip search form — grouped layout (Where / When / Details / Preferences) |
+| `SearchCardContainer` | `components/search/` | Hydrates SearchCard from URL params (edit search flow) |
+| `OriginAutocomplete` | `components/search/` | Optional departure city field |
+| `SearchProductSelector` | `components/search/` | Stays / Flights / Transport toggles |
 | `DestinationAutocomplete` | `components/search/` | Destination field — recent, popular, and filtered mock suggestions |
 | `TravelDatesSelector` | `components/search/` | Round-trip / one-way dates picker with calendar dropdown |
 | `TravelersSelector` | `components/search/` | Search-form wrapper around `PassengersSelector` |
