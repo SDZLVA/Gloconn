@@ -5,6 +5,7 @@
 
 import { createValidationError } from "@/lib/api/errors";
 import { serviceFailure, serviceSuccess, type ServiceResult } from "@/lib/api/types";
+import { validateBudget } from "@/lib/search/budget";
 import { validatePassengers } from "@/lib/search/passengers";
 import { normalizeProductTypes } from "@/lib/search/productTypes";
 import type { SearchData } from "@/types/search";
@@ -20,21 +21,25 @@ function validationFailure(
 export function validateSearchRequest(
   search: Partial<SearchData>,
 ): ServiceResult<SearchData> {
+  if (!search.origin?.trim()) {
+    return validationFailure(
+      "Please enter where you are leaving from.",
+      "origin",
+    );
+  }
+
   if (!search.destination?.trim()) {
-    return validationFailure("Destination is required.", "destination");
+    return validationFailure("Please enter a destination.", "destination");
   }
 
   if (!search.departureDate) {
-    return validationFailure("Departure date is required.", "departureDate");
+    return validationFailure("Please choose a departure date.", "departureDate");
   }
 
   const tripType = search.tripType ?? "round-trip";
 
   if (tripType === "round-trip" && !search.returnDate) {
-    return validationFailure(
-      "Return date is required for round-trip searches.",
-      "returnDate",
-    );
+    return validationFailure("Please choose a return date.", "returnDate");
   }
 
   if (
@@ -49,8 +54,21 @@ export function validateSearchRequest(
     );
   }
 
+  const budgetString =
+    search.budget !== null && search.budget !== undefined
+      ? String(search.budget)
+      : "";
+  const budgetCurrency = search.budgetCurrency ?? "EUR";
+  const budgetError = validateBudget(budgetString, budgetCurrency);
+  if (budgetError) {
+    return validationFailure(budgetError, "budget");
+  }
+
   if (!search.travelers) {
-    return validationFailure("Traveler details are required.", "travelers");
+    return validationFailure(
+      "Please set travelers and rooms.",
+      "travelers",
+    );
   }
 
   const passengersError = validatePassengers(search.travelers);
@@ -59,7 +77,7 @@ export function validateSearchRequest(
   }
 
   if (!search.travelStyle) {
-    return validationFailure("Travel style is required.", "travelStyle");
+    return validationFailure("Please select a travel style.", "travelStyle");
   }
 
   const adults = search.travelers.adults;
@@ -69,7 +87,7 @@ export function validateSearchRequest(
   return serviceSuccess({
     destination: search.destination.trim(),
     destinationId: search.destinationId,
-    origin: search.origin?.trim() || undefined,
+    origin: search.origin.trim(),
     originId: search.originId,
     tripType,
     departureDate: search.departureDate,

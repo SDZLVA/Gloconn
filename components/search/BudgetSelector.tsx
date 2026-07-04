@@ -10,6 +10,7 @@ type BudgetSelectorProps = {
   onChange: (value: string) => void;
   onCurrencyChange: (currency: CurrencyCode) => void;
   error?: string;
+  required?: boolean;
   className?: string;
 };
 
@@ -17,7 +18,6 @@ type BudgetSelectorProps = {
  * BudgetSelector — search-form budget field backed by BudgetSlider.
  *
  * Keeps the form's string-based budget value while the slider works with numbers.
- * An empty string means no budget limit (optional field).
  */
 export function BudgetSelector({
   value,
@@ -25,6 +25,7 @@ export function BudgetSelector({
   onChange,
   onCurrencyChange,
   error,
+  required = false,
   className,
 }: BudgetSelectorProps) {
   const isSet = value.trim() !== "";
@@ -32,10 +33,6 @@ export function BudgetSelector({
 
   function handleSliderChange(next: number) {
     onChange(String(next));
-  }
-
-  function handleClear() {
-    onChange("");
   }
 
   return (
@@ -49,9 +46,10 @@ export function BudgetSelector({
       max={BUDGET_LIMITS.max}
       step={BUDGET_LIMITS.step}
       isSet={isSet}
-      unsetLabel="No limit — slide to set"
-      onClear={handleClear}
+      unsetLabel="Slide to set your budget"
+      onClear={required ? undefined : () => onChange("")}
       error={error}
+      required={required}
       className={cn(className)}
     />
   );

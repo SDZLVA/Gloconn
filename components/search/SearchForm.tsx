@@ -12,6 +12,7 @@ import { TravelDatesSelector } from "@/components/search/TravelDatesSelector";
 import { TravelStyleSelector } from "@/components/search/TravelStyleSelector";
 import { TravelersSelector } from "@/components/search/TravelersSelector";
 import { Button } from "@/components/ui/Button";
+import { countSearchFormErrors } from "@/lib/search";
 import { cn } from "@/lib/utils";
 import type { SearchFormController } from "@/types/search-form";
 
@@ -34,6 +35,7 @@ export function SearchForm({
   submitLabel = "Search",
 }: SearchFormProps) {
   const { form, errors, actions } = controller;
+  const errorCount = countSearchFormErrors(errors);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -47,6 +49,17 @@ export function SearchForm({
       aria-label="Trip search"
       noValidate
     >
+      {errorCount > 0 && (
+        <div
+          role="alert"
+          className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-800"
+        >
+          {errorCount === 1
+            ? "Please fix the highlighted field below."
+            : `Please fix the ${errorCount} highlighted fields below.`}
+        </div>
+      )}
+
       <SearchFormSection id="search-section-where" title="Where">
         <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2 lg:items-start">
           <OriginAutocomplete
@@ -54,6 +67,7 @@ export function SearchForm({
             onChange={actions.updateOrigin}
             onOriginSelect={actions.selectOrigin}
             error={errors.origin}
+            required
           />
 
           <DestinationAutocomplete
@@ -99,6 +113,8 @@ export function SearchForm({
             onCurrencyChange={(value) =>
               actions.updateField("budgetCurrency", value)
             }
+            error={errors.budget}
+            required
           />
         </div>
       </SearchFormSection>

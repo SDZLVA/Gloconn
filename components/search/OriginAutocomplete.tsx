@@ -8,11 +8,12 @@ type OriginAutocompleteProps = {
   onChange: (value: string) => void;
   onOriginSelect?: (selection: PlaceSelection) => void;
   error?: string;
+  required?: boolean;
   className?: string;
 };
 
 /**
- * OriginAutocomplete — optional departure city field for flights and transport.
+ * OriginAutocomplete — departure city field for the search form.
  * Reuses the destination service and autocomplete UI (mock cities as origins).
  */
 export function OriginAutocomplete({
@@ -20,17 +21,19 @@ export function OriginAutocomplete({
   onChange,
   onOriginSelect,
   error,
+  required = false,
   className,
 }: OriginAutocompleteProps) {
   return (
     <DestinationAutocomplete
       id="search-origin"
       label="From"
-      placeholder="Where are you leaving from? (optional)"
+      placeholder="Where are you leaving from?"
       value={value}
       onChange={onChange}
       onDestinationSelect={onOriginSelect}
       error={error}
+      required={required}
       className={className}
     />
   );

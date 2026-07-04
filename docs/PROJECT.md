@@ -134,15 +134,15 @@ Gloconn/
 ### Search form (UI + client logic, mock provider)
 - **Architecture** — `useSearchForm` (logic) → `SearchForm` (UI) → `SearchCard` (home page chrome)
 - **Layout** — grouped sections (Where, When, Trip details, Preferences) with responsive grids and dividers
-- **From** — optional origin autocomplete (departure city)
-- **Destination** — autocomplete via `destinationService` (mock provider by default)
-- **Dates** — travel calendar with round-trip / one-way toggle, range selection, past dates disabled
-- **Travelers & rooms** — dropdown selector with Adults, Children, Infants, and Rooms steppers
-- **Budget** — optional slider with EUR / USD / GBP selector, live formatted value, min €500 and max €10,000
+- **From** — required origin autocomplete (departure city)
+- **Destination** — required autocomplete via `destinationService` (mock provider by default)
+- **Dates** — required travel calendar with round-trip / one-way toggle; return date required for round-trip
+- **Travelers & rooms** — required dropdown with Adults, Children, Infants, and Rooms steppers
+- **Budget** — required slider with EUR / USD / GBP selector (€500–€10,000)
 - **Search for** — toggle stays, flights, and ground transport result types
 - **Travel style** — Budget / Standard / Luxury radio group
 - React state management via `useSearchForm` hook
-- Required-field validation on Search click
+- Required-field validation on Search click with inline errors and a summary alert
 - Successful searches navigate to `/search/results` with URL query params
 
 ### Search results (mock provider via service layer)

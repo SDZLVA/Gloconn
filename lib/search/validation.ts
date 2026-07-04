@@ -1,3 +1,4 @@
+import { validateBudget } from "@/lib/search/budget";
 import { validatePassengers } from "@/lib/search/passengers";
 import { normalizeProductTypes } from "@/lib/search/productTypes";
 import type { SearchFormErrors, SearchFormState } from "@/types/search-form";
@@ -8,6 +9,10 @@ import type { SearchFormErrors, SearchFormState } from "@/types/search-form";
  */
 export function validateSearchForm(form: SearchFormState): SearchFormErrors {
   const errors: SearchFormErrors = {};
+
+  if (!form.origin.trim()) {
+    errors.origin = "Please enter where you are leaving from.";
+  }
 
   if (!form.destination.trim()) {
     errors.destination = "Please enter a destination.";
@@ -30,6 +35,11 @@ export function validateSearchForm(form: SearchFormState): SearchFormErrors {
     errors.returnDate = "Return date must be on or after departure.";
   }
 
+  const budgetError = validateBudget(form.budget, form.budgetCurrency);
+  if (budgetError) {
+    errors.budget = budgetError;
+  }
+
   const passengersError = validatePassengers(form.travelers);
   if (passengersError) {
     errors.travelers = passengersError;
@@ -49,4 +59,9 @@ export function validateSearchForm(form: SearchFormState): SearchFormErrors {
 /** Returns true when the validation result contains at least one error. */
 export function hasSearchFormErrors(errors: SearchFormErrors): boolean {
   return Object.keys(errors).length > 0;
+}
+
+/** Counts how many fields failed validation. */
+export function countSearchFormErrors(errors: SearchFormErrors): number {
+  return Object.keys(errors).length;
 }

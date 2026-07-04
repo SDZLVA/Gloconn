@@ -338,6 +338,14 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 - `useSearchForm` returns `SearchFormController`; `SearchCard` is card chrome only
 - Updated all documentation
 
+### Form validation (required fields)
+
+- **From** is now required (was optional)
+- **Budget** is now required with min/max checks via `lib/search/budget.ts`
+- Validation summary alert when submit fails; inline errors under each field
+- `validateSearchRequest` aligned with the same rules for results page
+- Updated documentation
+
 ---
 
 **Branch:** `cursor/architecture-improvements`

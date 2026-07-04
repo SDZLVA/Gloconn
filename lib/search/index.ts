@@ -39,4 +39,9 @@ export {
   TRAVELERS_FIELD_CONFIG,
   TRAVELERS_LIMITS,
 } from "@/lib/search/travelers";
-export { hasSearchFormErrors, validateSearchForm } from "@/lib/search/validation";
+export { validateBudget } from "@/lib/search/budget";
+export {
+  countSearchFormErrors,
+  hasSearchFormErrors,
+  validateSearchForm,
+} from "@/lib/search/validation";

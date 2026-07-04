@@ -69,7 +69,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `TravelersSelector` | `components/search/` | Search-form wrapper around `PassengersSelector` |
 | `PassengersSelector` | `components/ui/` | Reusable Adults / Children / Infants / Rooms picker |
 | `TravelStyleSelector` | `components/search/` | Budget / Standard / Luxury picker |
-| `BudgetSelector` | `components/search/` | Optional max budget slider with currency |
+| `BudgetSelector` | `components/search/` | Required max budget slider with currency |
 | `Button`, `Card`, `InputField` | `components/ui/` | Generic UI primitives |
 | `BudgetSlider` | `components/ui/` | Reusable range slider with currency selector and live value |
 | `Autocomplete` | `components/ui/` | Reusable accessible combobox (sections, keyboard navigation) |
@@ -90,7 +90,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 |--------|----------|---------|
 | `useSearchForm` | `hooks/useSearchForm.ts` | Returns `SearchFormController` (form, errors, actions) |
 | `useRecentDestinationSearches` | `hooks/useRecentDestinationSearches.ts` | Recent destination list (localStorage) |
-| `validateSearchForm` | `lib/search/validation.ts` | Required-field validation |
+| `validateSearchForm` | `lib/search/validation.ts` | Client-side required-field validation |
+| `validateBudget` | `lib/search/budget.ts` | Budget min/max and required checks |
 | `buildSearchData` | `lib/search/payload.ts` | Converts form strings to typed payload |
 | `buildResultsUrl` | `lib/search/params.ts` | Builds `/search/results?...` from form state |
 | `parseSearchParams` | `lib/search/params.ts` | Reads URL params back into `SearchData` |
@@ -195,20 +196,19 @@ Future Route Handler
 ## Search form behavior (do not break)
 
 1. User fills fields in `SearchCard`
-2. **Destination** — type to filter mock suggestions; empty field shows recent searches and popular destinations; pick with mouse or arrow keys + Enter; selections persist in localStorage
-3. **Dates** — click trigger to open calendar; choose Round-trip or One-way; pick departure (and return for round-trip) on the calendar; past dates are disabled; click Done
-4. **Travelers** — click trigger to open panel; adjust Adults, Children, Infants, Rooms with +/- steppers; infants cannot exceed adults; click Done
-5. **Budget** — optional slider (€500–€10,000); pick EUR, USD, or GBP; live formatted value; clear to remove limit
-6. User clicks **Search** button
-7. `useSearchForm.handleSearch()` runs
-8. `validateSearchForm()` checks required fields
-9. If invalid → red error messages appear under fields
+2. **From** — required; type or pick a departure city from suggestions
+3. **Destination** — required; type to filter mock suggestions; empty field shows recent searches and popular destinations; pick with mouse or arrow keys + Enter; selections persist in localStorage
+4. **Dates** — required; click trigger to open calendar; choose Round-trip or One-way; pick departure (and return for round-trip) on the calendar; past dates are disabled; click Done
+5. **Travelers** — required; click trigger to open panel; adjust Adults, Children, Infants, Rooms with +/- steppers; infants cannot exceed adults; click Done
+6. **Budget** — required slider (€500–€10,000); pick EUR, USD, or GBP; move slider to set amount
+7. User clicks **Search** button
+8. `actions.submit()` runs `validateSearchForm()`
+9. If invalid → summary alert at top + red error messages under each field
 10. If valid → `router.push(buildResultsUrl(form))` navigates to `/search/results`
 11. Results page calls `searchTrips()` via `useServiceQuery` — mock provider by default
 12. **No external travel APIs** — mock provider returns static data through the service layer
 
-Required fields: Destination, Departure, Return (round-trip only), Travelers (≥1 adult, ≥1 room), Travel style.  
-Optional: Budget.  
+Required fields: From, Destination, Departure, Return (round-trip only), Budget, Travelers (≥1 adult, ≥1 room), Travel style, at least one result type.  
 Return date must be ≥ departure date.  
 Infants cannot exceed adults.
 
