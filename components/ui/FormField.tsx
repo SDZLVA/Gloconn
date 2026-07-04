@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { formError } from "@/lib/styles";
+import { formError, formLabel } from "@/lib/styles";
 
 type FormErrorProps = {
   id?: string;
@@ -32,10 +32,7 @@ export function FormLabel({
   children,
   className,
 }: FormLabelProps) {
-  const labelClassName = cn(
-    "text-sm font-semibold tracking-wide text-slate-800",
-    className,
-  );
+  const labelClassName = cn(formLabel, className);
 
   if (htmlFor) {
     return (

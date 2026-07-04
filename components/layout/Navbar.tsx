@@ -1,13 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 import { NavLinkItem } from "@/components/layout/NavLinkItem";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { NAV_LINKS } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
-import { focusRing, focusRingLoose } from "@/lib/styles";
+import { focusRing } from "@/lib/styles";
 
 /**
  * Navbar — sticky top bar with the Glooconn logo and page links.
@@ -30,16 +30,7 @@ export function Navbar() {
           className="flex w-full items-center justify-between"
           aria-label="Main navigation"
         >
-          <Link
-            href="/"
-            className={cn(
-              "rounded-lg text-xl font-bold tracking-tight text-brand-700 motion-safe:transition-colors motion-safe:duration-200 hover:text-brand-800",
-              focusRingLoose,
-            )}
-            onClick={closeMobileMenu}
-          >
-            Glooconn
-          </Link>
+          <BrandLogo onNavigate={closeMobileMenu} />
 
           <ul className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((link) => (

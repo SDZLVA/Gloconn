@@ -47,7 +47,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [ ] Add static assets to `public/` (logo, placeholder images)
 - [ ] Improve date input UX (custom date picker component)
 - [ ] Add loading states for future API calls
-- [ ] Add unit tests for `lib/search.ts` validation
+- [ ] Add unit tests for `lib/search/validation.ts`
 - [ ] Set up GitHub Actions for CI (lint + build on PR)
 - [ ] Update root `README.md` with Glooconn-specific content
 
@@ -69,6 +69,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [x] UI polish (cards, hover, typography, accessibility)
 - [x] Project structure refactor
 - [x] Documentation folder (`docs/`)
+- [x] Architecture refactor (split lib/search, types, shared UI components)
 
 ---
 

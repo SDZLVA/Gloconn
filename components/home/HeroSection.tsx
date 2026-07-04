@@ -1,4 +1,5 @@
 import { SearchCard } from "@/components/search/SearchCard";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { cn } from "@/lib/utils";
 
 type HeroSectionProps = {
@@ -28,17 +29,14 @@ export function HeroSection({ title, subtitle, className }: HeroSectionProps) {
         aria-hidden="true"
       />
 
-      <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 sm:gap-6">
-        <h1
-          id="hero-heading"
-          className="text-balance text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl sm:leading-tight lg:text-5xl lg:leading-[1.1]"
-        >
-          {title}
-        </h1>
-        <p className="max-w-2xl text-pretty text-base leading-relaxed text-slate-600 sm:text-lg sm:leading-8">
-          {subtitle}
-        </p>
-      </div>
+      <SectionHeading
+        as="h1"
+        align="center"
+        id="hero-heading"
+        title={title}
+        description={subtitle}
+        className="mx-auto flex max-w-3xl flex-col items-center gap-5 sm:gap-6"
+      />
 
       {/* Search card sits below the text with generous spacing */}
       <div className="mt-10 w-full sm:mt-14 lg:mt-16">

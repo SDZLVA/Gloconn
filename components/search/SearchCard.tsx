@@ -4,6 +4,7 @@ import { TravelStyleSelector } from "@/components/search/TravelStyleSelector";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { InputField } from "@/components/ui/InputField";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useSearchForm } from "@/hooks/useSearchForm";
 import { cn } from "@/lib/utils";
 
@@ -21,14 +22,11 @@ export function SearchCard({ className }: SearchCardProps) {
 
   return (
     <Card hoverable className={cn("w-full max-w-3xl p-6 sm:p-8", className)}>
-      <div className="mb-6 space-y-1">
-        <h2 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
-          Plan your trip
-        </h2>
-        <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
-          Start planning your next adventure
-        </p>
-      </div>
+      <SectionHeading
+        className="mb-6 space-y-1"
+        title="Plan your trip"
+        description="Start planning your next adventure"
+      />
 
       <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
         <InputField

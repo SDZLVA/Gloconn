@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.1.0 (Week 1 foundation)
+**Current version:** 0.1.0 (Week 1 foundation + architecture improvements)
 
 ---
 
@@ -35,12 +35,22 @@ Gloconn/
 │   └── globals.css         # Global CSS, brand colors, typography
 ├── components/
 │   ├── home/               # Home page sections (HeroSection)
-│   ├── layout/             # Site shell (Navbar, Footer, AppShell)
+│   ├── layout/             # Site shell (AppShell, Navbar, Footer, BrandLogo)
 │   ├── search/             # Search form feature (SearchCard, TravelStyleSelector)
-│   └── ui/                 # Generic reusable UI (Button, Card, InputField, FormField)
+│   └── ui/                 # Generic reusable UI (Button, Card, SectionHeading, …)
 ├── hooks/                  # Custom React hooks (useSearchForm)
-├── lib/                    # Non-React helpers (navigation, search, styles, utils)
-├── types/                  # Shared TypeScript types
+├── lib/
+│   ├── search/             # Search feature logic (split by responsibility)
+│   │   ├── constants.ts    # Travel style options
+│   │   ├── validation.ts   # Form validation
+│   │   ├── payload.ts      # Build and log search data
+│   │   └── index.ts        # Public exports for the search feature
+│   ├── navigation.ts       # Nav and footer link config
+│   ├── styles.ts           # Shared Tailwind class strings
+│   └── utils.ts            # General helpers
+├── types/
+│   ├── search.ts           # Search-related types and defaults
+│   └── index.ts            # Re-exports (import from @/types)
 ├── docs/                   # Project documentation (this folder)
 └── public/                 # Static assets (reserved for future use)
 ```
@@ -50,13 +60,13 @@ Gloconn/
 ## Current features (Week 1)
 
 ### Layout
-- Sticky navigation bar with logo and links (Home, Destinations, My Trips, About)
+- Sticky navigation bar with `BrandLogo` and links (Home, Destinations, My Trips, About)
 - Responsive mobile hamburger menu
 - Footer with link groups and copyright
 - Consistent page width via `PageContainer`
 
 ### Home page
-- Hero section with headline, subtitle, and centered search card
+- Hero section with `SectionHeading`, subtitle, and centered search card
 - Modern travel-themed design (brand blues, soft gradients, rounded cards)
 
 ### Search form (UI + client logic, no API)
@@ -64,6 +74,11 @@ Gloconn/
 - React state management via `useSearchForm` hook
 - Required-field validation on Search click
 - Successful searches log formatted data to the browser console
+
+### Reusable UI primitives
+- `Button`, `Card`, `InputField`, `FormField` (label + error)
+- `SectionHeading` — consistent titles for heroes, cards, and sections
+- `BrandLogo` — shared Glooconn wordmark for navbar and footer
 
 ---
 

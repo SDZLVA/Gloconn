@@ -1,13 +1,10 @@
+"use client";
+
 import { FormError, FormLabel } from "@/components/ui/FormField";
+import { TRAVEL_STYLE_OPTIONS } from "@/lib/search";
 import { cn } from "@/lib/utils";
 import { focusRing } from "@/lib/styles";
-import type { TravelStyle } from "@/types";
-
-export const TRAVEL_STYLES = [
-  { value: "budget", label: "Budget" },
-  { value: "standard", label: "Standard" },
-  { value: "luxury", label: "Luxury" },
-] as const satisfies ReadonlyArray<{ value: TravelStyle; label: string }>;
+import type { TravelStyle } from "@/types/search";
 
 type TravelStyleSelectorProps = {
   value: TravelStyle;
@@ -36,7 +33,7 @@ export function TravelStyleSelector({
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? "travel-style-error" : undefined}
       >
-        {TRAVEL_STYLES.map((style) => {
+        {TRAVEL_STYLE_OPTIONS.map((style) => {
           const isSelected = value === style.value;
 
           return (

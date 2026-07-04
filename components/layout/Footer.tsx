@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { FOOTER_SECTIONS } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,7 @@ export function Footer() {
       <PageContainer className="py-12 sm:py-14">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
-            <p className="text-xl font-bold tracking-tight text-brand-700">Glooconn</p>
+            <BrandLogo variant="text" />
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-slate-600 sm:text-base sm:leading-7">
               Plan trips, discover destinations, and keep your travel in one
               place.

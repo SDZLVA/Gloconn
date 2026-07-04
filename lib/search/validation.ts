@@ -1,10 +1,9 @@
-import type { SearchData, SearchFormErrors, SearchFormState } from "@/types";
+import type { SearchFormErrors, SearchFormState } from "@/types/search";
 
 /**
- * Search helpers — validation and console logging for the trip search form.
- * Grouped in one file because they all belong to the same feature.
+ * Validates required search form fields.
+ * Returns an object of error messages — empty when the form is valid.
  */
-
 export function validateSearchForm(form: SearchFormState): SearchFormErrors {
   const errors: SearchFormErrors = {};
 
@@ -40,24 +39,7 @@ export function validateSearchForm(form: SearchFormState): SearchFormErrors {
   return errors;
 }
 
+/** Returns true when the validation result contains at least one error. */
 export function hasSearchFormErrors(errors: SearchFormErrors): boolean {
   return Object.keys(errors).length > 0;
-}
-
-export function buildSearchData(form: SearchFormState): SearchData {
-  const budgetValue = form.budget.trim();
-
-  return {
-    destination: form.destination.trim(),
-    departureDate: form.departureDate,
-    returnDate: form.returnDate,
-    budget: budgetValue ? Number(budgetValue) : null,
-    travelers: Number(form.travelers),
-    travelStyle: form.travelStyle,
-  };
-}
-
-/** Prints search data to the browser console (F12 → Console). No API calls. */
-export function logSearchData(form: SearchFormState): void {
-  console.log("Glooconn search data:", buildSearchData(form));
 }

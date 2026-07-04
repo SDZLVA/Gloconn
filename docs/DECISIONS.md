@@ -182,6 +182,65 @@ components/ui/       → generic reusable primitives
 
 ---
 
+## ADR-011: Split search logic into `lib/search/`
+
+**Decision:** Replace the single `lib/search.ts` file with a `lib/search/` folder.
+
+**Context:** Architecture review after Week 1 — one file mixed validation, payload building, and constants.
+
+**Structure:**
+```
+lib/search/
+  constants.ts   → TRAVEL_STYLE_OPTIONS
+  validation.ts  → validateSearchForm, hasSearchFormErrors
+  payload.ts     → buildSearchData, logSearchData
+  index.ts       → public exports
+```
+
+**Rationale:**
+- Each file has one clear job (beginner-friendly)
+- Validation can be unit-tested separately from logging
+- Constants live next to search logic, not inside UI components
+
+**Consequences:**
+- Import from `@/lib/search` in hooks and components
+- Do not import inner files from unrelated features unless editing that module
+
+---
+
+## ADR-012: Domain types in `types/search.ts`
+
+**Decision:** Move search types out of `types/index.ts` into `types/search.ts`; keep `index.ts` as a re-export barrel.
+
+**Context:** `types/index.ts` will grow as features are added (destinations, trips, users).
+
+**Rationale:**
+- One file per domain keeps types easy to find
+- `@/types` import path stays stable via re-exports
+
+**Consequences:**
+- New domains get their own file (e.g. `types/destination.ts`)
+- Search-specific code may import `@/types/search` directly
+
+---
+
+## ADR-013: Shared `SectionHeading` and `BrandLogo` components
+
+**Decision:** Extract repeated heading and brand markup into reusable components.
+
+**Context:** Hero, SearchCard, Navbar, and Footer duplicated similar class strings.
+
+**Rationale:**
+- One place to update typography and brand styling
+- New pages get consistent headings for free
+
+**Consequences:**
+- Use `SectionHeading` for title + description blocks
+- Use `BrandLogo` for the Glooconn wordmark (never inline duplicate markup)
+- `FormLabel` uses `formLabel` from `lib/styles.ts` (no duplicated class string)
+
+---
+
 ## Pending decisions (to resolve in Week 2+)
 
 | Topic | Options under consideration |

@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | Week 1 complete — foundation and home page search UI |
+| Stage | Week 1 complete + architecture refactor |
 | APIs | None connected |
 
 ---
@@ -50,12 +50,14 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | Component | Location | Purpose |
 |-----------|----------|---------|
 | `AppShell` | `components/layout/` | Wraps every page: navbar + main + footer |
+| `BrandLogo` | `components/layout/` | Glooconn wordmark (navbar link or footer text) |
 | `Navbar` | `components/layout/` | Sticky nav, mobile menu |
 | `Footer` | `components/layout/` | Site footer |
 | `HeroSection` | `components/home/` | Home page hero |
 | `SearchCard` | `components/search/` | Trip search form (layout only) |
 | `TravelStyleSelector` | `components/search/` | Budget / Standard / Luxury picker |
 | `Button`, `Card`, `InputField` | `components/ui/` | Generic UI primitives |
+| `SectionHeading` | `components/ui/` | Reusable title + description for sections |
 | `FormLabel`, `FormError` | `components/ui/FormField.tsx` | Shared form helpers |
 
 ### Key logic
@@ -63,11 +65,15 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | Module | Location | Purpose |
 |--------|----------|---------|
 | `useSearchForm` | `hooks/useSearchForm.ts` | Form state, validation trigger, submit |
-| `validateSearchForm` | `lib/search.ts` | Required-field validation |
-| `logSearchData` | `lib/search.ts` | Console.log on successful search |
+| `validateSearchForm` | `lib/search/validation.ts` | Required-field validation |
+| `buildSearchData` | `lib/search/payload.ts` | Converts form strings to typed payload |
+| `logSearchData` | `lib/search/payload.ts` | Console.log on successful search |
+| `TRAVEL_STYLE_OPTIONS` | `lib/search/constants.ts` | Travel style labels and values |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
 | `focusRing`, etc. | `lib/styles.ts` | Shared Tailwind class strings |
-| Search types | `types/index.ts` | `SearchFormState`, `TravelStyle`, etc. |
+| Search types | `types/search.ts` | `SearchFormState`, `TravelStyle`, etc. |
+
+**Import convention:** Use `@/lib/search` and `@/types` — not the inner files directly from components (unless you are editing the search module itself).
 
 ---
 
@@ -90,18 +96,21 @@ Return date must be ≥ departure date.
 ## Folder conventions
 
 ```
-app/              → routes and page files only
-components/home/  → home page sections
-components/layout/→ navbar, footer, shell
-components/search/→ search feature (NOT generic ui)
-components/ui/    → generic reusable components only
-hooks/            → custom React hooks
-lib/              → plain TS functions (no React, no JSX)
-types/            → shared TypeScript types (import from @/types)
-docs/             → project documentation
+app/                  → routes and page files only
+components/home/      → home page sections
+components/layout/    → navbar, footer, shell, brand
+components/search/    → search feature (NOT generic ui)
+components/ui/        → generic reusable components only
+hooks/                → custom React hooks
+lib/search/           → search validation, payload, constants
+lib/                  → other plain TS modules (navigation, styles, utils)
+types/search.ts       → search-related types
+types/index.ts        → re-exports all types
+docs/                 → project documentation
 ```
 
-**Do not** put feature-specific components in `components/ui/`.
+**Do not** put feature-specific components in `components/ui/`.  
+**Do not** put React or JSX in `lib/`.
 
 ---
 
@@ -111,6 +120,8 @@ docs/             → project documentation
 - Use `motion-safe:` prefix for hover animations (accessibility)
 - Use `focusRing` from `lib/styles.ts` for keyboard focus
 - Use `PageContainer` for consistent max-width and padding
+- Use `SectionHeading` for section titles instead of duplicating heading classes
+- Use `BrandLogo` for the Glooconn wordmark instead of inline markup
 - Page background: `#f8fafc` (slate-50)
 
 ---
@@ -148,11 +159,11 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 
 | If working on… | Read these first |
 |----------------|------------------|
-| Search form | `hooks/useSearchForm.ts`, `lib/search.ts`, `components/search/SearchCard.tsx` |
+| Search form | `hooks/useSearchForm.ts`, `lib/search/`, `components/search/SearchCard.tsx` |
 | Navigation | `lib/navigation.ts`, `components/layout/Navbar.tsx` |
 | New page | `app/layout.tsx`, `components/layout/AppShell.tsx`, an existing page |
 | Styling | `app/globals.css`, `lib/styles.ts` |
-| Types | `types/index.ts` |
+| Types | `types/search.ts`, `types/index.ts` |
 
 ---
 
@@ -163,6 +174,8 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 - ❌ Do not refactor unrelated code during a feature task
 - ❌ Do not remove console logging until search results page replaces it
 - ❌ Do not duplicate nav links outside `lib/navigation.ts`
+- ❌ Do not duplicate brand markup — use `BrandLogo`
+- ❌ Do not duplicate heading styles — use `SectionHeading`
 - ❌ Do not use Pages Router patterns (this is App Router only)
 
 ---

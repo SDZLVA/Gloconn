@@ -76,9 +76,10 @@ A week-by-week record of completed work. Update this file at the end of each dev
 | Metric | Count |
 |--------|-------|
 | Pages live | 1 (`/`) |
-| React components | ~15 |
+| React components | ~17 |
 | Custom hooks | 1 (`useSearchForm`) |
-| Lib modules | 4 (`navigation`, `search`, `styles`, `utils`) |
+| Lib modules | `navigation`, `styles`, `utils`, `search/*` (4 files) |
+| Type modules | `types/search.ts` + barrel `types/index.ts` |
 | Git commits (feature branches) | 7+ |
 | External APIs connected | 0 |
 
@@ -89,3 +90,20 @@ A week-by-week record of completed work. Update this file at the end of each dev
 Planned focus: Destinations page, search results page, About page placeholder.
 
 See [TODO.md](./TODO.md) for the active task list.
+
+---
+
+## Architecture improvements (post–Week 1)
+
+**Branch:** `cursor/architecture-improvements`
+
+### Changes
+
+- Split `lib/search.ts` into `lib/search/` (validation, payload, constants)
+- Split search types into `types/search.ts` with barrel re-export in `types/index.ts`
+- Added `SectionHeading` UI component — shared hero and card headings
+- Added `BrandLogo` layout component — shared navbar/footer wordmark
+- Renamed `TRAVEL_STYLES` → `TRAVEL_STYLE_OPTIONS` in `lib/search/constants.ts`
+- Removed duplicate `formLabel` class string from `FormField` (uses `lib/styles.ts`)
+- Added `"use client"` to `TravelStyleSelector` for correct client boundary
+- Updated `README.md` and all `docs/` files to reflect new structure

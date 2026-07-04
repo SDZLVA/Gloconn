@@ -10,7 +10,7 @@ import {
   INITIAL_SEARCH_FORM,
   type SearchFormErrors,
   type SearchFormState,
-} from "@/types";
+} from "@/types/search";
 
 /**
  * useSearchForm — manages search form state, validation, and submit logic.

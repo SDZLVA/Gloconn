@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Glooconn
 
-## Getting Started
+Travel planning web application — discover destinations, plan trips, and manage travel in one place.
 
-First, run the development server:
+**Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
+**Version:** 0.1.0 (Week 1 foundation + architecture pass)
+
+## Tech stack
+
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript 5 |
+| UI | React 19 |
+| Styling | Tailwind CSS 4 |
+| Linting | ESLint + eslint-config-next |
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Windows note
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+If PowerShell blocks `npm`, use `npm.cmd run dev` or:
 
-## Learn More
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Development server |
+| `npm run build` | Production build |
+| `npm run start` | Run production build locally |
+| `npm run lint` | Run ESLint |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project structure
 
-## Deploy on Vercel
+```
+Gloconn/
+├── app/                    # Routes and global styles
+├── components/
+│   ├── home/               # Home page sections
+│   ├── layout/             # Shell, navbar, footer, brand
+│   ├── search/             # Search form feature
+│   └── ui/                 # Reusable UI primitives
+├── hooks/                  # Custom React hooks
+├── lib/
+│   ├── search/             # Search validation, payload, constants
+│   ├── navigation.ts       # Nav and footer link config
+│   ├── styles.ts           # Shared Tailwind class strings
+│   └── utils.ts            # General helpers (e.g. cn)
+├── types/
+│   ├── search.ts           # Search-related types
+│   └── index.ts            # Re-exports all types
+└── docs/                   # Full project documentation
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Documentation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| File | Purpose |
+|------|---------|
+| [docs/PROJECT.md](./docs/PROJECT.md) | Overview, features, routes |
+| [docs/ROADMAP.md](./docs/ROADMAP.md) | Planned features by phase |
+| [docs/PROGRESS.md](./docs/PROGRESS.md) | Completed work log |
+| [docs/TODO.md](./docs/TODO.md) | Active task list |
+| [docs/DECISIONS.md](./docs/DECISIONS.md) | Architecture decisions |
+| [docs/AI_HANDOFF.md](./docs/AI_HANDOFF.md) | Guide for AI assistants |
+| [PROJECT_RULES.md](./PROJECT_RULES.md) | Development guidelines |
+
+## Current status
+
+- **Live route:** `/` (home page with search form)
+- **Planned routes:** `/destinations`, `/my-trips`, `/about`
+- **Backend / APIs:** None yet
+
+See [docs/TODO.md](./docs/TODO.md) for next tasks.
