@@ -1,8 +1,9 @@
 /**
- * Search response types — returned by searchService to the UI.
- *
- * Planned: SearchResponse wraps SearchResult[] with metadata (totalCount, warnings).
- * Not wired up yet — UI still receives SearchResult[] directly.
+ * Search response types — re-exported from shared models.
  */
 
-export {};
+export type {
+  SearchResponse,
+  SearchResponseDomain,
+  SearchResponseWarning,
+} from "@/types/models/search-response";

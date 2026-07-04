@@ -48,6 +48,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 ## 🟢 Low priority — Backlog
 
+- [x] Shared domain models in `types/models/`
 - [ ] Connect first external destination provider (behind `USE_MOCK_PROVIDERS=false`)
 - [ ] Connect first external search provider (hotels or flights)
 - [ ] Add unit tests for `lib/api/validation.ts`

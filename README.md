@@ -85,6 +85,10 @@ Gloconn/
 │   ├── destinations/
 │   └── search/
 ├── types/
+│   ├── models/             # Shared provider-independent domain models
+│   ├── search.ts           # Form + SearchData (legacy)
+│   ├── results.ts          # SearchResult union
+│   └── index.ts            # Barrel export
 │   ├── search.ts           # Search-related types
 │   ├── results.ts          # Search result types
 │   └── index.ts            # Re-exports all types

@@ -475,3 +475,22 @@ types/search-response.ts                 → stub
 - Existing `lib/providers/search/` stays active until mock data is split
 - Stub files export `{}` — no runtime behavior change
 - Next implementation phase: split mock into hotels/flights/ground providers
+
+---
+
+## ADR-023: Shared domain models in `types/models/`
+
+**Decision:** Define provider-independent TypeScript models in `types/models/` with documented properties. UI and services import from `@/types` or `@/types/models`.
+
+**Models:** `Hotel`, `Flight`, `Bus`, `Train`, `Destination`, `Restaurant`, `Attraction`, `Traveler`, `Budget`, `SearchRequest`, `SearchResponse`.
+
+**Rationale:**
+- Single contract between UI, services, and provider mappers
+- No Amadeus, Booking, Omio, or Google-specific fields in shared types
+- `HotelResult` etc. extend models with a `type` discriminator for the results UI
+- `SearchData` kept for backward compatibility; `SearchRequest` is the canonical search input
+
+**Consequences:**
+- New features (restaurants, attractions) have types ready before providers exist
+- Provider mappers must convert raw API shapes to these models only
+- `Budget` uses `{ amount, currency }` in `SearchRequest`; legacy `SearchData` keeps flat budget fields until migrated

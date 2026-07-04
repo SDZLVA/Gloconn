@@ -4,12 +4,30 @@
  */
 
 export type {
+  Attraction,
+  Budget,
+  Bus,
+  CurrencyCode,
+  Destination,
+  Flight,
+  Hotel,
+  Restaurant,
+  SearchRequest,
+  SearchResponse,
+  SearchResponseDomain,
+  SearchResponseWarning,
+  Train,
+  Traveler,
+  TravelStyle,
+  TripType,
+} from "@/types/models";
+
+export type {
   PassengersState,
   SearchData,
   SearchFormErrors,
   SearchFormState,
   TravelersState,
-  TravelStyle,
 } from "@/types/search";
 
 export {
@@ -38,5 +56,3 @@ export {
 export type { AuthFormState, AuthUser } from "@/types/auth";
 
 export type { SavedTrip, SavedTripRow } from "@/types/trips";
-
-export type { Destination } from "@/types/destination";

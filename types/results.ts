@@ -1,8 +1,9 @@
 /**
  * Types for the search results feature.
+ * Result types extend shared models with a `type` discriminator for the UI.
  */
 
-import type { CurrencyCode } from "@/lib/budget";
+import type { Bus, Flight, Hotel, Train } from "@/types/models";
 
 export type ResultType = "hotel" | "flight" | "bus" | "train";
 
@@ -40,53 +41,24 @@ export const RESULT_TYPE_LABELS: Record<ResultType, string> = {
   train: "Trains",
 };
 
-type BaseResult = {
-  id: string;
-  destinationId: string;
-  price: number;
-  currency: CurrencyCode;
-  rating: number;
-};
+/** Hotel result with UI discriminator — extends shared Hotel model. */
+export type HotelResult = Hotel & { type: "hotel" };
 
-export type HotelResult = BaseResult & {
-  type: "hotel";
-  name: string;
-  stars: number;
-  amenities: string[];
-  nights: number;
-  location: string;
-};
+/** Flight result with UI discriminator — extends shared Flight model. */
+export type FlightResult = Flight & { type: "flight" };
 
-export type FlightResult = BaseResult & {
-  type: "flight";
-  airline: string;
-  departureTime: string;
-  arrivalTime: string;
-  durationMinutes: number;
-  stops: number;
-  cabin: string;
-};
+/** Bus result with UI discriminator — extends shared Bus model. */
+export type BusResult = Bus & { type: "bus" };
 
-export type BusResult = BaseResult & {
-  type: "bus";
-  operator: string;
-  departureTime: string;
-  arrivalTime: string;
-  durationMinutes: number;
-  amenities: string[];
-};
+/** Train result with UI discriminator — extends shared Train model. */
+export type TrainResult = Train & { type: "train" };
 
-export type TrainResult = BaseResult & {
-  type: "train";
-  operator: string;
-  departureTime: string;
-  arrivalTime: string;
-  durationMinutes: number;
-  trainClass: string;
-};
-
+/** Union of all transport and stay results shown on the results page. */
 export type SearchResult =
   | HotelResult
   | FlightResult
   | BusResult
   | TrainResult;
+
+/** Re-export shared models for convenience in results feature code. */
+export type { Bus, Flight, Hotel, Train } from "@/types/models";

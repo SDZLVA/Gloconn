@@ -3,23 +3,20 @@
  */
 
 import type { CurrencyCode } from "@/lib/budget";
+import type {
+  SearchRequest,
+  Traveler,
+  TravelStyle,
+  TripType,
+} from "@/types/models";
 
-/** Budget, Standard, or Luxury — chosen in the search card. */
-export type TravelStyle = "budget" | "standard" | "luxury";
+export type { SearchRequest, Traveler, TravelStyle, TripType };
 
-/** Round-trip or one-way — chosen in the travel dates selector. */
-export type TripType = "round-trip" | "one-way";
+/** @deprecated Use Traveler — kept for existing search form code. */
+export type PassengersState = Traveler;
 
-/** Adults, children, infants, and rooms for the passengers selector. */
-export type PassengersState = {
-  adults: number;
-  children: number;
-  infants: number;
-  rooms: number;
-};
-
-/** @deprecated Use PassengersState — kept for existing search form code. */
-export type TravelersState = PassengersState;
+/** @deprecated Use Traveler — kept for existing search form code. */
+export type TravelersState = Traveler;
 
 /** Raw form values stored in React state. */
 export type SearchFormState = {
@@ -29,7 +26,7 @@ export type SearchFormState = {
   returnDate: string;
   budget: string;
   budgetCurrency: CurrencyCode;
-  travelers: PassengersState;
+  travelers: Traveler;
   travelStyle: TravelStyle;
 };
 
@@ -40,7 +37,10 @@ export type SearchFormErrors = Partial<
   travelers?: string;
 };
 
-/** Clean search payload produced after successful validation. */
+/**
+ * Clean search payload produced after successful validation.
+ * @deprecated Use SearchRequest for new code — flat budget fields kept for URL params and saved trips.
+ */
 export type SearchData = {
   destination: string;
   tripType: TripType;
@@ -48,13 +48,13 @@ export type SearchData = {
   returnDate: string | null;
   budget: number | null;
   budgetCurrency: CurrencyCode | null;
-  travelers: PassengersState;
+  travelers: Traveler;
   totalGuests: number;
   travelStyle: TravelStyle;
 };
 
 /** Default passenger counts when the search form first loads. */
-export const INITIAL_PASSENGERS: PassengersState = {
+export const INITIAL_PASSENGERS: Traveler = {
   adults: 2,
   children: 0,
   infants: 0,
@@ -62,7 +62,7 @@ export const INITIAL_PASSENGERS: PassengersState = {
 };
 
 /** @deprecated Use INITIAL_PASSENGERS — kept for existing search form code. */
-export const INITIAL_TRAVELERS: PassengersState = INITIAL_PASSENGERS;
+export const INITIAL_TRAVELERS: Traveler = INITIAL_PASSENGERS;
 
 /** Default values when the search form first loads. */
 export const INITIAL_SEARCH_FORM: SearchFormState = {

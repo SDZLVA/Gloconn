@@ -81,10 +81,16 @@ Gloconn/
 │   ├── styles.ts           # Shared Tailwind class strings
 │   └── utils.ts            # General helpers
 ├── types/
-│   ├── search.ts           # Search-related types and defaults
-│   ├── results.ts          # Search result types (hotel, flight, bus, train)
-│   ├── destination.ts      # Destination domain type
-│   ├── search-response.ts  # SearchResponse wrapper (planned)
+│   ├── models/             # Shared provider-independent domain models
+│   │   ├── hotel.ts, flight.ts, bus.ts, train.ts
+│   │   ├── destination.ts, restaurant.ts, attraction.ts
+│   │   ├── traveler.ts, budget.ts
+│   │   ├── search-request.ts, search-response.ts
+│   │   └── index.ts
+│   ├── search.ts           # Form types; SearchData (legacy), aliases to models
+│   ├── results.ts          # SearchResult union (models + type discriminator)
+│   ├── destination.ts      # Re-export from models
+│   ├── search-response.ts  # Re-export from models
 │   └── index.ts            # Re-exports (import from @/types)
 ├── app/api/                # HTTP Route Handlers (planned, scaffold only)
 │   ├── destinations/       # GET autocomplete

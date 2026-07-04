@@ -205,6 +205,19 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
+## Shared domain models
+
+**Branch:** `cursor/api-foundation`
+
+### Changes
+
+- Added `types/models/` with documented provider-independent models
+- Models: Hotel, Flight, Bus, Train, Destination, Restaurant, Attraction, Traveler, Budget, SearchRequest, SearchResponse
+- `types/results.ts` now extends shared models with `type` discriminators
+- `SearchData` preserved for backward compatibility; `SearchRequest` is canonical for new code
+
+---
+
 **Branch:** `cursor/architecture-improvements`
 
 ### Changes

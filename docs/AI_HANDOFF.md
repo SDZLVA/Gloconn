@@ -111,8 +111,9 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | Calendar date helpers | `lib/calendar/` | ISO formatting, month grids, range checks |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
 | `focusRing`, etc. | `lib/styles.ts` | Shared Tailwind class strings |
-| Search types | `types/search.ts` | `SearchFormState`, `PassengersState`, `TripType`, `TravelStyle`, etc. |
-| Results types | `types/results.ts` | `HotelResult`, `FlightResult`, `BusResult`, `TrainResult`, filters, sort |
+| Search types | `types/search.ts`, `types/models/search-request.ts` | `SearchData` (legacy), `SearchRequest`, `Traveler` |
+| Results types | `types/results.ts`, `types/models/` | `SearchResult`, `Hotel`, `Flight`, `Bus`, `Train` |
+| Shared models | `types/models/` | All provider-independent domain types |
 
 **Import convention:** Use `@/lib/search` and `@/types` — not the inner files directly from components (unless you are editing the search module itself).
 
@@ -161,10 +162,9 @@ lib/providers/        → provider adapters (mock + future external APIs)
 lib/services/         → service layer — UI calls these for travel data
 app/api/              → Route Handler slots (destinations, search) — stubs only
 lib/                  → other plain TS modules (navigation, styles, utils)
-types/search.ts       → search-related types
-types/destination.ts  → destination domain type
-types/search-response.ts → SearchResponse wrapper (stub)
-types/index.ts        → re-exports all types
+types/models/         → shared domain models (import from @/types)
+types/search.ts       → form types; SearchData legacy alias
+types/results.ts      → SearchResult union
 docs/                 → project documentation
 ```
 
