@@ -17,6 +17,7 @@ export {
   findDestinationById,
   findDestinationByLabel,
   formatDestinationLabel,
+  getDestinationsByIds,
   getPopularDestinationsList as getPopularDestinations,
   resolveDestinationIdFromLabel as resolveDestinationId,
 } from "@/lib/providers/destinations/mock/helpers";

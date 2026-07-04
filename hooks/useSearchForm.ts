@@ -126,7 +126,7 @@ export function useSearchForm(
     if (form.destinationId) {
       rememberDestinationById(form.destinationId);
     } else {
-      void rememberDestinationByLabel(form.destination);
+      rememberDestinationByLabel(form.destination);
     }
 
     router.push(buildResultsUrlFromRequest(result.request));

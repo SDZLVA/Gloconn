@@ -1,4 +1,4 @@
-import { resolveDestinationId } from "@/lib/services/destinationService";
+import { findDestinationByLabel } from "@/lib/destinations";
 
 const STORAGE_KEY = "glooconn-recent-destinations";
 const MAX_RECENT = 5;
@@ -49,10 +49,10 @@ export function addRecentDestinationId(destinationId: string): string[] {
 }
 
 /** Saves a matching destination to recent searches (e.g. after form submit). */
-export async function rememberDestinationByLabel(label: string): Promise<void> {
-  const result = await resolveDestinationId(label);
-  if (result.success && result.data) {
-    addRecentDestinationId(result.data);
+export function rememberDestinationByLabel(label: string): void {
+  const destination = findDestinationByLabel(label);
+  if (destination) {
+    addRecentDestinationId(destination.id);
   }
 }
 

@@ -6,14 +6,12 @@ import {
   type AutocompleteSection,
 } from "@/components/ui/Autocomplete";
 import { useRecentDestinationSearches } from "@/hooks/useRecentDestinationSearches";
-import { useServiceQuery } from "@/hooks/useServiceQuery";
-import { getApiErrorMessage } from "@/lib/api";
-import { destinationToAutocompleteOption } from "@/lib/destinations";
 import {
+  destinationToAutocompleteOption,
+  filterDestinations,
+  findDestinationById,
   getPopularDestinations,
-  searchDestinations,
-} from "@/lib/services/destinationService";
-
+} from "@/lib/destinations";
 import type { PlaceSelection } from "@/types/search-form";
 
 type DestinationAutocompleteProps = {
@@ -30,10 +28,10 @@ type DestinationAutocompleteProps = {
 };
 
 /**
- * DestinationAutocomplete — destination field with suggestions via the destination service.
+ * DestinationAutocomplete — destination field with mock-data suggestions.
  *
  * Empty field: recent searches + popular destinations.
- * While typing: ranked suggestions from the active provider (mock by default).
+ * While typing: ranked matches from static mock data (no API calls).
  */
 export function DestinationAutocomplete({
   id = "search-destination",
@@ -51,29 +49,10 @@ export function DestinationAutocomplete({
   const query = value.trim();
   const isSearching = query.length > 0;
 
-  const searchState = useServiceQuery(
-    () => searchDestinations(query),
-    [query],
-    { enabled: isSearching },
-  );
-
-  const popularState = useServiceQuery(
-    () => getPopularDestinations(),
-    [],
-    { enabled: !isSearching },
-  );
-
   const sections = useMemo(() => {
     if (isSearching) {
-      if (searchState.status === "loading") {
-        return [];
-      }
-
-      if (searchState.status === "error" || !searchState.data) {
-        return [];
-      }
-
-      if (searchState.data.length === 0) {
+      const matches = filterDestinations(query);
+      if (matches.length === 0) {
         return [];
       }
 
@@ -81,7 +60,7 @@ export function DestinationAutocomplete({
         {
           id: "matches",
           heading: "Suggestions",
-          options: searchState.data.map(destinationToAutocompleteOption),
+          options: matches.map(destinationToAutocompleteOption),
         },
       ] satisfies AutocompleteSection[];
     }
@@ -97,7 +76,7 @@ export function DestinationAutocomplete({
     }
 
     const recentIds = new Set(recentDestinations.map((destination) => destination.id));
-    const popular = (popularState.data ?? []).filter(
+    const popular = getPopularDestinations().filter(
       (destination) => !recentIds.has(destination.id),
     );
 
@@ -110,26 +89,19 @@ export function DestinationAutocomplete({
     }
 
     return nextSections;
-  }, [isSearching, recentDestinations, searchState, popularState.data]);
-
-  const serviceError =
-    isSearching && searchState.status === "error" && searchState.error
-      ? getApiErrorMessage(searchState.error)
-      : undefined;
+  }, [isSearching, query, recentDestinations]);
 
   function handleSelect(option: { id: string; label: string }) {
-    const destination =
-      searchState.data?.find((item) => item.id === option.id) ??
-      recentDestinations.find((item) => item.id === option.id) ??
-      popularState.data?.find((item) => item.id === option.id);
-
-    if (destination) {
-      addRecent(destination);
-      onDestinationSelect?.({
-        label: option.label,
-        id: destination.id,
-      });
+    const destination = findDestinationById(option.id);
+    if (!destination) {
+      return;
     }
+
+    addRecent(destination);
+    onDestinationSelect?.({
+      label: option.label,
+      id: destination.id,
+    });
   }
 
   return (
@@ -142,13 +114,9 @@ export function DestinationAutocomplete({
       onChange={onChange}
       onSelect={handleSelect}
       onListOpen={reloadRecent}
-      error={error ?? serviceError}
+      error={error}
       required={required}
-      noResultsMessage={
-        searchState.status === "loading"
-          ? "Loading suggestions…"
-          : "No destinations match your search."
-      }
+      noResultsMessage="No destinations match your search."
       className={className}
     />
   );

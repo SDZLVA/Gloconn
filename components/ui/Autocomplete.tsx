@@ -1,20 +1,18 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  AutocompleteDropdown,
+  buildAutocompleteListItems,
+} from "@/components/ui/AutocompleteDropdown";
+import type {
+  AutocompleteOption,
+  AutocompleteSection,
+} from "@/components/ui/autocomplete-types";
 import { FormError, FormLabel } from "@/components/ui/FormField";
 import { cn } from "@/lib/utils";
 
-export type AutocompleteOption = {
-  id: string;
-  label: string;
-  description?: string;
-};
-
-export type AutocompleteSection = {
-  id: string;
-  heading: string;
-  options: AutocompleteOption[];
-};
+export type { AutocompleteOption, AutocompleteSection } from "@/components/ui/autocomplete-types";
 
 type AutocompleteProps = {
   id?: string;
@@ -86,25 +84,10 @@ export function Autocomplete({
     [resolvedSections],
   );
 
-  const listItems = useMemo(() => {
-    const items: Array<
-      | { type: "heading"; id: string; label: string }
-      | { type: "option"; option: AutocompleteOption; index: number }
-    > = [];
-
-    let index = 0;
-    for (const section of resolvedSections) {
-      if (section.heading) {
-        items.push({ type: "heading", id: section.id, label: section.heading });
-      }
-      for (const option of section.options) {
-        items.push({ type: "option", option, index });
-        index += 1;
-      }
-    }
-
-    return items;
-  }, [resolvedSections]);
+  const listItems = useMemo(
+    () => buildAutocompleteListItems(resolvedSections),
+    [resolvedSections],
+  );
 
   const showList = isOpen && (flatOptions.length > 0 || value.trim().length > 0);
 
@@ -245,66 +228,18 @@ export function Autocomplete({
       </div>
 
       {showList && (
-        <ul
-          ref={listRef}
-          id={listboxId}
-          role="listbox"
-          aria-label={`${label} suggestions`}
-          className="absolute top-full z-20 mt-1 max-h-72 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white py-1 shadow-lg shadow-slate-200/60"
-        >
-          {flatOptions.length === 0 ? (
-            <li
-              role="option"
-              aria-selected={false}
-              aria-disabled="true"
-              className="px-4 py-3 text-sm text-slate-500"
-            >
-              {noResultsMessage}
-            </li>
-          ) : (
-            listItems.map((item) => {
-              if (item.type === "heading") {
-                return (
-                  <li
-                    key={`heading-${item.id}`}
-                    role="presentation"
-                    className="px-4 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-slate-400"
-                  >
-                    {item.label}
-                  </li>
-                );
-              }
-
-              const isHighlighted = item.index === highlightedIndex;
-
-              return (
-                <li
-                  key={item.option.id}
-                  id={`${inputId}-option-${item.index}`}
-                  role="option"
-                  data-option-index={item.index}
-                  aria-selected={isHighlighted}
-                  onMouseEnter={() => setHighlightedIndex(item.index)}
-                  onMouseDown={(event) => event.preventDefault()}
-                  onClick={() => selectOption(item.option)}
-                  className={cn(
-                    "cursor-pointer px-4 py-2.5 text-sm motion-safe:transition-colors motion-safe:duration-150",
-                    isHighlighted
-                      ? "bg-brand-50 text-brand-800"
-                      : "text-slate-700 hover:bg-slate-50",
-                  )}
-                >
-                  <span className="font-medium">{item.option.label}</span>
-                  {item.option.description && (
-                    <span className="mt-0.5 block text-xs text-slate-500">
-                      {item.option.description}
-                    </span>
-                  )}
-                </li>
-              );
-            })
-          )}
-        </ul>
+        <AutocompleteDropdown
+          listboxId={listboxId}
+          inputId={inputId}
+          ariaLabel={label}
+          listRef={listRef}
+          listItems={listItems}
+          flatOptions={flatOptions}
+          highlightedIndex={highlightedIndex}
+          onHighlight={setHighlightedIndex}
+          onSelect={selectOption}
+          noResultsMessage={noResultsMessage}
+        />
       )}
 
       {error && <FormError id={errorId} message={error} />}

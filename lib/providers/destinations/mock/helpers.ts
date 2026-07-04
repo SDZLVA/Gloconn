@@ -83,6 +83,13 @@ export function findDestinationById(id: string): Destination | null {
   return MOCK_DESTINATIONS.find((destination) => destination.id === id) ?? null;
 }
 
+/** Resolves multiple destination ids to full objects (preserves order). */
+export function getDestinationsByIds(ids: string[]): Destination[] {
+  return ids
+    .map((id) => findDestinationById(id))
+    .filter((destination): destination is Destination => destination !== null);
+}
+
 /** Finds a destination by its display label. */
 export function findDestinationByLabel(label: string): Destination | null {
   const normalized = label.trim().toLowerCase();
