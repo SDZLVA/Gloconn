@@ -1,12 +1,9 @@
+import type { User } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/lib/auth/server";
 import type { AuthUser } from "@/types/auth";
 
 /** Maps Supabase user metadata into the app's AuthUser shape. */
-function toAuthUser(
-  user: NonNullable<
-    Awaited<ReturnType<Awaited<ReturnType<typeof createSupabaseServerClient>>["auth"]["getUser"]>>["data"]["user"]
-  >,
-): AuthUser {
+function toAuthUser(user: User): AuthUser {
   const metadata = user.user_metadata ?? {};
 
   return {
@@ -22,9 +19,14 @@ function toAuthUser(
   };
 }
 
-/** Returns the signed-in user, or null when unauthenticated. */
+/** Returns the signed-in user, or null when unauthenticated or Supabase is not configured. */
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const supabase = await createSupabaseServerClient();
+
+  if (!supabase) {
+    return null;
+  }
+
   const { data, error } = await supabase.auth.getUser();
 
   if (error || !data.user) {

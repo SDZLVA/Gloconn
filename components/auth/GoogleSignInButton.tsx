@@ -19,6 +19,10 @@ export function GoogleSignInButton({ redirectTo }: GoogleSignInButtonProps) {
 
     setLoading(true);
     const supabase = createSupabaseBrowserClient();
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
 
     await supabase.auth.signInWithOAuth({
       provider: "google",

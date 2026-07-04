@@ -38,6 +38,11 @@ export function EmailAuthForm({ mode }: EmailAuthFormProps) {
     setSubmitting(true);
 
     const supabase = createSupabaseBrowserClient();
+    if (!supabase) {
+      setError("Authentication is not configured. Add Supabase keys to .env.local.");
+      setSubmitting(false);
+      return;
+    }
 
     if (mode === "signup") {
       const { error: signUpError } = await supabase.auth.signUp({

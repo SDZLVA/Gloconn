@@ -9,6 +9,10 @@ export async function getSavedTripsForUser(): Promise<SavedTrip[]> {
   const user = await requireUser();
   const supabase = await createSupabaseServerClient();
 
+  if (!supabase) {
+    throw new Error("Authentication is not configured.");
+  }
+
   const { data, error } = await supabase
     .from("saved_trips")
     .select("*")
@@ -28,6 +32,10 @@ export async function saveTripForUser(
 ): Promise<string> {
   const user = await requireUser();
   const supabase = await createSupabaseServerClient();
+
+  if (!supabase) {
+    throw new Error("Authentication is not configured.");
+  }
 
   const { data, error } = await supabase
     .from("saved_trips")
@@ -50,6 +58,10 @@ export async function saveTripForUser(
 export async function deleteTripForUser(tripId: string): Promise<void> {
   const user = await requireUser();
   const supabase = await createSupabaseServerClient();
+
+  if (!supabase) {
+    throw new Error("Authentication is not configured.");
+  }
 
   const { error } = await supabase
     .from("saved_trips")

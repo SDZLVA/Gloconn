@@ -1,13 +1,19 @@
 import { createServerClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { getSupabaseEnv } from "@/lib/auth/env";
 
 /**
  * Supabase client for Server Components, Server Actions, and Route Handlers.
- * Reads and writes auth cookies via Next.js `cookies()`.
+ * Returns null when `.env.local` is not configured — auth features are disabled.
  */
-export async function createSupabaseServerClient() {
-  const { url, anonKey } = getSupabaseEnv();
+export async function createSupabaseServerClient(): Promise<SupabaseClient | null> {
+  const { url, anonKey, isConfigured } = getSupabaseEnv();
+
+  if (!isConfigured) {
+    return null;
+  }
+
   const cookieStore = await cookies();
 
   return createServerClient(url, anonKey, {
