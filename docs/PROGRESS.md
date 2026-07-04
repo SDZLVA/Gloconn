@@ -262,6 +262,21 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
+## Centralized error handling
+
+**Branch:** `cursor/api-foundation`
+
+### Changes
+
+- Enhanced `lib/api/errors.ts` — error factories, HTTP status mapping, `isApiError`
+- Added `lib/api/responses.ts` — `ApiResponse<T>`, `toJsonResponse()` for Route Handlers
+- Added `runService()` / `runServiceSync()` in `lib/api/types.ts` — DRY try/catch in services
+- Validation uses `createValidationError()` with optional `field`
+- `useServiceQuery` catches unexpected promise rejections
+- Services refactored to use `runService()` instead of manual try/catch
+
+---
+
 **Branch:** `cursor/architecture-improvements`
 
 ### Changes

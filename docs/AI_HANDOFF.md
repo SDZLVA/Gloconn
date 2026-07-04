@@ -97,7 +97,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | Mock provider classes | `lib/providers/*/mock/provider.ts` | `MockHotelsProvider`, `MockFlightsProvider`, etc. |
 | `searchDestinations` | `lib/services/destinationService.ts` | Autocomplete via active provider |
 | `useServiceQuery` | `hooks/useServiceQuery.ts` | Loading / success / error for async services |
-| API env, errors, validation | `lib/api/` | `getApiEnv`, `ApiError`, `ServiceResult`, `validateSearchRequest` |
+| API env, errors, validation | `lib/api/` | `ApiError`, `ServiceResult`, `runService`, `toJsonResponse`, `validateSearchRequest` |
 | Provider interfaces | `lib/providers/core/types.ts` | `DestinationProvider`, `HotelsProvider`, `FlightsProvider`, `TransportProvider`, … |
 | Legacy search provider | `lib/providers/types.ts` | `SearchProvider` (deprecated monolithic mock) |
 | Mock providers | `lib/providers/*/mock/` | Default implementations (no external APIs) |
@@ -136,6 +136,21 @@ SearchResultsPage
 ```
 
 Destination autocomplete follows the same pattern: `searchDestinations()` → `getServiceProviders().destinations` → `MockDestinationProvider`.
+
+### Error handling flow
+
+```
+Service function
+  → validateSearchRequest()     → serviceFailure(createValidationError(...))  [400]
+  → runService(async () => ...) → serviceSuccess(data) | serviceFailure(toApiError(...))
+UI hook (useServiceQuery)
+  → toServiceState(result)      → { status, data, error }
+  → .catch()                    → unexpected promise rejections → UNKNOWN error
+Component
+  → getApiErrorMessage(error)   → safe user-facing string
+Future Route Handler
+  → toJsonResponse(result)      → { ok: true, data } | { ok: false, error: { code, message } }
+```
 | Calendar date helpers | `lib/calendar/` | ISO formatting, month grids, range checks |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
 | `focusRing`, etc. | `lib/styles.ts` | Shared Tailwind class strings |

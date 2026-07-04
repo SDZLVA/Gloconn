@@ -3,32 +3,36 @@
  * Reuses the same rules as the search form where possible.
  */
 
-import { ApiError } from "@/lib/api/errors";
+import { createValidationError } from "@/lib/api/errors";
 import { serviceFailure, serviceSuccess, type ServiceResult } from "@/lib/api/types";
 import { validatePassengers } from "@/lib/search/passengers";
 import type { SearchData } from "@/types/search";
+
+function validationFailure(
+  message: string,
+  field?: string,
+): ServiceResult<SearchData> {
+  return serviceFailure(createValidationError(message, { field }));
+}
 
 /** Checks that a search request has the minimum fields needed for a results query. */
 export function validateSearchRequest(
   search: Partial<SearchData>,
 ): ServiceResult<SearchData> {
   if (!search.destination?.trim()) {
-    return serviceFailure(
-      new ApiError("Destination is required.", "VALIDATION_ERROR"),
-    );
+    return validationFailure("Destination is required.", "destination");
   }
 
   if (!search.departureDate) {
-    return serviceFailure(
-      new ApiError("Departure date is required.", "VALIDATION_ERROR"),
-    );
+    return validationFailure("Departure date is required.", "departureDate");
   }
 
   const tripType = search.tripType ?? "round-trip";
 
   if (tripType === "round-trip" && !search.returnDate) {
-    return serviceFailure(
-      new ApiError("Return date is required for round-trip searches.", "VALIDATION_ERROR"),
+    return validationFailure(
+      "Return date is required for round-trip searches.",
+      "returnDate",
     );
   }
 
@@ -38,26 +42,23 @@ export function validateSearchRequest(
     search.returnDate &&
     search.returnDate < search.departureDate
   ) {
-    return serviceFailure(
-      new ApiError("Return date must be on or after departure.", "VALIDATION_ERROR"),
+    return validationFailure(
+      "Return date must be on or after departure.",
+      "returnDate",
     );
   }
 
   if (!search.travelers) {
-    return serviceFailure(
-      new ApiError("Traveler details are required.", "VALIDATION_ERROR"),
-    );
+    return validationFailure("Traveler details are required.", "travelers");
   }
 
   const passengersError = validatePassengers(search.travelers);
   if (passengersError) {
-    return serviceFailure(new ApiError(passengersError, "VALIDATION_ERROR"));
+    return validationFailure(passengersError, "travelers");
   }
 
   if (!search.travelStyle) {
-    return serviceFailure(
-      new ApiError("Travel style is required.", "VALIDATION_ERROR"),
-    );
+    return validationFailure("Travel style is required.", "travelStyle");
   }
 
   const adults = search.travelers.adults;

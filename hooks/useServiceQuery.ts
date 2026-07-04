@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toApiError } from "@/lib/api/errors";
 import {
   createInitialServiceState,
-  fromServiceResult,
+  serviceFailure,
+  toServiceState,
   type ServiceResult,
   type ServiceState,
 } from "@/lib/api/types";
@@ -34,11 +36,23 @@ export function useServiceQuery<T>(
     let cancelled = false;
     setState({ status: "loading", data: null, error: null });
 
-    fetcher().then((result) => {
-      if (!cancelled) {
-        setState(fromServiceResult(result));
-      }
-    });
+    fetcher()
+      .then((result) => {
+        if (!cancelled) {
+          setState(toServiceState(result));
+        }
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setState(
+            toServiceState(
+              serviceFailure(
+                toApiError(error, "Something went wrong. Please try again."),
+              ),
+            ),
+          );
+        }
+      });
 
     return () => {
       cancelled = true;

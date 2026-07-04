@@ -556,3 +556,29 @@ UI → lib/services (destinationService, searchService)
 - `lib/api/searchMappers.ts` holds shared `toSearchRequest` / `mergeSearchResults` (no mock imports)
 - Recent destinations resolve IDs via `destinationService.getDestinationsByIds()`
 - External APIs plug in by extending the registry when `USE_MOCK_PROVIDERS=false`
+
+---
+
+## ADR-027: Centralized error handling
+
+**Decision:** Standardize errors and responses in `lib/api/` with reusable `ApiError` factories, `ServiceResult<T>` for services, and `ApiResponse<T>` for HTTP Route Handlers.
+
+**Error types:** `VALIDATION_ERROR` (400), `NOT_FOUND` (404), `PROVIDER_ERROR` (502), `UNKNOWN` (500).
+
+**Factories:** `createValidationError`, `createProviderError`, `createNotFoundError`, `createUnexpectedError`.
+
+**Helpers:**
+- `runService()` — wraps async operations; catches unexpected throws via `toApiError()`
+- `toApiResponse()` / `toJsonResponse()` — converts `ServiceResult` to JSON for Route Handlers
+- `getApiErrorMessage()` — user-friendly UI messages (hides raw provider errors)
+
+**Rationale:**
+- One pattern for validation, provider, and unexpected failures
+- Services stay thin — no duplicated try/catch blocks
+- Route Handlers can reuse the same shapes when `app/api/` is implemented
+- `useServiceQuery` catches promise rejections that bypass `ServiceResult`
+
+**Consequences:**
+- Validation errors include optional `field` for form mapping
+- UI continues using `getApiErrorMessage()` — no component changes required
+- Provider throws are mapped to `PROVIDER_ERROR` with a safe user message

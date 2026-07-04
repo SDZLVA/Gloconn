@@ -28,6 +28,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [x] Implement mock `HotelsProvider`, `FlightsProvider`, `TransportProvider`
 - [x] **Implement searchOrchestrator** — parallel provider calls + merge in service layer (wire SearchResponse next)
 - [x] **Service layer with provider injection** — `context.ts`, central registry, UI uses services only
+- [x] **Centralized error handling** — `ApiError` factories, `ServiceResult`, `ApiResponse`, `runService()`
 
 - [ ] **My Trips page** (`app/my-trips/page.tsx`)
   - [x] Protected route with Supabase auth

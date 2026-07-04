@@ -2,12 +2,7 @@
  * Search service — UI and pages call this, not providers directly.
  */
 
-import { toApiError } from "@/lib/api/errors";
-import {
-  serviceFailure,
-  serviceSuccess,
-  type ServiceResult,
-} from "@/lib/api/types";
+import { runService, type ServiceResult } from "@/lib/api/types";
 import { validateSearchRequest } from "@/lib/api/validation";
 import {
   getAllTripSearchResults,
@@ -25,12 +20,10 @@ export async function searchTrips(
     return validation;
   }
 
-  try {
-    const data = await orchestrateTripSearch(validation.data);
-    return serviceSuccess(data);
-  } catch (error) {
-    return serviceFailure(toApiError(error, "Could not load search results."));
-  }
+  return runService(
+    () => orchestrateTripSearch(validation.data),
+    "Could not load search results.",
+  );
 }
 
 /**
@@ -56,10 +49,8 @@ export async function searchByDestination(
 
 /** Returns the full results catalog via active providers (price-range defaults). */
 export async function getAllSearchResults(): Promise<ServiceResult<SearchResult[]>> {
-  try {
-    const data = await getAllTripSearchResults();
-    return serviceSuccess(data);
-  } catch (error) {
-    return serviceFailure(toApiError(error, "Could not load results."));
-  }
+  return runService(
+    () => getAllTripSearchResults(),
+    "Could not load results.",
+  );
 }
