@@ -24,10 +24,14 @@ export type {
 
 export type {
   PassengersState,
+  PlaceSelection,
   SearchData,
+  SearchFormActions,
+  SearchFormController,
   SearchFormErrors,
   SearchFormState,
   TravelersState,
+  UseSearchFormOptions,
 } from "@/types/search";
 
 export {

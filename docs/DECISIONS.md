@@ -254,6 +254,32 @@ Record new decisions in this file as they are made.
 
 ---
 
+## ADR-021: Reusable SearchForm with separated UI and logic
+
+**Decision:** Split the search card into `useSearchForm` (logic), `SearchForm` (UI), and `SearchCard` (home page chrome).
+
+**Context:** Search card grew to include layout, state, validation, and navigation in one file.
+
+**Structure:**
+```
+useSearchForm() → SearchFormController { form, errors, actions }
+SearchForm      → presentational; receives controller
+SearchCard      → Card + heading + SearchForm
+types/search-form.ts → SearchFormState, SearchFormActions, PlaceSelection
+```
+
+**Rationale:**
+- `SearchForm` can be reused without the card (modals, sidebars) via `SearchFormWithState`
+- Business logic stays in the hook and `lib/search/` — no routing in UI components
+- `SearchFormController` is a stable, typed contract between hook and UI
+
+**Consequences:**
+- Import form types from `@/types/search-form` or `@/types` barrel
+- `SearchData` (validated payload) stays in `types/search.ts`
+- Field components (`DestinationAutocomplete`, etc.) remain in `components/search/`
+
+---
+
 ## Resolved (formerly pending)
 
 | Topic | Decision |

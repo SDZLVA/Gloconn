@@ -1,4 +1,4 @@
-import { SearchCard } from "@/components/search/SearchCard";
+import { SearchCardContainer } from "@/components/search/SearchCardContainer";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +40,7 @@ export function HeroSection({ title, subtitle, className }: HeroSectionProps) {
 
       {/* Search card sits below the text with generous spacing */}
       <div className="mt-10 w-full sm:mt-14 lg:mt-16">
-        <SearchCard className="mx-auto" />
+        <SearchCardContainer className="mx-auto" />
       </div>
     </section>
   );

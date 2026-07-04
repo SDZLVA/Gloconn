@@ -7,33 +7,44 @@ import {
   hasSearchFormErrors,
   validateSearchForm,
 } from "@/lib/search";
-import { rememberDestinationByLabel } from "@/lib/destinations/recentSearches";
+import {
+  rememberDestinationById,
+  rememberDestinationByLabel,
+} from "@/lib/destinations/recentSearches";
 import {
   INITIAL_SEARCH_FORM,
+  type SearchFormActions,
+  type SearchFormController,
   type SearchFormErrors,
   type SearchFormState,
-  type PassengersState,
-  type TripType,
-} from "@/types/search";
+  type UseSearchFormOptions,
+} from "@/types/search-form";
 
 /**
- * useSearchForm — manages search form state, validation, and submit logic.
+ * useSearchForm — search form state, validation, and submit logic.
  *
- * Keeps SearchCard focused on layout while all form behavior lives here.
+ * Returns a `SearchFormController` for the presentational `SearchForm` component.
+ * No JSX — business logic only.
  */
-export function useSearchForm() {
+export function useSearchForm(
+  options: UseSearchFormOptions = {},
+): SearchFormController {
   const router = useRouter();
-  const [form, setForm] = useState<SearchFormState>(INITIAL_SEARCH_FORM);
+  const [form, setForm] = useState<SearchFormState>(() => ({
+    ...INITIAL_SEARCH_FORM,
+    ...options.initialForm,
+  }));
   const [errors, setErrors] = useState<SearchFormErrors>({});
 
   function clearError(field: keyof SearchFormErrors) {
-    if (errors[field]) {
-      setErrors((current) => {
-        const next = { ...current };
-        delete next[field];
-        return next;
-      });
-    }
+    setErrors((current) => {
+      if (!current[field]) {
+        return current;
+      }
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
   }
 
   function updateField<K extends keyof SearchFormState>(
@@ -44,15 +55,48 @@ export function useSearchForm() {
     clearError(field);
   }
 
-  function updateTravelers(travelers: PassengersState) {
+  function updateDestination(label: string) {
+    setForm((current) => ({
+      ...current,
+      destination: label,
+      destinationId: "",
+    }));
+    clearError("destination");
+  }
+
+  function selectDestination(selection: { label: string; id: string }) {
+    setForm((current) => ({
+      ...current,
+      destination: selection.label,
+      destinationId: selection.id,
+    }));
+    clearError("destination");
+  }
+
+  function updateOrigin(label: string) {
+    setForm((current) => ({
+      ...current,
+      origin: label,
+      originId: "",
+    }));
+    clearError("origin");
+  }
+
+  function selectOrigin(selection: { label: string; id: string }) {
+    setForm((current) => ({
+      ...current,
+      origin: selection.label,
+      originId: selection.id,
+    }));
+    clearError("origin");
+  }
+
+  function updateTravelers(travelers: SearchFormState["travelers"]) {
     setForm((current) => ({ ...current, travelers }));
     clearError("travelers");
   }
 
-  /** Alias for updateTravelers — same passengers state shape. */
-  const updatePassengers = updateTravelers;
-
-  function updateTripType(tripType: TripType) {
+  function updateTripType(tripType: SearchFormState["tripType"]) {
     setForm((current) => ({
       ...current,
       tripType,
@@ -67,7 +111,12 @@ export function useSearchForm() {
     clearError("returnDate");
   }
 
-  function handleSearch() {
+  function updateProductTypes(productTypes: SearchFormState["productTypes"]) {
+    setForm((current) => ({ ...current, productTypes }));
+    clearError("productTypes");
+  }
+
+  function submit() {
     const nextErrors = validateSearchForm(form);
     setErrors(nextErrors);
 
@@ -75,18 +124,27 @@ export function useSearchForm() {
       return;
     }
 
-    void rememberDestinationByLabel(form.destination);
+    if (form.destinationId) {
+      rememberDestinationById(form.destinationId);
+    } else {
+      void rememberDestinationByLabel(form.destination);
+    }
+
     router.push(buildResultsUrl(form));
   }
 
-  return {
-    form,
-    errors,
+  const actions: SearchFormActions = {
     updateField,
+    updateDestination,
+    selectDestination,
+    updateOrigin,
+    selectOrigin,
     updateTravelers,
-    updatePassengers,
     updateTripType,
     updateDates,
-    handleSearch,
+    updateProductTypes,
+    submit,
   };
+
+  return { form, errors, actions };
 }

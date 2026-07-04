@@ -1,77 +1,58 @@
 /**
- * Types for the trip search form feature.
+ * Types for validated search payloads (URL params, saved trips, service layer).
+ *
+ * Form-specific types live in `types/search-form.ts`.
  */
 
 import type { CurrencyCode } from "@/lib/budget";
 import type {
+  SearchProductType,
   SearchRequest,
-  Traveler,
   TravelStyle,
   TripType,
 } from "@/types/models";
 
-export type { SearchRequest, Traveler, TravelStyle, TripType };
+export type { SearchRequest, SearchProductType, TravelStyle, TripType };
 
-/** @deprecated Use Traveler — kept for existing search form code. */
-export type PassengersState = Traveler;
+export type {
+  PlaceSelection,
+  SearchFormActions,
+  SearchFormController,
+  SearchFormErrors,
+  SearchFormState,
+  UseSearchFormOptions,
+} from "@/types/search-form";
 
-/** @deprecated Use Traveler — kept for existing search form code. */
-export type TravelersState = Traveler;
+export {
+  INITIAL_PASSENGERS,
+  INITIAL_SEARCH_FORM,
+} from "@/types/search-form";
 
-/** Raw form values stored in React state. */
-export type SearchFormState = {
-  destination: string;
-  tripType: TripType;
-  departureDate: string;
-  returnDate: string;
-  budget: string;
-  budgetCurrency: CurrencyCode;
-  travelers: Traveler;
-  travelStyle: TravelStyle;
-};
+/** @deprecated Use Traveler from `@/types/models` — kept for existing imports. */
+export type { Traveler as PassengersState } from "@/types/models";
 
-/** Validation error messages keyed by field name. */
-export type SearchFormErrors = Partial<
-  Record<keyof Omit<SearchFormState, "travelers">, string>
-> & {
-  travelers?: string;
-};
+/** @deprecated Use Traveler from `@/types/models` — kept for existing imports. */
+export type { Traveler as TravelersState } from "@/types/models";
+
+/** @deprecated Use INITIAL_PASSENGERS — kept for existing imports. */
+export { INITIAL_PASSENGERS as INITIAL_TRAVELERS } from "@/types/search-form";
 
 /**
  * Clean search payload produced after successful validation.
- * @deprecated Use SearchRequest for new code — flat budget fields kept for URL params and saved trips.
+ * @deprecated Use SearchRequest for new provider code — flat budget fields kept for URL params.
  */
 export type SearchData = {
   destination: string;
+  destinationId?: string;
+  origin?: string;
+  originId?: string;
   tripType: TripType;
   departureDate: string;
   returnDate: string | null;
   budget: number | null;
   budgetCurrency: CurrencyCode | null;
-  travelers: Traveler;
+  travelers: import("@/types/models").Traveler;
   totalGuests: number;
   travelStyle: TravelStyle;
-};
-
-/** Default passenger counts when the search form first loads. */
-export const INITIAL_PASSENGERS: Traveler = {
-  adults: 2,
-  children: 0,
-  infants: 0,
-  rooms: 1,
-};
-
-/** @deprecated Use INITIAL_PASSENGERS — kept for existing search form code. */
-export const INITIAL_TRAVELERS: Traveler = INITIAL_PASSENGERS;
-
-/** Default values when the search form first loads. */
-export const INITIAL_SEARCH_FORM: SearchFormState = {
-  destination: "",
-  tripType: "round-trip",
-  departureDate: "",
-  returnDate: "",
-  budget: "",
-  budgetCurrency: "EUR",
-  travelers: INITIAL_TRAVELERS,
-  travelStyle: "standard",
+  productTypes?: SearchProductType[];
 };

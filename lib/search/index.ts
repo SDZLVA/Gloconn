@@ -3,15 +3,26 @@
  * Import from `@/lib/search` in hooks and components.
  */
 
-export { TRAVEL_STYLE_OPTIONS, TRIP_TYPE_OPTIONS } from "@/lib/search/constants";
+export {
+  SEARCH_PRODUCT_TYPE_OPTIONS,
+  TRAVEL_STYLE_OPTIONS,
+  TRIP_TYPE_OPTIONS,
+} from "@/lib/search/constants";
 export { formatTravelDatesSummary } from "@/lib/search/dates";
 export { buildSearchData, logSearchData } from "@/lib/search/payload";
 export {
+  buildHomeSearchUrl,
   buildResultsUrl,
   formToSearchParams,
   parseSearchParams,
+  parseSearchParamsToForm,
   searchDataToParams,
 } from "@/lib/search/params";
+export {
+  normalizeProductTypes,
+  parseProductTypesParam,
+  serializeProductTypesParam,
+} from "@/lib/search/productTypes";
 export {
   applyPassengerFieldUpdate,
   formatPassengersSummary,

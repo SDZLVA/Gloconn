@@ -27,9 +27,12 @@ export type { Attraction } from "@/types/models/attraction";
 
 export type {
   SearchRequest,
+  SearchProductType,
   TravelStyle,
   TripType,
 } from "@/types/models/search-request";
+
+export { DEFAULT_SEARCH_PRODUCT_TYPES } from "@/types/models/search-request";
 
 export type {
   SearchResponse,

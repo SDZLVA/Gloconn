@@ -331,6 +331,13 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 - Semantic `<form>` with `aria-label` and section `role="group"` headings
 - Updated `docs/PROJECT.md`, `docs/AI_HANDOFF.md`, `docs/PROGRESS.md`
 
+### Reusable SearchForm refactor
+
+- Added `types/search-form.ts` — `SearchFormState`, `SearchFormActions`, `SearchFormController`, `PlaceSelection`
+- Added `SearchForm` (presentational UI), `SearchFormSection`, `SearchFormWithState`
+- `useSearchForm` returns `SearchFormController`; `SearchCard` is card chrome only
+- Updated all documentation
+
 ---
 
 **Branch:** `cursor/architecture-improvements`

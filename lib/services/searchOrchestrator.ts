@@ -7,21 +7,30 @@ import {
   mergeSearchResults,
   toSearchRequest,
 } from "@/lib/api/searchMappers";
+import { normalizeProductTypes } from "@/lib/search/productTypes";
 import { getServiceProviders } from "@/lib/services/context";
 import type { ServiceProviders } from "@/lib/services/types";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchResult } from "@/types/results";
 import type { SearchData } from "@/types/search";
 
-/** Runs all search domains in parallel and merges into the UI result union. */
+/** Runs selected search domains in parallel and merges into the UI result union. */
 async function searchAllDomains(
   request: SearchRequest,
   providers: ServiceProviders,
 ): Promise<SearchResult[]> {
+  const productTypes = normalizeProductTypes(request.productTypes);
+
   const [hotels, flights, transport] = await Promise.all([
-    providers.hotels.search(request),
-    providers.flights.search(request),
-    providers.transport.search(request),
+    productTypes.includes("hotels")
+      ? providers.hotels.search(request)
+      : Promise.resolve([]),
+    productTypes.includes("flights")
+      ? providers.flights.search(request)
+      : Promise.resolve([]),
+    productTypes.includes("transport")
+      ? providers.transport.search(request)
+      : Promise.resolve({ buses: [], trains: [] }),
   ]);
 
   return mergeSearchResults(
@@ -38,6 +47,10 @@ async function enrichSearchRequest(
   providers: ServiceProviders,
 ): Promise<SearchRequest> {
   const request = toSearchRequest(search);
+
+  if (search.destinationId) {
+    return request;
+  }
 
   try {
     const destinationId = await providers.destinations.resolveDestinationId(

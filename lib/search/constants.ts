@@ -1,3 +1,4 @@
+import type { SearchProductType } from "@/types/models/search-request";
 import type { TravelStyle, TripType } from "@/types/search";
 
 /** Labels for round-trip vs one-way in the dates selector. */
@@ -12,3 +13,10 @@ export const TRAVEL_STYLE_OPTIONS = [
   { value: "standard", label: "Standard" },
   { value: "luxury", label: "Luxury" },
 ] as const satisfies ReadonlyArray<{ value: TravelStyle; label: string }>;
+
+/** Labels for hotels / flights / transport toggles on the search card. */
+export const SEARCH_PRODUCT_TYPE_OPTIONS = [
+  { value: "hotels", label: "Stays" },
+  { value: "flights", label: "Flights" },
+  { value: "transport", label: "Trains & buses" },
+] as const satisfies ReadonlyArray<{ value: SearchProductType; label: string }>;

@@ -1,5 +1,6 @@
 import { validatePassengers } from "@/lib/search/passengers";
-import type { SearchFormErrors, SearchFormState } from "@/types/search";
+import { normalizeProductTypes } from "@/lib/search/productTypes";
+import type { SearchFormErrors, SearchFormState } from "@/types/search-form";
 
 /**
  * Validates required search form fields.
@@ -36,6 +37,10 @@ export function validateSearchForm(form: SearchFormState): SearchFormErrors {
 
   if (!form.travelStyle) {
     errors.travelStyle = "Please select a travel style.";
+  }
+
+  if (normalizeProductTypes(form.productTypes).length === 0) {
+    errors.productTypes = "Select at least one result type.";
   }
 
   return errors;

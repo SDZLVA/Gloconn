@@ -39,6 +39,9 @@ export function SaveTripButton({ search }: SaveTripButtonProps) {
     setMessage(null);
     const searchData = buildSearchData({
       destination: search.destination,
+      destinationId: search.destinationId ?? "",
+      origin: search.origin ?? "",
+      originId: search.originId ?? "",
       tripType: search.tripType,
       departureDate: search.departureDate,
       returnDate: search.returnDate ?? "",
@@ -46,6 +49,11 @@ export function SaveTripButton({ search }: SaveTripButtonProps) {
       budgetCurrency: search.budgetCurrency ?? "EUR",
       travelers: search.travelers,
       travelStyle: search.travelStyle,
+      productTypes: search.productTypes ?? [
+        "hotels",
+        "flights",
+        "transport",
+      ],
     });
 
     startTransition(async () => {

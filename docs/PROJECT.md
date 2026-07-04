@@ -45,7 +45,11 @@ Gloconn/
 │   ├── search/             # Search form feature
 │   │   ├── BudgetSelector.tsx
 │   │   ├── DestinationAutocomplete.tsx
-│   │   ├── SearchCard.tsx
+│   │   ├── SearchCard.tsx          # Card wrapper + heading (home page)
+│   │   ├── SearchCardContainer.tsx # URL hydration for edit-search flow
+│   │   ├── SearchForm.tsx          # Presentational form (UI only)
+│   │   ├── SearchFormSection.tsx   # Grouped section + divider primitives
+│   │   ├── SearchFormWithState.tsx # Hook + SearchForm convenience wrapper
 │   │   ├── TravelDatesSelector.tsx
 │   │   ├── TravelersSelector.tsx
 │   │   └── TravelStyleSelector.tsx
@@ -94,13 +98,14 @@ Gloconn/
 │   ├── styles.ts           # Shared Tailwind class strings
 │   └── utils.ts            # General helpers
 ├── types/
+│   ├── search-form.ts      # Form state, errors, actions, controller types
 │   ├── models/             # Shared provider-independent domain models
 │   │   ├── hotel.ts, flight.ts, bus.ts, train.ts
 │   │   ├── destination.ts, restaurant.ts, attraction.ts
 │   │   ├── traveler.ts, budget.ts
 │   │   ├── search-request.ts, search-response.ts
 │   │   └── index.ts
-│   ├── search.ts           # Form types; SearchData (legacy), aliases to models
+│   ├── search.ts           # SearchData payload; re-exports from search-form
 │   ├── results.ts          # SearchResult union (models + type discriminator)
 │   ├── destination.ts      # Re-export from models
 │   ├── search-response.ts  # Re-export from models
@@ -127,6 +132,7 @@ Gloconn/
 - Modern travel-themed design (brand blues, soft gradients, rounded cards)
 
 ### Search form (UI + client logic, mock provider)
+- **Architecture** — `useSearchForm` (logic) → `SearchForm` (UI) → `SearchCard` (home page chrome)
 - **Layout** — grouped sections (Where, When, Trip details, Preferences) with responsive grids and dividers
 - **From** — optional origin autocomplete (departure city)
 - **Destination** — autocomplete via `destinationService` (mock provider by default)

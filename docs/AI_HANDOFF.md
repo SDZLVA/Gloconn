@@ -57,8 +57,11 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `Navbar` | `components/layout/` | Sticky nav, mobile menu |
 | `Footer` | `components/layout/` | Site footer |
 | `HeroSection` | `components/home/` | Home page hero |
-| `SearchCard` | `components/search/` | Trip search form — grouped layout (Where / When / Details / Preferences) |
+| `SearchCard` | `components/search/` | Home page card wrapper (heading + `SearchForm`) |
 | `SearchCardContainer` | `components/search/` | Hydrates SearchCard from URL params (edit search flow) |
+| `SearchForm` | `components/search/` | Presentational trip search form — pass `SearchFormController` |
+| `SearchFormWithState` | `components/search/` | `useSearchForm` + `SearchForm` convenience wrapper |
+| `SearchFormSection` | `components/search/` | Accessible section group + divider for form layout |
 | `OriginAutocomplete` | `components/search/` | Optional departure city field |
 | `SearchProductSelector` | `components/search/` | Stays / Flights / Transport toggles |
 | `DestinationAutocomplete` | `components/search/` | Destination field — recent, popular, and filtered mock suggestions |
@@ -85,7 +88,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 
 | Module | Location | Purpose |
 |--------|----------|---------|
-| `useSearchForm` | `hooks/useSearchForm.ts` | Form state, validation trigger, submit |
+| `useSearchForm` | `hooks/useSearchForm.ts` | Returns `SearchFormController` (form, errors, actions) |
 | `useRecentDestinationSearches` | `hooks/useRecentDestinationSearches.ts` | Recent destination list (localStorage) |
 | `validateSearchForm` | `lib/search/validation.ts` | Required-field validation |
 | `buildSearchData` | `lib/search/payload.ts` | Converts form strings to typed payload |
@@ -181,7 +184,7 @@ Future Route Handler
 | Calendar date helpers | `lib/calendar/` | ISO formatting, month grids, range checks |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
 | `focusRing`, etc. | `lib/styles.ts` | Shared Tailwind class strings |
-| Search types | `types/search.ts`, `types/models/search-request.ts` | `SearchData` (legacy), `SearchRequest`, `Traveler` |
+| Search types | `types/search-form.ts`, `types/search.ts` | `SearchFormController`, `SearchData`, `SearchRequest` |
 | Results types | `types/results.ts`, `types/models/` | `SearchResult`, `Hotel`, `Flight`, `Bus`, `Train` |
 | Shared models | `types/models/` | All provider-independent domain types |
 

@@ -6,6 +6,7 @@
 import { createValidationError } from "@/lib/api/errors";
 import { serviceFailure, serviceSuccess, type ServiceResult } from "@/lib/api/types";
 import { validatePassengers } from "@/lib/search/passengers";
+import { normalizeProductTypes } from "@/lib/search/productTypes";
 import type { SearchData } from "@/types/search";
 
 function validationFailure(
@@ -67,6 +68,9 @@ export function validateSearchRequest(
 
   return serviceSuccess({
     destination: search.destination.trim(),
+    destinationId: search.destinationId,
+    origin: search.origin?.trim() || undefined,
+    originId: search.originId,
     tripType,
     departureDate: search.departureDate,
     returnDate: tripType === "one-way" ? null : (search.returnDate ?? null),
@@ -75,5 +79,6 @@ export function validateSearchRequest(
     travelers: { ...search.travelers },
     totalGuests: search.totalGuests ?? adults + children + infants,
     travelStyle: search.travelStyle,
+    productTypes: normalizeProductTypes(search.productTypes),
   });
 }

@@ -14,10 +14,16 @@ import {
   searchDestinations,
 } from "@/lib/services/destinationService";
 
+import type { PlaceSelection } from "@/types/search-form";
+
 type DestinationAutocompleteProps = {
   id?: string;
+  label?: string;
+  placeholder?: string;
   value: string;
   onChange: (value: string) => void;
+  /** Called when the user picks a suggestion (label + canonical id). */
+  onDestinationSelect?: (selection: PlaceSelection) => void;
   error?: string;
   required?: boolean;
   className?: string;
@@ -31,8 +37,11 @@ type DestinationAutocompleteProps = {
  */
 export function DestinationAutocomplete({
   id = "search-destination",
+  label = "Destination",
+  placeholder = "Where do you want to go?",
   value,
   onChange,
+  onDestinationSelect,
   error,
   required = false,
   className,
@@ -116,14 +125,18 @@ export function DestinationAutocomplete({
 
     if (destination) {
       addRecent(destination);
+      onDestinationSelect?.({
+        label: option.label,
+        id: destination.id,
+      });
     }
   }
 
   return (
     <Autocomplete
       id={id}
-      label="Destination"
-      placeholder="Where do you want to go?"
+      label={label}
+      placeholder={placeholder}
       value={value}
       sections={sections}
       onChange={onChange}

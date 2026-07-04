@@ -55,3 +55,10 @@ export async function rememberDestinationByLabel(label: string): Promise<void> {
     addRecentDestinationId(result.data);
   }
 }
+
+/** Saves a known destination id to recent searches (preferred on form submit). */
+export function rememberDestinationById(destinationId: string): void {
+  if (destinationId.trim()) {
+    addRecentDestinationId(destinationId.trim());
+  }
+}

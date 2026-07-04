@@ -7,6 +7,7 @@ import type { Bus, Flight, Hotel, Train } from "@/types/models";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchResult } from "@/types/results";
 import type { SearchData } from "@/types/search";
+import { normalizeProductTypes } from "@/lib/search/productTypes";
 
 /**
  * Special destination value that tells mock providers to return their full catalog.
@@ -18,6 +19,9 @@ export const CATALOG_SEARCH_DESTINATION = "__catalog__";
 export function toSearchRequest(search: SearchData): SearchRequest {
   return {
     destination: search.destination,
+    destinationId: search.destinationId,
+    origin: search.origin,
+    originId: search.originId,
     tripType: search.tripType,
     departureDate: search.departureDate,
     returnDate: search.returnDate,
@@ -28,6 +32,7 @@ export function toSearchRequest(search: SearchData): SearchRequest {
     travelers: search.travelers,
     totalGuests: search.totalGuests,
     travelStyle: search.travelStyle,
+    productTypes: normalizeProductTypes(search.productTypes),
   };
 }
 

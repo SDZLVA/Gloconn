@@ -11,6 +11,16 @@ export type TravelStyle = "budget" | "standard" | "luxury";
 /** Round-trip includes a return date; one-way does not. */
 export type TripType = "round-trip" | "one-way";
 
+/** Which travel domains the orchestrator should query. */
+export type SearchProductType = "hotels" | "flights" | "transport";
+
+/** Default — search stays, flights, and ground transport together. */
+export const DEFAULT_SEARCH_PRODUCT_TYPES: SearchProductType[] = [
+  "hotels",
+  "flights",
+  "transport",
+];
+
 /**
  * Complete, validated criteria for searching hotels, flights, and ground transport.
  * This is the public contract between the UI and the service layer.
@@ -50,8 +60,17 @@ export type SearchRequest = {
   travelStyle: TravelStyle;
 
   /**
-   * Origin city or airport code (IATA) for flight searches.
-   * Optional until the search form collects a departure city.
+   * Origin city label (e.g. "Milan, Italy") for flight and transport searches.
    */
   origin?: string;
+
+  /**
+   * Resolved Glooconn destination id for the origin city when available.
+   */
+  originId?: string;
+
+  /**
+   * Which result domains to query. Defaults to all three when omitted.
+   */
+  productTypes?: SearchProductType[];
 };
