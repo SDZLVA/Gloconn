@@ -231,6 +231,21 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
+## Mock provider classes
+
+**Branch:** `cursor/api-foundation`
+
+### Changes
+
+- Added `MockHotelsProvider`, `MockFlightsProvider`, `MockTransportProvider`, `MockDestinationProvider` classes
+- Centralized shared logic in `lib/providers/mock/shared.ts`
+- Implemented `lib/providers/orchestrate.ts` — parallel domain provider calls
+- `searchService` now uses orchestrator instead of monolithic `SearchProvider`
+- Legacy `SearchProvider` delegates to orchestrator for backward compatibility
+- UI unchanged — still receives `SearchResult[]` via `searchTrips()`
+
+---
+
 **Branch:** `cursor/architecture-improvements`
 
 ### Changes

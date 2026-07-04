@@ -4,9 +4,9 @@
  */
 
 import {
-  ALL_MOCK_RESULTS,
+  ALL_MOCK_SEARCH_RESULTS,
   searchMockResults,
-} from "@/lib/providers/search/mock/search";
+} from "@/lib/providers/mock/shared";
 
 /** @deprecated Use `searchTrips` from `@/lib/services` for new code. */
 export function getResultsForSearch(
@@ -18,7 +18,7 @@ export function getResultsForSearch(
 
 /** Returns the full mock results pool (used for price range defaults). */
 export function getAllMockResults() {
-  return ALL_MOCK_RESULTS;
+  return ALL_MOCK_SEARCH_RESULTS;
 }
 
 export { resolveDestinationIdFromLabel as resolveDestinationId } from "@/lib/providers/destinations/mock/helpers";

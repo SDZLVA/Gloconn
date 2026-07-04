@@ -514,3 +514,20 @@ types/search-response.ts                 → stub
 - Registry will expose `getHotelsProvider()`, `getFlightsProvider()`, etc. (not implemented yet)
 - Mock implementations in `hotels/mock/`, `flights/mock/`, `ground/mock/` will implement these interfaces next
 - `searchOrchestrator` will call all search providers in parallel
+
+---
+
+## ADR-025: Mock provider classes and orchestration
+
+**Decision:** Split the monolithic mock search adapter into class-based providers per domain (`MockHotelsProvider`, `MockFlightsProvider`, `MockTransportProvider`) with shared logic in `lib/providers/mock/shared.ts` and parallel orchestration in `lib/providers/orchestrate.ts`.
+
+**Rationale:**
+- Each class implements one interface — mirrors how Amadeus/Booking/Omio adapters will be added
+- Shared filter, pricing, and mapping logic avoids duplication across mock classes
+- Orchestrator merges domain results into the existing `SearchResult[]` UI contract
+- UI still calls `searchService.searchTrips()` — never imports mock modules
+
+**Consequences:**
+- `lib/providers/search/mock/` is deprecated but delegates to orchestrator
+- `SearchData` → `SearchRequest` conversion happens in `toSearchRequest()` before provider calls
+- Restaurants and attractions providers remain unimplemented (no mock data yet)

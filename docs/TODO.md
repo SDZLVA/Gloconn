@@ -25,9 +25,8 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 ## 🟡 Medium priority — Week 2–3
 
-- [x] Provider interfaces in `lib/providers/core/types.ts`
-- [ ] Implement mock `HotelsProvider`, `FlightsProvider`, `TransportProvider`
-- [ ] **Implement searchOrchestrator** — parallel provider calls + merge
+- [x] Implement mock `HotelsProvider`, `FlightsProvider`, `TransportProvider`
+- [ ] **Implement searchOrchestrator** — parallel provider calls + merge (done; wire SearchResponse next)
 
 - [ ] **My Trips page** (`app/my-trips/page.tsx`)
   - [x] Protected route with Supabase auth

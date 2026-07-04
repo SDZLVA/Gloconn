@@ -90,7 +90,9 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `parseSearchParams` | `lib/search/params.ts` | Reads URL params back into `SearchData` |
 | `getResultsForSearch` | `lib/results/` | **Deprecated** — use `searchTrips` from `@/lib/services` |
 | `filterResults`, `sortResults` | `lib/results/` | Client-side filter and sort helpers |
-| `searchTrips` | `lib/services/searchService.ts` | Validated search via active provider |
+| `searchTrips` | `lib/services/searchService.ts` | Validated search via orchestrator + domain providers |
+| `orchestrateTripSearch` | `lib/providers/orchestrate.ts` | Parallel hotels / flights / transport calls |
+| Mock provider classes | `lib/providers/*/mock/provider.ts` | `MockHotelsProvider`, `MockFlightsProvider`, etc. |
 | `searchDestinations` | `lib/services/destinationService.ts` | Autocomplete via active provider |
 | `useServiceQuery` | `hooks/useServiceQuery.ts` | Loading / success / error for async services |
 | API env, errors, validation | `lib/api/` | `getApiEnv`, `ApiError`, `ServiceResult`, `validateSearchRequest` |

@@ -1,9 +1,8 @@
 /**
- * Multi-provider search orchestration.
- *
- * Planned: parallel calls to hotels, flights, and ground providers;
- * merge into SearchResponse; handle partial failures.
- * Not implemented yet — searchService still uses the monolithic mock search provider.
+ * Multi-provider search orchestration — service-layer entry point.
  */
 
-export {};
+export {
+  getAllTripSearchResults as getAllOrchestratedResults,
+  orchestrateTripSearch as orchestrateSearch,
+} from "@/lib/providers/orchestrate";

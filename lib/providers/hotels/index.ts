@@ -1,6 +1,16 @@
-/**
- * Hotels provider registry — getHotelsProvider().
- * Not implemented yet. Mock implementation will live in hotels/mock/.
- */
+import { getApiEnv } from "@/lib/api/env";
+import { mockHotelsProvider } from "@/lib/providers/hotels/mock";
+import type { HotelsProvider } from "@/lib/providers/types";
 
-export {};
+/**
+ * Returns the active hotels provider based on environment configuration.
+ */
+export function getHotelsProvider(): HotelsProvider {
+  const { useMockProviders } = getApiEnv();
+
+  if (useMockProviders) {
+    return mockHotelsProvider;
+  }
+
+  return mockHotelsProvider;
+}

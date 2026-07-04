@@ -3,7 +3,15 @@
  */
 
 export { getDestinationProvider } from "@/lib/providers/destinations";
+export { getFlightsProvider } from "@/lib/providers/flights";
+export { getTransportProvider } from "@/lib/providers/ground";
+export { getHotelsProvider } from "@/lib/providers/hotels";
 export { getSearchProvider } from "@/lib/providers/search";
+
+export {
+  getAllTripSearchResults,
+  orchestrateTripSearch,
+} from "@/lib/providers/orchestrate";
 
 export type { BaseProvider } from "@/lib/providers/core/base";
 

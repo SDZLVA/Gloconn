@@ -58,9 +58,11 @@ Gloconn/
 │   │   ├── core/           # BaseProvider, domain interfaces, registry (planned)
 │   │   ├── destinations/   # mock ✅, google-maps (planned)
 │   │   ├── search/         # Monolithic mock search provider ✅ (to split)
-│   │   ├── hotels/         # mock, booking (planned)
-│   │   ├── flights/        # mock, amadeus (planned)
-│   │   └── ground/         # mock, omio (planned)
+│   │   ├── hotels/         # mock ✅, booking (planned)
+│   │   ├── flights/        # mock ✅, amadeus (planned)
+│   │   └── ground/         # mock ✅, omio (planned)
+│   │   ├── mock/           # Shared mock helpers (filter, pricing, merge)
+│   │   ├── orchestrate.ts  # Parallel domain provider calls
 │   ├── services/           # Service layer — UI calls these, not providers
 │   ├── trips/              # Saved trip queries and server actions
 │   ├── budget/             # Currency options, limits, and budget formatting
