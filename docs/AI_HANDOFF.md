@@ -57,7 +57,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `SearchCard` | `components/search/` | Trip search form (layout only) |
 | `DestinationAutocomplete` | `components/search/` | Destination field — recent, popular, and filtered mock suggestions |
 | `TravelDatesSelector` | `components/search/` | Round-trip / one-way dates picker with calendar dropdown |
-| `TravelersSelector` | `components/search/` | Adults / Children / Infants / Rooms picker |
+| `TravelersSelector` | `components/search/` | Search-form wrapper around `PassengersSelector` |
+| `PassengersSelector` | `components/ui/` | Reusable Adults / Children / Infants / Rooms picker |
 | `TravelStyleSelector` | `components/search/` | Budget / Standard / Luxury picker |
 | `BudgetSelector` | `components/search/` | Optional max budget slider with currency |
 | `Button`, `Card`, `InputField` | `components/ui/` | Generic UI primitives |
@@ -65,6 +66,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `Autocomplete` | `components/ui/` | Reusable accessible combobox (sections, keyboard navigation) |
 | `TravelCalendar` | `components/ui/` | Reusable date picker — single or range, disables past dates |
 | `NumberStepper` | `components/ui/` | Reusable +/- numeric counter |
+| `PassengersSelector` | `components/ui/` | Reusable passengers & rooms dropdown with steppers |
 | `SectionHeading` | `components/ui/` | Reusable title + description for sections |
 | `FormLabel`, `FormError` | `components/ui/FormField.tsx` | Shared form helpers |
 | Budget helpers | `lib/budget/` | Currency options, limits, and formatting |
@@ -78,9 +80,12 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `validateSearchForm` | `lib/search/validation.ts` | Required-field validation |
 | `buildSearchData` | `lib/search/payload.ts` | Converts form strings to typed payload |
 | `logSearchData` | `lib/search/payload.ts` | Console.log on successful search |
-| `formatTravelersSummary` | `lib/search/travelers.ts` | Builds travelers trigger label |
+| `formatPassengersSummary` | `lib/search/passengers.ts` | Builds passengers trigger label |
+| `validatePassengers` | `lib/search/passengers.ts` | Validates adults, children, infants, rooms |
+| `formatTravelersSummary` | `lib/search/travelers.ts` | Alias for `formatPassengersSummary` |
 | `formatTravelDatesSummary` | `lib/search/dates.ts` | Builds dates trigger label |
-| `TRAVELERS_LIMITS` | `lib/search/travelers.ts` | Min/max for adults, children, infants, rooms |
+| `PASSENGERS_LIMITS` | `lib/search/passengers.ts` | Min/max for adults, children, infants, rooms |
+| `TRAVELERS_LIMITS` | `lib/search/travelers.ts` | Alias for `PASSENGERS_LIMITS` |
 | `TRAVEL_STYLE_OPTIONS` | `lib/search/constants.ts` | Travel style labels and values |
 | `TRIP_TYPE_OPTIONS` | `lib/search/constants.ts` | Round-trip / one-way labels |
 | `MOCK_DESTINATIONS` | `lib/destinations.ts` | Static destination list for autocomplete |
@@ -90,7 +95,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | Calendar date helpers | `lib/calendar/` | ISO formatting, month grids, range checks |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
 | `focusRing`, etc. | `lib/styles.ts` | Shared Tailwind class strings |
-| Search types | `types/search.ts` | `SearchFormState`, `TravelersState`, `TripType`, `TravelStyle`, etc. |
+| Search types | `types/search.ts` | `SearchFormState`, `PassengersState`, `TripType`, `TravelStyle`, etc. |
 
 **Import convention:** Use `@/lib/search` and `@/types` — not the inner files directly from components (unless you are editing the search module itself).
 
@@ -101,7 +106,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 1. User fills fields in `SearchCard`
 2. **Destination** — type to filter mock suggestions; empty field shows recent searches and popular destinations; pick with mouse or arrow keys + Enter; selections persist in localStorage
 3. **Dates** — click trigger to open calendar; choose Round-trip or One-way; pick departure (and return for round-trip) on the calendar; past dates are disabled; click Done
-4. **Travelers** — click trigger to open panel; adjust Adults, Children, Infants, Rooms with steppers; click Done
+4. **Travelers** — click trigger to open panel; adjust Adults, Children, Infants, Rooms with +/- steppers; infants cannot exceed adults; click Done
 5. **Budget** — optional slider (€500–€10,000); pick EUR, USD, or GBP; live formatted value; clear to remove limit
 6. User clicks **Search** button
 7. `useSearchForm.handleSearch()` runs

@@ -53,7 +53,8 @@ Gloconn/
 │   ├── search/             # Search feature logic (split by responsibility)
 │   │   ├── constants.ts    # Travel style and trip type options
 │   │   ├── dates.ts        # Travel dates summary label
-│   │   ├── travelers.ts    # Travelers summary, limits, helpers
+│   │   ├── travelers.ts    # Backward-compatible aliases for passengers helpers
+│   │   ├── passengers.ts   # Passengers summary, limits, validation
 │   │   ├── validation.ts   # Form validation
 │   │   ├── payload.ts      # Build and log search data
 │   │   └── index.ts        # Public exports for the search feature
@@ -97,6 +98,7 @@ Gloconn/
 - `Autocomplete` — generic accessible combobox (keyboard navigation, listbox)
 - `TravelCalendar` — reusable date picker with single or range selection
 - `NumberStepper` — +/- counter for bounded numeric values
+- `PassengersSelector` — reusable dropdown for adults, children, infants, and rooms
 - `SectionHeading` — consistent titles for heroes, cards, and sections
 - `BrandLogo` — shared Glooconn wordmark for navbar and footer
 

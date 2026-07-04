@@ -1,4 +1,4 @@
-import { TRAVELERS_LIMITS } from "@/lib/search/travelers";
+import { validatePassengers } from "@/lib/search/passengers";
 import type { SearchFormErrors, SearchFormState } from "@/types/search";
 
 /**
@@ -29,22 +29,9 @@ export function validateSearchForm(form: SearchFormState): SearchFormErrors {
     errors.returnDate = "Return date must be on or after departure.";
   }
 
-  const { adults, children, infants, rooms } = form.travelers;
-
-  if (adults < TRAVELERS_LIMITS.adults.min) {
-    errors.travelers = "At least 1 adult is required.";
-  } else if (adults > TRAVELERS_LIMITS.adults.max) {
-    errors.travelers = `Maximum ${TRAVELERS_LIMITS.adults.max} adults.`;
-  } else if (children > TRAVELERS_LIMITS.children.max) {
-    errors.travelers = `Maximum ${TRAVELERS_LIMITS.children.max} children.`;
-  } else if (infants > TRAVELERS_LIMITS.infants.max) {
-    errors.travelers = `Maximum ${TRAVELERS_LIMITS.infants.max} infants.`;
-  } else if (rooms < TRAVELERS_LIMITS.rooms.min) {
-    errors.travelers = "At least 1 room is required.";
-  } else if (rooms > TRAVELERS_LIMITS.rooms.max) {
-    errors.travelers = `Maximum ${TRAVELERS_LIMITS.rooms.max} rooms.`;
-  } else if (infants > adults) {
-    errors.travelers = "Each infant must be accompanied by an adult.";
+  const passengersError = validatePassengers(form.travelers);
+  if (passengersError) {
+    errors.travelers = passengersError;
   }
 
   if (!form.travelStyle) {

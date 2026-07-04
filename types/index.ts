@@ -4,6 +4,7 @@
  */
 
 export type {
+  PassengersState,
   SearchData,
   SearchFormErrors,
   SearchFormState,
@@ -11,4 +12,8 @@ export type {
   TravelStyle,
 } from "@/types/search";
 
-export { INITIAL_SEARCH_FORM, INITIAL_TRAVELERS } from "@/types/search";
+export {
+  INITIAL_PASSENGERS,
+  INITIAL_SEARCH_FORM,
+  INITIAL_TRAVELERS,
+} from "@/types/search";

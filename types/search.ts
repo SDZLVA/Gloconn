@@ -10,13 +10,16 @@ export type TravelStyle = "budget" | "standard" | "luxury";
 /** Round-trip or one-way — chosen in the travel dates selector. */
 export type TripType = "round-trip" | "one-way";
 
-/** Adults, children, infants, and rooms for the travelers selector. */
-export type TravelersState = {
+/** Adults, children, infants, and rooms for the passengers selector. */
+export type PassengersState = {
   adults: number;
   children: number;
   infants: number;
   rooms: number;
 };
+
+/** @deprecated Use PassengersState — kept for existing search form code. */
+export type TravelersState = PassengersState;
 
 /** Raw form values stored in React state. */
 export type SearchFormState = {
@@ -26,7 +29,7 @@ export type SearchFormState = {
   returnDate: string;
   budget: string;
   budgetCurrency: CurrencyCode;
-  travelers: TravelersState;
+  travelers: PassengersState;
   travelStyle: TravelStyle;
 };
 
@@ -45,18 +48,21 @@ export type SearchData = {
   returnDate: string | null;
   budget: number | null;
   budgetCurrency: CurrencyCode | null;
-  travelers: TravelersState;
+  travelers: PassengersState;
   totalGuests: number;
   travelStyle: TravelStyle;
 };
 
-/** Default traveler counts when the search form first loads. */
-export const INITIAL_TRAVELERS: TravelersState = {
+/** Default passenger counts when the search form first loads. */
+export const INITIAL_PASSENGERS: PassengersState = {
   adults: 2,
   children: 0,
   infants: 0,
   rooms: 1,
 };
+
+/** @deprecated Use INITIAL_PASSENGERS — kept for existing search form code. */
+export const INITIAL_TRAVELERS: PassengersState = INITIAL_PASSENGERS;
 
 /** Default values when the search form first loads. */
 export const INITIAL_SEARCH_FORM: SearchFormState = {

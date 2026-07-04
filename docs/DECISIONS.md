@@ -350,3 +350,29 @@ TravelersState = { adults, children, infants, rooms }
 - `formatTravelDatesSummary()` builds the trigger label
 - Validation requires return date only when `tripType === "round-trip"`
 - `SearchData.returnDate` is `null` for one-way trips
+
+---
+
+## ADR-019: Reusable PassengersSelector component
+
+**Decision:** Extract passenger picking into `components/ui/PassengersSelector.tsx` with logic in `lib/search/passengers.ts`. Keep `TravelersSelector` as a thin search-form wrapper.
+
+**Context:** Search card already had travelers steppers (ADR-015); this refactor makes the UI reusable for future forms (e.g. flights) while preserving the search card label and behavior.
+
+**Structure:**
+```
+PassengersState = { adults, children, infants, rooms }
+PassengersSelector (ui/) → NumberStepper rows, dropdown shell
+TravelersSelector (search/) → wraps PassengersSelector with "Travelers & rooms" label
+```
+
+**Rationale:**
+- Matches the pattern used by `TravelCalendar` + `TravelDatesSelector`
+- `validatePassengers()` is shared by the selector constraints and form validation
+- Infants are capped at adult count during stepper interaction (`applyPassengerFieldUpdate`)
+- `fields` prop allows hiding rows (e.g. omit rooms for flight-only forms)
+
+**Consequences:**
+- `lib/search/travelers.ts` re-exports from `passengers.ts` for backward compatibility
+- `TravelersState` is a type alias for `PassengersState`
+- Responsive panel scrolls on small viewports (`max-h` + `overflow-y-auto`)

@@ -11,7 +11,7 @@ import {
   INITIAL_SEARCH_FORM,
   type SearchFormErrors,
   type SearchFormState,
-  type TravelersState,
+  type PassengersState,
   type TripType,
 } from "@/types/search";
 
@@ -42,10 +42,13 @@ export function useSearchForm() {
     clearError(field);
   }
 
-  function updateTravelers(travelers: TravelersState) {
+  function updateTravelers(travelers: PassengersState) {
     setForm((current) => ({ ...current, travelers }));
     clearError("travelers");
   }
+
+  /** Alias for updateTravelers — same passengers state shape. */
+  const updatePassengers = updateTravelers;
 
   function updateTripType(tripType: TripType) {
     setForm((current) => ({
@@ -79,6 +82,7 @@ export function useSearchForm() {
     errors,
     updateField,
     updateTravelers,
+    updatePassengers,
     updateTripType,
     updateDates,
     handleSearch,

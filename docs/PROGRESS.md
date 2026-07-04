@@ -123,6 +123,16 @@ A week-by-week record of completed work. Update this file at the end of each dev
 
 **Files added:** `lib/budget/currencies.ts`, `lib/budget/index.ts`, `components/ui/BudgetSlider.tsx`, `components/search/BudgetSelector.tsx`
 
+### Passengers selector
+
+- Extracted reusable `PassengersSelector` UI component (Adults, Children, Infants, Rooms with +/- steppers)
+- Added `lib/search/passengers.ts` with limits, summary formatting, and `validatePassengers()`
+- Infants are capped at adult count during stepper use; form validation reuses the same rules
+- `TravelersSelector` now wraps `PassengersSelector` for the search card
+- Updated all documentation
+
+**Files added:** `lib/search/passengers.ts`, `components/ui/PassengersSelector.tsx`
+
 ---
 
 ## Week 2 — Core pages (not started)
