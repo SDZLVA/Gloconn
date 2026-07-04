@@ -17,27 +17,31 @@ export function HeroSection({ title, subtitle, className }: HeroSectionProps) {
   return (
     <section
       className={cn(
-        "relative flex flex-col items-center overflow-hidden rounded-2xl px-4 py-14 text-center sm:px-8 sm:py-16 lg:py-20",
+        "relative flex flex-col items-center overflow-hidden rounded-3xl px-4 py-12 text-center sm:px-8 sm:py-16 lg:py-24",
         className,
       )}
+      aria-labelledby="hero-heading"
     >
       {/* Soft travel-themed gradient behind the content */}
       <div
-        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-brand-50 via-sky-50/80 to-transparent"
+        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-brand-50 via-sky-50/90 to-transparent"
         aria-hidden="true"
       />
 
-      <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 sm:gap-5">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+      <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 sm:gap-6">
+        <h1
+          id="hero-heading"
+          className="text-balance text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl sm:leading-tight lg:text-5xl lg:leading-[1.1]"
+        >
           {title}
         </h1>
-        <p className="max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+        <p className="max-w-2xl text-pretty text-base leading-relaxed text-slate-600 sm:text-lg sm:leading-8">
           {subtitle}
         </p>
       </div>
 
       {/* Search card sits below the text with generous spacing */}
-      <div className="mt-10 w-full sm:mt-12 lg:mt-14">
+      <div className="mt-10 w-full sm:mt-14 lg:mt-16">
         <SearchCard className="mx-auto" />
       </div>
     </section>

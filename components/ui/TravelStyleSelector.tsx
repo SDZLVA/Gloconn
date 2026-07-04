@@ -30,17 +30,24 @@ export function TravelStyleSelector({
   className,
 }: TravelStyleSelectorProps) {
   return (
-    <fieldset className={cn("flex flex-col gap-2", className)}>
-      <legend className="text-sm font-medium text-slate-700">
+    <fieldset className={cn("flex flex-col gap-3", className)}>
+      <legend className="text-sm font-semibold tracking-wide text-slate-800">
         Travel style
-        {required && <span className="text-red-500"> *</span>}
+        {required && (
+          <span className="text-red-500" aria-hidden="true">
+            {" "}
+            *
+          </span>
+        )}
+        {required && <span className="sr-only"> (required)</span>}
       </legend>
 
       <div
-        className="grid grid-cols-3 gap-2"
+        className="grid grid-cols-1 gap-2 sm:grid-cols-3"
         role="radiogroup"
         aria-label="Travel style"
         aria-invalid={error ? true : undefined}
+        aria-describedby={error ? "travel-style-error" : undefined}
       >
         {TRAVEL_STYLES.map((style) => {
           const isSelected = value === style.value;
@@ -53,10 +60,10 @@ export function TravelStyleSelector({
               aria-checked={isSelected}
               onClick={() => onChange(style.value)}
               className={cn(
-                "rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors",
+                "rounded-xl border px-4 py-3 text-sm font-semibold motion-safe:transition-all motion-safe:duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-700",
                 isSelected
-                  ? "border-brand-700 bg-brand-50 text-brand-700"
-                  : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50",
+                  ? "border-brand-700 bg-brand-50 text-brand-800 shadow-sm shadow-brand-100"
+                  : "border-slate-200 bg-white text-slate-600 motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-slate-300 motion-safe:hover:bg-slate-50 motion-safe:hover:shadow-sm",
               )}
             >
               {style.label}
@@ -66,7 +73,7 @@ export function TravelStyleSelector({
       </div>
 
       {error && (
-        <p className="text-sm text-red-600" role="alert">
+        <p id="travel-style-error" className="text-sm font-medium text-red-600" role="alert">
           {error}
         </p>
       )}

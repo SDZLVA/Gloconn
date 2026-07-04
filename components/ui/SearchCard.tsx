@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Card } from "@/components/ui/Card";
 import { InputField } from "@/components/ui/InputField";
 import { SearchButton } from "@/components/ui/SearchButton";
 import { TravelStyleSelector } from "@/components/ui/TravelStyleSelector";
@@ -63,17 +64,17 @@ export function SearchCard({ className }: SearchCardProps) {
   }
 
   return (
-    <div
-      className={cn(
-        "w-full max-w-3xl rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xl shadow-slate-200/50 sm:p-6",
-        className,
-      )}
-    >
-      <p className="mb-4 text-left text-sm font-medium text-slate-500">
-        Start planning your next adventure
-      </p>
+    <Card hoverable className={cn("w-full max-w-3xl p-6 sm:p-8", className)}>
+      <div className="mb-6 space-y-1">
+        <h2 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+          Plan your trip
+        </h2>
+        <p className="text-sm leading-relaxed text-slate-600 sm:text-base">
+          Start planning your next adventure
+        </p>
+      </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-5 sm:grid-cols-2 sm:gap-6">
         <InputField
           id="search-destination"
           label="Destination"
@@ -136,9 +137,9 @@ export function SearchCard({ className }: SearchCardProps) {
         />
       </div>
 
-      <div className="mt-5 flex justify-end">
+      <div className="mt-8 flex justify-end border-t border-slate-100 pt-6">
         <SearchButton onClick={handleSearch} />
       </div>
-    </div>
+    </Card>
   );
 }

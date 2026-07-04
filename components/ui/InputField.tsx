@@ -33,10 +33,16 @@ export function InputField({
   className,
 }: InputFieldProps) {
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={id} className="text-sm font-medium text-slate-700">
+    <div className={cn("flex flex-col gap-2", className)}>
+      <label htmlFor={id} className="text-sm font-semibold tracking-wide text-slate-800">
         {label}
-        {required && <span className="text-red-500"> *</span>}
+        {required && (
+          <span className="text-red-500" aria-hidden="true">
+            {" "}
+            *
+          </span>
+        )}
+        {required && <span className="sr-only"> (required)</span>}
       </label>
       <input
         id={id}
@@ -49,14 +55,14 @@ export function InputField({
         aria-describedby={error ? `${id}-error` : undefined}
         onChange={(event) => onChange(event.target.value)}
         className={cn(
-          "w-full rounded-lg border bg-white px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2",
+          "w-full rounded-xl border bg-white px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 motion-safe:transition-all motion-safe:duration-200 focus:outline-none focus:ring-2 sm:text-sm",
           error
-            ? "border-red-300 focus:border-red-500 focus:ring-red-50"
-            : "border-slate-200 focus:border-brand-700 focus:ring-brand-50",
+            ? "border-red-300 focus:border-red-500 focus:ring-red-100"
+            : "border-slate-200 motion-safe:hover:border-slate-300 focus:border-brand-700 focus:ring-brand-100",
         )}
       />
       {error && (
-        <p id={`${id}-error`} className="text-sm text-red-600" role="alert">
+        <p id={`${id}-error`} className="text-sm font-medium text-red-600" role="alert">
           {error}
         </p>
       )}
