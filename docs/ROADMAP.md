@@ -30,7 +30,7 @@ This roadmap outlines planned development phases. Dates are approximate and will
 | Item | Priority | Notes |
 |------|----------|-------|
 | Destinations page | High | Grid of destination cards using `Card` component |
-| Search results page | High | Navigate from search form with query params; mock data first |
+| Search results page | High | ✅ Mock hotels, flights, buses, trains; filters; sorting; URL params |
 | About page | Medium | Company/product information |
 | My Trips page | Medium | Placeholder UI for saved trips |
 | 404 / not-found page styling | Low | Match Glooconn brand |

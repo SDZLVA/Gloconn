@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | Week 1 complete + search card improvements |
+| Stage | Week 2 in progress — search results page live |
 | APIs | None connected |
 
 ---
@@ -37,8 +37,9 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 
 ## What exists today
 
-### Live route
+### Live routes
 - `/` — Home page with `HeroSection` + `SearchCard`
+- `/search/results` — Search results with mock hotels, flights, buses, trains (filters + sorting)
 
 ### Nav links (pages NOT built yet — will 404)
 - `/destinations`
@@ -68,6 +69,10 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `NumberStepper` | `components/ui/` | Reusable +/- numeric counter |
 | `PassengersSelector` | `components/ui/` | Reusable passengers & rooms dropdown with steppers |
 | `SectionHeading` | `components/ui/` | Reusable title + description for sections |
+| `SearchResultsPage` | `components/results/` | Client orchestrator for results layout |
+| `ResultCard` | `components/results/` | Dispatches to hotel/flight/bus/train cards |
+| `ResultsFilterSidebar` | `components/results/` | Transport type, price, rating filters |
+| `ResultsSortBar` | `components/results/` | Sort dropdown and result count |
 | `FormLabel`, `FormError` | `components/ui/FormField.tsx` | Shared form helpers |
 | Budget helpers | `lib/budget/` | Currency options, limits, and formatting |
 
@@ -79,7 +84,10 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `useRecentDestinationSearches` | `hooks/useRecentDestinationSearches.ts` | Recent destination list (localStorage) |
 | `validateSearchForm` | `lib/search/validation.ts` | Required-field validation |
 | `buildSearchData` | `lib/search/payload.ts` | Converts form strings to typed payload |
-| `logSearchData` | `lib/search/payload.ts` | Console.log on successful search |
+| `buildResultsUrl` | `lib/search/params.ts` | Builds `/search/results?...` from form state |
+| `parseSearchParams` | `lib/search/params.ts` | Reads URL params back into `SearchData` |
+| `getResultsForSearch` | `lib/results/` | Returns mock results for destination + travel style |
+| `filterResults`, `sortResults` | `lib/results/` | Client-side filter and sort helpers |
 | `formatPassengersSummary` | `lib/search/passengers.ts` | Builds passengers trigger label |
 | `validatePassengers` | `lib/search/passengers.ts` | Validates adults, children, infants, rooms |
 | `formatTravelersSummary` | `lib/search/travelers.ts` | Alias for `formatPassengersSummary` |
@@ -96,6 +104,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
 | `focusRing`, etc. | `lib/styles.ts` | Shared Tailwind class strings |
 | Search types | `types/search.ts` | `SearchFormState`, `PassengersState`, `TripType`, `TravelStyle`, etc. |
+| Results types | `types/results.ts` | `HotelResult`, `FlightResult`, `BusResult`, `TrainResult`, filters, sort |
 
 **Import convention:** Use `@/lib/search` and `@/types` — not the inner files directly from components (unless you are editing the search module itself).
 
@@ -112,8 +121,9 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 7. `useSearchForm.handleSearch()` runs
 8. `validateSearchForm()` checks required fields
 9. If invalid → red error messages appear under fields
-10. If valid → `logSearchData()` prints to browser console (F12)
-11. **No API calls, no navigation** (yet)
+10. If valid → `router.push(buildResultsUrl(form))` navigates to `/search/results`
+11. Results page reads URL params and shows mock hotels, flights, buses, and trains
+12. **No API calls** — all data is mock
 
 Required fields: Destination, Departure, Return (round-trip only), Travelers (≥1 adult, ≥1 room), Travel style.  
 Optional: Budget.  

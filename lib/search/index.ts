@@ -7,6 +7,12 @@ export { TRAVEL_STYLE_OPTIONS, TRIP_TYPE_OPTIONS } from "@/lib/search/constants"
 export { formatTravelDatesSummary } from "@/lib/search/dates";
 export { buildSearchData, logSearchData } from "@/lib/search/payload";
 export {
+  buildResultsUrl,
+  formToSearchParams,
+  parseSearchParams,
+  searchDataToParams,
+} from "@/lib/search/params";
+export {
   applyPassengerFieldUpdate,
   formatPassengersSummary,
   getInfantMax,

@@ -3,7 +3,7 @@
 Travel planning web application — discover destinations, plan trips, and manage travel in one place.
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
-**Version:** 0.2.0 (Search card improvements — autocomplete, passengers & calendar)
+**Version:** 0.3.0 (Search results page — hotels, flights, buses, trains)
 
 ## Tech stack
 
@@ -54,6 +54,7 @@ Gloconn/
 │   │   ├── SearchCard.tsx
 │   │   ├── TravelersSelector.tsx
 │   │   └── TravelStyleSelector.tsx
+│   ├── results/            # Search results cards, filters, sorting
 │   └── ui/                 # Reusable UI primitives
 │       ├── Autocomplete.tsx
 │       ├── NumberStepper.tsx
@@ -62,12 +63,14 @@ Gloconn/
 ├── hooks/                  # Custom React hooks
 ├── lib/
 │   ├── destinations.ts     # Mock destination data (autocomplete)
-│   ├── search/             # Search validation, payload, passengers, constants
+│   ├── results/            # Mock results, filter, and sort helpers
+│   ├── search/             # Search validation, payload, params, passengers
 │   ├── navigation.ts       # Nav and footer link config
 │   ├── styles.ts           # Shared Tailwind class strings
 │   └── utils.ts            # General helpers (e.g. cn)
 ├── types/
 │   ├── search.ts           # Search-related types
+│   ├── results.ts          # Search result types
 │   └── index.ts            # Re-exports all types
 └── docs/                   # Full project documentation
 ```
@@ -86,8 +89,8 @@ Gloconn/
 
 ## Current status
 
-- **Live route:** `/` (home page with enhanced search card)
-- **Search card:** Destination autocomplete, passengers & rooms selector, dates, budget, travel style
+- **Live routes:** `/` (home), `/search/results` (mock hotels, flights, buses, trains)
+- **Search card:** Destination autocomplete, passengers & rooms selector, dates, budget, travel style → navigates to results
 - **Planned routes:** `/destinations`, `/my-trips`, `/about`
 - **Backend / APIs:** None yet
 

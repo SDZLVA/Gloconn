@@ -1,9 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
+  buildResultsUrl,
   hasSearchFormErrors,
-  logSearchData,
   validateSearchForm,
 } from "@/lib/search";
 import { rememberDestinationByLabel } from "@/lib/destinations/recentSearches";
@@ -21,6 +22,7 @@ import {
  * Keeps SearchCard focused on layout while all form behavior lives here.
  */
 export function useSearchForm() {
+  const router = useRouter();
   const [form, setForm] = useState<SearchFormState>(INITIAL_SEARCH_FORM);
   const [errors, setErrors] = useState<SearchFormErrors>({});
 
@@ -74,7 +76,7 @@ export function useSearchForm() {
     }
 
     rememberDestinationByLabel(form.destination);
-    logSearchData(form);
+    router.push(buildResultsUrl(form));
   }
 
   return {

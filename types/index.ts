@@ -17,3 +17,20 @@ export {
   INITIAL_SEARCH_FORM,
   INITIAL_TRAVELERS,
 } from "@/types/search";
+
+export type {
+  BusResult,
+  FlightResult,
+  HotelResult,
+  ResultType,
+  ResultsFilters,
+  SearchResult,
+  SortOption,
+  TrainResult,
+} from "@/types/results";
+
+export {
+  DEFAULT_RESULTS_FILTERS,
+  RESULT_TYPE_LABELS,
+  SORT_OPTIONS,
+} from "@/types/results";

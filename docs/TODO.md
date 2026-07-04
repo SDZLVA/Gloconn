@@ -11,10 +11,11 @@ Active and upcoming tasks. Check items off as they are completed and move done i
   - Mock destination data (name, image placeholder, short description)
   - Responsive layout (1 col mobile, 2–3 cols desktop)
 
-- [ ] **Search results page** (`app/search/results/page.tsx` or similar)
-  - Receive search data via URL query params or Next.js navigation state
-  - Display mock results based on destination and travel style
-  - Link from Search button after validation (replace console-only flow)
+- [x] **Search results page** (`app/search/results/page.tsx`)
+  - Receive search data via URL query params
+  - Display mock results: hotels, flights, buses, trains
+  - Filter sidebar, sorting, responsive layout
+  - Link from Search button after validation
 
 - [ ] **About page** (`app/about/page.tsx`)
   - Simple content page about Glooconn

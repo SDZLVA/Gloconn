@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.2.0 (Search card improvements — autocomplete, travelers & calendar)
+**Current version:** 0.3.0 (Search results page — hotels, flights, buses, trains)
 
 ---
 
@@ -32,10 +32,14 @@ Gloconn/
 ├── app/                    # Next.js App Router pages and global styles
 │   ├── layout.tsx          # Root layout (wraps all pages in AppShell)
 │   ├── page.tsx            # Home page
+│   ├── search/
+│   │   └── results/
+│   │       └── page.tsx    # Search results (mock data, filters, sorting)
 │   └── globals.css         # Global CSS, brand colors, typography
 ├── components/
 │   ├── home/               # Home page sections (HeroSection)
 │   ├── layout/             # Site shell (AppShell, Navbar, Footer, BrandLogo)
+│   ├── results/            # Search results feature (cards, filters, sort)
 │   ├── search/             # Search form feature
 │   │   ├── BudgetSelector.tsx
 │   │   ├── DestinationAutocomplete.tsx
@@ -50,6 +54,7 @@ Gloconn/
 │   ├── calendar/           # Date helpers for the travel calendar
 │   ├── destinations.ts     # Mock destination data for autocomplete
 │   ├── destinations/       # Recent-search persistence (localStorage)
+│   ├── results/            # Mock results data, filter, and sort helpers
 │   ├── search/             # Search feature logic (split by responsibility)
 │   │   ├── constants.ts    # Travel style and trip type options
 │   │   ├── dates.ts        # Travel dates summary label
@@ -57,12 +62,14 @@ Gloconn/
 │   │   ├── passengers.ts   # Passengers summary, limits, validation
 │   │   ├── validation.ts   # Form validation
 │   │   ├── payload.ts      # Build and log search data
+│   │   ├── params.ts       # URL query param serialization for results
 │   │   └── index.ts        # Public exports for the search feature
 │   ├── navigation.ts       # Nav and footer link config
 │   ├── styles.ts           # Shared Tailwind class strings
 │   └── utils.ts            # General helpers
 ├── types/
 │   ├── search.ts           # Search-related types and defaults
+│   ├── results.ts          # Search result types (hotel, flight, bus, train)
 │   └── index.ts            # Re-exports (import from @/types)
 ├── docs/                   # Project documentation (this folder)
 └── public/                 # Static assets (reserved for future use)
@@ -90,7 +97,15 @@ Gloconn/
 - **Travel style** — Budget / Standard / Luxury radio group
 - React state management via `useSearchForm` hook
 - Required-field validation on Search click
-- Successful searches log formatted data to the browser console
+- Successful searches navigate to `/search/results` with URL query params
+
+### Search results (mock data, no API)
+- **Route:** `/search/results` — reads search criteria from URL query params
+- **Cards:** Hotel, flight, bus, and train result cards with modern layout
+- **Filters:** Sidebar with transport type, price range, and minimum rating
+- **Sorting:** Price, rating, and duration options
+- **Responsive:** Collapsible filter panel on mobile; sticky sidebar on desktop
+- **Reusable parts:** `ResultCard`, `ResultPrice`, `ResultRating`, `ResultTypeBadge`, etc.
 
 ### Reusable UI primitives
 - `Button`, `Card`, `InputField`, `FormField` (label + error)
@@ -109,6 +124,7 @@ Gloconn/
 | Route | Status | Description |
 |-------|--------|-------------|
 | `/` | ✅ Live | Home page with hero and search card |
+| `/search/results` | ✅ Live | Search results with mock hotels, flights, buses, trains |
 | `/destinations` | ⏳ Planned | Destination browsing (nav link exists, page not built) |
 | `/my-trips` | ⏳ Planned | User trip management (nav link exists, page not built) |
 | `/about` | ⏳ Planned | About Glooconn (nav link exists, page not built) |

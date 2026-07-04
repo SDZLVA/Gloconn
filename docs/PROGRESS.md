@@ -135,9 +135,21 @@ A week-by-week record of completed work. Update this file at the end of each dev
 
 ---
 
-## Week 2 — Core pages (not started)
+## Week 2 — Core pages (in progress)
 
-See [TODO.md](./TODO.md) for the active task list.
+### Search results page
+
+- Added `/search/results` route with mock hotels, flights, buses, and trains
+- Built reusable result cards (`HotelResultCard`, `FlightResultCard`, `BusResultCard`, `TrainResultCard`)
+- Added filter sidebar (transport type, price range, minimum rating) and sort bar
+- Responsive layout: collapsible filters on mobile, sticky sidebar on desktop
+- Search form now navigates to results via URL query params (`lib/search/params.ts`)
+- Mock data in `lib/results/` with filter and sort helpers
+- Updated all documentation
+
+**Files added:** `app/search/results/page.tsx`, `types/results.ts`, `lib/results/`, `lib/search/params.ts`, `components/results/`
+
+See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
