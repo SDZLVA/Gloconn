@@ -112,6 +112,17 @@ A week-by-week record of completed work. Update this file at the end of each dev
 
 **Files added:** `lib/calendar/dates.ts`, `lib/calendar/index.ts`, `lib/search/dates.ts`, `components/ui/TravelCalendar.tsx`, `components/search/TravelDatesSelector.tsx`
 
+### Budget slider
+
+- Replaced optional budget number input with `BudgetSelector` and reusable `BudgetSlider`
+- Added currency selector (EUR, USD, GBP) with live formatted value display
+- Added min/max budget labels (€500–€10,000) and clear action for optional field
+- Added `lib/budget/` helpers and slider track styles in `globals.css`
+- Updated search payload to include `budgetCurrency` when a budget is set
+- Updated all documentation
+
+**Files added:** `lib/budget/currencies.ts`, `lib/budget/index.ts`, `components/ui/BudgetSlider.tsx`, `components/search/BudgetSelector.tsx`
+
 ---
 
 ## Week 2 — Core pages (not started)

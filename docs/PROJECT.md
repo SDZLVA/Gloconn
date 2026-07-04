@@ -37,14 +37,16 @@ Gloconn/
 │   ├── home/               # Home page sections (HeroSection)
 │   ├── layout/             # Site shell (AppShell, Navbar, Footer, BrandLogo)
 │   ├── search/             # Search form feature
+│   │   ├── BudgetSelector.tsx
 │   │   ├── DestinationAutocomplete.tsx
 │   │   ├── SearchCard.tsx
 │   │   ├── TravelDatesSelector.tsx
 │   │   ├── TravelersSelector.tsx
 │   │   └── TravelStyleSelector.tsx
-│   └── ui/                 # Generic reusable UI (Button, Card, TravelCalendar, …)
+│   └── ui/                 # Generic reusable UI (Button, Card, BudgetSlider, TravelCalendar, …)
 ├── hooks/                  # Custom React hooks (useSearchForm, useRecentDestinationSearches)
 ├── lib/
+│   ├── budget/             # Currency options, limits, and budget formatting
 │   ├── calendar/           # Date helpers for the travel calendar
 │   ├── destinations.ts     # Mock destination data for autocomplete
 │   ├── destinations/       # Recent-search persistence (localStorage)
@@ -83,7 +85,7 @@ Gloconn/
 - **Destination** — autocomplete with mock suggestions, recent searches, and popular destinations (keyboard + mouse accessible)
 - **Dates** — travel calendar with round-trip / one-way toggle, range selection, past dates disabled
 - **Travelers & rooms** — dropdown selector with Adults, Children, Infants, and Rooms steppers
-- **Budget** — optional max spend in €
+- **Budget** — optional slider with EUR / USD / GBP selector, live formatted value, min €500 and max €10,000
 - **Travel style** — Budget / Standard / Luxury radio group
 - React state management via `useSearchForm` hook
 - Required-field validation on Search click
@@ -91,6 +93,7 @@ Gloconn/
 
 ### Reusable UI primitives
 - `Button`, `Card`, `InputField`, `FormField` (label + error)
+- `BudgetSlider` — reusable range control with currency selector and real-time formatted value
 - `Autocomplete` — generic accessible combobox (keyboard navigation, listbox)
 - `TravelCalendar` — reusable date picker with single or range selection
 - `NumberStepper` — +/- counter for bounded numeric values

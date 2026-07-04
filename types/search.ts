@@ -2,6 +2,8 @@
  * Types for the trip search form feature.
  */
 
+import type { CurrencyCode } from "@/lib/budget";
+
 /** Budget, Standard, or Luxury — chosen in the search card. */
 export type TravelStyle = "budget" | "standard" | "luxury";
 
@@ -23,6 +25,7 @@ export type SearchFormState = {
   departureDate: string;
   returnDate: string;
   budget: string;
+  budgetCurrency: CurrencyCode;
   travelers: TravelersState;
   travelStyle: TravelStyle;
 };
@@ -41,6 +44,7 @@ export type SearchData = {
   departureDate: string;
   returnDate: string | null;
   budget: number | null;
+  budgetCurrency: CurrencyCode | null;
   travelers: TravelersState;
   totalGuests: number;
   travelStyle: TravelStyle;
@@ -61,6 +65,7 @@ export const INITIAL_SEARCH_FORM: SearchFormState = {
   departureDate: "",
   returnDate: "",
   budget: "",
+  budgetCurrency: "EUR",
   travelers: INITIAL_TRAVELERS,
   travelStyle: "standard",
 };

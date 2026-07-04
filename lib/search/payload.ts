@@ -11,6 +11,7 @@ export function buildSearchData(form: SearchFormState): SearchData {
     departureDate: form.departureDate,
     returnDate: form.tripType === "one-way" ? null : form.returnDate,
     budget: budgetValue ? Number(budgetValue) : null,
+    budgetCurrency: budgetValue ? form.budgetCurrency : null,
     travelers: { ...form.travelers },
     totalGuests: getTotalGuests(form.travelers),
     travelStyle: form.travelStyle,

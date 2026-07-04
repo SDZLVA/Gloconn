@@ -34,6 +34,68 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Budget slider — native range input with brand fill track */
+.budget-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--color-brand-600) 0%,
+    var(--color-brand-600) var(--range-progress, 0%),
+    var(--color-brand-100) var(--range-progress, 0%),
+    var(--color-brand-100) 100%
+  );
+  cursor: pointer;
+}
+
+.budget-range:focus {
+  outline: none;
+}
+
+.budget-range:focus-visible {
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--color-brand-700);
+}
+
+.budget-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  border: 2px solid white;
+  background: var(--color-brand-700);
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.2);
+  transition: transform 150ms ease, background-color 150ms ease;
+}
+
+.budget-range::-moz-range-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  border: 2px solid white;
+  background: var(--color-brand-700);
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.2);
+  transition: transform 150ms ease, background-color 150ms ease;
+}
+
+.budget-range:hover::-webkit-slider-thumb {
+  background: var(--color-brand-800);
+  transform: scale(1.05);
+}
+
+.budget-range:hover::-moz-range-thumb {
+  background: var(--color-brand-800);
+  transform: scale(1.05);
+}
+
+.budget-range::-moz-range-track {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: transparent;
+}
+
 /* Respect users who prefer less motion (accessibility) */
 @media (prefers-reduced-motion: reduce) {
   *,

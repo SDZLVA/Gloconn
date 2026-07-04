@@ -59,12 +59,15 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `TravelDatesSelector` | `components/search/` | Round-trip / one-way dates picker with calendar dropdown |
 | `TravelersSelector` | `components/search/` | Adults / Children / Infants / Rooms picker |
 | `TravelStyleSelector` | `components/search/` | Budget / Standard / Luxury picker |
+| `BudgetSelector` | `components/search/` | Optional max budget slider with currency |
 | `Button`, `Card`, `InputField` | `components/ui/` | Generic UI primitives |
+| `BudgetSlider` | `components/ui/` | Reusable range slider with currency selector and live value |
 | `Autocomplete` | `components/ui/` | Reusable accessible combobox (sections, keyboard navigation) |
 | `TravelCalendar` | `components/ui/` | Reusable date picker — single or range, disables past dates |
 | `NumberStepper` | `components/ui/` | Reusable +/- numeric counter |
 | `SectionHeading` | `components/ui/` | Reusable title + description for sections |
 | `FormLabel`, `FormError` | `components/ui/FormField.tsx` | Shared form helpers |
+| Budget helpers | `lib/budget/` | Currency options, limits, and formatting |
 
 ### Key logic
 
@@ -99,12 +102,13 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 2. **Destination** — type to filter mock suggestions; empty field shows recent searches and popular destinations; pick with mouse or arrow keys + Enter; selections persist in localStorage
 3. **Dates** — click trigger to open calendar; choose Round-trip or One-way; pick departure (and return for round-trip) on the calendar; past dates are disabled; click Done
 4. **Travelers** — click trigger to open panel; adjust Adults, Children, Infants, Rooms with steppers; click Done
-5. User clicks **Search** button
-6. `useSearchForm.handleSearch()` runs
-7. `validateSearchForm()` checks required fields
-8. If invalid → red error messages appear under fields
-9. If valid → `logSearchData()` prints to browser console (F12)
-10. **No API calls, no navigation** (yet)
+5. **Budget** — optional slider (€500–€10,000); pick EUR, USD, or GBP; live formatted value; clear to remove limit
+6. User clicks **Search** button
+7. `useSearchForm.handleSearch()` runs
+8. `validateSearchForm()` checks required fields
+9. If invalid → red error messages appear under fields
+10. If valid → `logSearchData()` prints to browser console (F12)
+11. **No API calls, no navigation** (yet)
 
 Required fields: Destination, Departure, Return (round-trip only), Travelers (≥1 adult, ≥1 room), Travel style.  
 Optional: Budget.  

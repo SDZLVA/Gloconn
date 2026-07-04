@@ -1,12 +1,12 @@
 "use client";
 
+import { BudgetSelector } from "@/components/search/BudgetSelector";
 import { DestinationAutocomplete } from "@/components/search/DestinationAutocomplete";
 import { TravelDatesSelector } from "@/components/search/TravelDatesSelector";
 import { TravelStyleSelector } from "@/components/search/TravelStyleSelector";
 import { TravelersSelector } from "@/components/search/TravelersSelector";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { InputField } from "@/components/ui/InputField";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useSearchForm } from "@/hooks/useSearchForm";
 import { cn } from "@/lib/utils";
@@ -68,14 +68,12 @@ export function SearchCard({ className }: SearchCardProps) {
           required
         />
 
-        <InputField
-          id="search-budget"
-          label="Budget"
-          type="number"
-          placeholder="Optional — max spend in €"
+        <BudgetSelector
           value={form.budget}
+          currency={form.budgetCurrency}
           onChange={(value) => updateField("budget", value)}
-          min={0}
+          onCurrencyChange={(value) => updateField("budgetCurrency", value)}
+          className="sm:col-span-2"
         />
 
         <TravelStyleSelector
