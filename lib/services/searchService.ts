@@ -17,7 +17,7 @@ export async function searchTrips(
 ): Promise<ServiceResult<SearchResult[]>> {
   const validation = validateSearchRequest(search);
   if (!validation.success) {
-    return validation;
+    return { success: false, error: validation.error };
   }
 
   return runService(

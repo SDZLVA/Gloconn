@@ -5,14 +5,12 @@
 import {
   createCatalogSearchRequest,
   mergeSearchResults,
-  toSearchRequest,
 } from "@/lib/api/searchMappers";
 import { normalizeProductTypes } from "@/lib/search/productTypes";
 import { getServiceProviders } from "@/lib/services/context";
 import type { ServiceProviders } from "@/lib/services/types";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchResult } from "@/types/results";
-import type { SearchData } from "@/types/search";
 
 /** Runs selected search domains in parallel and merges into the UI result union. */
 async function searchAllDomains(
@@ -43,18 +41,16 @@ async function searchAllDomains(
 
 /** Enriches a search request with a resolved destination id when possible. */
 async function enrichSearchRequest(
-  search: SearchData,
+  request: SearchRequest,
   providers: ServiceProviders,
 ): Promise<SearchRequest> {
-  const request = toSearchRequest(search);
-
-  if (search.destinationId) {
+  if (request.destinationId) {
     return request;
   }
 
   try {
     const destinationId = await providers.destinations.resolveDestinationId(
-      search.destination,
+      request.destination,
     );
     return { ...request, destinationId };
   } catch {
@@ -64,11 +60,11 @@ async function enrichSearchRequest(
 
 /** Runs hotels, flights, and transport providers in parallel. */
 export async function orchestrateTripSearch(
-  search: SearchData,
+  request: SearchRequest,
   providers: ServiceProviders = getServiceProviders(),
 ): Promise<SearchResult[]> {
-  const request = await enrichSearchRequest(search, providers);
-  return searchAllDomains(request, providers);
+  const enriched = await enrichSearchRequest(request, providers);
+  return searchAllDomains(enriched, providers);
 }
 
 /** Returns the full result catalog via active providers (price-range defaults). */

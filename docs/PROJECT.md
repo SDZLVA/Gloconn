@@ -91,7 +91,8 @@ Gloconn/
 │   │   ├── travelers.ts    # Backward-compatible aliases for passengers helpers
 │   │   ├── passengers.ts   # Passengers summary, limits, validation
 │   │   ├── validation.ts   # Form validation
-│   │   ├── payload.ts      # Build and log search data
+│   │   ├── request.ts      # SearchRequest builder (form → model → URL / API)
+│   │   ├── payload.ts      # Legacy SearchData from form (delegates to request.ts)
 │   │   ├── params.ts       # URL query param serialization for results
 │   │   └── index.ts        # Public exports for the search feature
 │   ├── navigation.ts       # Nav and footer link config
@@ -142,6 +143,7 @@ Gloconn/
 - **Search for** — toggle stays, flights, and ground transport result types
 - **Travel style** — Budget / Standard / Luxury radio group
 - React state management via `useSearchForm` hook
+- Submit builds a canonical `SearchRequest` via `lib/search/request.ts` (ready for future `POST /api/search`)
 - Required-field validation on Search click with inline errors and a summary alert
 - Successful searches navigate to `/search/results` with URL query params
 

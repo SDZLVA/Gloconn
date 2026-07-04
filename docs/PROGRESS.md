@@ -346,6 +346,15 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 - `validateSearchRequest` aligned with the same rules for results page
 - Updated documentation
 
+### Reusable SearchRequest builder
+
+- Added `lib/search/request.ts` — single module to collect form values into `SearchRequest`
+- `validateAndBuildSearchRequest()` used on form submit; `serializeSearchRequest()` for future API body
+- `searchOrchestrator.orchestrateTripSearch()` now accepts `SearchRequest` directly
+- `validateSearchRequest()` returns `ServiceResult<SearchRequest>`
+- URL serialization delegated to `searchRequestToParams()`; `buildSearchData()` delegates to request builder
+- Updated documentation
+
 ---
 
 **Branch:** `cursor/architecture-improvements`

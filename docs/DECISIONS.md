@@ -555,7 +555,7 @@ types/search-response.ts                 → stub
 
 **Consequences:**
 - `lib/providers/search/mock/` is deprecated but delegates to domain providers
-- `SearchData` → `SearchRequest` conversion happens in `lib/api/searchMappers.ts`
+- `SearchData` → `SearchRequest` conversion happens in `lib/search/request.ts` (`toSearchRequest` in searchMappers delegates)
 - Restaurants and attractions providers remain unimplemented (no mock data yet)
 
 ---
@@ -672,3 +672,27 @@ lib/config/
 - `lib/results/mock*.ts` remain as mock data source (move to providers planned)
 - `app/api/` routes still planned — use `toJsonResponse` when added
 - Amadeus stub delegates to mock until `client.ts` is implemented
+
+---
+
+## ADR-028: Central SearchRequest builder
+
+**Decision:** Introduce `lib/search/request.ts` as the single place to collect search form values into the canonical `SearchRequest` model. Form submit, URL serialization, service validation, and future Route Handlers all use this module — no API calls yet.
+
+**Flow:**
+```
+SearchFormState → validateAndBuildSearchRequest() → SearchRequest
+  → buildResultsUrlFromRequest()     (navigation)
+  → serializeSearchRequest()         (future POST /api/search body)
+SearchData (URL / saved trips) → buildSearchRequestFromData() → SearchRequest
+```
+
+**Rationale:**
+- One model for providers, orchestrator, and future HTTP APIs
+- `SearchData` kept for URL params and saved trips; conversion is explicit
+- `validateSearchRequest()` returns `SearchRequest` so services never re-map
+
+**Consequences:**
+- `lib/api/searchMappers.toSearchRequest()` delegates to `buildSearchRequestFromData()`
+- `orchestrateTripSearch()` accepts `SearchRequest` only
+- `buildSearchData()` delegates to the request builder for consistency

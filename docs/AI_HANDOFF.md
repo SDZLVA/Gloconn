@@ -92,8 +92,12 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `useRecentDestinationSearches` | `hooks/useRecentDestinationSearches.ts` | Recent destination list (localStorage) |
 | `validateSearchForm` | `lib/search/validation.ts` | Client-side required-field validation |
 | `validateBudget` | `lib/search/budget.ts` | Budget min/max and required checks |
-| `buildSearchData` | `lib/search/payload.ts` | Converts form strings to typed payload |
+| `buildSearchData` | `lib/search/payload.ts` | Legacy `SearchData` from form (delegates to request builder) |
+| `buildSearchRequest` | `lib/search/request.ts` | Form state → canonical `SearchRequest` |
+| `validateAndBuildSearchRequest` | `lib/search/request.ts` | Validate form + build `SearchRequest` (submit) |
+| `serializeSearchRequest` | `lib/search/request.ts` | JSON-ready body for future `POST /api/search` |
 | `buildResultsUrl` | `lib/search/params.ts` | Builds `/search/results?...` from form state |
+| `buildResultsUrlFromRequest` | `lib/search/request.ts` | Builds results URL from `SearchRequest` |
 | `parseSearchParams` | `lib/search/params.ts` | Reads URL params back into `SearchData` |
 | `getResultsForSearch` | `lib/results/` | **Deprecated** — use `searchTrips` from `@/lib/services` |
 | `filterResults`, `sortResults` | `lib/results/` | Client-side filter and sort helpers |
@@ -129,8 +133,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 SearchResultsPage
   → useServiceQuery(() => searchTrips(search))
     → searchService.searchTrips()
-      → validateSearchRequest()          [lib/api/validation]
-      → searchOrchestrator.orchestrateTripSearch()
+      → validateSearchRequest()          [lib/api/validation → SearchRequest]
+      → searchOrchestrator.orchestrateTripSearch(request)
         → getServiceProviders()        [lib/services/context]
           → getProviderRegistry()      [lib/providers/core/registry]
         → Promise.all([
@@ -202,9 +206,9 @@ Future Route Handler
 5. **Travelers** — required; click trigger to open panel; adjust Adults, Children, Infants, Rooms with +/- steppers; infants cannot exceed adults; click Done
 6. **Budget** — required slider (€500–€10,000); pick EUR, USD, or GBP; move slider to set amount
 7. User clicks **Search** button
-8. `actions.submit()` runs `validateSearchForm()`
+8. `actions.submit()` runs `validateAndBuildSearchRequest()` → `SearchRequest`
 9. If invalid → summary alert at top + red error messages under each field
-10. If valid → `router.push(buildResultsUrl(form))` navigates to `/search/results`
+10. If valid → `router.push(buildResultsUrlFromRequest(request))` navigates to `/search/results`
 11. Results page calls `searchTrips()` via `useServiceQuery` — mock provider by default
 12. **No external travel APIs** — mock provider returns static data through the service layer
 

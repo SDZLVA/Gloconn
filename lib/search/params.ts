@@ -2,8 +2,13 @@ import { buildSearchData } from "@/lib/search/payload";
 import {
   normalizeProductTypes,
   parseProductTypesParam,
-  serializeProductTypesParam,
 } from "@/lib/search/productTypes";
+import {
+  buildResultsUrlFromRequest,
+  buildSearchRequest,
+  buildSearchRequestFromData,
+  searchRequestToParams,
+} from "@/lib/search/request";
 import {
   INITIAL_PASSENGERS,
   INITIAL_SEARCH_FORM,
@@ -13,41 +18,7 @@ import type { SearchData } from "@/types/search";
 
 /** Serializes validated search data into URL query parameters. */
 export function searchDataToParams(data: SearchData): URLSearchParams {
-  const params = new URLSearchParams();
-
-  params.set("destination", data.destination);
-  if (data.destinationId) {
-    params.set("destinationId", data.destinationId);
-  }
-  if (data.origin) {
-    params.set("origin", data.origin);
-  }
-  if (data.originId) {
-    params.set("originId", data.originId);
-  }
-  params.set("tripType", data.tripType);
-  params.set("departureDate", data.departureDate);
-  if (data.returnDate) {
-    params.set("returnDate", data.returnDate);
-  }
-  if (data.budget !== null) {
-    params.set("budget", String(data.budget));
-    params.set("budgetCurrency", data.budgetCurrency ?? "EUR");
-  }
-  params.set("adults", String(data.travelers.adults));
-  params.set("children", String(data.travelers.children));
-  params.set("infants", String(data.travelers.infants));
-  params.set("rooms", String(data.travelers.rooms));
-  params.set("travelStyle", data.travelStyle);
-
-  const productTypesParam = serializeProductTypesParam(
-    normalizeProductTypes(data.productTypes),
-  );
-  if (productTypesParam) {
-    params.set("productTypes", productTypesParam);
-  }
-
-  return params;
+  return searchRequestToParams(buildSearchRequestFromData(data));
 }
 
 /** Builds URL query params from raw form state (after validation). */
@@ -126,7 +97,7 @@ export function parseSearchParamsToForm(
 
 /** Builds the results page URL from validated form state. */
 export function buildResultsUrl(form: SearchFormState): string {
-  return `/search/results?${formToSearchParams(form).toString()}`;
+  return buildResultsUrlFromRequest(buildSearchRequest(form));
 }
 
 /** Builds the home page URL with search params for editing an existing search. */

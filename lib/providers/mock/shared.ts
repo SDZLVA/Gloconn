@@ -153,6 +153,7 @@ export function searchMockResults(
   travelStyle: TravelStyle = "standard",
 ): SearchResult[] {
   const request: SearchRequest = {
+    origin: "",
     destination,
     tripType: "round-trip",
     departureDate: new Date().toISOString().slice(0, 10),

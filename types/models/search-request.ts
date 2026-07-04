@@ -47,7 +47,7 @@ export type SearchRequest = {
    */
   returnDate: string | null;
 
-  /** Optional spending limit; null when the user did not set a budget. */
+  /** Spending limit; null only for internal catalog searches. */
   budget: Budget | null;
 
   /** Guest and room counts. */
@@ -62,7 +62,7 @@ export type SearchRequest = {
   /**
    * Origin city label (e.g. "Milan, Italy") for flight and transport searches.
    */
-  origin?: string;
+  origin: string;
 
   /**
    * Resolved Glooconn destination id for the origin city when available.

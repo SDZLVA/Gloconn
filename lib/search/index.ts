@@ -19,6 +19,17 @@ export {
   searchDataToParams,
 } from "@/lib/search/params";
 export {
+  buildResultsUrlFromRequest,
+  buildSearchRequest,
+  buildSearchRequestFromData,
+  parseSearchRequestFromParams,
+  searchRequestToParams,
+  searchRequestToSearchData,
+  serializeSearchRequest,
+  validateAndBuildSearchRequest,
+  type BuildSearchRequestResult,
+} from "@/lib/search/request";
+export {
   normalizeProductTypes,
   parseProductTypesParam,
   serializeProductTypesParam,

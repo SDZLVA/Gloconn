@@ -7,7 +7,7 @@ import type { Bus, Flight, Hotel, Train } from "@/types/models";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchResult } from "@/types/results";
 import type { SearchData } from "@/types/search";
-import { normalizeProductTypes } from "@/lib/search/productTypes";
+import { buildSearchRequestFromData } from "@/lib/search/request";
 
 /**
  * Special destination value that tells mock providers to return their full catalog.
@@ -17,28 +17,13 @@ export const CATALOG_SEARCH_DESTINATION = "__catalog__";
 
 /** Converts validated SearchData into the canonical SearchRequest model. */
 export function toSearchRequest(search: SearchData): SearchRequest {
-  return {
-    destination: search.destination,
-    destinationId: search.destinationId,
-    origin: search.origin,
-    originId: search.originId,
-    tripType: search.tripType,
-    departureDate: search.departureDate,
-    returnDate: search.returnDate,
-    budget:
-      search.budget !== null && search.budgetCurrency !== null
-        ? { amount: search.budget, currency: search.budgetCurrency }
-        : null,
-    travelers: search.travelers,
-    totalGuests: search.totalGuests,
-    travelStyle: search.travelStyle,
-    productTypes: normalizeProductTypes(search.productTypes),
-  };
+  return buildSearchRequestFromData(search);
 }
 
 /** Builds a catalog search request that returns all items from each provider. */
 export function createCatalogSearchRequest(): SearchRequest {
   return {
+    origin: "",
     destination: CATALOG_SEARCH_DESTINATION,
     tripType: "round-trip",
     departureDate: new Date().toISOString().slice(0, 10),

@@ -62,11 +62,26 @@ Cross-cutting:
 
 ## Request flow (search)
 
-1. `SearchResultsPage` → `useServiceQuery(() => searchTrips(search))`
-2. `searchService.searchTrips` → `validateSearchRequest()` → `runService()`
-3. `searchOrchestrator.orchestrateTripSearch` → enriches `destinationId` → parallel provider calls
-4. `mergeSearchResults()` → `ServiceResult<SearchResult[]>`
-5. UI filters/sorts in the browser
+1. `useSearchForm.submit()` → `validateAndBuildSearchRequest()` → `SearchRequest`
+2. Navigate to results via `buildResultsUrlFromRequest(request)` (URL params)
+3. `SearchResultsPage` → `useServiceQuery(() => searchTrips(search))`
+4. `searchService.searchTrips` → `validateSearchRequest()` → `SearchRequest` → `runService()`
+5. `searchOrchestrator.orchestrateTripSearch(request)` → enriches `destinationId` → parallel provider calls
+6. `mergeSearchResults()` → `ServiceResult<SearchResult[]>`
+7. UI filters/sorts in the browser
+
+### SearchRequest builder (`lib/search/request.ts`)
+
+| Function | Purpose |
+|----------|---------|
+| `buildSearchRequest(form)` | Form state → canonical model |
+| `validateAndBuildSearchRequest(form)` | Validate + build (used on submit) |
+| `buildSearchRequestFromData(data)` | Legacy `SearchData` → `SearchRequest` |
+| `searchRequestToParams(request)` | URL query serialization |
+| `buildResultsUrlFromRequest(request)` | Results page href |
+| `serializeSearchRequest(request)` | JSON-ready body for future Route Handlers |
+
+No HTTP calls — shape matches what `POST /api/search` will accept.
 
 ---
 
@@ -90,7 +105,7 @@ Cross-cutting:
 **Model gaps to fill before production Amadeus:**
 
 - `Destination.iataCode` — airport code per destination (optional field added)
-- `SearchRequest.origin` — departure airport (optional field added)
+- `SearchRequest.origin` — departure city (required for user searches)
 - Populate IATA codes in destination mock data or via Google Places adapter
 
 ---
@@ -127,7 +142,8 @@ See `.env.example`. Summary:
 | `lib/results/getResultsForSearch` | `searchTrips()` |
 | `getSearchProvider()` | Domain providers via registry |
 | `SearchProvider` interface | `HotelsProvider`, `FlightsProvider`, etc. |
-| `SearchData` | `SearchRequest` for new provider code |
+| `SearchData` | `SearchRequest` via `lib/search/request.ts` |
+| `toSearchRequest()` in searchMappers | `buildSearchRequestFromData()` (delegates) |
 | `getApiEnv()` | `getAppConfig().providers` |
 
 ---

@@ -3,9 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
-  buildResultsUrl,
-  hasSearchFormErrors,
-  validateSearchForm,
+  buildResultsUrlFromRequest,
+  validateAndBuildSearchRequest,
 } from "@/lib/search";
 import {
   rememberDestinationById,
@@ -117,10 +116,10 @@ export function useSearchForm(
   }
 
   function submit() {
-    const nextErrors = validateSearchForm(form);
-    setErrors(nextErrors);
+    const result = validateAndBuildSearchRequest(form);
 
-    if (hasSearchFormErrors(nextErrors)) {
+    if (!result.ok) {
+      setErrors(result.errors);
       return;
     }
 
@@ -130,7 +129,7 @@ export function useSearchForm(
       void rememberDestinationByLabel(form.destination);
     }
 
-    router.push(buildResultsUrl(form));
+    router.push(buildResultsUrlFromRequest(result.request));
   }
 
   const actions: SearchFormActions = {

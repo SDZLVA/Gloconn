@@ -7,20 +7,22 @@ import { createValidationError } from "@/lib/api/errors";
 import { serviceFailure, serviceSuccess, type ServiceResult } from "@/lib/api/types";
 import { validateBudget } from "@/lib/search/budget";
 import { validatePassengers } from "@/lib/search/passengers";
+import { buildSearchRequestFromData } from "@/lib/search/request";
 import { normalizeProductTypes } from "@/lib/search/productTypes";
+import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchData } from "@/types/search";
 
 function validationFailure(
   message: string,
   field?: string,
-): ServiceResult<SearchData> {
+): ServiceResult<SearchRequest> {
   return serviceFailure(createValidationError(message, { field }));
 }
 
 /** Checks that a search request has the minimum fields needed for a results query. */
 export function validateSearchRequest(
   search: Partial<SearchData>,
-): ServiceResult<SearchData> {
+): ServiceResult<SearchRequest> {
   if (!search.origin?.trim()) {
     return validationFailure(
       "Please enter where you are leaving from.",
@@ -84,19 +86,21 @@ export function validateSearchRequest(
   const children = search.travelers.children;
   const infants = search.travelers.infants;
 
-  return serviceSuccess({
-    destination: search.destination.trim(),
-    destinationId: search.destinationId,
-    origin: search.origin.trim(),
-    originId: search.originId,
-    tripType,
-    departureDate: search.departureDate,
-    returnDate: tripType === "one-way" ? null : (search.returnDate ?? null),
-    budget: search.budget ?? null,
-    budgetCurrency: search.budgetCurrency ?? null,
-    travelers: { ...search.travelers },
-    totalGuests: search.totalGuests ?? adults + children + infants,
-    travelStyle: search.travelStyle,
-    productTypes: normalizeProductTypes(search.productTypes),
-  });
+  return serviceSuccess(
+    buildSearchRequestFromData({
+      destination: search.destination.trim(),
+      destinationId: search.destinationId,
+      origin: search.origin.trim(),
+      originId: search.originId,
+      tripType,
+      departureDate: search.departureDate,
+      returnDate: tripType === "one-way" ? null : (search.returnDate ?? null),
+      budget: search.budget ?? null,
+      budgetCurrency: search.budgetCurrency ?? null,
+      travelers: { ...search.travelers },
+      totalGuests: search.totalGuests ?? adults + children + infants,
+      travelStyle: search.travelStyle,
+      productTypes: normalizeProductTypes(search.productTypes),
+    }),
+  );
 }
