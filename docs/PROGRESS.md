@@ -218,6 +218,19 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
+## Provider interfaces
+
+**Branch:** `cursor/api-foundation`
+
+### Changes
+
+- Added `lib/providers/core/base.ts` — `BaseProvider` with `name`
+- Added domain interfaces: `DestinationProvider`, `HotelsProvider`, `FlightsProvider`, `TransportProvider`, `RestaurantsProvider`, `AttractionsProvider`
+- Marked legacy `SearchProvider` as deprecated
+- No new provider implementations — existing mock adapters unchanged
+
+---
+
 **Branch:** `cursor/architecture-improvements`
 
 ### Changes

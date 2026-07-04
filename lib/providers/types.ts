@@ -1,22 +1,29 @@
 /**
- * Provider contracts — any external API (Amadeus, Booking.com, etc.)
- * implements these interfaces and maps responses to Glooconn domain types.
+ * Provider contracts — re-exported from core interfaces.
+ *
+ * Legacy `SearchProvider` remains for the monolithic mock search adapter
+ * until it is split into HotelsProvider, FlightsProvider, and TransportProvider.
  */
 
-import type { Destination } from "@/types/destination";
 import type { SearchResult } from "@/types/results";
 import type { SearchData } from "@/types/search";
 
-/** Contract for destination lookup and autocomplete providers. */
-export type DestinationProvider = {
-  readonly name: string;
-  searchDestinations(query: string): Promise<Destination[]>;
-  getPopularDestinations(): Promise<Destination[]>;
-  getDestinationById(id: string): Promise<Destination | null>;
-  resolveDestinationId(destinationLabel: string): Promise<string>;
-};
+export type { BaseProvider } from "@/lib/providers/core/base";
 
-/** Contract for travel search providers (hotels, flights, buses, trains). */
+export type {
+  AttractionsProvider,
+  DestinationProvider,
+  FlightsProvider,
+  HotelsProvider,
+  RestaurantsProvider,
+  TransportProvider,
+  TransportSearchResult,
+} from "@/lib/providers/core/types";
+
+/**
+ * @deprecated Monolithic search adapter — use HotelsProvider, FlightsProvider,
+ * and TransportProvider via searchOrchestrator instead.
+ */
 export type SearchProvider = {
   readonly name: string;
   search(searchData: SearchData): Promise<SearchResult[]>;

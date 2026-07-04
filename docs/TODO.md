@@ -25,7 +25,8 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 ## 🟡 Medium priority — Week 2–3
 
-- [ ] **Split mock search provider** into `hotels/`, `flights/`, `ground/` mock implementations
+- [x] Provider interfaces in `lib/providers/core/types.ts`
+- [ ] Implement mock `HotelsProvider`, `FlightsProvider`, `TransportProvider`
 - [ ] **Implement searchOrchestrator** — parallel provider calls + merge
 
 - [ ] **My Trips page** (`app/my-trips/page.tsx`)

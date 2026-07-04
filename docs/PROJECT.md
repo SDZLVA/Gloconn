@@ -55,7 +55,7 @@ Gloconn/
 │   ├── api/                # Env, errors, types, validation, cache (planned)
 │   ├── auth/               # Supabase clients, session helpers, middleware
 │   ├── providers/          # Provider adapters (mock + future external APIs)
-│   │   ├── core/           # Registry, config, base interfaces (planned)
+│   │   ├── core/           # BaseProvider, domain interfaces, registry (planned)
 │   │   ├── destinations/   # mock ✅, google-maps (planned)
 │   │   ├── search/         # Monolithic mock search provider ✅ (to split)
 │   │   ├── hotels/         # mock, booking (planned)

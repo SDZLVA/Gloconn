@@ -1,9 +1,19 @@
 /**
  * Central provider factory — returns the active adapter per domain.
  *
- * Planned: getHotelsProvider(), getFlightsProvider(), getGroundProvider()
- * alongside the existing destination provider registry.
- * Not implemented yet.
+ * Planned: getHotelsProvider(), getFlightsProvider(), getTransportProvider(),
+ * getRestaurantsProvider(), getAttractionsProvider().
+ * Not implemented yet — see lib/providers/core/types.ts for interfaces.
  */
 
-export {};
+export type { BaseProvider } from "@/lib/providers/core/base";
+
+export type {
+  AttractionsProvider,
+  DestinationProvider,
+  FlightsProvider,
+  HotelsProvider,
+  RestaurantsProvider,
+  TransportProvider,
+  TransportSearchResult,
+} from "@/lib/providers/core/types";

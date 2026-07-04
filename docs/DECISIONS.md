@@ -494,3 +494,23 @@ types/search-response.ts                 → stub
 - New features (restaurants, attractions) have types ready before providers exist
 - Provider mappers must convert raw API shapes to these models only
 - `Budget` uses `{ amount, currency }` in `SearchRequest`; legacy `SearchData` keeps flat budget fields until migrated
+
+---
+
+## ADR-024: Per-domain provider interfaces
+
+**Decision:** Define generic provider interfaces in `lib/providers/core/types.ts` — one contract per travel domain.
+
+**Interfaces:** `DestinationProvider`, `HotelsProvider`, `FlightsProvider`, `TransportProvider`, `RestaurantsProvider`, `AttractionsProvider`. All extend `BaseProvider` (`name` only).
+
+**Operations:** Each interface exposes only `search` (or destination-specific lookup methods) using shared models (`SearchRequest`, `Hotel`, `Flight`, etc.). No provider-specific fields.
+
+**Rationale:**
+- Amadeus, Booking, Omio, and Google Maps each implement one interface
+- `TransportProvider` returns `{ buses, trains }` so Omio can cover both in one adapter
+- Legacy `SearchProvider` kept until monolithic mock is split
+
+**Consequences:**
+- Registry will expose `getHotelsProvider()`, `getFlightsProvider()`, etc. (not implemented yet)
+- Mock implementations in `hotels/mock/`, `flights/mock/`, `ground/mock/` will implement these interfaces next
+- `searchOrchestrator` will call all search providers in parallel

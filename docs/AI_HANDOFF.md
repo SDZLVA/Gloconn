@@ -94,7 +94,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `searchDestinations` | `lib/services/destinationService.ts` | Autocomplete via active provider |
 | `useServiceQuery` | `hooks/useServiceQuery.ts` | Loading / success / error for async services |
 | API env, errors, validation | `lib/api/` | `getApiEnv`, `ApiError`, `ServiceResult`, `validateSearchRequest` |
-| Provider interfaces | `lib/providers/types.ts` | `DestinationProvider`, `SearchProvider` |
+| Provider interfaces | `lib/providers/core/types.ts` | `DestinationProvider`, `HotelsProvider`, `FlightsProvider`, `TransportProvider`, … |
+| Legacy search provider | `lib/providers/types.ts` | `SearchProvider` (deprecated monolithic mock) |
 | Mock providers | `lib/providers/*/mock/` | Default implementations (no external APIs) |
 | `formatPassengersSummary` | `lib/search/passengers.ts` | Builds passengers trigger label |
 | `validatePassengers` | `lib/search/passengers.ts` | Validates adults, children, infants, rooms |
