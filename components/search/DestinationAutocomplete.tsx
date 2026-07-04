@@ -6,11 +6,11 @@ import {
   type AutocompleteSection,
 } from "@/components/ui/Autocomplete";
 import { useRecentDestinationSearches } from "@/hooks/useRecentDestinationSearches";
+import { buildPopularDestinationsSection } from "@/components/destinations/buildPopularDestinationsSection";
 import {
   destinationToAutocompleteOption,
   filterDestinations,
   findDestinationById,
-  getPopularDestinations,
 } from "@/lib/destinations";
 import type { RecentSearchScope } from "@/lib/destinations/recentSearches";
 import type { PlaceSelection } from "@/types/search-form";
@@ -91,16 +91,9 @@ export function DestinationAutocomplete({
       });
     }
 
-    const popular = getPopularDestinations().filter(
-      (destination) => !recentIds.has(destination.id),
-    );
-
-    if (popular.length > 0) {
-      nextSections.push({
-        id: "popular",
-        heading: "Popular destinations",
-        options: popular.map(destinationToAutocompleteOption),
-      });
+    const popularSection = buildPopularDestinationsSection(recentIds);
+    if (popularSection) {
+      nextSections.push(popularSection);
     }
 
     return nextSections;
