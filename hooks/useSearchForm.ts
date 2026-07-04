@@ -9,6 +9,8 @@ import {
 import {
   rememberDestinationById,
   rememberDestinationByLabel,
+  rememberOriginById,
+  rememberOriginByLabel,
 } from "@/lib/destinations/recentSearches";
 import {
   INITIAL_SEARCH_FORM,
@@ -127,6 +129,12 @@ export function useSearchForm(
       rememberDestinationById(form.destinationId);
     } else {
       rememberDestinationByLabel(form.destination);
+    }
+
+    if (form.originId) {
+      rememberOriginById(form.originId);
+    } else {
+      rememberOriginByLabel(form.origin);
     }
 
     router.push(buildResultsUrlFromRequest(result.request));

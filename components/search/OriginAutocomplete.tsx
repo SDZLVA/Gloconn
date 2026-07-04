@@ -32,6 +32,7 @@ export function OriginAutocomplete({
       value={value}
       onChange={onChange}
       onDestinationSelect={onOriginSelect}
+      recentScope="origin"
       error={error}
       required={required}
       className={className}

@@ -12,6 +12,7 @@ import {
   findDestinationById,
   getPopularDestinations,
 } from "@/lib/destinations";
+import type { RecentSearchScope } from "@/lib/destinations/recentSearches";
 import type { PlaceSelection } from "@/types/search-form";
 
 type DestinationAutocompleteProps = {
@@ -25,13 +26,15 @@ type DestinationAutocompleteProps = {
   error?: string;
   required?: boolean;
   className?: string;
+  /** Separate localStorage bucket for destination vs origin recents. */
+  recentScope?: RecentSearchScope;
 };
 
 /**
  * DestinationAutocomplete — destination field with mock-data suggestions.
  *
- * Empty field: recent searches + popular destinations.
- * While typing: ranked matches from static mock data (no API calls).
+ * Empty field: recent searches (last 5, localStorage) + popular destinations.
+ * While typing: ranked matches; matching recents shown first.
  */
 export function DestinationAutocomplete({
   id = "search-destination",
@@ -43,23 +46,39 @@ export function DestinationAutocomplete({
   error,
   required = false,
   className,
+  recentScope = "destination",
 }: DestinationAutocompleteProps) {
-  const { recentDestinations, addRecent, reloadRecent } = useRecentDestinationSearches();
+  const { recentDestinations, addRecent, reloadRecent } =
+    useRecentDestinationSearches(recentScope);
 
   const query = value.trim();
   const isSearching = query.length > 0;
 
   const sections = useMemo(() => {
+    const recentIds = new Set(recentDestinations.map((destination) => destination.id));
+
     if (isSearching) {
       const matches = filterDestinations(query);
+      const recentMatches = matches.filter((destination) => recentIds.has(destination.id));
+      const otherMatches = matches.filter((destination) => !recentIds.has(destination.id));
 
-      return [
-        {
-          id: "matches",
-          heading: matches.length > 0 ? "Suggestions" : "",
-          options: matches.map(destinationToAutocompleteOption),
-        },
-      ] satisfies AutocompleteSection[];
+      const nextSections: AutocompleteSection[] = [];
+
+      if (recentMatches.length > 0) {
+        nextSections.push({
+          id: "recent",
+          heading: "Recent searches",
+          options: recentMatches.map(destinationToAutocompleteOption),
+        });
+      }
+
+      nextSections.push({
+        id: "matches",
+        heading: otherMatches.length > 0 ? "Suggestions" : "",
+        options: otherMatches.map(destinationToAutocompleteOption),
+      });
+
+      return nextSections;
     }
 
     const nextSections: AutocompleteSection[] = [];
@@ -72,7 +91,6 @@ export function DestinationAutocomplete({
       });
     }
 
-    const recentIds = new Set(recentDestinations.map((destination) => destination.id));
     const popular = getPopularDestinations().filter(
       (destination) => !recentIds.has(destination.id),
     );
