@@ -1,15 +1,14 @@
-/** Supported currencies for the budget slider. */
-export const CURRENCY_OPTIONS = [
-  { code: "EUR", symbol: "€", label: "Euro (EUR)" },
-  { code: "USD", symbol: "$", label: "US Dollar (USD)" },
-  { code: "GBP", symbol: "£", label: "British Pound (GBP)" },
-] as const;
+import type { CurrencyCode } from "@/types/models/currency";
+import { getCurrencyOptions } from "@/lib/providers/currencies/mock/helpers";
 
-export type CurrencyCode = (typeof CURRENCY_OPTIONS)[number]["code"];
+export type { CurrencyCode };
+
+/** Select-friendly currency options from mock data. */
+export const CURRENCY_OPTIONS = getCurrencyOptions();
 
 /** Default min, max, and step for trip budget selection. */
 export const BUDGET_LIMITS = {
-  min: 500,
+  min: 0,
   max: 10_000,
   step: 100,
 } as const;

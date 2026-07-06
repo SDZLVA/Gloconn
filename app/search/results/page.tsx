@@ -1,15 +1,13 @@
 import { SearchResultsPage } from "@/components/results/SearchResultsPage";
-import { parseSearchParams } from "@/lib/search/params";
+import { parseSearchRequestFromParams } from "@/lib/search/request";
 
 type SearchResultsRouteProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-/** Search results route — reads query params and renders mock results. */
-export default async function SearchResultsRoute({
-  searchParams,
-}: SearchResultsRouteProps) {
-  const params = await searchParams;
+function toUrlSearchParams(
+  params: Record<string, string | string[] | undefined>,
+): URLSearchParams {
   const urlParams = new URLSearchParams();
 
   for (const [key, value] of Object.entries(params)) {
@@ -20,7 +18,15 @@ export default async function SearchResultsRoute({
     }
   }
 
-  const search = parseSearchParams(urlParams);
+  return urlParams;
+}
+
+/** Search results route — reads query params into SearchRequest and renders results. */
+export default async function SearchResultsRoute({
+  searchParams,
+}: SearchResultsRouteProps) {
+  const params = await searchParams;
+  const search = parseSearchRequestFromParams(toUrlSearchParams(params));
 
   return <SearchResultsPage search={search} />;
 }

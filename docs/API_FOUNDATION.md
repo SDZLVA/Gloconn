@@ -81,7 +81,11 @@ Cross-cutting:
 | `buildResultsUrlFromRequest(request)` | Results page href |
 | `serializeSearchRequest(request)` | JSON-ready body for future Route Handlers |
 
-No HTTP calls — shape matches what `POST /api/search` will accept.
+No HTTP calls from the form — shape matches what `POST /api/search` accepts.
+
+### HTTP Route Handler
+
+`POST /api/search` — accepts JSON `SearchRequest`, calls `searchTrips()`, returns `toJsonResponse()`.
 
 ---
 

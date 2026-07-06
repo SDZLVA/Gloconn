@@ -6,6 +6,11 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 ## 🔴 High priority — Week 2
 
+- [x] **Search engine** — SearchRequest builder, validation, URL flow, `POST /api/search`, unit tests, CI
+- [x] Search-while-typing destination autocomplete
+- [x] Recent destination and origin searches (localStorage)
+- [x] Popular destinations on empty autocomplete
+
 - [ ] **Destinations page** (`app/destinations/page.tsx`)
   - Grid of destination cards using the existing `Card` component
   - Mock destination data (name, image placeholder, short description)
@@ -61,7 +66,8 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [x] Improve date input UX (custom date picker component)
 - [x] Loading states for API calls (service layer + UI)
 - [ ] Add unit tests for `lib/search/validation.ts`
-- [ ] Set up GitHub Actions for CI (lint + build on PR)
+- [x] Add unit tests for search request builder and API validation (`lib/search/search.test.ts`)
+- [x] Set up GitHub Actions for CI (lint + build on PR)
 - [ ] Update root `README.md` with Glooconn-specific content
 
 ---

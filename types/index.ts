@@ -7,6 +7,7 @@ export type {
   Attraction,
   Budget,
   Bus,
+  Currency,
   CurrencyCode,
   Destination,
   Flight,

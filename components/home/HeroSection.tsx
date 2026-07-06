@@ -18,7 +18,7 @@ export function HeroSection({ title, subtitle, className }: HeroSectionProps) {
   return (
     <section
       className={cn(
-        "relative flex flex-col items-center overflow-hidden rounded-3xl px-4 py-12 text-center sm:px-8 sm:py-16 lg:py-24",
+        "relative flex flex-col items-center overflow-x-hidden rounded-3xl px-4 py-12 text-center sm:px-8 sm:py-16 lg:py-24",
         className,
       )}
       aria-labelledby="hero-heading"

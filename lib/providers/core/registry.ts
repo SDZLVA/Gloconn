@@ -4,12 +4,14 @@
 
 import { getAppConfig } from "@/lib/config";
 import {
+  createCurrencyProvider,
   createDestinationProvider,
   createFlightsProvider,
   createHotelsProvider,
   createTransportProvider,
 } from "@/lib/providers/core/factories";
 import type {
+  CurrencyProvider,
   DestinationProvider,
   FlightsProvider,
   HotelsProvider,
@@ -18,6 +20,7 @@ import type {
 
 /** Active provider instances for all travel domains. */
 export type ProviderRegistry = {
+  currencies: CurrencyProvider;
   destinations: DestinationProvider;
   hotels: HotelsProvider;
   flights: FlightsProvider;
@@ -28,6 +31,7 @@ let registry: ProviderRegistry | null = null;
 
 function createProviderRegistry(): ProviderRegistry {
   return {
+    currencies: createCurrencyProvider(),
     destinations: createDestinationProvider(),
     hotels: createHotelsProvider(),
     flights: createFlightsProvider(),
@@ -64,6 +68,10 @@ export function resetProviderRegistry(): void {
 
 export function getDestinationProvider(): DestinationProvider {
   return getProviderRegistry().destinations;
+}
+
+export function getCurrencyProvider(): CurrencyProvider {
+  return getProviderRegistry().currencies;
 }
 
 export function getHotelsProvider(): HotelsProvider {

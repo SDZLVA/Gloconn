@@ -5,10 +5,11 @@
 
 import { createValidationError } from "@/lib/api/errors";
 import { serviceFailure, serviceSuccess, type ServiceResult } from "@/lib/api/types";
+import { getPastTravelDateErrors } from "@/lib/search/dates";
 import { validateBudget } from "@/lib/search/budget";
 import { validatePassengers } from "@/lib/search/passengers";
-import { buildSearchRequestFromData } from "@/lib/search/request";
-import { normalizeProductTypes } from "@/lib/search/productTypes";
+import { buildSearchRequestFromData, normalizeSearchInput } from "@/lib/search/request";
+import { normalizeProductTypes, resolveProductTypes } from "@/lib/search/productTypes";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchData } from "@/types/search";
 
@@ -21,34 +22,47 @@ function validationFailure(
 
 /** Checks that a search request has the minimum fields needed for a results query. */
 export function validateSearchRequest(
-  search: Partial<SearchData>,
+  search: Partial<SearchData> | Partial<SearchRequest>,
 ): ServiceResult<SearchRequest> {
-  if (!search.origin?.trim()) {
+  const normalized = normalizeSearchInput(search);
+
+  if (!normalized.origin?.trim()) {
     return validationFailure(
       "Please enter where you are leaving from.",
       "origin",
     );
   }
 
-  if (!search.destination?.trim()) {
+  if (!normalized.destination?.trim()) {
     return validationFailure("Please enter a destination.", "destination");
   }
 
-  if (!search.departureDate) {
+  if (!normalized.departureDate) {
     return validationFailure("Please choose a departure date.", "departureDate");
   }
 
-  const tripType = search.tripType ?? "round-trip";
+  const pastDateErrors = getPastTravelDateErrors(
+    normalized.departureDate,
+    normalized.returnDate ?? "",
+  );
+  if (pastDateErrors.departureDate) {
+    return validationFailure(pastDateErrors.departureDate, "departureDate");
+  }
+  if (pastDateErrors.returnDate) {
+    return validationFailure(pastDateErrors.returnDate, "returnDate");
+  }
 
-  if (tripType === "round-trip" && !search.returnDate) {
+  const tripType = normalized.tripType ?? "round-trip";
+
+  if (tripType === "round-trip" && !normalized.returnDate) {
     return validationFailure("Please choose a return date.", "returnDate");
   }
 
   if (
     tripType === "round-trip" &&
-    search.departureDate &&
-    search.returnDate &&
-    search.returnDate < search.departureDate
+    normalized.departureDate &&
+    normalized.returnDate &&
+    normalized.returnDate < normalized.departureDate
   ) {
     return validationFailure(
       "Return date must be on or after departure.",
@@ -57,50 +71,54 @@ export function validateSearchRequest(
   }
 
   const budgetString =
-    search.budget !== null && search.budget !== undefined
-      ? String(search.budget)
+    normalized.budget !== null && normalized.budget !== undefined
+      ? String(normalized.budget)
       : "";
-  const budgetCurrency = search.budgetCurrency ?? "EUR";
+  const budgetCurrency = normalized.budgetCurrency ?? "EUR";
   const budgetError = validateBudget(budgetString, budgetCurrency);
   if (budgetError) {
     return validationFailure(budgetError, "budget");
   }
 
-  if (!search.travelers) {
+  if (!normalized.travelers) {
     return validationFailure(
       "Please set travelers and rooms.",
       "travelers",
     );
   }
 
-  const passengersError = validatePassengers(search.travelers);
+  const passengersError = validatePassengers(normalized.travelers);
   if (passengersError) {
     return validationFailure(passengersError, "travelers");
   }
 
-  if (!search.travelStyle) {
+  if (!normalized.travelStyle) {
     return validationFailure("Please select a travel style.", "travelStyle");
   }
 
-  const adults = search.travelers.adults;
-  const children = search.travelers.children;
-  const infants = search.travelers.infants;
+  if (resolveProductTypes(normalized.productTypes).length === 0) {
+    return validationFailure("Select at least one result type.", "productTypes");
+  }
+
+  const adults = normalized.travelers.adults;
+  const children = normalized.travelers.children;
+  const infants = normalized.travelers.infants;
 
   return serviceSuccess(
     buildSearchRequestFromData({
-      destination: search.destination.trim(),
-      destinationId: search.destinationId,
-      origin: search.origin.trim(),
-      originId: search.originId,
+      destination: normalized.destination.trim(),
+      destinationId: normalized.destinationId,
+      origin: normalized.origin.trim(),
+      originId: normalized.originId,
       tripType,
-      departureDate: search.departureDate,
-      returnDate: tripType === "one-way" ? null : (search.returnDate ?? null),
-      budget: search.budget ?? null,
-      budgetCurrency: search.budgetCurrency ?? null,
-      travelers: { ...search.travelers },
-      totalGuests: search.totalGuests ?? adults + children + infants,
-      travelStyle: search.travelStyle,
-      productTypes: normalizeProductTypes(search.productTypes),
+      departureDate: normalized.departureDate,
+      returnDate: tripType === "one-way" ? null : (normalized.returnDate ?? null),
+      budget: normalized.budget ?? null,
+      budgetCurrency: normalized.budgetCurrency ?? null,
+      travelers: { ...normalized.travelers },
+      totalGuests: normalized.totalGuests ?? adults + children + infants,
+      travelStyle: normalized.travelStyle,
+      productTypes: normalizeProductTypes(normalized.productTypes),
     }),
   );
 }

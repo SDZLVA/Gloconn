@@ -1,12 +1,9 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useState } from "react";
+import { CurrencySelector } from "@/components/ui/CurrencySelector";
 import { FormError, FormLabel } from "@/components/ui/FormField";
-import {
-  CURRENCY_OPTIONS,
-  formatBudget,
-  type CurrencyCode,
-} from "@/lib/budget";
+import { formatBudget, type CurrencyCode } from "@/lib/budget";
 import { focusRing } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +17,6 @@ type BudgetSliderProps = {
   min: number;
   max: number;
   step?: number;
-  currencies?: ReadonlyArray<(typeof CURRENCY_OPTIONS)[number]>;
   /** When false, the value display shows an optional / unset state. */
   isSet?: boolean;
   unsetLabel?: string;
@@ -45,7 +41,6 @@ export function BudgetSlider({
   min,
   max,
   step = 100,
-  currencies = CURRENCY_OPTIONS,
   isSet = true,
   unsetLabel = "No limit",
   onClear,
@@ -60,12 +55,23 @@ export function BudgetSlider({
   const valueId = `${fieldId}-value`;
   const errorId = `${fieldId}-error`;
 
-  const clampedValue = Math.min(Math.max(value, min), max);
-  const fillPercent = ((clampedValue - min) / (max - min)) * 100;
-  const displayValue = isSet ? formatBudget(clampedValue, currency) : unsetLabel;
+  const [dragValue, setDragValue] = useState<number | null>(null);
+  const shownValue = dragValue ?? Math.min(Math.max(value, min), max);
+  const clampedValue = shownValue;
+  const fillPercent =
+    max === min ? 0 : ((clampedValue - min) / (max - min)) * 100;
+  const displayValue = formatBudget(clampedValue, currency);
 
-  function handleSliderChange(event: React.ChangeEvent<HTMLInputElement>) {
-    onChange(Number(event.target.value));
+  function handleSliderChange(
+    event: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>,
+  ) {
+    const next = Number(event.currentTarget.value);
+    setDragValue(next);
+    onChange(next);
+  }
+
+  function commitDragValue() {
+    setDragValue(null);
   }
 
   return (
@@ -76,26 +82,11 @@ export function BudgetSlider({
         </FormLabel>
 
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-          <label htmlFor={currencyId} className="sr-only">
-            Currency
-          </label>
-          <select
+          <CurrencySelector
             id={currencyId}
             value={currency}
-            onChange={(event) =>
-              onCurrencyChange(event.target.value as CurrencyCode)
-            }
-            className={cn(
-              "rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 motion-safe:transition-colors motion-safe:duration-200 hover:border-slate-300 focus:outline-none focus:ring-2 focus:border-brand-700 focus:ring-brand-100",
-              focusRing,
-            )}
-          >
-            {currencies.map((option) => (
-              <option key={option.code} value={option.code}>
-                {option.code}
-              </option>
-            ))}
-          </select>
+            onChange={onCurrencyChange}
+          />
         </div>
       </div>
 
@@ -107,17 +98,23 @@ export function BudgetSlider({
             : "border-slate-200 motion-safe:hover:border-slate-300",
         )}
       >
-        <p
-          id={valueId}
-          className={cn(
-            "mb-4 text-2xl font-bold tabular-nums tracking-tight sm:text-3xl",
-            isSet ? "text-brand-800" : "text-slate-400",
+        <div className="mb-4">
+          <p
+            id={valueId}
+            className={cn(
+              "text-2xl font-bold tabular-nums tracking-tight sm:text-3xl",
+              isSet ? "text-brand-800" : "text-slate-600",
+            )}
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {displayValue}
+          </p>
+
+          {!isSet && unsetLabel && (
+            <p className="mt-1 text-sm text-slate-500">{unsetLabel}</p>
           )}
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {displayValue}
-        </p>
+        </div>
 
         <input
           id={sliderId}
@@ -127,6 +124,11 @@ export function BudgetSlider({
           step={step}
           value={clampedValue}
           onChange={handleSliderChange}
+          onInput={handleSliderChange}
+          onMouseUp={commitDragValue}
+          onTouchEnd={commitDragValue}
+          onKeyUp={commitDragValue}
+          onBlur={commitDragValue}
           aria-valuemin={min}
           aria-valuemax={max}
           aria-valuenow={clampedValue}

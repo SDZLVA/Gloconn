@@ -3,6 +3,10 @@
  */
 
 export {
+  getCurrencies,
+} from "@/lib/services/currencyService";
+
+export {
   getDestinationById,
   getDestinationsByIds,
   getPopularDestinations,

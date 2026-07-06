@@ -4,20 +4,24 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { saveTripAction } from "@/lib/trips/actions";
-import { buildSearchData } from "@/lib/search/payload";
-import type { SearchData } from "@/types/search";
+import { searchRequestToSearchData } from "@/lib/search/request";
+import type { SearchRequest } from "@/types/models/search-request";
 
 type SaveTripButtonProps = {
-  search: Partial<SearchData>;
+  search: Partial<SearchRequest>;
 };
 
-function isCompleteSearch(search: Partial<SearchData>): search is SearchData {
+function isCompleteSearch(
+  search: Partial<SearchRequest>,
+): search is SearchRequest {
   return Boolean(
     search.destination &&
       search.departureDate &&
       search.travelers &&
       search.travelStyle &&
-      search.tripType,
+      search.tripType &&
+      search.origin &&
+      search.budget,
   );
 }
 
@@ -37,24 +41,7 @@ export function SaveTripButton({ search }: SaveTripButtonProps) {
     }
 
     setMessage(null);
-    const searchData = buildSearchData({
-      destination: search.destination,
-      destinationId: search.destinationId ?? "",
-      origin: search.origin ?? "",
-      originId: search.originId ?? "",
-      tripType: search.tripType,
-      departureDate: search.departureDate,
-      returnDate: search.returnDate ?? "",
-      budget: search.budget !== null ? String(search.budget) : "",
-      budgetCurrency: search.budgetCurrency ?? "EUR",
-      travelers: search.travelers,
-      travelStyle: search.travelStyle,
-      productTypes: search.productTypes ?? [
-        "hotels",
-        "flights",
-        "transport",
-      ],
-    });
+    const searchData = searchRequestToSearchData(search);
 
     startTransition(async () => {
       const result = await saveTripAction(searchData, "/search/results");

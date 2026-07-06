@@ -1,15 +1,15 @@
 import Link from "next/link";
 import { formatTravelDatesSummary } from "@/lib/search";
-import { buildHomeSearchUrl } from "@/lib/search/params";
+import { buildHomeSearchUrlFromRequest } from "@/lib/search/params";
 import { formatPassengersSummary } from "@/lib/search/passengers";
 import { focusRing } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 import { SaveTripButton } from "@/components/trips/SaveTripButton";
 import { Card } from "@/components/ui/Card";
-import type { SearchData } from "@/types/search";
+import type { SearchRequest } from "@/types/models/search-request";
 
 type ResultsSummaryBarProps = {
-  search: Partial<SearchData>;
+  search: Partial<SearchRequest>;
 };
 
 const styleLabels = {
@@ -49,7 +49,7 @@ export function ResultsSummaryBar({ search }: ResultsSummaryBarProps) {
         <div className="flex shrink-0 flex-col gap-2 sm:items-end">
           <SaveTripButton search={search} />
           <Link
-            href={buildHomeSearchUrl(search)}
+            href={buildHomeSearchUrlFromRequest(search)}
             className={cn(
               "inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold tracking-wide text-slate-700 motion-safe:transition-all motion-safe:duration-200 motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-slate-300 motion-safe:hover:bg-slate-50 motion-safe:hover:shadow-sm",
               focusRing,

@@ -13,8 +13,17 @@ export {
   getWeekdayLabels,
   isBeforeMinDate,
   isDateInRange,
+  isPastDate,
   isSameDate,
   parseDateISO,
+  sanitizeSelectableDate,
   startOfMonth,
   todayISO,
+  compareMonths,
 } from "@/lib/calendar/dates";
+export {
+  getRangeHighlightEnd,
+  getRangeSelectionPhase,
+  resolveRangeDayClick,
+  type RangeSelectionPhase,
+} from "@/lib/calendar/rangeSelection";

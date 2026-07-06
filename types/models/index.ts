@@ -5,7 +5,7 @@
  * Import from `@/types/models` or the `@/types` barrel.
  */
 
-export type { CurrencyCode } from "@/types/models/currency";
+export type { CurrencyCode, Currency } from "@/types/models/currency";
 
 export type { Budget } from "@/types/models/budget";
 

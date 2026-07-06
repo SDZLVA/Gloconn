@@ -8,12 +8,13 @@ import {
   getAllTripSearchResults,
   orchestrateTripSearch,
 } from "@/lib/services/searchOrchestrator";
+import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchResult } from "@/types/results";
 import type { SearchData, TravelStyle } from "@/types/search";
 
 /** Runs a full validated search and returns hotels, flights, buses, and trains. */
 export async function searchTrips(
-  search: Partial<SearchData>,
+  search: Partial<SearchData> | Partial<SearchRequest>,
 ): Promise<ServiceResult<SearchResult[]>> {
   const validation = validateSearchRequest(search);
   if (!validation.success) {

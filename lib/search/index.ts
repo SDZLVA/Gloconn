@@ -8,10 +8,11 @@ export {
   TRAVEL_STYLE_OPTIONS,
   TRIP_TYPE_OPTIONS,
 } from "@/lib/search/constants";
-export { formatTravelDatesSummary } from "@/lib/search/dates";
+export { formatTravelDatesSummary, getPastTravelDateErrors, sanitizeTravelDates } from "@/lib/search/dates";
 export { buildSearchData, logSearchData } from "@/lib/search/payload";
 export {
   buildHomeSearchUrl,
+  buildHomeSearchUrlFromRequest,
   buildResultsUrl,
   formToSearchParams,
   parseSearchParams,
@@ -23,15 +24,19 @@ export {
   buildSearchRequest,
   buildSearchRequestFromData,
   parseSearchRequestFromParams,
+  partialSearchRequestToSearchData,
   searchRequestToParams,
   searchRequestToSearchData,
   serializeSearchRequest,
   validateAndBuildSearchRequest,
+  isSearchRequestInput,
+  normalizeSearchInput,
   type BuildSearchRequestResult,
 } from "@/lib/search/request";
 export {
   normalizeProductTypes,
   parseProductTypesParam,
+  resolveProductTypes,
   serializeProductTypesParam,
 } from "@/lib/search/productTypes";
 export {

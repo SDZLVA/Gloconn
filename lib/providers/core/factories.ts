@@ -10,11 +10,13 @@
 import { getAppConfig } from "@/lib/config";
 import type { ProviderName } from "@/lib/config/types";
 import type {
+  CurrencyProvider,
   DestinationProvider,
   FlightsProvider,
   HotelsProvider,
   TransportProvider,
 } from "@/lib/providers/core/types";
+import { mockCurrencyProvider } from "@/lib/providers/currencies/mock";
 import { mockDestinationProvider } from "@/lib/providers/destinations/mock";
 import { amadeusFlightsProvider } from "@/lib/providers/flights/amadeus";
 import { mockFlightsProvider } from "@/lib/providers/flights/mock";
@@ -31,6 +33,10 @@ function resolveProviderName(
   }
 
   return configured;
+}
+
+export function createCurrencyProvider(): CurrencyProvider {
+  return mockCurrencyProvider;
 }
 
 export function createDestinationProvider(): DestinationProvider {

@@ -44,6 +44,30 @@ export function isBeforeMinDate(date: string, minDate: string): boolean {
   return compareDates(date, minDate) < 0;
 }
 
+/** Returns true when the date is before today (not selectable). */
+export function isPastDate(date: string, minDate: string = todayISO()): boolean {
+  return isBeforeMinDate(date, minDate);
+}
+
+/** Drops invalid or past dates; returns an empty string when not selectable. */
+export function sanitizeSelectableDate(
+  date: string,
+  minDate: string = todayISO(),
+): string {
+  if (!date || isBeforeMinDate(date, minDate)) {
+    return "";
+  }
+
+  return date;
+}
+
+/** Compares two months (year + month only). Negative when a is before b. */
+export function compareMonths(a: Date, b: Date): number {
+  const aKey = a.getFullYear() * 12 + a.getMonth();
+  const bKey = b.getFullYear() * 12 + b.getMonth();
+  return aKey - bKey;
+}
+
 /** Returns true when date falls between start and end (inclusive). */
 export function isDateInRange(
   date: string,

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   buildResultsUrlFromRequest,
+  sanitizeTravelDates,
   validateAndBuildSearchRequest,
 } from "@/lib/search";
 import {
@@ -107,7 +108,12 @@ export function useSearchForm(
   }
 
   function updateDates(departureDate: string, returnDate: string) {
-    setForm((current) => ({ ...current, departureDate, returnDate }));
+    const safe = sanitizeTravelDates(departureDate, returnDate);
+    setForm((current) => ({
+      ...current,
+      departureDate: safe.departureDate,
+      returnDate: safe.returnDate,
+    }));
     clearError("departureDate");
     clearError("returnDate");
   }

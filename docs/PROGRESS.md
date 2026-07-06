@@ -355,6 +355,17 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 - URL serialization delegated to `searchRequestToParams()`; `buildSearchData()` delegates to request builder
 - Updated documentation
 
+### Search engine completion
+
+- Results route parses `SearchRequest` via `parseSearchRequestFromParams`
+- `searchTrips` and results UI use `Partial<SearchRequest>` end to end
+- Added `POST /api/search` Route Handler (`app/api/search/route.ts`)
+- Added `resolveProductTypes` for explicit empty-array validation
+- Expanded mock destinations with descriptions (Berlin, Singapore added)
+- Added unit tests (`lib/search/search.test.ts`) and `npm test` script
+- Added GitHub Actions CI (typecheck, lint, test, build)
+- Updated all documentation
+
 ---
 
 **Branch:** `cursor/architecture-improvements`

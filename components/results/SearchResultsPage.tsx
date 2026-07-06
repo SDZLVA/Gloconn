@@ -16,7 +16,7 @@ import { ResultsSummaryBar } from "@/components/results/ResultsSummaryBar";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
-import type { SearchData } from "@/types/search";
+import type { SearchRequest } from "@/types/models/search-request";
 import {
   DEFAULT_RESULTS_FILTERS,
   type ResultsFilters,
@@ -24,8 +24,12 @@ import {
 } from "@/types/results";
 
 type SearchResultsPageProps = {
-  search: Partial<SearchData>;
+  search: Partial<SearchRequest>;
 };
+
+function searchCacheKey(search: Partial<SearchRequest>): string {
+  return JSON.stringify(search);
+}
 
 function countActiveFilters(
   filters: ResultsFilters,
@@ -44,9 +48,11 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const [sortBy, setSortBy] = useState<SortOption>("price-asc");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
+  const searchKey = useMemo(() => searchCacheKey(search), [search]);
+
   const resultsState = useServiceQuery(
     () => searchTrips(search),
-    [search],
+    [searchKey],
   );
 
   const allResults = resultsState.data ?? [];

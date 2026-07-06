@@ -10,6 +10,7 @@
 import type { BaseProvider } from "@/lib/providers/core/base";
 import type { Attraction } from "@/types/models/attraction";
 import type { Bus } from "@/types/models/bus";
+import type { Currency } from "@/types/models/currency";
 import type { Destination } from "@/types/models/destination";
 import type { Flight } from "@/types/models/flight";
 import type { Hotel } from "@/types/models/hotel";
@@ -39,6 +40,15 @@ export interface DestinationProvider extends BaseProvider {
    * Used before hotel/flight/transport searches run.
    */
   resolveDestinationId(destinationLabel: string): Promise<string>;
+}
+
+/**
+ * Supported currencies for budgets and price display.
+ * Used by the budget slider and future payments features.
+ */
+export interface CurrencyProvider extends BaseProvider {
+  /** Returns all currencies the user can select. */
+  getCurrencies(): Promise<Currency[]>;
 }
 
 /**

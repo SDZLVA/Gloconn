@@ -111,9 +111,8 @@ Gloconn/
 │   ├── destination.ts      # Re-export from models
 │   ├── search-response.ts  # Re-export from models
 │   └── index.ts            # Re-exports (import from @/types)
-├── app/api/                # HTTP Route Handlers (planned, scaffold only)
-│   ├── destinations/       # GET autocomplete
-│   └── search/             # POST search
+├── app/api/                # HTTP Route Handlers
+│   └── search/route.ts     # POST /api/search — validated trip search
 ├── docs/                   # Project documentation (this folder)
 └── public/                 # Static assets (reserved for future use)
 ```
@@ -139,13 +138,14 @@ Gloconn/
 - **Destination** — required autocomplete via `destinationService` (mock provider by default)
 - **Dates** — required travel calendar with round-trip / one-way toggle; return date required for round-trip
 - **Travelers & rooms** — required dropdown with Adults, Children, Infants, and Rooms steppers
-- **Budget** — required slider with EUR / USD / GBP selector (€500–€10,000)
+- **Budget** — required slider with currency selector (€0–€10,000)
 - **Search for** — toggle stays, flights, and ground transport result types
 - **Travel style** — Budget / Standard / Luxury radio group
 - React state management via `useSearchForm` hook
 - Submit builds a canonical `SearchRequest` via `lib/search/request.ts` (ready for future `POST /api/search`)
 - Required-field validation on Search click with inline errors and a summary alert
 - Successful searches navigate to `/search/results` with URL query params
+- Results route and `POST /api/search` use `SearchRequest` end to end
 
 ### Search results (mock provider via service layer)
 - **Route:** `/search/results` — reads search criteria from URL query params

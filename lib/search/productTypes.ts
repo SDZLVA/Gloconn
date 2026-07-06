@@ -39,13 +39,21 @@ export function serializeProductTypesParam(
   return isDefault ? null : normalized.join(",");
 }
 
-/** Ensures at least one product type; falls back to all domains. */
-export function normalizeProductTypes(
+/** When undefined, defaults to all domains; empty array means none selected. */
+export function resolveProductTypes(
   types?: SearchProductType[],
 ): SearchProductType[] {
-  if (!types || types.length === 0) {
+  if (types === undefined) {
     return [...DEFAULT_SEARCH_PRODUCT_TYPES];
   }
 
   return types.filter((type) => VALID_PRODUCT_TYPES.has(type));
+}
+
+/** Ensures at least one product type; falls back to all domains. */
+export function normalizeProductTypes(
+  types?: SearchProductType[],
+): SearchProductType[] {
+  const resolved = resolveProductTypes(types);
+  return resolved.length > 0 ? resolved : [...DEFAULT_SEARCH_PRODUCT_TYPES];
 }

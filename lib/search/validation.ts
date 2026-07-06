@@ -1,6 +1,7 @@
 import { validateBudget } from "@/lib/search/budget";
+import { getPastTravelDateErrors } from "@/lib/search/dates";
 import { validatePassengers } from "@/lib/search/passengers";
-import { normalizeProductTypes } from "@/lib/search/productTypes";
+import { resolveProductTypes } from "@/lib/search/productTypes";
 import type { SearchFormErrors, SearchFormState } from "@/types/search-form";
 
 /**
@@ -20,6 +21,17 @@ export function validateSearchForm(form: SearchFormState): SearchFormErrors {
 
   if (!form.departureDate) {
     errors.departureDate = "Please choose a departure date.";
+  }
+
+  const pastDateErrors = getPastTravelDateErrors(
+    form.departureDate,
+    form.returnDate,
+  );
+  if (pastDateErrors.departureDate) {
+    errors.departureDate = pastDateErrors.departureDate;
+  }
+  if (pastDateErrors.returnDate) {
+    errors.returnDate = pastDateErrors.returnDate;
   }
 
   if (form.tripType === "round-trip" && !form.returnDate) {
@@ -49,7 +61,7 @@ export function validateSearchForm(form: SearchFormState): SearchFormErrors {
     errors.travelStyle = "Please select a travel style.";
   }
 
-  if (normalizeProductTypes(form.productTypes).length === 0) {
+  if (resolveProductTypes(form.productTypes).length === 0) {
     errors.productTypes = "Select at least one result type.";
   }
 

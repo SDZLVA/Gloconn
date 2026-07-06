@@ -3,6 +3,7 @@
  */
 
 export {
+  createCurrencyProvider,
   createDestinationProvider,
   createFlightsProvider,
   createHotelsProvider,
@@ -10,6 +11,7 @@ export {
 } from "@/lib/providers/core/factories";
 
 export {
+  getCurrencyProvider,
   getDestinationProvider,
   getFlightsProvider,
   getHotelsProvider,

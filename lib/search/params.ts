@@ -1,14 +1,14 @@
 import { buildSearchData } from "@/lib/search/payload";
-import {
-  normalizeProductTypes,
-  parseProductTypesParam,
-} from "@/lib/search/productTypes";
+import { normalizeProductTypes } from "@/lib/search/productTypes";
 import {
   buildResultsUrlFromRequest,
   buildSearchRequest,
   buildSearchRequestFromData,
+  parseSearchRequestFromParams,
+  partialSearchRequestToSearchData,
   searchRequestToParams,
 } from "@/lib/search/request";
+import type { SearchRequest } from "@/types/models/search-request";
 import {
   INITIAL_PASSENGERS,
   INITIAL_SEARCH_FORM,
@@ -30,44 +30,7 @@ export function formToSearchParams(form: SearchFormState): URLSearchParams {
 export function parseSearchParams(
   params: URLSearchParams,
 ): Partial<SearchData> {
-  const destination = params.get("destination") ?? "";
-  const destinationId = params.get("destinationId") ?? undefined;
-  const origin = params.get("origin") ?? undefined;
-  const originId = params.get("originId") ?? undefined;
-  const tripType = params.get("tripType") as SearchData["tripType"] | null;
-  const departureDate = params.get("departureDate") ?? "";
-  const returnDate = params.get("returnDate");
-  const budgetRaw = params.get("budget");
-  const budgetCurrency = params.get(
-    "budgetCurrency",
-  ) as SearchData["budgetCurrency"];
-  const adults = Number(params.get("adults") ?? "2");
-  const children = Number(params.get("children") ?? "0");
-  const infants = Number(params.get("infants") ?? "0");
-  const rooms = Number(params.get("rooms") ?? "1");
-  const travelStyle = params.get(
-    "travelStyle",
-  ) as SearchData["travelStyle"] | null;
-  const productTypes = parseProductTypesParam(params.get("productTypes"));
-
-  const travelers = { adults, children, infants, rooms };
-  const totalGuests = adults + children + infants;
-
-  return {
-    destination,
-    destinationId,
-    origin,
-    originId,
-    tripType: tripType ?? "round-trip",
-    departureDate,
-    returnDate: returnDate ?? null,
-    budget: budgetRaw ? Number(budgetRaw) : null,
-    budgetCurrency: budgetRaw ? (budgetCurrency ?? "EUR") : null,
-    travelers,
-    totalGuests,
-    travelStyle: travelStyle ?? "standard",
-    productTypes,
-  };
+  return partialSearchRequestToSearchData(parseSearchRequestFromParams(params));
 }
 
 /** Rebuilds form state from URL params (e.g. when editing a search from results). */
@@ -125,4 +88,11 @@ export function buildHomeSearchUrl(data: Partial<SearchData>): string {
   };
 
   return `/?${searchDataToParams(merged).toString()}`;
+}
+
+/** Builds the home page URL from a partial SearchRequest (edit search flow). */
+export function buildHomeSearchUrlFromRequest(
+  data: Partial<SearchRequest>,
+): string {
+  return buildHomeSearchUrl(partialSearchRequestToSearchData(data));
 }

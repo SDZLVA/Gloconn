@@ -72,6 +72,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `BudgetSelector` | `components/search/` | Required max budget slider with currency |
 | `Button`, `Card`, `InputField` | `components/ui/` | Generic UI primitives |
 | `BudgetSlider` | `components/ui/` | Reusable range slider with currency selector and live value |
+| `CurrencySelector` | `components/ui/` | Currency dropdown backed by mock provider data |
 | `Autocomplete` | `components/ui/` | Reusable accessible combobox (sections, keyboard navigation) |
 | `TravelCalendar` | `components/ui/` | Reusable date picker — single or range, disables past dates |
 | `NumberStepper` | `components/ui/` | Reusable +/- numeric counter |
@@ -83,6 +84,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `ResultsSortBar` | `components/results/` | Sort dropdown and result count |
 | `FormLabel`, `FormError` | `components/ui/FormField.tsx` | Shared form helpers |
 | Budget helpers | `lib/budget/` | Currency options, limits, and formatting |
+| Currency mock provider | `lib/providers/currencies/mock/` | Static currency list for selectors |
+| `getCurrencies` | `lib/services/currencyService.ts` | Loads currencies via provider registry |
 
 ### Key logic
 
@@ -95,7 +98,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `buildSearchData` | `lib/search/payload.ts` | Legacy `SearchData` from form (delegates to request builder) |
 | `buildSearchRequest` | `lib/search/request.ts` | Form state → canonical `SearchRequest` |
 | `validateAndBuildSearchRequest` | `lib/search/request.ts` | Validate form + build `SearchRequest` (submit) |
-| `serializeSearchRequest` | `lib/search/request.ts` | JSON-ready body for future `POST /api/search` |
+| `serializeSearchRequest` | `lib/search/request.ts` | JSON body for `POST /api/search` |
+| `POST /api/search` | `app/api/search/route.ts` | Route Handler — `searchTrips()` + `toJsonResponse()` |
 | `buildResultsUrl` | `lib/search/params.ts` | Builds `/search/results?...` from form state |
 | `buildResultsUrlFromRequest` | `lib/search/request.ts` | Builds results URL from `SearchRequest` |
 | `parseSearchParams` | `lib/search/params.ts` | Reads URL params back into `SearchData` |
@@ -204,7 +208,7 @@ Future Route Handler
 3. **Destination** — required; type to filter mock suggestions; empty field shows recent searches and popular destinations; pick with mouse or arrow keys + Enter; selections persist in localStorage
 4. **Dates** — required; click trigger to open calendar; choose Round-trip or One-way; pick departure (and return for round-trip) on the calendar; past dates are disabled; click Done
 5. **Travelers** — required; click trigger to open panel; adjust Adults, Children, Infants, Rooms with +/- steppers; infants cannot exceed adults; click Done
-6. **Budget** — required slider (€500–€10,000); pick EUR, USD, or GBP; move slider to set amount
+6. **Budget** — required slider (€0–€10,000); pick a currency; move slider to set amount
 7. User clicks **Search** button
 8. `actions.submit()` runs `validateAndBuildSearchRequest()` → `SearchRequest`
 9. If invalid → summary alert at top + red error messages under each field

@@ -199,6 +199,55 @@ export function parseSearchRequestFromParams(
   };
 }
 
+/** True when `budget` uses the SearchRequest object shape (not a flat number). */
+export function isSearchRequestInput(
+  search: Partial<SearchData> | Partial<SearchRequest>,
+): search is Partial<SearchRequest> {
+  if (!("budget" in search) || search.budget === undefined) {
+    return false;
+  }
+
+  return search.budget === null || typeof search.budget === "object";
+}
+
+/** Converts a partial SearchRequest into legacy SearchData field shape. */
+export function partialSearchRequestToSearchData(
+  partial: Partial<SearchRequest>,
+): Partial<SearchData> {
+  return {
+    origin: partial.origin,
+    originId: partial.originId,
+    destination: partial.destination,
+    destinationId: partial.destinationId,
+    tripType: partial.tripType,
+    departureDate: partial.departureDate,
+    returnDate: partial.returnDate,
+    budget:
+      partial.budget === undefined
+        ? undefined
+        : (partial.budget?.amount ?? null),
+    budgetCurrency:
+      partial.budget === undefined
+        ? undefined
+        : (partial.budget?.currency ?? null),
+    travelers: partial.travelers,
+    totalGuests: partial.totalGuests,
+    travelStyle: partial.travelStyle,
+    productTypes: partial.productTypes,
+  };
+}
+
+/** Normalizes SearchRequest or SearchData input to legacy SearchData partial. */
+export function normalizeSearchInput(
+  search: Partial<SearchData> | Partial<SearchRequest>,
+): Partial<SearchData> {
+  if (isSearchRequestInput(search)) {
+    return partialSearchRequestToSearchData(search);
+  }
+
+  return search;
+}
+
 /** Builds the search results page URL from a SearchRequest. */
 export function buildResultsUrlFromRequest(request: SearchRequest): string {
   return `/search/results?${searchRequestToParams(request).toString()}`;

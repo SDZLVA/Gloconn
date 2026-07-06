@@ -696,3 +696,16 @@ SearchData (URL / saved trips) → buildSearchRequestFromData() → SearchReques
 - `lib/api/searchMappers.toSearchRequest()` delegates to `buildSearchRequestFromData()`
 - `orchestrateTripSearch()` accepts `SearchRequest` only
 - `buildSearchData()` delegates to the request builder for consistency
+
+---
+
+## ADR-029: Search API Route Handler
+
+**Decision:** Add `POST /api/search` that accepts JSON `SearchRequest`, delegates to `searchTrips()`, and returns `toJsonResponse()`. Results page parses URL params into `SearchRequest` via `parseSearchRequestFromParams`.
+
+**Rationale:** Completes the search pipeline for future mobile clients and SDK integrations without changing the service layer.
+
+**Consequences:**
+- `searchTrips()` accepts `Partial<SearchRequest> | Partial<SearchData>`
+- Unit tests cover request builder, validation, and URL round-trip
+- GitHub Actions CI runs typecheck, lint, test, and build

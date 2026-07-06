@@ -12,6 +12,7 @@ export type { BaseProvider } from "@/lib/providers/core/base";
 
 export type {
   AttractionsProvider,
+  CurrencyProvider,
   DestinationProvider,
   FlightsProvider,
   HotelsProvider,
