@@ -24,7 +24,7 @@ function safeRedirectPath(path: string | null, fallback: string) {
 
 /**
  * Refreshes the Supabase session and enforces protected-route redirects.
- * Called from the root `middleware.ts`.
+ * Called from the root `proxy.ts`.
  */
 export async function updateSession(request: NextRequest) {
   const { url, anonKey, isConfigured } = getSupabaseEnv();
