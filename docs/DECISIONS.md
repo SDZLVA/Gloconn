@@ -709,3 +709,37 @@ SearchData (URL / saved trips) → buildSearchRequestFromData() → SearchReques
 - `searchTrips()` accepts `Partial<SearchRequest> | Partial<SearchData>`
 - Unit tests cover request builder, validation, and URL round-trip
 - GitHub Actions CI runs typecheck, lint, test, and build
+
+---
+
+## ADR-030: Server search boundary (Sprint 1)
+
+**Decision:** Trip search execution runs on the server only. Client components call `POST /api/search` via `postSearchTrips()` — never `searchTrips()` or `searchService` directly.
+
+**Context:** The results page previously imported `searchService`, bundling the provider registry into the client. Real flight APIs (Amadeus) require server-only credentials.
+
+**Structure:**
+```
+SearchResultsPage (client)
+  → postSearchTrips()           [lib/api/searchClient.ts]
+    → POST /api/search          [app/api/search/route.ts]
+      → searchTrips()           [lib/services/searchService.ts — import "server-only"]
+        → searchOrchestrator → providers
+```
+
+**Changes:**
+- `lib/api/searchClient.ts` — `postSearchTrips()` HTTP client
+- `lib/api/responses.ts` — `serviceResultFromApiResponse()` (generic JSON → `ServiceResult`)
+- `lib/services/searchService.ts` — `import "server-only"`
+- `SearchResultsPage` — uses `postSearchTrips()` instead of `searchTrips()`
+
+**Rationale:**
+- API keys and provider HTTP clients stay on the server
+- Same `SearchRequest` / `SearchResult` contracts — no UI redesign
+- `serviceResultFromApiResponse<T>()` is reusable for future domain API clients
+- Build fails if a client component imports `searchService` again
+
+**Consequences:**
+- Destination and currency services may still run from the client (mock-only today)
+- Filters and sorting remain client-side after results load
+- Future Amadeus work plugs into the existing server path without UI changes

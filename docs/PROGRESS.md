@@ -380,3 +380,27 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 - Removed duplicate `formLabel` class string from `FormField` (uses `lib/styles.ts`)
 - Added `"use client"` to `TravelStyleSelector` for correct client boundary
 - Updated `README.md` and all `docs/` files to reflect new structure
+
+---
+
+## Sprint 1 — Server search boundary
+
+**Branch:** `cursor/project-principles`  
+**Dates:** July 2026
+
+### Objective
+
+Move trip search execution from the browser to the server while keeping existing functionality unchanged.
+
+### Changes
+
+- Added `lib/api/searchClient.ts` — `postSearchTrips()` calls `POST /api/search`
+- Added `serviceResultFromApiResponse()` and `apiErrorFromBody()` in `lib/api/responses.ts`
+- Exported `postSearchTrips` from `lib/api/index.ts`
+- Updated `SearchResultsPage` to use `postSearchTrips()` instead of direct `searchTrips()`
+- Added `import "server-only"` to `lib/services/searchService.ts`
+- Updated `docs/API_FOUNDATION.md`, `docs/AI_HANDOFF.md`, `docs/DECISIONS.md` (ADR-030)
+
+### Result
+
+Browser → `POST /api/search` → server `searchTrips()` → orchestrator → mock providers. No client import of `searchService`. Ready for Amadeus credentials on the server in Sprint 2+.

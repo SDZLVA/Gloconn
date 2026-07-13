@@ -52,3 +52,4 @@ export {
   type ServiceStatus,
 } from "@/lib/api/types";
 export { validateSearchRequest } from "@/lib/api/validation";
+export { postSearchTrips } from "@/lib/api/searchClient";

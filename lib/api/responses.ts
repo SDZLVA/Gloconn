@@ -5,13 +5,18 @@
  */
 
 import {
+  ApiError,
   createUnexpectedError,
   getApiErrorMessage,
+  getHttpStatusForCode,
   isApiError,
-  type ApiError,
   type ApiErrorCode,
 } from "@/lib/api/errors";
-import { serviceFailure, type ServiceResult } from "@/lib/api/types";
+import {
+  serviceFailure,
+  serviceSuccess,
+  type ServiceResult,
+} from "@/lib/api/types";
 
 /** Error payload sent in JSON API responses. */
 export type ApiErrorBody = {
@@ -52,6 +57,26 @@ export function apiError(error: ApiError): ApiErrorResponse {
       issues: error.issues,
     },
   };
+}
+
+/** Rebuilds an ApiError from a JSON error body returned by a Route Handler. */
+export function apiErrorFromBody(body: ApiErrorBody): ApiError {
+  return new ApiError(body.message, body.code, {
+    statusCode: getHttpStatusForCode(body.code),
+    field: body.field,
+    issues: body.issues,
+  });
+}
+
+/** Converts a standard ApiResponse back into a ServiceResult for UI hooks. */
+export function serviceResultFromApiResponse<T>(
+  response: ApiResponse<T>,
+): ServiceResult<T> {
+  if (response.ok) {
+    return serviceSuccess(response.data);
+  }
+
+  return serviceFailure(apiErrorFromBody(response.error));
 }
 
 /** Converts a ServiceResult into a standard ApiResponse. */

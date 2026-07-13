@@ -3,8 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { filterResults } from "@/lib/results/filter";
 import { sortResults } from "@/lib/results/sort";
-import { getApiErrorMessage } from "@/lib/api";
-import { searchTrips } from "@/lib/services/searchService";
+import { getApiErrorMessage, postSearchTrips } from "@/lib/api";
 import { useServiceQuery } from "@/hooks/useServiceQuery";
 import {
   MobileFilterToggle,
@@ -51,7 +50,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const searchKey = useMemo(() => searchCacheKey(search), [search]);
 
   const resultsState = useServiceQuery(
-    () => searchTrips(search),
+    () => postSearchTrips(search),
     [searchKey],
   );
 

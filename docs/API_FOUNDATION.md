@@ -1,6 +1,6 @@
 # API Foundation — Architecture Reference
 
-This document is the single reference for the Glooconn API foundation (v0.7.0). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
+This document is the single reference for the Glooconn API foundation (v0.7.1). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
 
 ---
 
@@ -9,13 +9,19 @@ This document is the single reference for the Glooconn API foundation (v0.7.0). 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  UI (components, hooks)                                     │
-│  — calls lib/services only                                  │
+│  — trip search: postSearchTrips() → POST /api/search        │
+│  — other data: lib/services (e.g. destinations)             │
 │  — uses ServiceState<T> via useServiceQuery                 │
+└───────────────────────────┬─────────────────────────────────┘
+                            │ HTTP (trip search)
+┌───────────────────────────▼─────────────────────────────────┐
+│  app/api/search/route.ts                                    │
+│  — calls searchTrips() on the server                        │
 └───────────────────────────┬─────────────────────────────────┘
                             │
 ┌───────────────────────────▼─────────────────────────────────┐
-│  lib/services                                               │
-│  destinationService, searchService, searchOrchestrator      │
+│  lib/services (server-only for trip search)                 │
+│  searchService, searchOrchestrator, destinationService      │
 │  context.ts — getServiceProviders() (simple DI)             │
 └───────────────────────────┬─────────────────────────────────┘
                             │
@@ -36,7 +42,7 @@ This document is the single reference for the Glooconn API foundation (v0.7.0). 
 └─────────────────────────────────────────────────────────────┘
 
 Cross-cutting:
-  lib/api/     — errors, ServiceResult, validation, HTTP responses
+  lib/api/     — errors, ServiceResult, HTTP clients, validation, responses
   lib/config/  — environment variables, API key slots
 ```
 
@@ -47,8 +53,9 @@ Cross-cutting:
 | Path | Purpose |
 |------|---------|
 | `lib/config/` | `getAppConfig()` — all env vars |
-| `lib/api/` | Errors, `ServiceResult`, validation, `toJsonResponse` |
-| `lib/services/` | UI entry point for travel data |
+| `lib/api/` | Errors, `ServiceResult`, `searchClient`, validation, `toJsonResponse` |
+| `lib/api/searchClient.ts` | Browser-safe `postSearchTrips()` → `POST /api/search` |
+| `lib/services/` | Server entry point for travel data (`searchService` is server-only) |
 | `lib/providers/core/` | Interfaces, registry, factories |
 | `lib/providers/<domain>/mock/` | Mock adapter class |
 | `lib/providers/<domain>/<vendor>/` | Real API adapter (e.g. `flights/amadeus/`) |
@@ -64,11 +71,12 @@ Cross-cutting:
 
 1. `useSearchForm.submit()` → `validateAndBuildSearchRequest()` → `SearchRequest`
 2. Navigate to results via `buildResultsUrlFromRequest(request)` (URL params)
-3. `SearchResultsPage` → `useServiceQuery(() => searchTrips(search))`
-4. `searchService.searchTrips` → `validateSearchRequest()` → `SearchRequest` → `runService()`
-5. `searchOrchestrator.orchestrateTripSearch(request)` → enriches `destinationId` → parallel provider calls
-6. `mergeSearchResults()` → `ServiceResult<SearchResult[]>`
-7. UI filters/sorts in the browser
+3. `SearchResultsPage` → `useServiceQuery(() => postSearchTrips(search))`
+4. `postSearchTrips()` → `POST /api/search` with JSON `SearchRequest`
+5. Route Handler → `searchService.searchTrips()` → `validateSearchRequest()` → `runService()`
+6. `searchOrchestrator.orchestrateTripSearch(request)` → enriches `destinationId` → parallel provider calls
+7. `mergeSearchResults()` → `toJsonResponse()` → `serviceResultFromApiResponse()` in the client
+8. UI filters/sorts in the browser
 
 ### SearchRequest builder (`lib/search/request.ts`)
 
@@ -79,13 +87,21 @@ Cross-cutting:
 | `buildSearchRequestFromData(data)` | Legacy `SearchData` → `SearchRequest` |
 | `searchRequestToParams(request)` | URL query serialization |
 | `buildResultsUrlFromRequest(request)` | Results page href |
-| `serializeSearchRequest(request)` | JSON-ready body for future Route Handlers |
+| `serializeSearchRequest(request)` | JSON-ready body for `POST /api/search` |
 
-No HTTP calls from the form — shape matches what `POST /api/search` accepts.
+The search form does not call HTTP directly — navigation uses URL params. The results page calls `POST /api/search`.
 
 ### HTTP Route Handler
 
-`POST /api/search` — accepts JSON `SearchRequest`, calls `searchTrips()`, returns `toJsonResponse()`.
+`POST /api/search` — accepts JSON `SearchRequest`, calls `searchTrips()` (server-only), returns `toJsonResponse()`.
+
+### HTTP client (`lib/api/searchClient.ts`)
+
+| Function | Purpose |
+|----------|---------|
+| `postSearchTrips(search)` | `fetch("/api/search")` → `serviceResultFromApiResponse()` |
+
+Reuses `serviceResultFromApiResponse()` from `lib/api/responses.ts` — generic for future domain API clients.
 
 ---
 
@@ -142,8 +158,9 @@ See `.env.example`. Summary:
 
 | Item | Use instead |
 |------|-------------|
+| `searchTrips()` from client components | `postSearchTrips()` from `@/lib/api` |
 | `lib/destinations.ts` sync helpers | `@/lib/services` |
-| `lib/results/getResultsForSearch` | `searchTrips()` |
+| `lib/results/getResultsForSearch` | `postSearchTrips()` (UI) or `searchTrips()` (server) |
 | `getSearchProvider()` | Domain providers via registry |
 | `SearchProvider` interface | `HotelsProvider`, `FlightsProvider`, etc. |
 | `SearchData` | `SearchRequest` via `lib/search/request.ts` |
@@ -169,7 +186,7 @@ afterEach(() => resetServiceProviders());
 
 ## Planned (not implemented)
 
-- `app/api/search/` Route Handlers (use `toJsonResponse`)
 - `SearchResponse` wrapper model in orchestrator
 - Move mock datasets from `lib/results/mock*.ts` into `lib/providers/*/mock/data.ts`
 - Booking, Omio, Google Maps adapter folders (same pattern as Amadeus)
+- `server-only` on additional service modules (orchestrator, destination service)

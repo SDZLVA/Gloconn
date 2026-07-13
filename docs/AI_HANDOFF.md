@@ -99,13 +99,15 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `buildSearchRequest` | `lib/search/request.ts` | Form state → canonical `SearchRequest` |
 | `validateAndBuildSearchRequest` | `lib/search/request.ts` | Validate form + build `SearchRequest` (submit) |
 | `serializeSearchRequest` | `lib/search/request.ts` | JSON body for `POST /api/search` |
-| `POST /api/search` | `app/api/search/route.ts` | Route Handler — `searchTrips()` + `toJsonResponse()` |
+| `postSearchTrips` | `lib/api/searchClient.ts` | Client HTTP call to `POST /api/search` |
+| `POST /api/search` | `app/api/search/route.ts` | Route Handler — server-only `searchTrips()` + `toJsonResponse()` |
 | `buildResultsUrl` | `lib/search/params.ts` | Builds `/search/results?...` from form state |
 | `buildResultsUrlFromRequest` | `lib/search/request.ts` | Builds results URL from `SearchRequest` |
 | `parseSearchParams` | `lib/search/params.ts` | Reads URL params back into `SearchData` |
-| `getResultsForSearch` | `lib/results/` | **Deprecated** — use `searchTrips` from `@/lib/services` |
+| `getResultsForSearch` | `lib/results/` | **Deprecated** — use `postSearchTrips()` from `@/lib/api` in UI |
 | `filterResults`, `sortResults` | `lib/results/` | Client-side filter and sort helpers |
-| `searchTrips` | `lib/services/searchService.ts` | Validated search via orchestrator + domain providers |
+| `searchTrips` | `lib/services/searchService.ts` | **Server only** — validated search via orchestrator + providers |
+| `serviceResultFromApiResponse` | `lib/api/responses.ts` | Converts Route Handler JSON → `ServiceResult` |
 | `orchestrateTripSearch` | `lib/services/searchOrchestrator.ts` | Parallel hotels / flights / transport calls |
 | `getServiceProviders` | `lib/services/context.ts` | Returns injected or registry-backed providers |
 | Provider registry | `lib/providers/core/registry.ts` | Central `get*Provider()` selection |
@@ -131,28 +133,24 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `filterDestinations` | `lib/destinations.ts` | Client-side ranked destination filtering |
 | Recent search helpers | `lib/destinations/recentSearches.ts` | localStorage read/write; resolves IDs via destination service |
 
-### Request flow (UI → provider)
+### Request flow (trip search)
 
 ```
-SearchResultsPage
-  → useServiceQuery(() => searchTrips(search))
-    → searchService.searchTrips()
-      → validateSearchRequest()          [lib/api/validation → SearchRequest]
-      → searchOrchestrator.orchestrateTripSearch(request)
-        → getServiceProviders()        [lib/services/context]
-          → getProviderRegistry()      [lib/providers/core/registry]
-        → Promise.all([
-             providers.hotels.search(request),
-             providers.flights.search(request),
-             providers.transport.search(request),
-           ])
-        → mergeSearchResults()         [lib/api/searchMappers]
-      → ServiceResult<SearchResult[]>
+SearchResultsPage (client)
+  → useServiceQuery(() => postSearchTrips(search))
+    → fetch POST /api/search              [lib/api/searchClient.ts]
+      → searchTrips()                     [lib/services/searchService.ts — server only]
+        → validateSearchRequest()
+        → searchOrchestrator.orchestrateTripSearch(request)
+          → getServiceProviders()
+          → Promise.all([hotels, flights, transport])
+          → mergeSearchResults()
+      → toJsonResponse() → serviceResultFromApiResponse()
     → useServiceQuery sets loading / data / error
   → filterResults() + sortResults() in the browser
 ```
 
-Destination autocomplete follows the same pattern: `searchDestinations()` → `getServiceProviders().destinations` → `MockDestinationProvider`.
+Destination autocomplete still calls `lib/services` directly (mock provider, no external API keys yet).
 
 ### Error handling flow
 
@@ -165,8 +163,9 @@ UI hook (useServiceQuery)
   → .catch()                    → unexpected promise rejections → UNKNOWN error
 Component
   → getApiErrorMessage(error)   → safe user-facing string
-Future Route Handler
-  → toJsonResponse(result)      → { ok: true, data } | { ok: false, error: { code, message } }
+Route Handler + HTTP client
+  → toJsonResponse(result)      → { ok: true, data } | { ok: false, error }
+  → serviceResultFromApiResponse() → ServiceResult for useServiceQuery
 ```
 
 ### Environment variables
@@ -213,8 +212,8 @@ Future Route Handler
 8. `actions.submit()` runs `validateAndBuildSearchRequest()` → `SearchRequest`
 9. If invalid → summary alert at top + red error messages under each field
 10. If valid → `router.push(buildResultsUrlFromRequest(request))` navigates to `/search/results`
-11. Results page calls `searchTrips()` via `useServiceQuery` — mock provider by default
-12. **No external travel APIs** — mock provider returns static data through the service layer
+11. Results page calls `postSearchTrips()` via `useServiceQuery` → `POST /api/search` (server runs providers)
+12. **No external travel APIs** — mock provider returns static data through the service layer on the server
 
 Required fields: From, Destination, Departure, Return (round-trip only), Budget, Travelers (≥1 adult, ≥1 room), Travel style, at least one result type.  
 Return date must be ≥ departure date.  
@@ -232,7 +231,8 @@ components/search/    → search feature (NOT generic ui)
 components/ui/        → generic reusable components only
 hooks/                → custom React hooks
 lib/search/           → search validation, payload, constants
-lib/api/              → env, errors, types, validation for services
+lib/api/              → env, errors, types, searchClient, validation, HTTP responses
+  searchClient.ts     → postSearchTrips() (browser → POST /api/search)
 lib/providers/        → provider adapters (mock + future external APIs)
   core/               → registry, config, base interfaces (stubs)
   destinations/       → mock ✅, google-maps (planned)
@@ -240,11 +240,11 @@ lib/providers/        → provider adapters (mock + future external APIs)
   hotels/             → mock, booking (planned)
   flights/            → mock, amadeus (planned)
   ground/             → mock, omio (planned)
-lib/services/         → service layer — UI calls these for travel data
+lib/services/         → server-side service layer (searchService is server-only)
   context.ts          → getServiceProviders / setServiceProviders (simple DI)
   searchOrchestrator  → parallel provider calls + merge
 lib/providers/core/   → registry + config (selects active adapters)
-app/api/              → Route Handler slots (destinations, search) — stubs only
+app/api/search/       → POST /api/search Route Handler
 lib/                  → other plain TS modules (navigation, styles, utils)
 types/models/         → shared domain models (import from @/types)
 types/search.ts       → form types; SearchData legacy alias
@@ -312,7 +312,8 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 
 ## What NOT to do
 
-- ❌ Do not call provider modules directly from UI — use `@/lib/services`
+- ❌ Do not call `searchTrips()` or `searchService` from client components — use `postSearchTrips()` from `@/lib/api`
+- ❌ Do not call provider modules directly from UI — use services (server) or HTTP clients (browser)
 - ❌ Do not add external API integrations without being asked
 - ❌ Do not install UI libraries (shadcn, MUI) without approval
 - ❌ Do not refactor unrelated code during a feature task

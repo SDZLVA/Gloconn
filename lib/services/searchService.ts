@@ -1,6 +1,9 @@
 /**
- * Search service — UI and pages call this, not providers directly.
+ * Search service — server-only entry point for trip search.
+ * Client UI must call `postSearchTrips()` → POST /api/search instead.
  */
+
+import "server-only";
 
 import { runService, type ServiceResult } from "@/lib/api/types";
 import { validateSearchRequest } from "@/lib/api/validation";
