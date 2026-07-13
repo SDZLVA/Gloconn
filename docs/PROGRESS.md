@@ -383,14 +383,25 @@ See [TODO.md](./TODO.md) for remaining Week 2 tasks.
 
 ---
 
-## Sprint 1 — Server search boundary
+## Sprint 1 — Server search boundary ✅ Complete
 
 **Branch:** `cursor/project-principles`  
-**Dates:** July 2026
+**Commit:** `99742bd` — *Route trip search through POST /api/search so providers run server-side only.*  
+**Dates:** July 2026  
+**Status:** Completed successfully — quality gate passed
 
 ### Objective
 
 Move trip search execution from the browser to the server while keeping existing functionality unchanged.
+
+### Definition of Done (verified)
+
+- [x] `SearchResultsPage` calls `postSearchTrips()` — not `searchTrips()` directly
+- [x] `lib/services/searchService.ts` marked `server-only`
+- [x] `POST /api/search` is the only path from browser to providers for trip search
+- [x] Existing search, validation, filters, and sorting unchanged from the user’s perspective
+- [x] Build, lint, and tests pass
+- [x] Documentation updated (`API_FOUNDATION.md`, `AI_HANDOFF.md`, `DECISIONS.md` ADR-030)
 
 ### Changes
 
@@ -403,4 +414,19 @@ Move trip search execution from the browser to the server while keeping existing
 
 ### Result
 
-Browser → `POST /api/search` → server `searchTrips()` → orchestrator → mock providers. No client import of `searchService`. Ready for Amadeus credentials on the server in Sprint 2+.
+```
+Browser → postSearchTrips() → POST /api/search → searchTrips() → orchestrator → providers
+```
+
+No client import of `searchService`. API keys and real provider HTTP clients can run on the server starting Sprint 2.
+
+---
+
+## Sprint 2 — (Planned)
+
+**Focus:** IATA airport resolution and flight provider preparation (prerequisite for Amadeus).  
+See [TODO.md](./TODO.md) and [CURRENT_STATE.md](./CURRENT_STATE.md).
+
+---
+
+## Week 2 — (Historical)

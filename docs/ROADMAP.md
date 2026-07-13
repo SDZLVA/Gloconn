@@ -62,19 +62,26 @@ This roadmap outlines planned development phases. Dates are approximate and will
 | User authentication | High | ✅ Google + email via Supabase |
 | Save trips to user account | High | ✅ `saved_trips` table + save button on results |
 | User profile page | High | ✅ `/profile` |
-| Protected routes | High | ✅ Middleware for `/my-trips`, `/profile` |
+| Protected routes | High | ✅ Proxy for `/my-trips`, `/profile` |
 | Destination API or CMS | Medium | Dynamic destination content |
 
 ---
 
-## Phase 5 — External APIs (Future)
+## Phase 5 — External APIs (In progress)
 
 **Goal:** Connect real travel data providers behind the existing service layer.
+
+| Sprint | Focus | Status |
+|--------|-------|--------|
+| Sprint 1 | Server search boundary (`POST /api/search`) | ✅ Complete |
+| Sprint 2 | IATA resolution + flight provider prep | 📋 Next |
+| Sprint 3 | Amadeus flight integration | Planned |
 
 | Item | Notes |
 |------|-------|
 | Destinations API | Google Places, GeoNames, or CMS — swap mock destination provider |
-| Hotels / flights API | Amadeus, Duffel, or affiliate APIs — swap mock search provider |
+| **Flights API (Amadeus)** | Sprint 2–3 — IATA prep, then OAuth + Flight Offers Search |
+| Hotels / flights API | Amadeus flights first; Booking.com hotels later |
 | Ground transport API | Omio or similar for buses and trains |
 | Caching and rate limiting | Protect Route Handlers and provider quotas |
 | Budget-aware trip suggestions | Use budget + travel style from search |

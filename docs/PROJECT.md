@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.7.0 (API foundation review — provider factories, Amadeus stub, docs)
+**Current version:** 0.8.0 (Sprint 1 — server search boundary complete)
 
 ---
 
@@ -149,7 +149,7 @@ Gloconn/
 
 ### Search results (mock provider via service layer)
 - **Route:** `/search/results` — reads search criteria from URL query params
-- **Data:** Loaded through `searchService.searchTrips()` with loading and error states
+- **Data:** Loaded via `postSearchTrips()` → `POST /api/search` → server `searchTrips()` (providers run server-side only)
 - **Cards:** Hotel, flight, bus, and train result cards with modern layout
 - **Filters:** Sidebar with transport type, price range, and minimum rating
 - **Sorting:** Price, rating, and duration options
@@ -219,3 +219,5 @@ See `PROJECT_RULES.md` in the project root for AI and developer guidelines. Key 
 | [DECISIONS.md](./DECISIONS.md) | Architecture and design decisions |
 | [API_FOUNDATION.md](./API_FOUNDATION.md) | API layers, provider swap guide, naming |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | Context for AI assistants continuing the project |
+| [CURRENT_STATE.md](./CURRENT_STATE.md) | Latest sprint snapshot and active focus |
+| [../PROJECT_PRINCIPLES.md](../PROJECT_PRINCIPLES.md) | Mission, vision, and decision-making rules |

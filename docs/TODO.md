@@ -4,7 +4,36 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 ---
 
-## 🔴 High priority — Week 2
+## 🏃 Sprint tracking
+
+### Sprint 1 — Server search boundary ✅ Complete
+
+- [x] Add `lib/api/searchClient.ts` with `postSearchTrips()`
+- [x] Route `SearchResultsPage` through `POST /api/search`
+- [x] Mark `searchService` as server-only
+- [x] Update API foundation docs and ADR-030
+
+### Sprint 2 — IATA resolution & flight prep (next)
+
+- [ ] **Resolve IATA codes** — enrich `SearchRequest` with origin/destination airport codes via `DestinationProvider`
+- [ ] **Orchestrator enrichment** — resolve `originId` and `destinationId` to `iataCode` before flights provider runs
+- [ ] **Validation** — clear error when a city has no airport code (user-friendly message)
+- [ ] **OAuth token cache** — implement token storage in `lib/api/cache.ts` for Amadeus client-credentials flow
+- [ ] **Flight mapper scaffold** — define `AmadeusFlightOffer` shape and `mapAmadeusOfferToFlight()` in `lib/providers/flights/mappers.ts`
+- [ ] **Unit tests** — IATA resolution and mapper tests with mocked destination data
+- [ ] **Documentation** — update `API_FOUNDATION.md`, `PROGRESS.md`, `DECISIONS.md` (ADR-031)
+
+### Sprint 3 — Amadeus flight integration (planned)
+
+- [ ] Implement `lib/providers/flights/amadeus/client.ts` (OAuth + Flight Offers Search)
+- [ ] Wire `AmadeusFlightsProvider` to client + mapper (remove mock delegation)
+- [ ] Partial provider failure — show hotels/transport if flights fail
+- [ ] Integration tests with mocked Amadeus HTTP responses
+- [ ] Enable with `USE_MOCK_PROVIDERS=false`, `FLIGHTS_PROVIDER=amadeus`
+
+---
+
+## 🔴 High priority — Product pages
 
 - [x] **Search engine** — SearchRequest builder, validation, URL flow, `POST /api/search`, unit tests, CI
 - [x] Search-while-typing destination autocomplete
@@ -59,7 +88,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 - [x] Shared domain models in `types/models/`
 - [ ] Connect first external destination provider (behind `USE_MOCK_PROVIDERS=false`)
-- [ ] Connect first external search provider (hotels or flights)
+- [ ] Connect first external search provider (hotels or flights) — **Sprint 2–3: flights (Amadeus)**
 - [ ] Add unit tests for `lib/api/validation.ts`
 - [ ] Add favicon and Open Graph metadata
 - [ ] Add static assets to `public/` (logo, placeholder images)
