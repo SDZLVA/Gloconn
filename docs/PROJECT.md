@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.10.0 (Sprint 4 — Flight Offers HTTP; mapping + live provider next)
+**Current version:** 0.11.0 (Sprint 5 — Amadeus → Flight mapping; live provider wiring next)
 
 ---
 
@@ -71,7 +71,7 @@ Gloconn/
 │   │   ├── destinations/ # mock ✅, google-maps (planned)
 │   │   ├── search/         # Deprecated monolithic provider
 │   │   ├── hotels/         # mock ✅, booking (planned)
-│   │   ├── flights/        # mock ✅, amadeus/ auth+client+flightOffers ✅ (provider mock until Sprint 5)
+│   │   ├── flights/        # mock ✅, amadeus/ auth+client+flightOffers+mappers ✅ (provider mock until Sprint 6)
 │   │   ├── ground/         # mock ✅, omio (planned)
 │   │   └── mock/           # Shared mock helpers (filter, pricing)
 │   ├── services/           # Service layer — trip search is server-only
@@ -224,4 +224,5 @@ See `PROJECT_RULES.md` in the project root for AI and developer guidelines. Key 
 | [SPRINT_2_SUMMARY.md](./SPRINT_2_SUMMARY.md) | Sprint 2 completion summary |
 | [SPRINT_3_SUMMARY.md](./SPRINT_3_SUMMARY.md) | Sprint 3 completion summary |
 | [SPRINT_4_SUMMARY.md](./SPRINT_4_SUMMARY.md) | Sprint 4 completion summary |
+| [SPRINT_5_SUMMARY.md](./SPRINT_5_SUMMARY.md) | Sprint 5 completion summary |
 | [../PROJECT_PRINCIPLES.md](../PROJECT_PRINCIPLES.md) | Mission, vision, and decision-making rules |

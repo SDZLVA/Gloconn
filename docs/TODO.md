@@ -34,10 +34,18 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [x] `searchFlightOffers()` via `amadeusFetch` (raw JSON, no mapping)
 - [x] Documentation — ADR-033, foundation, handoff, progress, current state
 
-### Sprint 5 — Flight mapping & live provider (next)
+### Sprint 5 — Flight response mapping ✅ Complete
 
-- [ ] Flight mapper — `mapAmadeusOfferToFlight()` in `lib/providers/flights/mappers.ts`
-- [ ] Wire `AmadeusFlightsProvider` to `searchFlightOffers` + mapper (remove mock delegation)
+- [x] Expanded internal Amadeus types (mapper fields only)
+- [x] Pure helpers — `mappingHelpers.ts`
+- [x] `mapAmadeusOfferToFlight()` → `Flight | null`
+- [x] `mapAmadeusFlightOffersResponse()` → `Flight[]`
+- [x] Public barrel export — only `mapAmadeusFlightOffersResponse`
+- [x] Documentation — ADR-034, foundation, handoff, progress, current state
+
+### Sprint 6 — Wire live Amadeus provider (next)
+
+- [ ] Wire `AmadeusFlightsProvider` to `searchFlightOffers` + `mapAmadeusFlightOffersResponse` (remove mock delegation)
 - [ ] Partial provider failure — show hotels/transport if flights fail
 - [ ] Unit / integration tests for mapper and Flight Offers
 - [ ] Enable with `USE_MOCK_PROVIDERS=false`, `FLIGHTS_PROVIDER=amadeus`
@@ -99,7 +107,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 - [x] Shared domain models in `types/models/`
 - [ ] Connect first external destination provider (behind `USE_MOCK_PROVIDERS=false`)
-- [ ] Connect first external search provider (hotels or flights) — **Sprint 5: wire live Amadeus flights**
+- [ ] Connect first external search provider (hotels or flights) — **Sprint 6: wire live Amadeus flights**
 - [ ] Add unit tests for `lib/api/validation.ts`
 - [ ] Add favicon and Open Graph metadata
 - [ ] Add static assets to `public/` (logo, placeholder images)

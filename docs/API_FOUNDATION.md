@@ -1,6 +1,6 @@
 # API Foundation — Architecture Reference
 
-This document is the single reference for the Glooconn API foundation (v0.10.0). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
+This document is the single reference for the Glooconn API foundation (v0.11.0). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
 
 ---
 
@@ -41,7 +41,8 @@ This document is the single reference for the Glooconn API foundation (v0.10.0).
                     amadeus/auth.ts         → OAuth token (cached)
                     amadeus/client.ts       → amadeusFetch() infrastructure
                     amadeus/flightOffers.ts → GET /v2/shopping/flight-offers (raw JSON)
-                    amadeus/provider.ts     → still mocks (Sprint 5 wires live search)
+                    amadeus/mappers.ts      → raw JSON → Flight[] (public: mapAmadeusFlightOffersResponse)
+                    amadeus/provider.ts     → still mocks (Sprint 6 wires live search)
         │                   │                   │
         └───────────────────┴───────────────────┘
                             │
@@ -70,6 +71,8 @@ Cross-cutting:
 | `lib/providers/flights/amadeus/auth.ts` | `getAmadeusAccessToken()` — OAuth client-credentials (test env) |
 | `lib/providers/flights/amadeus/client.ts` | `amadeusFetch()` — authenticated HTTP infrastructure |
 | `lib/providers/flights/amadeus/flightOffers.ts` | `buildFlightOffersSearchParams()` + `searchFlightOffers()` (raw JSON) |
+| `lib/providers/flights/amadeus/mappers.ts` | `mapAmadeusFlightOffersResponse()` (public); single-offer mapper private |
+| `lib/providers/flights/amadeus/mappingHelpers.ts` | Pure parse/map helpers (package-private) |
 | `lib/providers/flights/amadeus/types.ts` | Internal Amadeus response/error shapes |
 | `lib/providers/core/` | Interfaces, registry, factories |
 | `lib/providers/<domain>/mock/` | Mock adapter class |
@@ -120,7 +123,7 @@ Step list:
 |---------|-------|----------------|
 | Data enrichment | `lib/services/iataResolution.ts` | Map places → catalog destinations → optional IATA codes |
 | Business rule | `searchOrchestrator` | Fail when flights are requested but airports cannot be resolved |
-| Flight HTTP | `searchFlightOffers()` ready (Sprint 4); provider still mocks; mapping is Sprint 5 |
+| Flight HTTP | `searchFlightOffers()` ready (Sprint 4); mapping ready (Sprint 5); provider still mocks (Sprint 6) |
 
 **Why enrichment is in the orchestrator path (via helper):**
 
@@ -220,35 +223,61 @@ searchFlightOffers(request)                [amadeus/flightOffers.ts]
 - Same `SearchRequest` always produces the same query string
 - HTTP stays in `searchFlightOffers()` / `amadeusFetch()` only
 
-**Why the provider still remains mocked:**
+**Why the provider remained mocked through Sprint 4:**
 
-- Raw Amadeus JSON is not yet converted to Glooconn `Flight`
+- Raw Amadeus JSON was not yet converted to Glooconn `Flight`
 - Wiring live search before mapping would break the `FlightsProvider` contract (`Promise<Flight[]>`)
-- App UX stays stable on mock data until Sprint 5
 
-**Why response mapping is deferred to Sprint 5:**
+### Flight response mapping (Sprint 5 — complete)
 
-- Separates network correctness from domain model design
-- Mapper can evolve without changing HTTP or OAuth
-- Provider swap becomes a thin: `searchFlightOffers` → `mapAmadeusOfferToFlight` → `Flight[]`
+```
+AmadeusFlightOffersResponse                    [raw JSON from searchFlightOffers]
+  → mapAmadeusFlightOffersResponse(response, { destinationId })
+      → for each offer: mapAmadeusOfferToFlight(offer, options)   (package-private)
+          → helpers: parsePrice, validateCurrency, formatTime,
+                     parseDuration, mapAirline, mapCabin, calculateStops
+      → drop null offers; rethrow ProviderErrors (e.g. unsupported currency)
+  → Flight[]
+```
 
-### Remaining work (Sprint 5)
+**Public barrel export:** only `mapAmadeusFlightOffersResponse` (plus existing provider exports).
+
+**Why mapping is isolated inside the Amadeus adapter:**
+
+- Amadeus JSON shapes must not leak into UI, orchestrator, or shared domain modules
+- Vendor-specific parsing stays next to HTTP/auth for that vendor
+- Glooconn `Flight` remains the only flight shape outside `amadeus/`
+
+**Why only `mapAmadeusFlightOffersResponse()` is public:**
+
+- Sprint 6 needs one entry point: raw response → `Flight[]`
+- Callers should not depend on per-offer internals or helper signatures
+
+**Why helpers and internal types remain private:**
+
+- `mappingHelpers.ts` and `types.ts` are implementation details that can change without a public API break
+- `mapAmadeusOfferToFlight` is an internal building block of the response mapper
+
+**Why provider integration is deferred to Sprint 6:**
+
+- Mapping can be reviewed and tested without changing app search UX
+- Wiring is a thin step: `searchFlightOffers` → `mapAmadeusFlightOffersResponse` → `Flight[]`
+- Unsupported currency already throws `createProviderError` — live path must handle that deliberately
+
+### Remaining work (Sprint 6)
 
 | Step | File | Action |
 |------|------|--------|
-| 1 | `lib/providers/flights/mappers.ts` | `mapAmadeusOfferToFlight()` |
-| 2 | `lib/providers/flights/amadeus/provider.ts` | Replace mock delegation with `searchFlightOffers` + mapper |
-| 3 | `.env.local` | `USE_MOCK_PROVIDERS=false`, `FLIGHTS_PROVIDER=amadeus`, keys |
-| 4 | Optional | Partial provider failure, tests |
+| 1 | `lib/providers/flights/amadeus/provider.ts` | Replace mock with `searchFlightOffers` + `mapAmadeusFlightOffersResponse` |
+| 2 | `.env.local` | `USE_MOCK_PROVIDERS=false`, `FLIGHTS_PROVIDER=amadeus`, keys |
+| 3 | Optional | Partial provider failure, mapper unit tests |
 
-**Already wired:**
+**Already ready (not live in UI yet):**
 
-- `createFlightsProvider()` in `factories.ts` returns `amadeusFlightsProvider` when configured
-- `AmadeusFlightsProvider` implements `FlightsProvider`
-- Config validation checks `AMADEUS_API_KEY` + `AMADEUS_API_SECRET`
+- `createFlightsProvider()` returns `amadeusFlightsProvider` when configured
 - IATA enrichment + flight airport validation in the orchestrator
-- OAuth + TTL cache + `amadeusFetch` (test environment)
-- `searchFlightOffers()` GET Flight Offers (raw response; not used by provider yet)
+- OAuth + TTL cache + `amadeusFetch` + `searchFlightOffers`
+- `mapAmadeusFlightOffersResponse()` (Sprint 5)
 
 ---
 
@@ -265,7 +294,9 @@ Services use `runService()` — never raw try/catch.
 
 **Flight IATA validation:** when `productTypes` includes `"flights"` and `originIata` or `destinationIata` is missing after enrichment, the orchestrator throws `createValidationError(...)` asking the user to pick cities from autocomplete. `runService` maps this to a failed `ServiceResult`; the UI shows the exact message.
 
-**Flight Offers HTTP errors:** `searchFlightOffers()` maps Amadeus HTTP failures to `createProviderError` using safe `title`/`detail` from the error body — never tokens or credentials. Not surfaced in the app UI until the provider is wired in Sprint 5.
+**Flight Offers HTTP errors:** `searchFlightOffers()` maps Amadeus HTTP failures to `createProviderError` using safe `title`/`detail` from the error body — never tokens or credentials. Not surfaced in the app UI until the provider is wired in Sprint 6.
+
+**Flight mapping currency errors:** unsupported or missing offer currency throws `createProviderError` (does not silently drop the offer). Propagates from `mapAmadeusFlightOffersResponse`.
 
 ---
 
@@ -312,7 +343,7 @@ afterEach(() => resetServiceProviders());
 
 ## Planned (not implemented)
 
-- Map Amadeus offers → Glooconn `Flight` and wire `AmadeusFlightsProvider` (Sprint 5)
+- Wire `AmadeusFlightsProvider` to `searchFlightOffers` + `mapAmadeusFlightOffersResponse` (Sprint 6)
 - Partial provider failure (show hotels/transport if flights fail)
 - `SearchResponse` wrapper model in orchestrator
 - Move mock datasets from `lib/results/mock*.ts` into `lib/providers/*/mock/data.ts`

@@ -534,13 +534,52 @@ searchFlightOffers(request)
 AmadeusFlightsProvider.search → still mock
 ```
 
-Ready for Sprint 5 — mapper + wire live provider.
+Ready for Sprint 5 — mapper (provider wiring deferred to Sprint 6).
 
 ---
 
-## Sprint 5 — (Planned)
+## Sprint 5 — Flight response mapping ✅ Complete
 
-**Focus:** Map Amadeus offers → `Flight`, replace mock in `AmadeusFlightsProvider`.  
+**Branch:** `cursor/project-principles`  
+**Dates:** July 2026  
+**Status:** Completed — Amadeus → `Flight` mapping (ADR-034). Provider still mocks.
+
+### Objective
+
+Map raw Amadeus Flight Offers JSON to Glooconn `Flight` models inside the Amadeus package, without wiring the live provider or changing app search UX.
+
+### Definition of Done (verified)
+
+- [x] Expanded internal Amadeus types (mapper fields only)
+- [x] Pure helpers in `mappingHelpers.ts`
+- [x] `mapAmadeusOfferToFlight` → `Flight | null` (throws on unsupported currency)
+- [x] `mapAmadeusFlightOffersResponse` → `Flight[]`
+- [x] Public barrel exports only `mapAmadeusFlightOffersResponse` (plus existing provider)
+- [x] No provider, HTTP, orchestrator, or UI changes
+- [x] Documentation updated (ADR-034, foundation, handoff, progress, todo, current state, roadmap)
+
+### Changes
+
+- Added `lib/providers/flights/amadeus/mappingHelpers.ts`
+- Added `lib/providers/flights/amadeus/mappers.ts`
+- Expanded `lib/providers/flights/amadeus/types.ts`
+- Updated `lib/providers/flights/amadeus/index.ts` exports
+- Documented architecture in ADR-034
+
+### Result
+
+```
+mapAmadeusFlightOffersResponse(raw, { destinationId }) → Flight[]
+AmadeusFlightsProvider.search → still mock
+```
+
+Ready for Sprint 6 — wire live provider.
+
+---
+
+## Sprint 6 — (Planned)
+
+**Focus:** Wire `AmadeusFlightsProvider` to `searchFlightOffers` + `mapAmadeusFlightOffersResponse`.  
 See [TODO.md](./TODO.md).
 
 ---

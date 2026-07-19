@@ -880,6 +880,59 @@ searchFlightOffers(SearchRequest)
 - App UX stays on mock flights until mapping + provider wiring land together
 
 **Consequences:**
-- `searchFlightOffers` is available for smoke tests / Sprint 5 wiring but unused by the live search path
+- `searchFlightOffers` is available for smoke tests / Sprint 6 wiring but unused by the live search path
 - GET MVP only (POST multi-city deferred)
-- Mapper + live provider = Sprint 5
+- Mapping landed in Sprint 5 (ADR-034); live provider wiring = Sprint 6
+
+---
+
+## ADR-034: Amadeus → Flight mapping without provider wiring (Sprint 5)
+
+**Decision:** Implement pure Amadeus → Glooconn `Flight` mapping inside the Amadeus adapter package. Expose only `mapAmadeusFlightOffersResponse` from the package barrel. Do not change `AmadeusFlightsProvider` (still mocks).
+
+**Context:** Sprint 4 returns raw Flight Offers JSON. Live UI needs `Flight[]`. Separating mapping from provider wiring keeps UX on mock data while the mapper is reviewed.
+
+**Structure:**
+```
+amadeus/types.ts            — mapper-needed Amadeus shapes (package-private)
+amadeus/mappingHelpers.ts   — parseDuration, formatTime, calculateStops,
+                               mapAirline, mapCabin, parsePrice, validateCurrency
+amadeus/mappers.ts          — mapAmadeusOfferToFlight (private)
+                            — mapAmadeusFlightOffersResponse (public)
+amadeus/index.ts            — exports mapAmadeusFlightOffersResponse (+ provider)
+amadeus/provider.ts         — still delegates to mock
+```
+
+**Mapping pipeline:**
+```
+AmadeusFlightOffersResponse
+  → mapAmadeusFlightOffersResponse(response, { destinationId })
+      → mapAmadeusOfferToFlight(offer, { destinationId, dictionaries })
+          → helpers (price, currency, times, duration, airline, cabin, stops)
+      → filter null; allow ProviderErrors to propagate
+  → Flight[]
+  // STOP — AmadeusFlightsProvider.search unchanged
+```
+
+**Responsibilities:**
+
+| Module | Role |
+|--------|------|
+| `mappingHelpers` | Pure field-level parsing (no I/O) |
+| `mapAmadeusOfferToFlight` | One offer → `Flight \| null`; throws on unsupported currency |
+| `mapAmadeusFlightOffersResponse` | Response → `Flight[]` (public entry point) |
+| `AmadeusFlightsProvider` | Unchanged mock until Sprint 6 |
+
+**Rationale:**
+- Isolating mapping in the Amadeus package prevents vendor JSON from leaking into orchestrator/UI
+- One public mapper function keeps Sprint 6 wiring thin and stable
+- Helpers/types stay private so internal parsing can evolve without a public API contract
+- Deferring provider wiring avoids changing search UX until HTTP + mapping are both approved
+- Unsupported currency uses a controlled `createProviderError` — never silently drops a priced offer
+- `rating` is always `0` (Amadeus provides no rating; do not fabricate)
+
+**Consequences:**
+- Mapper requires `destinationId` from the caller (from enriched `SearchRequest` in Sprint 6)
+- Outbound itinerary only drives schedule fields on the card; price is offer total
+- Shared stub `lib/providers/flights/mappers.ts` is unused — logic lives under `amadeus/`
+- Live Amadeus results in the UI = Sprint 6

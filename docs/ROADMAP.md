@@ -77,12 +77,13 @@ This roadmap outlines planned development phases. Dates are approximate and will
 | Sprint 2 | IATA resolution (orchestrator enrichment + validation) | ✅ Complete |
 | Sprint 3 | Amadeus OAuth + token cache + `amadeusFetch` | ✅ Complete |
 | Sprint 4 | Flight Offers HTTP (`searchFlightOffers` raw JSON) | ✅ Complete |
-| Sprint 5 | Map offers → `Flight` + wire live provider | 📋 Next |
+| Sprint 5 | Map Amadeus offers → `Flight` (mapper only) | ✅ Complete |
+| Sprint 6 | Wire live Amadeus provider | 📋 Next |
 
 | Item | Notes |
 |------|-------|
 | Destinations API | Google Places, GeoNames, or CMS — swap mock destination provider |
-| **Flights API (Amadeus)** | Sprint 5 — mapper + live provider (HTTP done in Sprint 4) |
+| **Flights API (Amadeus)** | Sprint 6 — wire live provider (HTTP + mapping done in Sprints 4–5) |
 | Hotels / flights API | Amadeus flights first; Booking.com hotels later |
 | Ground transport API | Omio or similar for buses and trains |
 | Caching and rate limiting | Protect Route Handlers and provider quotas |

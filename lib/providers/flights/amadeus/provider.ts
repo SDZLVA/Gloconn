@@ -1,8 +1,9 @@
 /**
  * Amadeus flight search adapter.
  *
- * Sprint 3–4: OAuth + `amadeusFetch` + `searchFlightOffers` (raw JSON) are ready.
- * Sprint 5: map offers → Flight and replace mock delegation below.
+ * Sprint 3–5: OAuth, Flight Offers HTTP, and response→Flight mapping are ready.
+ * Sprint 6: wire `searchFlightOffers` + `mapAmadeusFlightOffersResponse` below
+ * (replace mock delegation).
  * Registry selects this class when FLIGHTS_PROVIDER=amadeus and keys are set.
  */
 

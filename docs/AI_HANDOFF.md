@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | Week 2+ — server search, IATA, Amadeus OAuth + Flight Offers HTTP (provider still mock) |
+| Stage | Week 2+ — Amadeus OAuth + Flight Offers HTTP + Flight mapping (provider still mock) |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers (default) |
 
 ---
@@ -114,7 +114,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `getAmadeusAccessToken` | `lib/providers/flights/amadeus/auth.ts` | OAuth client-credentials (test env) |
 | `amadeusFetch` | `lib/providers/flights/amadeus/client.ts` | Authenticated Amadeus HTTP infrastructure |
 | `searchFlightOffers` | `lib/providers/flights/amadeus/flightOffers.ts` | GET Flight Offers → raw Amadeus JSON (not wired to provider) |
-| Amadeus flights adapter | `lib/providers/flights/amadeus/` | OAuth + Flight Offers HTTP ready; `search` still mocks until Sprint 5 |
+| `mapAmadeusFlightOffersResponse` | `lib/providers/flights/amadeus/` (barrel) | Raw response → `Flight[]` (public mapper; Sprint 6 wiring) |
+| Amadeus flights adapter | `lib/providers/flights/amadeus/` | HTTP + mapping ready; `search` still mocks until Sprint 6 |
 | `getServiceProviders` | `lib/services/context.ts` | Returns injected or registry-backed providers |
 | Provider registry | `lib/providers/core/registry.ts` | Central `get*Provider()` selection |
 | Provider factories | `lib/providers/core/factories.ts` | Env-based mock vs external selection |
@@ -162,19 +163,23 @@ SearchResultsPage (client)
 - Hotels/transport-only searches do not require IATA
 - UI never collects or displays IATA fields
 
-**Amadeus notes (ADR-032 / ADR-033):**
+**Amadeus notes (ADR-032 / ADR-033 / ADR-034):**
 ```
-amadeus/flightOffers.ts
-  → buildFlightOffersSearchParams(request)   // pure
-  → amadeusFetch("/v2/shopping/flight-offers?" + params)
-    → getAmadeusAccessToken()   [auth.ts + cache]
+searchFlightOffers(request)
   → raw AmadeusFlightOffersResponse
-```
-- Auth + HTTP live inside the Amadeus adapter — not in orchestrator or UI
-- Cache is generic; not exported from `@/lib/api` barrel
-- `AmadeusFlightsProvider.search` still delegates to mock (Sprint 5: mapper + wire live search)
-- Do not map Amadeus JSON to `Flight` until Sprint 5
 
+mapAmadeusFlightOffersResponse(response, { destinationId })   // public
+  → mapAmadeusOfferToFlight(...)                              // private
+  → helpers in mappingHelpers.ts                              // private
+  → Flight[]
+```
+- Auth, HTTP, and mapping live inside the Amadeus adapter — not in orchestrator or UI
+- Cache is generic; not exported from `@/lib/api` barrel
+- Only `mapAmadeusFlightOffersResponse` is exported from the Amadeus barrel (plus provider)
+- Helpers, `mapAmadeusOfferToFlight`, and Amadeus types stay package-private
+- `AmadeusFlightsProvider.search` still delegates to mock (Sprint 6 wires live search)
+- Unsupported currency throws `createProviderError` — do not silently skip those offers
+- `rating` is always `0` (do not fabricate)
 Destination autocomplete still calls `lib/services` directly (mock provider, no external API keys yet).
 
 ### Error handling flow
@@ -264,10 +269,12 @@ lib/providers/        → provider adapters (mock + future external APIs)
   destinations/       → mock ✅, google-maps (planned)
   search/             → monolithic mock ✅ (to split into hotels/flights/ground)
   hotels/             → mock, booking (planned)
-  flights/            → mock ✅, amadeus/ (auth + client + flightOffers ✅; provider mock until Sprint 5)
+  flights/            → mock ✅, amadeus/ (HTTP + mapping ✅; provider mock until Sprint 6)
     amadeus/auth.ts   → getAmadeusAccessToken()
     amadeus/client.ts → amadeusFetch() HTTP infrastructure
     amadeus/flightOffers.ts → buildFlightOffersSearchParams + searchFlightOffers
+    amadeus/mappers.ts → mapAmadeusFlightOffersResponse (public)
+    amadeus/mappingHelpers.ts → pure helpers (private)
     amadeus/types.ts  → internal raw Amadeus response shapes
   ground/             → mock, omio (planned)
 lib/services/         → server-side service layer (searchService is server-only)
@@ -349,7 +356,10 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 - ❌ Do not resolve IATA inside `FlightsProvider` / Amadeus — use enriched `SearchRequest` fields
 - ❌ Do not call Amadeus OAuth, `amadeusFetch`, or `searchFlightOffers` from UI / orchestrator — only Amadeus adapter code
 - ❌ Do not re-export `lib/api/cache` from the public `@/lib/api` barrel — auth imports it privately
-- ❌ Do not wire `searchFlightOffers` into `AmadeusFlightsProvider` until mapping exists (Sprint 5)
+- ❌ Do not wire `searchFlightOffers` / `mapAmadeusFlightOffersResponse` into `AmadeusFlightsProvider` until Sprint 6
+- ❌ Do not import Amadeus `mappingHelpers`, `mapAmadeusOfferToFlight`, or `types` outside the Amadeus package — use the barrel’s `mapAmadeusFlightOffersResponse`
+- ❌ Do not silently skip offers for unsupported currency — surface `createProviderError`
+- ❌ Do not fabricate flight ratings (mapper uses `rating: 0`)
 - ❌ Do not add external API integrations without being asked
 - ❌ Do not install UI libraries (shadcn, MUI) without approval
 - ❌ Do not refactor unrelated code during a feature task

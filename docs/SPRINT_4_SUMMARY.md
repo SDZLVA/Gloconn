@@ -26,10 +26,13 @@ Call Amadeus **Flight Offers Search** over HTTP (test environment) using enriche
 
 ---
 
-## What was intentionally deferred to Sprint 5
+## What was intentionally deferred
 
-- `mapAmadeusOfferToFlight()` response mapping
-- Wiring `AmadeusFlightsProvider.search` to live Amadeus (still uses mock)
+**To Sprint 5 (mapping):**
+- `mapAmadeusOfferToFlight()` / response → `Flight[]` mapping
+
+**To Sprint 6 (live provider):**
+- Wiring `AmadeusFlightsProvider.search` to live Amadeus (still uses mock after Sprint 5)
 - Partial provider failure (show hotels if flights fail)
 - Enabling live flights with `USE_MOCK_PROVIDERS=false`
 
@@ -43,7 +46,7 @@ searchFlightOffers(request)
   → amadeusFetch(GET /v2/shopping/flight-offers?...)
   → raw Amadeus JSON
 
-AmadeusFlightsProvider.search → still mock (Sprint 5)
+AmadeusFlightsProvider.search → still mock (Sprint 5–6)
 ```
 
 **Rules:**
@@ -69,13 +72,13 @@ AmadeusFlightsProvider.search → still mock (Sprint 5)
 1. `npm run typecheck` — passes
 2. `npm run build` — passes
 3. App UX unchanged with default `USE_MOCK_PROVIDERS=true`
-4. `searchFlightOffers` is available for Sprint 5 wiring (not called from the UI yet)
+4. `searchFlightOffers` is available for Sprint 5 mapping / Sprint 6 wiring (not called from the UI yet)
 
 ---
 
 ## Next sprint
 
-**Sprint 5 — Flight mapping & live provider**  
-Map Amadeus offers → `Flight`, replace mock delegation in `AmadeusFlightsProvider`.
+**Sprint 5 — Flight response mapping** ✅ (done in v0.11.0)  
+**Sprint 6 — Live Amadeus flights provider** — wire `searchFlightOffers` + mapper into `AmadeusFlightsProvider`.
 
 See `docs/TODO.md` and `docs/CURRENT_STATE.md`.
