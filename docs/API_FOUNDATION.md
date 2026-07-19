@@ -1,6 +1,6 @@
 # API Foundation — Architecture Reference
 
-This document is the single reference for the Glooconn API foundation (v0.13.0). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
+This document is the single reference for the Glooconn API foundation (v0.14.0). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
 
 ---
 
@@ -52,7 +52,7 @@ This document is the single reference for the Glooconn API foundation (v0.13.0).
 
 Cross-cutting:
   lib/api/     — errors, ServiceResult, HTTP clients, TTL cache, validation, responses
-  lib/config/  — environment variables, API key slots
+  lib/config/  — environment variables, Amadeus host/timeout settings, API key slots
 ```
 
 ---
@@ -61,18 +61,21 @@ Cross-cutting:
 
 | Path | Purpose |
 |------|---------|
-| `lib/config/` | `getAppConfig()` — all env vars |
+| `lib/config/` | `getAppConfig()` — all env vars (including Amadeus env/timeouts) |
+| `lib/config/amadeusHosts.ts` | Known Amadeus hosts + default timeout constants |
 | `lib/api/` | Errors, `ServiceResult`, `searchClient`, validation, `toJsonResponse` |
 | `lib/api/searchClient.ts` | Browser-safe `postSearchTrips()` → `POST /api/search` |
 | `lib/api/cache.ts` | Generic in-memory TTL cache (used privately by Amadeus auth) |
 | `lib/services/` | Server entry point for travel data (`searchService` is server-only) |
 | `lib/services/iataResolution.ts` | Destination catalog → optional `originIata` / `destinationIata` |
 | `lib/services/searchOrchestrator.ts` | Enrichment + flight airport validation + parallel providers |
-| `lib/providers/flights/amadeus/auth.ts` | `getAmadeusAccessToken()` — OAuth client-credentials (test env) |
-| `lib/providers/flights/amadeus/client.ts` | `amadeusFetch()` — authenticated HTTP infrastructure |
+| `lib/providers/flights/amadeus/auth.ts` | `getAmadeusAccessToken()` — OAuth client-credentials (config host) |
+| `lib/providers/flights/amadeus/client.ts` | `amadeusFetch()` — timeouts + 401 single retry |
 | `lib/providers/flights/amadeus/flightOffers.ts` | `buildFlightOffersSearchParams()` + `searchFlightOffers()` (raw JSON) |
+| `lib/providers/flights/amadeus/log.ts` | Structured Amadeus console logging (server-only) |
 | `lib/providers/flights/amadeus/mappers.ts` | `mapAmadeusFlightOffersResponse()` (public); single-offer mapper private |
 | `lib/providers/flights/amadeus/mappingHelpers.ts` | Pure parse/map helpers (package-private) |
+| `lib/providers/flights/amadeus/httpTimeout.ts` | Timeout helpers shared by OAuth + fetch |
 | `lib/providers/flights/amadeus/types.ts` | Internal Amadeus response/error shapes |
 | `lib/providers/core/` | Interfaces, registry, factories |
 | `lib/providers/<domain>/mock/` | Mock adapter class |
@@ -291,23 +294,26 @@ AmadeusFlightsProvider.search(request)
 - Currencies remain mock-only; behavior for the budget UI is unchanged
 - **Debt:** restore registry/DI for currencies without importing server-only flight adapters into client components (split client-safe factories / lazy Amadeus load)
 
-### Remaining work (post–Sprint 6)
+### Remaining work (post–Sprint 8)
+
+Flight API is in **maintenance mode** (`v0.14.0`). Items below are backlog / enablement, not active Flight API feature sprints.
 
 | Step | Action |
 |------|--------|
 | 1 | Partial provider failure (hotels/transport if flights fail) |
-| 2 | Optional: enable live flights in `.env.local` for manual sandbox QA |
-| 3 | Manual Amadeus sandbox / OAuth smoke (not in CI) |
+| 2 | currencyService registry DI cleanup (ADR-035) |
+| 3 | Execute manual Amadeus sandbox checklist (`docs/SPRINT_8_SUMMARY.md`) |
 
 **Live when configured:**
 
 - `AmadeusFlightsProvider.search` → Flight Offers HTTP + mapping
 - IATA enrichment + flight airport validation in the orchestrator
 - Factory selection of Amadeus vs mock as above
+- Timeouts, 401 retry, 429 handling, structured logs
 
 ### Flight API automated testing (Sprint 7 — complete)
 
-**Strategy:** unit tests for pure logic; integration tests with **mocked `fetch`** for the provider pipeline; **no real Amadeus calls in CI**. Manual sandbox testing remains future work.
+**Strategy:** unit tests for pure logic; integration tests with **mocked `fetch`** for the provider pipeline; **no real Amadeus calls in CI**. Manual sandbox testing uses the Sprint 8 checklist.
 
 **Architecture:**
 ```
@@ -317,7 +323,7 @@ npm test  (tsx --test + server-only stub register)
   └── Existing: lib/search/search.test.ts
 ```
 
-**Covered components:**
+**Covered components (Sprint 7 base):**
 
 | Area | Test file |
 |------|-----------|
@@ -335,9 +341,29 @@ npm test  (tsx --test + server-only stub register)
 | `test/stubs/server-only.js` + `test/register-server-only.mjs` | Allow Amadeus modules under `tsx` |
 | Mocked `globalThis.fetch` | Token + Flight Offers HTTP without network |
 
-**Automated suite size:** **85** tests (`npm test`) — includes search request tests + Flight API tests.
+### Flight API production hardening (Sprint 8 — complete)
 
-**Not in CI:** live Amadeus sandbox smoke, OAuth against real test host, Playwright E2E.
+| Area | Behavior |
+|------|----------|
+| Timeouts | OAuth + `amadeusFetch` use `AbortSignal.timeout`; clear ProviderError on timeout |
+| 401 | Clear token cache → refresh → **one** retry |
+| 429 | No retry; clear user message; Retry-After never in UI copy |
+| Config | `AMADEUS_ENV=test\|production` → known hosts only; timeouts via `lib/config` |
+| Logging | `logAmadeusEvent` — `provider`, `operation`, `httpStatus?`, `durationMs`, `errorCode?` |
+
+**Additional test coverage (Sprint 8):**
+
+| Area | Test file |
+|------|-----------|
+| Amadeus config | `lib/config/amadeusConfig.test.ts` |
+| Timeouts | `amadeus/httpTimeout.test.ts`, `amadeus/client.timeout.test.ts` |
+| 401 / 429 | `amadeus/client.retry.test.ts` (+ provider assertions) |
+| Structured logs | `amadeus/log.test.ts` |
+
+**Automated suite size:** **115** tests (`npm test`) — includes search request tests + Flight API + hardening.
+
+**Not in CI:** live Amadeus sandbox smoke, OAuth against real test host, Playwright E2E.  
+**Manual plan:** see `docs/SPRINT_8_SUMMARY.md` (sandbox checklist).
 
 ---
 
@@ -356,6 +382,12 @@ Services use `runService()` — never raw try/catch.
 
 **Flight Offers HTTP errors:** `searchFlightOffers()` maps Amadeus HTTP failures to `createProviderError` using safe `title`/`detail` from the error body — never tokens or credentials. Surfaced when the Amadeus provider is selected (not when `USE_MOCK_PROVIDERS=true`).
 
+**Timeouts / rate limits / auth refresh (Sprint 8):**
+
+- Timeout → clear ProviderError ("timed out…"); structured log `errorCode: "TIMEOUT"`
+- HTTP 429 → clear "temporarily busy" message; structured log `RATE_LIMITED` (Retry-After not in UI)
+- HTTP 401 on authenticated fetch → one unauthorized retry after token cache clear
+
 **Missing `destinationId` on Amadeus search:** `AmadeusFlightsProvider` throws `createProviderError` (programming/config error — orchestrator should have enriched the request).
 
 **Flight mapping currency errors:** unsupported or missing offer currency throws `createProviderError` (does not silently drop the offer). Propagates from `mapAmadeusFlightOffersResponse`.
@@ -368,8 +400,10 @@ See `.env.example`. Summary:
 
 - `USE_MOCK_PROVIDERS=true` — default, no API keys needed
 - `FLIGHTS_PROVIDER=amadeus` — selects Amadeus adapter (when mock flag is false)
+- `AMADEUS_ENV=test|production` — known hosts only (default `test`)
+- `AMADEUS_OAUTH_TIMEOUT_MS` / `AMADEUS_FETCH_TIMEOUT_MS` — optional (defaults 10000 / 15000)
 - API keys are **server-only** (no `NEXT_PUBLIC_` prefix)
-- Read via `getAppConfig()` — never `process.env` in components
+- Read via `getAppConfig()` — never `process.env` in components or Amadeus modules outside `lib/config`
 
 ---
 

@@ -89,6 +89,15 @@ function collectProviderKeyErrors(
   return issues;
 }
 
+function isLiveAmadeusIntended(config: Omit<AppConfig, "validation">): boolean {
+  return (
+    !config.providers.useMockProviders &&
+    !config.providers.useMockProvidersInvalid &&
+    config.providers.flights === "amadeus" &&
+    !config.providers.flightsInvalid
+  );
+}
+
 /** Validates configuration and returns errors + warnings. */
 export function validateAppConfig(
   config: Omit<AppConfig, "validation">,
@@ -111,10 +120,61 @@ export function validateAppConfig(
     });
   }
 
-  if (!config.providers.useMockProviders) {
-    errors.push(
-      ...collectProviderKeyErrors(config.providers, config.apiKeys),
+  if (config.providers.useMockProvidersInvalid) {
+    errors.push({
+      env: "USE_MOCK_PROVIDERS",
+      message: `USE_MOCK_PROVIDERS must be true, false, 1, or 0 (got "${config.providers.useMockProvidersInput}").`,
+    });
+  }
+
+  if (config.providers.flightsInvalid) {
+    errors.push({
+      env: "FLIGHTS_PROVIDER",
+      message: `FLIGHTS_PROVIDER must be mock, google-maps, amadeus, booking, or omio (got "${config.providers.flightsInput}").`,
+    });
+  }
+
+  if (config.amadeus.envInvalid) {
+    errors.push({
+      env: "AMADEUS_ENV",
+      message: `AMADEUS_ENV must be "test" or "production" (got "${config.amadeus.envInput}"). Arbitrary base URLs are not supported.`,
+    });
+  }
+
+  if (config.amadeus.oauthTimeoutInvalidRaw !== undefined) {
+    errors.push({
+      env: "AMADEUS_OAUTH_TIMEOUT_MS",
+      message: `AMADEUS_OAUTH_TIMEOUT_MS must be a positive integer (got "${config.amadeus.oauthTimeoutInvalidRaw}").`,
+    });
+  }
+
+  if (config.amadeus.fetchTimeoutInvalidRaw !== undefined) {
+    errors.push({
+      env: "AMADEUS_FETCH_TIMEOUT_MS",
+      message: `AMADEUS_FETCH_TIMEOUT_MS must be a positive integer (got "${config.amadeus.fetchTimeoutInvalidRaw}").`,
+    });
+  }
+
+  if (!config.providers.useMockProviders && !config.providers.useMockProvidersInvalid) {
+    const providerKeyErrors = collectProviderKeyErrors(
+      config.providers,
+      config.apiKeys,
     );
+
+    if (isLiveAmadeusIntended(config) && !config.amadeus.isConfigured) {
+      errors.push({
+        env: "AMADEUS_API_KEY, AMADEUS_API_SECRET",
+        message:
+          "Live Amadeus flights require AMADEUS_API_KEY and AMADEUS_API_SECRET. Set both credentials, or keep USE_MOCK_PROVIDERS=true.",
+      });
+      errors.push(
+        ...providerKeyErrors.filter(
+          (issue) => !issue.message.includes('flights provider "amadeus"'),
+        ),
+      );
+    } else {
+      errors.push(...providerKeyErrors);
+    }
 
     const usesExternalProvider = [
       config.providers.destinations,

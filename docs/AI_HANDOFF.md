@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | Week 2+ — Flight API complete through testing (Sprint 7); default travel data still mock via env |
+| Stage | Week 2+ — Flight API in **maintenance mode** (`v0.14.0`, Sprints 1–8); default travel data still mock via env |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers (default) |
 
 ---
@@ -111,9 +111,10 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `iataResolution` | `lib/services/iataResolution.ts` | Enrich SearchRequest with optional origin/destination IATA |
 | `orchestrateTripSearch` | `lib/services/searchOrchestrator.ts` | IATA enrichment + flight airport validation + parallel providers |
 | TTL cache | `lib/api/cache.ts` | Generic in-memory TTL — used privately by Amadeus auth |
-| `getAmadeusAccessToken` | `lib/providers/flights/amadeus/auth.ts` | OAuth client-credentials (test env) |
-| `amadeusFetch` | `lib/providers/flights/amadeus/client.ts` | Authenticated Amadeus HTTP infrastructure |
+| `getAmadeusAccessToken` | `lib/providers/flights/amadeus/auth.ts` | OAuth client-credentials (config host + timeout) |
+| `amadeusFetch` | `lib/providers/flights/amadeus/client.ts` | Authenticated Amadeus HTTP (timeouts + 401 retry) |
 | `searchFlightOffers` | `lib/providers/flights/amadeus/flightOffers.ts` | GET Flight Offers → raw Amadeus JSON (used by Amadeus provider) |
+| `logAmadeusEvent` | `lib/providers/flights/amadeus/log.ts` | Structured server-only Amadeus logs |
 | `mapAmadeusFlightOffersResponse` | `lib/providers/flights/amadeus/` (barrel) | Raw response → `Flight[]` (used by Amadeus provider) |
 | Amadeus flights adapter | `lib/providers/flights/amadeus/` | Live pipeline in `AmadeusFlightsProvider.search` (ADR-035) |
 | `getServiceProviders` | `lib/services/context.ts` | Returns injected or registry-backed providers |
@@ -163,7 +164,7 @@ SearchResultsPage (client)
 - Hotels/transport-only searches do not require IATA
 - UI never collects or displays IATA fields
 
-**Amadeus notes (ADR-032 / ADR-033 / ADR-034 / ADR-035):**
+**Amadeus notes (ADR-032 / ADR-033 / ADR-034 / ADR-035 + Sprint 8 hardening):**
 ```
 AmadeusFlightsProvider.search(request)
   → require destinationId or createProviderError
@@ -176,21 +177,25 @@ AmadeusFlightsProvider.search(request)
 - Only `mapAmadeusFlightOffersResponse` is exported from the Amadeus barrel (plus provider)
 - Helpers, `mapAmadeusOfferToFlight`, and Amadeus types stay package-private
 - Selection: `USE_MOCK_PROVIDERS=true` → mock; false + Amadeus keys → live Amadeus
+- Hosts: `AMADEUS_ENV=test|production` via `getAppConfig().amadeus.baseUrl` (no arbitrary URLs)
+- Timeouts / 401 retry / 429 / structured logs are Amadeus-package concerns (Sprint 8)
 - Unsupported currency throws `createProviderError` — do not silently skip those offers
 - `rating` is always `0` (do not fabricate)
 - **Debt:** `currencyService` uses `mockCurrencyProvider` directly so the client budget UI does not import Amadeus `server-only` via the registry
 
-**Flight API tests (Sprint 7):**
+**Flight API tests (Sprints 7–8):**
 ```
-npm test  → 85 automated tests (node:test via tsx)
+npm test  → 115 automated tests (node:test via tsx)
   helpers / mappers / query builder / cache / provider (mocked fetch)
+  config (AMADEUS_ENV, timeouts, credentials, mock bypass)
+  timeouts / 401 retry / 429 / structured logging
   fixtures: amadeus/__fixtures__/
   server-only stub: test/register-server-only.mjs
 ```
 - Do not call real Amadeus in CI — use mocked `fetch`
-- Manual sandbox / live OAuth smoke remains future work
+- Manual sandbox checklist: `docs/SPRINT_8_SUMMARY.md`
 - Keep `npm test` green when changing Amadeus adapter code
-
+- Do not log tokens, credentials, Authorization headers, payloads, or PII
 ### Error handling flow
 
 ```
@@ -222,11 +227,15 @@ Route Handler + HTTP client
 | `NEXT_PUBLIC_SITE_URL` | No | Yes | OAuth redirect base URL |
 | `NEXT_PUBLIC_SUPABASE_*` | No | Yes | Auth + saved trips (warns if missing) |
 | `DESTINATIONS_PROVIDER` etc. | No | No | Per-domain provider name |
-| `AMADEUS_API_KEY` etc. | When provider active | **Never** | Server-only API credentials |
+| `AMADEUS_ENV` | No (default `test`) | No | `test` or `production` host selection |
+| `AMADEUS_API_KEY` / `AMADEUS_API_SECRET` | When live Amadeus | **Never** | Server-only API credentials |
+| `AMADEUS_OAUTH_TIMEOUT_MS` | No (default `10000`) | No | OAuth request timeout |
+| `AMADEUS_FETCH_TIMEOUT_MS` | No (default `15000`) | No | Authenticated Amadeus fetch timeout |
 
 **Rules:**
 - `NEXT_PUBLIC_` only for values safe in the browser
 - API keys (Amadeus, Booking, Omio, Google) — no `NEXT_PUBLIC_` prefix
+- Amadeus host/timeouts/credentials — only via `getAppConfig()` (never `process.env` in Amadeus modules)
 - `.env.example` is the committed template; put real secrets only in `.env.local`
 | Calendar date helpers | `lib/calendar/` | ISO formatting, month grids, range checks |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
@@ -370,7 +379,9 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 - ❌ Do not import Amadeus `mappingHelpers`, `mapAmadeusOfferToFlight`, or `types` outside the Amadeus package — use the barrel’s `mapAmadeusFlightOffersResponse`
 - ❌ Do not silently skip offers for unsupported currency — surface `createProviderError`
 - ❌ Do not fabricate flight ratings (mapper uses `rating: 0`)
-- ❌ Do not call real Amadeus APIs from automated tests — use mocked `fetch` and fixtures (Sprint 7)
+- ❌ Do not call real Amadeus APIs from automated tests — use mocked `fetch` and fixtures (Sprint 7+)
+- ❌ Do not set arbitrary Amadeus base URLs — use `AMADEUS_ENV=test|production` only
+- ❌ Do not log Amadeus tokens, client id/secret, Authorization headers, payloads, or PII
 - ❌ Do not reintroduce client imports of the full provider registry that pull Amadeus `server-only` (see currencyService debt / ADR-035)
 - ❌ Do not add external API integrations without being asked
 - ❌ Do not install UI libraries (shadcn, MUI) without approval
@@ -393,6 +404,8 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 | [TODO.md](./TODO.md) | What to build next |
 | [DECISIONS.md](./DECISIONS.md) | Why things are built this way |
 | [API_FOUNDATION.md](./API_FOUNDATION.md) | API layers, provider swap guide |
+| [CURRENT_STATE.md](./CURRENT_STATE.md) | Latest sprint snapshot |
+| [SPRINT_8_SUMMARY.md](./SPRINT_8_SUMMARY.md) | Sprint 8 hardening + sandbox checklist |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | This file — start here |
 
 ---

@@ -18,12 +18,63 @@ export type SupabaseConfig = {
 
 export type ProviderName = "mock" | "google-maps" | "amadeus" | "booking" | "omio";
 
+/** Amadeus Self-Service environment (maps to a known host). */
+export type AmadeusEnvName = "test" | "production";
+
+/**
+ * Amadeus runtime settings — loaded only via `lib/config`.
+ * Hosts are fixed per `env`; arbitrary base URLs are not supported.
+ */
+export type AmadeusConfig = {
+  /** Selected Amadeus environment (`test` by default). */
+  env: AmadeusEnvName;
+
+  /**
+   * Raw `AMADEUS_ENV` value when present.
+   * Used for validation when the value is not `test` or `production`.
+   */
+  envInput?: string;
+
+  /** True when `AMADEUS_ENV` was set to an unsupported value. */
+  envInvalid: boolean;
+
+  /** Resolved known Amadeus API host for `env`. */
+  baseUrl: string;
+
+  apiKey: string;
+  apiSecret: string;
+  isConfigured: boolean;
+
+  oauthTimeoutMs: number;
+  fetchTimeoutMs: number;
+
+  /** Present when `AMADEUS_OAUTH_TIMEOUT_MS` was set but not a positive integer. */
+  oauthTimeoutInvalidRaw?: string;
+
+  /** Present when `AMADEUS_FETCH_TIMEOUT_MS` was set but not a positive integer. */
+  fetchTimeoutInvalidRaw?: string;
+};
+
 export type ProvidersConfig = {
   /** When true, mock adapters are used (default for local development). */
   useMockProviders: boolean;
+
+  /** Raw `USE_MOCK_PROVIDERS` when present. */
+  useMockProvidersInput?: string;
+
+  /** True when `USE_MOCK_PROVIDERS` is set to an unsupported value. */
+  useMockProvidersInvalid: boolean;
+
   destinations: ProviderName;
   hotels: ProviderName;
   flights: ProviderName;
+
+  /** Raw `FLIGHTS_PROVIDER` when present. */
+  flightsInput?: string;
+
+  /** True when `FLIGHTS_PROVIDER` is set to an unsupported value. */
+  flightsInvalid: boolean;
+
   transport: ProviderName;
 };
 
@@ -55,6 +106,7 @@ export type AppConfig = {
   supabase: SupabaseConfig;
   providers: ProvidersConfig;
   apiKeys: ApiKeysConfig;
+  amadeus: AmadeusConfig;
   validation: ConfigValidation;
 };
 

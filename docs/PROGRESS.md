@@ -638,8 +638,41 @@ Add a comprehensive automated test suite for helpers, mappers, query builder, TT
 ```
 Unit: helpers, mappers, buildFlightOffersSearchParams, cache
 Integration: AmadeusFlightsProvider.search (mocked token + offers)
-Manual Amadeus sandbox → future work
+Manual Amadeus sandbox → Sprint 8 checklist
 ```
+
+---
+
+## Sprint 8 — Flight API production hardening ✅ Complete
+
+**Branch:** `cursor/project-principles`  
+**Dates:** July 2026  
+**Status:** Completed — timeouts, 401 retry, 429 handling, centralized Amadeus config, structured logging, docs + sandbox checklist.
+
+### Objective
+
+Harden the live Amadeus Flight API path for production readiness without changing provider contracts or mock behavior.
+
+### Definition of Done (verified)
+
+- [x] Request timeouts on OAuth + `amadeusFetch`
+- [x] 401 → clear cache → single retry
+- [x] 429 → no retry; safe user message; Retry-After not in UI
+- [x] `AMADEUS_ENV=test|production` → known hosts; timeout envs via `lib/config`
+- [x] Structured Amadeus logs (`provider`, `operation`, `httpStatus`, `durationMs`, `errorCode`)
+- [x] Automated tests — **115** total (`npm test`)
+- [x] Documentation + manual sandbox checklist (`SPRINT_8_SUMMARY.md`)
+
+### Result
+
+```
+Hardening: timeouts · 401 retry · 429 · AMADEUS_ENV + timeouts config · structured logs
+Tests: 115 (config, timeouts, retry, logging, Flight API pipeline)
+Manual sandbox: checklist documented (not CI)
+Debt still open: currencyService DI (ADR-035), partial provider failure
+```
+
+**Flight API Sprint 8 complete.** Status: **maintenance mode** — release tag `v0.14.0`.
 
 ---
 

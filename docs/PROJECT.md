@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.13.0 (Sprint 7 — Flight API automated testing; 85 tests)
+**Current version:** 0.14.0 (Sprint 8 — Flight API production hardening; 115 tests; Flight API in maintenance mode)
 
 ---
 
@@ -227,4 +227,5 @@ See `PROJECT_RULES.md` in the project root for AI and developer guidelines. Key 
 | [SPRINT_5_SUMMARY.md](./SPRINT_5_SUMMARY.md) | Sprint 5 completion summary |
 | [SPRINT_6_SUMMARY.md](./SPRINT_6_SUMMARY.md) | Sprint 6 completion summary (`flight-api-v1`) |
 | [SPRINT_7_SUMMARY.md](./SPRINT_7_SUMMARY.md) | Sprint 7 completion summary (Flight API v1 release) |
+| [SPRINT_8_SUMMARY.md](./SPRINT_8_SUMMARY.md) | Sprint 8 completion summary (production hardening) |
 | [../PROJECT_PRINCIPLES.md](../PROJECT_PRINCIPLES.md) | Mission, vision, and decision-making rules |

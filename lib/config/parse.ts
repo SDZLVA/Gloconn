@@ -57,3 +57,31 @@ export function readProviderName(name: string): ProviderName {
 
   return "mock";
 }
+
+/**
+ * Parses a positive integer env var.
+ * Returns `{ ok: true, value }` or `{ ok: false, raw }` when set but invalid.
+ * When unset, returns `{ ok: true, value: defaultValue }`.
+ */
+export function readPositiveIntEnv(
+  name: string,
+  defaultValue: number,
+):
+  | { ok: true; value: number; fromDefault: boolean }
+  | { ok: false; raw: string } {
+  const raw = readEnv(name);
+  if (raw === undefined) {
+    return { ok: true, value: defaultValue, fromDefault: true };
+  }
+
+  if (!/^\d+$/.test(raw)) {
+    return { ok: false, raw };
+  }
+
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 1) {
+    return { ok: false, raw };
+  }
+
+  return { ok: true, value, fromDefault: false };
+}

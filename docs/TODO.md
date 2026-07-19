@@ -60,12 +60,24 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [x] Provider integration tests (mocked fetch)
 - [x] Documentation — foundation, handoff, progress, current state, roadmap
 
-### Post–Sprint 7 backlog
+### Sprint 8 — Flight API production hardening ✅ Complete
 
+- [x] Request timeouts (OAuth + authenticated fetch)
+- [x] 401 single retry after token cache clear
+- [x] 429 handling (no retry; safe user message)
+- [x] Centralized Amadeus config (`AMADEUS_ENV`, timeouts, credential validation)
+- [x] Structured server-only Amadeus logging
+- [x] Automated tests updated (config, timeouts, retry, logging) — **115** total
+- [x] Documentation + manual Amadeus sandbox checklist
+
+### Post–Sprint 8 backlog
+
+**Flight API:** maintenance mode (`v0.14.0`). Prefer bugfixes / sandbox enablement over new Flight API features.
+
+- [ ] Execute manual Amadeus sandbox checklist (`docs/SPRINT_8_SUMMARY.md`)
 - [ ] Partial provider failure — show hotels/transport if flights fail
 - [ ] Restore currencyService → registry DI without client importing Amadeus `server-only`
-- [ ] Enable live flights in local/prod when ready (`USE_MOCK_PROVIDERS=false`, keys)
-- [ ] Manual Amadeus sandbox smoke (OAuth + live offers) — not automated CI
+- [ ] Enable live flights in local/prod when ready (`USE_MOCK_PROVIDERS=false`, keys, `AMADEUS_ENV`)
 
 ---
 

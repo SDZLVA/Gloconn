@@ -75,12 +75,12 @@ export function createHotelsProvider(): HotelsProvider {
 }
 
 export function createFlightsProvider(): FlightsProvider {
-  const { providers, apiKeys } = getAppConfig();
+  const { providers, amadeus } = getAppConfig();
   const name = resolveProviderName(providers.flights, providers.useMockProviders);
 
   switch (name) {
     case "amadeus":
-      if (!apiKeys.amadeus.isConfigured) {
+      if (!amadeus.isConfigured) {
         console.warn(
           "[Glooconn] FLIGHTS_PROVIDER=amadeus but API keys are missing — using mock flights.",
         );

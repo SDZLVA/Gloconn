@@ -8,6 +8,8 @@
 import { loadAppConfig } from "@/lib/config/load";
 
 export type {
+  AmadeusConfig,
+  AmadeusEnvName,
   ApiEnv,
   ApiKeysConfig,
   AppConfig,
@@ -20,6 +22,12 @@ export type {
   SupabaseConfig,
 } from "@/lib/config/types";
 
+export {
+  AMADEUS_HOSTS,
+  DEFAULT_AMADEUS_FETCH_TIMEOUT_MS,
+  DEFAULT_AMADEUS_OAUTH_TIMEOUT_MS,
+  resolveAmadeusBaseUrl,
+} from "@/lib/config/amadeusHosts";
 export { loadAppConfig, loadAppConfigRaw } from "@/lib/config/load";
 export { validateAppConfig } from "@/lib/config/validate";
 

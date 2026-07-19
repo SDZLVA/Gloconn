@@ -8,6 +8,11 @@ import "server-only";
 
 import { createProviderError } from "@/lib/api/errors";
 import { amadeusFetch } from "@/lib/providers/flights/amadeus/client";
+import {
+  logAmadeusEvent,
+  startAmadeusTimer,
+  type AmadeusLogErrorCode,
+} from "@/lib/providers/flights/amadeus/log";
 import type {
   AmadeusApiErrorResponse,
   AmadeusFlightOffersResponse,
@@ -145,15 +150,25 @@ export function buildFlightOffersSearchParams(
 export async function searchFlightOffers(
   request: SearchRequest,
 ): Promise<AmadeusFlightOffersResponse> {
+  const elapsed = startAmadeusTimer();
   const params = buildFlightOffersSearchParams(request);
   const path = `${FLIGHT_OFFERS_PATH}?${params.toString()}`;
-  const response = await amadeusFetch(path, { method: "GET" });
+
+  const response = await amadeusFetch(path, { method: "GET" }, {
+    logOperation: "flightOffers",
+  });
 
   let body: unknown;
 
   try {
     body = await response.json();
   } catch (error) {
+    logAmadeusEvent({
+      operation: "flightOffers",
+      httpStatus: response.status,
+      durationMs: elapsed(),
+      errorCode: "PROVIDER_ERROR",
+    });
     throw createProviderError(
       "Flight search returned an invalid response. Please try again.",
       { cause: error },
@@ -161,8 +176,34 @@ export async function searchFlightOffers(
   }
 
   if (!response.ok) {
+    const errorCode: AmadeusLogErrorCode =
+      response.status === 429
+        ? "RATE_LIMITED"
+        : response.status === 401
+          ? "UNAUTHORIZED"
+          : "PROVIDER_ERROR";
+
+    logAmadeusEvent({
+      operation: "flightOffers",
+      httpStatus: response.status,
+      durationMs: elapsed(),
+      errorCode,
+    });
+
+    if (response.status === 429) {
+      throw createProviderError(
+        "Flight search is temporarily busy. Please try again shortly.",
+      );
+    }
+
     throw createProviderError(messageFromAmadeusErrorBody(body, response.status));
   }
+
+  logAmadeusEvent({
+    operation: "flightOffers",
+    httpStatus: response.status,
+    durationMs: elapsed(),
+  });
 
   return body as AmadeusFlightOffersResponse;
 }

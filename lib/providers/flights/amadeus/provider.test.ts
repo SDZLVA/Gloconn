@@ -207,7 +207,7 @@ describe("AmadeusFlightsProvider.search — validation", () => {
 });
 
 describe("AmadeusFlightsProvider.search — HTTP failures", () => {
-  for (const status of [400, 401, 429, 500] as const) {
+  for (const status of [400, 500] as const) {
     it(`propagates ProviderError for Flight Offers HTTP ${status}`, async () => {
       offersStatus = status;
       offersBody = {
@@ -233,6 +233,84 @@ describe("AmadeusFlightsProvider.search — HTTP failures", () => {
       assert.equal(countOffersFetches(), 1);
     });
   }
+
+  it("returns a clear ProviderError for HTTP 429 without retrying", async () => {
+    offersStatus = 429;
+    offersBody = {
+      errors: [{ status: 429, title: "Rate limit", detail: "Too many requests" }],
+    };
+
+    // Custom fetch so we can attach Retry-After and count offers calls.
+    let offersCalls = 0;
+    const warnMessages: unknown[] = [];
+    const originalWarn = console.warn;
+    console.warn = (...args: unknown[]) => {
+      warnMessages.push(args);
+    };
+
+    globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url =
+        typeof input === "string"
+          ? input
+          : input instanceof URL
+            ? input.href
+            : input.url;
+      const method = (init?.method ?? "GET").toUpperCase();
+      fetchCalls.push({ url, method });
+
+      if (url.startsWith(TOKEN_URL)) {
+        return jsonResponse(200, tokenBody);
+      }
+
+      if (url.includes(OFFERS_PATH)) {
+        offersCalls += 1;
+        return new Response(JSON.stringify(offersBody), {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            "Retry-After": "30",
+          },
+        });
+      }
+
+      throw new Error(`Unexpected fetch URL in test: ${url}`);
+    }) as typeof fetch;
+
+    try {
+      await assert.rejects(
+        () => amadeusFlightsProvider.search(baseRequest()),
+        (error: unknown) => {
+          assert.ok(isApiError(error));
+          assert.equal(error.code, "PROVIDER_ERROR");
+          assert.equal(
+            error.message,
+            "Flight search is temporarily busy. Please try again shortly.",
+          );
+          assert.equal(error.message.includes("Retry-After"), false);
+          assert.equal(error.message.includes("30"), false);
+          return true;
+        },
+      );
+
+      assert.equal(offersCalls, 1);
+      assert.ok(
+        warnMessages.some((entry) => {
+          const serialized = JSON.stringify(entry);
+          return (
+            serialized.includes("RATE_LIMITED") &&
+            serialized.includes("flightOffers") &&
+            serialized.includes('"httpStatus":429')
+          );
+        }),
+      );
+      assert.equal(
+        warnMessages.some((entry) => JSON.stringify(entry).includes("30")),
+        false,
+      );
+    } finally {
+      console.warn = originalWarn;
+    }
+  });
 });
 
 describe("AmadeusFlightsProvider.search — response failures", () => {
