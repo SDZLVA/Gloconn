@@ -1,6 +1,6 @@
 # API Foundation — Architecture Reference
 
-This document is the single reference for the Glooconn API foundation (v0.8.0). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
+This document is the single reference for the Glooconn API foundation (v0.9.0). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
 
 ---
 
@@ -37,6 +37,10 @@ This document is the single reference for the Glooconn API foundation (v0.8.0). 
         ┌───────────────────┼───────────────────┐
         ▼                   ▼                   ▼
   destinations/mock   flights/mock|amadeus   hotels/mock
+                            │
+                    amadeus/auth.ts  → OAuth token (cached)
+                    amadeus/client.ts → amadeusFetch() infrastructure
+                    (Flight Offers Search — Sprint 4)
         │                   │                   │
         └───────────────────┴───────────────────┘
                             │
@@ -45,7 +49,7 @@ This document is the single reference for the Glooconn API foundation (v0.8.0). 
 └─────────────────────────────────────────────────────────────┘
 
 Cross-cutting:
-  lib/api/     — errors, ServiceResult, HTTP clients, validation, responses
+  lib/api/     — errors, ServiceResult, HTTP clients, TTL cache, validation, responses
   lib/config/  — environment variables, API key slots
 ```
 
@@ -58,9 +62,12 @@ Cross-cutting:
 | `lib/config/` | `getAppConfig()` — all env vars |
 | `lib/api/` | Errors, `ServiceResult`, `searchClient`, validation, `toJsonResponse` |
 | `lib/api/searchClient.ts` | Browser-safe `postSearchTrips()` → `POST /api/search` |
+| `lib/api/cache.ts` | Generic in-memory TTL cache (used privately by Amadeus auth) |
 | `lib/services/` | Server entry point for travel data (`searchService` is server-only) |
 | `lib/services/iataResolution.ts` | Destination catalog → optional `originIata` / `destinationIata` |
 | `lib/services/searchOrchestrator.ts` | Enrichment + flight airport validation + parallel providers |
+| `lib/providers/flights/amadeus/auth.ts` | `getAmadeusAccessToken()` — OAuth client-credentials (test env) |
+| `lib/providers/flights/amadeus/client.ts` | `amadeusFetch()` — authenticated HTTP infrastructure |
 | `lib/providers/core/` | Interfaces, registry, factories |
 | `lib/providers/<domain>/mock/` | Mock adapter class |
 | `lib/providers/<domain>/<vendor>/` | Real API adapter (e.g. `flights/amadeus/`) |
@@ -110,7 +117,7 @@ Step list:
 |---------|-------|----------------|
 | Data enrichment | `lib/services/iataResolution.ts` | Map places → catalog destinations → optional IATA codes |
 | Business rule | `searchOrchestrator` | Fail when flights are requested but airports cannot be resolved |
-| Flight HTTP | Not yet | Amadeus client is Sprint 3 |
+| Flight HTTP | Amadeus OAuth + `amadeusFetch` ready (Sprint 3); Flight Offers is Sprint 4 |
 
 **Why enrichment is in the orchestrator path (via helper):**
 
@@ -165,14 +172,51 @@ Reuses `serviceResultFromApiResponse()` from `lib/api/responses.ts` — generic 
 
 ## Swapping Mock → Amadeus (flights)
 
-**Prerequisite (done in Sprint 2):** `SearchRequest` can carry `originIata` / `destinationIata` after orchestrator enrichment. Flight providers should read those fields — not resolve destinations themselves.
+**Prerequisites done:**
 
-**Files to implement (Sprint 3 — no UI changes):**
+- Sprint 1 — server search boundary (`POST /api/search`)
+- Sprint 2 — IATA enrichment + flight airport validation
+- Sprint 3 — OAuth + token cache + `amadeusFetch` infrastructure
+
+### Amadeus OAuth (Sprint 3 — complete)
+
+```
+getAmadeusAccessToken()                    [amadeus/auth.ts]
+  → getCached("amadeus:access_token")      [lib/api/cache.ts — private to auth]
+  → on miss: POST test.api.amadeus.com/v1/security/oauth2/token
+  → setCached(token, expires_in − 60s)
+
+amadeusFetch(path)                         [amadeus/client.ts]
+  → getAmadeusAuthHeaders() → Bearer token
+  → fetch(test base URL + path)
+```
+
+**Why auth lives inside the Amadeus adapter:**
+
+- OAuth is vendor-specific (URLs, form body, credentials)
+- `FlightsProvider`, orchestrator, and UI never see tokens
+- Other vendors (Booking, Omio) can use the same generic cache with their own auth modules
+
+**Why the cache is generic:**
+
+- `lib/api/cache.ts` has no Amadeus types — only `getCached` / `setCached` / `deleteCached`
+- Not re-exported from `@/lib/api` — auth imports it privately
+- Future vendors or short-lived server data can reuse it
+
+**Why the client owns HTTP:**
+
+- Single place for test base URL, auth headers, and network errors
+- Future Flight Offers calls `amadeusFetch("/v2/shopping/flight-offers", …)` without duplicating OAuth
+- Provider stays a thin adapter: search → client → mapper → `Flight[]`
+
+**Not yet wired:** `AmadeusFlightsProvider` still delegates to mock. Flight Offers Search is Sprint 4.
+
+### Remaining files (Sprint 4)
 
 | Step | File | Action |
 |------|------|--------|
-| 1 | `lib/providers/flights/amadeus/client.ts` | OAuth + Flight Offers Search HTTP |
-| 2 | `lib/providers/flights/mappers.ts` | `mapAmadeusOfferToFlight()` |
+| 1 | `lib/providers/flights/mappers.ts` | `mapAmadeusOfferToFlight()` |
+| 2 | Flight Offers via `amadeusFetch` | Query using `originIata` / `destinationIata` |
 | 3 | `lib/providers/flights/amadeus/provider.ts` | Replace mock delegation with client + mapper |
 | 4 | `.env.local` | `USE_MOCK_PROVIDERS=false`, `FLIGHTS_PROVIDER=amadeus`, keys |
 
@@ -182,7 +226,7 @@ Reuses `serviceResultFromApiResponse()` from `lib/api/responses.ts` — generic 
 - `AmadeusFlightsProvider` implements `FlightsProvider`
 - Config validation checks `AMADEUS_API_KEY` + `AMADEUS_API_SECRET`
 - IATA enrichment + flight airport validation in the orchestrator
-
+- OAuth + TTL cache + `amadeusFetch` (test environment)
 ---
 
 ## Error handling
@@ -243,9 +287,11 @@ afterEach(() => resetServiceProviders());
 
 ## Planned (not implemented)
 
-- Amadeus OAuth + Flight Offers Search (Sprint 3)
+- Amadeus Flight Offers Search + mappers (Sprint 4)
+- Wire `AmadeusFlightsProvider` to live client (remove mock delegation)
 - Partial provider failure (show hotels/transport if flights fail)
 - `SearchResponse` wrapper model in orchestrator
 - Move mock datasets from `lib/results/mock*.ts` into `lib/providers/*/mock/data.ts`
 - Booking, Omio, Google Maps adapter folders (same pattern as Amadeus)
 - `server-only` on additional service modules (orchestrator, destination service)
+- Redis / distributed token cache (optional; in-memory TTL is enough for MVP)

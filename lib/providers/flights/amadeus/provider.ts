@@ -1,8 +1,9 @@
 /**
- * Amadeus flight search adapter (stub).
+ * Amadeus flight search adapter.
  *
- * Swap implementation: replace the delegation below with client + mapper calls.
- * Registry already selects this class when FLIGHTS_PROVIDER=amadeus and keys are set.
+ * Sprint 3: OAuth + `amadeusFetch` infrastructure is ready.
+ * Sprint 4: replace mock delegation with Flight Offers + mappers.
+ * Registry selects this class when FLIGHTS_PROVIDER=amadeus and keys are set.
  */
 
 import type { FlightsProvider } from "@/lib/providers/core/types";

@@ -75,12 +75,13 @@ This roadmap outlines planned development phases. Dates are approximate and will
 |--------|-------|--------|
 | Sprint 1 | Server search boundary (`POST /api/search`) | ✅ Complete |
 | Sprint 2 | IATA resolution (orchestrator enrichment + validation) | ✅ Complete |
-| Sprint 3 | Amadeus flight integration | 📋 Next |
+| Sprint 3 | Amadeus OAuth + token cache + `amadeusFetch` | ✅ Complete |
+| Sprint 4 | Amadeus Flight Offers Search + mappers | 📋 Next |
 
 | Item | Notes |
 |------|-------|
 | Destinations API | Google Places, GeoNames, or CMS — swap mock destination provider |
-| **Flights API (Amadeus)** | Sprint 3 — OAuth + Flight Offers Search (IATA enrichment done in Sprint 2) |
+| **Flights API (Amadeus)** | Sprint 4 — Flight Offers (OAuth + IATA done in Sprints 2–3) |
 | Hotels / flights API | Amadeus flights first; Booking.com hotels later |
 | Ground transport API | Omio or similar for buses and trains |
 | Caching and rate limiting | Protect Route Handlers and provider quotas |

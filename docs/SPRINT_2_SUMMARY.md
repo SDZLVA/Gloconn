@@ -26,13 +26,12 @@ Prepare trip search for real flight APIs (Amadeus in Sprint 3) by resolving orig
 
 ---
 
-## What was intentionally deferred to Sprint 3
+## What was deferred after Sprint 2
 
-- Amadeus OAuth + Flight Offers Search client
-- Flight offer → `Flight` mapper implementation
-- OAuth token caching
-- Partial provider failure (show hotels if flights fail)
-- Enabling `FLIGHTS_PROVIDER=amadeus` in production
+- Amadeus OAuth + token cache → **done in Sprint 3**
+- Flight Offers Search + mappers → **Sprint 4**
+- Partial provider failure (show hotels if flights fail) → **Sprint 4+**
+- Enabling live Amadeus search in production → **Sprint 4**
 
 ---
 
@@ -72,9 +71,10 @@ Browser → POST /api/search → searchTrips() [server-only]
 
 ---
 
-## Next sprint
+## Next sprint (after Sprint 2)
 
-**Sprint 3 — Amadeus flight integration**  
-Implement the Amadeus client and mapper using `originIata` / `destinationIata` already on `SearchRequest`.
+**Sprint 3 — Amadeus OAuth & token cache** ✅ Complete  
+See `docs/SPRINT_3_SUMMARY.md`.
 
-See `docs/TODO.md` and `docs/CURRENT_STATE.md`.
+**Sprint 4 — Amadeus Flight Offers** (next)  
+Use `originIata` / `destinationIata` + `amadeusFetch` for live flight search.

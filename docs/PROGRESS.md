@@ -463,9 +463,47 @@ Ready for Sprint 3 — Amadeus client can consume `originIata` / `destinationIat
 
 ---
 
-## Sprint 3 — (Planned)
+## Sprint 3 — Amadeus OAuth & token cache ✅ Complete
 
-**Focus:** Amadeus OAuth + Flight Offers Search + mappers.  
+**Branch:** `cursor/project-principles`  
+**Dates:** July 2026  
+**Status:** Completed — OAuth + TTL cache + `amadeusFetch` (ADR-032). No Flight Offers yet.
+
+### Objective
+
+Add server-only Amadeus OAuth (test environment) and a generic token cache so future Flight Offers Search can authenticate without coupling the UI or orchestrator to Amadeus.
+
+### Definition of Done (verified)
+
+- [x] Generic TTL cache in `lib/api/cache.ts`
+- [x] `getAmadeusAccessToken()` in `amadeus/auth.ts` (credentials from `getAppConfig`)
+- [x] Cache used privately inside auth — not exposed on `@/lib/api` barrel
+- [x] `amadeusFetch` / `getAmadeusAuthHeaders` in `amadeus/client.ts`
+- [x] Test environment host (`test.api.amadeus.com`)
+- [x] No Flight Offers Search, mappers, UI, or orchestrator changes
+- [x] Documentation updated (ADR-032, foundation, handoff, progress, todo, current state, roadmap)
+
+### Changes
+
+- Implemented `lib/api/cache.ts` — `getCached` / `setCached` / `deleteCached` / `clearCache`
+- Added `lib/providers/flights/amadeus/auth.ts`
+- Replaced stub `amadeus/client.ts` with HTTP infrastructure using auth
+- Documented architecture in ADR-032
+
+### Result
+
+```
+Amadeus adapter (server-only)
+  auth.ts  → getAmadeusAccessToken() → TTL cache
+  client.ts → amadeusFetch(path) → Bearer token + test base URL
+AmadeusFlightsProvider.search → still mock (Sprint 4)
+```
+
+---
+
+## Sprint 4 — (Planned)
+
+**Focus:** Flight Offers Search, mappers, wire live Amadeus provider.  
 See [TODO.md](./TODO.md).
 
 ---

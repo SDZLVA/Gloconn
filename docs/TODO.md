@@ -20,12 +20,18 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [x] **Validation** — clear error when flights are requested and airport codes are missing
 - [x] **Documentation** — `API_FOUNDATION.md`, `PROGRESS.md`, `DECISIONS.md` (ADR-031), `AI_HANDOFF.md`, `CURRENT_STATE.md`
 
-### Sprint 3 — Amadeus flight integration (next)
+### Sprint 3 — Amadeus OAuth & token cache ✅ Complete
 
-- [ ] Implement `lib/providers/flights/amadeus/client.ts` (OAuth + Flight Offers Search)
-- [ ] Wire `AmadeusFlightsProvider` to client + mapper (remove mock delegation)
-- [ ] OAuth token cache — `lib/api/cache.ts` for client-credentials tokens
+- [x] Generic TTL cache — `lib/api/cache.ts`
+- [x] Amadeus auth module — `getAmadeusAccessToken()` (test environment)
+- [x] Amadeus client infrastructure — `amadeusFetch()` / auth headers
+- [x] Documentation — ADR-032, `API_FOUNDATION.md`, handoff, progress, current state
+
+### Sprint 4 — Amadeus Flight Offers (next)
+
+- [ ] Flight Offers Search via `amadeusFetch` (use `originIata` / `destinationIata`)
 - [ ] Flight mapper — `mapAmadeusOfferToFlight()` in `lib/providers/flights/mappers.ts`
+- [ ] Wire `AmadeusFlightsProvider` to client + mapper (remove mock delegation)
 - [ ] Partial provider failure — show hotels/transport if flights fail
 - [ ] Unit / integration tests for Amadeus client and mapper
 - [ ] Enable with `USE_MOCK_PROVIDERS=false`, `FLIGHTS_PROVIDER=amadeus`
@@ -87,7 +93,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 - [x] Shared domain models in `types/models/`
 - [ ] Connect first external destination provider (behind `USE_MOCK_PROVIDERS=false`)
-- [ ] Connect first external search provider (hotels or flights) — **Sprint 3: flights (Amadeus)**
+- [ ] Connect first external search provider (hotels or flights) — **Sprint 4: flights (Amadeus Flight Offers)**
 - [ ] Add unit tests for `lib/api/validation.ts`
 - [ ] Add favicon and Open Graph metadata
 - [ ] Add static assets to `public/` (logo, placeholder images)

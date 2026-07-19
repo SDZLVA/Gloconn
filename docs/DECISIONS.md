@@ -786,3 +786,54 @@ orchestrateTripSearch(request)
 - Free-typed cities without catalog match fail when flights are selected (user must pick autocomplete)
 - Multi-airport cities use one primary `iataCode` for MVP
 - Amadeus client can assume IATA is present when flights run (or receive validation failure earlier)
+
+---
+
+## ADR-032: Amadeus OAuth and generic token cache (Sprint 3)
+
+**Decision:** Implement OAuth 2.0 client-credentials for Amadeus inside the Amadeus adapter, backed by a generic in-memory TTL cache. Expose authenticated HTTP infrastructure via `amadeusFetch()` without calling Flight Offers yet.
+
+**Context:** Sprint 2 prepared IATA on `SearchRequest`. Live flight search needs a Bearer token. Auth must stay server-only and must not leak into the UI, orchestrator, or `FlightsProvider` interface.
+
+**Structure:**
+```
+lib/api/cache.ts                         — generic getCached / setCached / deleteCached
+lib/providers/flights/amadeus/auth.ts    — getAmadeusAccessToken() (uses cache privately)
+lib/providers/flights/amadeus/client.ts  — getAmadeusAuthHeaders(), amadeusFetch()
+```
+
+**Authentication lifecycle:**
+```
+getAmadeusAccessToken()
+  → cache hit? return token
+  → else POST https://test.api.amadeus.com/v1/security/oauth2/token
+       (client_credentials + AMADEUS_API_KEY / AMADEUS_API_SECRET from getAppConfig)
+  → cache token with expires_in − 60s buffer
+  → return token
+
+amadeusFetch(path)   [future Flight Offers]
+  → Authorization: Bearer <token>
+  → fetch(test.api.amadeus.com + path)
+```
+
+**Responsibilities:**
+
+| Layer | Role |
+|-------|------|
+| `lib/api/cache.ts` | Vendor-agnostic TTL store — not re-exported from `@/lib/api` |
+| `amadeus/auth.ts` | Amadeus-specific OAuth; only public API is `getAmadeusAccessToken()` |
+| `amadeus/client.ts` | Single HTTP entry point for future Amadeus endpoints |
+| `AmadeusFlightsProvider` | Still mocks until Sprint 4 wires Flight Offers |
+| Orchestrator / UI | Unchanged — never import Amadeus auth |
+
+**Rationale:**
+- Auth inside the adapter keeps domain interfaces clean
+- Generic cache can serve Booking/Omio later without renaming
+- Client owns HTTP so Flight Offers does not reimplement OAuth
+- Test environment by default (`test.api.amadeus.com`)
+
+**Consequences:**
+- Cache is process-local (not Redis) — fine for MVP / single instance
+- No retry-on-401 yet (deferred)
+- Production Amadeus host can be added later via config
+- App search UX unchanged until provider stops delegating to mock
