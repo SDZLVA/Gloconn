@@ -221,4 +221,5 @@ See `PROJECT_RULES.md` in the project root for AI and developer guidelines. Key 
 | [API_FOUNDATION.md](./API_FOUNDATION.md) | API layers, provider swap guide, naming |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | Context for AI assistants continuing the project |
 | [CURRENT_STATE.md](./CURRENT_STATE.md) | Latest sprint snapshot and active focus |
+| [SPRINT_2_SUMMARY.md](./SPRINT_2_SUMMARY.md) | Sprint 2 completion summary |
 | [../PROJECT_PRINCIPLES.md](../PROJECT_PRINCIPLES.md) | Mission, vision, and decision-making rules |
