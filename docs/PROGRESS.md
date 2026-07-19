@@ -496,14 +496,51 @@ Add server-only Amadeus OAuth (test environment) and a generic token cache so fu
 Amadeus adapter (server-only)
   auth.ts  → getAmadeusAccessToken() → TTL cache
   client.ts → amadeusFetch(path) → Bearer token + test base URL
-AmadeusFlightsProvider.search → still mock (Sprint 4)
+AmadeusFlightsProvider.search → still mock (Sprint 5)
 ```
 
 ---
 
-## Sprint 4 — (Planned)
+## Sprint 4 — Flight Offers HTTP ✅ Complete
 
-**Focus:** Flight Offers Search, mappers, wire live Amadeus provider.  
+**Branch:** `cursor/project-principles`  
+**Dates:** July 2026  
+**Status:** Completed — GET Flight Offers returns raw JSON (ADR-033). Provider still mocks.
+
+### Objective
+
+Call Amadeus Flight Offers Search over HTTP using enriched IATA fields, without mapping to Glooconn `Flight` or changing app search UX.
+
+### Definition of Done (verified)
+
+- [x] Internal raw types in `amadeus/types.ts`
+- [x] Pure `buildFlightOffersSearchParams(request)`
+- [x] `searchFlightOffers(request)` via `amadeusFetch` (GET `/v2/shopping/flight-offers`)
+- [x] Safe `createProviderError` on HTTP failures
+- [x] No response mapping, provider wiring, orchestrator, or UI changes
+- [x] Documentation updated (ADR-033, foundation, handoff, progress, todo, current state, roadmap)
+
+### Changes
+
+- Added `lib/providers/flights/amadeus/types.ts`
+- Added `lib/providers/flights/amadeus/flightOffers.ts`
+- Documented architecture in ADR-033
+
+### Result
+
+```
+searchFlightOffers(request)
+  → buildFlightOffersSearchParams() → amadeusFetch(...) → raw JSON
+AmadeusFlightsProvider.search → still mock
+```
+
+Ready for Sprint 5 — mapper + wire live provider.
+
+---
+
+## Sprint 5 — (Planned)
+
+**Focus:** Map Amadeus offers → `Flight`, replace mock in `AmadeusFlightsProvider`.  
 See [TODO.md](./TODO.md).
 
 ---

@@ -27,13 +27,12 @@ Add **server-only** Amadeus authentication for the **test** environment, plus a 
 
 ---
 
-## What was intentionally deferred to Sprint 4
+## What was deferred after Sprint 3
 
-- Flight Offers Search endpoint calls
-- `mapAmadeusOfferToFlight()` implementation
-- Wiring `AmadeusFlightsProvider.search` to live Amadeus (still uses mock)
-- Partial provider failure handling
-- Enabling live flights with `USE_MOCK_PROVIDERS=false`
+- Flight Offers Search HTTP → **done in Sprint 4** (`searchFlightOffers`)
+- `mapAmadeusOfferToFlight()` + live provider wiring → **Sprint 5**
+- Partial provider failure handling → **Sprint 5+**
+- Enabling live flights with `USE_MOCK_PROVIDERS=false` → **Sprint 5**
 
 ---
 
@@ -44,7 +43,7 @@ Amadeus adapter (server-only)
   auth.ts   → getAmadeusAccessToken() → TTL cache
   client.ts → amadeusFetch(path) → Bearer token + test base URL
 
-AmadeusFlightsProvider.search → still mock until Sprint 4
+AmadeusFlightsProvider.search → still mock until Sprint 5
 ```
 
 **Rules:**
@@ -74,9 +73,10 @@ AmadeusFlightsProvider.search → still mock until Sprint 4
 
 ---
 
-## Next sprint
+## Next sprint (after Sprint 3)
 
-**Sprint 4 — Amadeus Flight Offers**  
-Call Flight Offers via `amadeusFetch`, map responses to `Flight`, and remove mock delegation from `AmadeusFlightsProvider`.
+**Sprint 4 — Flight Offers HTTP** ✅ Complete  
+See `docs/SPRINT_4_SUMMARY.md`.
 
-See `docs/TODO.md` and `docs/CURRENT_STATE.md`.
+**Sprint 5 — Flight mapping & live provider** (next)  
+Map Amadeus offers → `Flight` and wire `AmadeusFlightsProvider`.

@@ -837,3 +837,49 @@ amadeusFetch(path)   [future Flight Offers]
 - No retry-on-401 yet (deferred)
 - Production Amadeus host can be added later via config
 - App search UX unchanged until provider stops delegating to mock
+
+---
+
+## ADR-033: Flight Offers HTTP without provider wiring (Sprint 4)
+
+**Decision:** Implement GET `/v2/shopping/flight-offers` in a dedicated `flightOffers.ts` module. Return raw Amadeus JSON. Do not map to `Flight` and do not change `AmadeusFlightsProvider` (still mocks).
+
+**Context:** Sprint 3 provided OAuth + `amadeusFetch`. Sprint 2 provides IATA on `SearchRequest`. Live UI results need mapping first.
+
+**Structure:**
+```
+amadeus/types.ts          — AmadeusFlightOffersResponse, AmadeusApiErrorResponse (internal)
+amadeus/flightOffers.ts   — buildFlightOffersSearchParams() + searchFlightOffers()
+amadeus/client.ts         — amadeusFetch() only (unchanged role)
+amadeus/provider.ts       — still delegates to mock
+```
+
+**Request lifecycle:**
+```
+searchFlightOffers(SearchRequest)
+  → buildFlightOffersSearchParams(request)   // pure
+  → amadeusFetch("/v2/shopping/flight-offers?" + params)
+      → getAmadeusAccessToken() → TTL cache / OAuth
+  → JSON → AmadeusFlightOffersResponse
+  // STOP — no mapAmadeusOfferToFlight, no provider.search change
+```
+
+**Responsibilities:**
+
+| Module | Role |
+|--------|------|
+| `buildFlightOffersSearchParams` | Pure SearchRequest → URLSearchParams |
+| `searchFlightOffers` | HTTP + safe provider errors; raw response |
+| `amadeusFetch` | Auth headers + test base URL |
+| `AmadeusFlightsProvider` | Unchanged mock until Sprint 5 |
+
+**Rationale:**
+- Separating `flightOffers.ts` from `client.ts` keeps HTTP infrastructure generic
+- Pure query builder is easy to test without network
+- Deferring mapping avoids breaking `Promise<Flight[]>` with raw Amadeus shapes
+- App UX stays on mock flights until mapping + provider wiring land together
+
+**Consequences:**
+- `searchFlightOffers` is available for smoke tests / Sprint 5 wiring but unused by the live search path
+- GET MVP only (POST multi-city deferred)
+- Mapper + live provider = Sprint 5

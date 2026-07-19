@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | Week 2+ — server search, IATA enrichment, Amadeus OAuth infrastructure |
+| Stage | Week 2+ — server search, IATA, Amadeus OAuth + Flight Offers HTTP (provider still mock) |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers (default) |
 
 ---
@@ -113,7 +113,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | TTL cache | `lib/api/cache.ts` | Generic in-memory TTL — used privately by Amadeus auth |
 | `getAmadeusAccessToken` | `lib/providers/flights/amadeus/auth.ts` | OAuth client-credentials (test env) |
 | `amadeusFetch` | `lib/providers/flights/amadeus/client.ts` | Authenticated Amadeus HTTP infrastructure |
-| Amadeus flights adapter | `lib/providers/flights/amadeus/` | OAuth + client ready; search still mocks until Sprint 4 |
+| `searchFlightOffers` | `lib/providers/flights/amadeus/flightOffers.ts` | GET Flight Offers → raw Amadeus JSON (not wired to provider) |
+| Amadeus flights adapter | `lib/providers/flights/amadeus/` | OAuth + Flight Offers HTTP ready; `search` still mocks until Sprint 5 |
 | `getServiceProviders` | `lib/services/context.ts` | Returns injected or registry-backed providers |
 | Provider registry | `lib/providers/core/registry.ts` | Central `get*Provider()` selection |
 | Provider factories | `lib/providers/core/factories.ts` | Env-based mock vs external selection |
@@ -161,18 +162,18 @@ SearchResultsPage (client)
 - Hotels/transport-only searches do not require IATA
 - UI never collects or displays IATA fields
 
-**Amadeus OAuth notes (ADR-032 — infrastructure only):**
+**Amadeus notes (ADR-032 / ADR-033):**
 ```
-amadeus/client.ts (future Flight Offers)
-  → amadeusFetch(path)
-    → getAmadeusAuthHeaders()
-      → getAmadeusAccessToken()   [auth.ts]
-        → lib/api/cache.ts TTL
-        → or POST test.api.amadeus.com/.../token
+amadeus/flightOffers.ts
+  → buildFlightOffersSearchParams(request)   // pure
+  → amadeusFetch("/v2/shopping/flight-offers?" + params)
+    → getAmadeusAccessToken()   [auth.ts + cache]
+  → raw AmadeusFlightOffersResponse
 ```
-- Auth lives inside the Amadeus adapter — not in orchestrator or UI
+- Auth + HTTP live inside the Amadeus adapter — not in orchestrator or UI
 - Cache is generic; not exported from `@/lib/api` barrel
-- `AmadeusFlightsProvider.search` still delegates to mock (Sprint 4 wires live search)
+- `AmadeusFlightsProvider.search` still delegates to mock (Sprint 5: mapper + wire live search)
+- Do not map Amadeus JSON to `Flight` until Sprint 5
 
 Destination autocomplete still calls `lib/services` directly (mock provider, no external API keys yet).
 
@@ -263,9 +264,11 @@ lib/providers/        → provider adapters (mock + future external APIs)
   destinations/       → mock ✅, google-maps (planned)
   search/             → monolithic mock ✅ (to split into hotels/flights/ground)
   hotels/             → mock, booking (planned)
-  flights/            → mock ✅, amadeus/ (auth + client ✅; Flight Offers Sprint 4)
+  flights/            → mock ✅, amadeus/ (auth + client + flightOffers ✅; provider mock until Sprint 5)
     amadeus/auth.ts   → getAmadeusAccessToken()
     amadeus/client.ts → amadeusFetch() HTTP infrastructure
+    amadeus/flightOffers.ts → buildFlightOffersSearchParams + searchFlightOffers
+    amadeus/types.ts  → internal raw Amadeus response shapes
   ground/             → mock, omio (planned)
 lib/services/         → server-side service layer (searchService is server-only)
   context.ts          → getServiceProviders / setServiceProviders (simple DI)
@@ -344,8 +347,9 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 - ❌ Do not call provider modules directly from UI — use services (server) or HTTP clients (browser)
 - ❌ Do not put flight IATA validation inside `iataResolution.ts` — enrichment only; orchestrator owns product rules
 - ❌ Do not resolve IATA inside `FlightsProvider` / Amadeus — use enriched `SearchRequest` fields
-- ❌ Do not call Amadeus OAuth or `amadeusFetch` from UI / orchestrator — only Amadeus adapter code
+- ❌ Do not call Amadeus OAuth, `amadeusFetch`, or `searchFlightOffers` from UI / orchestrator — only Amadeus adapter code
 - ❌ Do not re-export `lib/api/cache` from the public `@/lib/api` barrel — auth imports it privately
+- ❌ Do not wire `searchFlightOffers` into `AmadeusFlightsProvider` until mapping exists (Sprint 5)
 - ❌ Do not add external API integrations without being asked
 - ❌ Do not install UI libraries (shadcn, MUI) without approval
 - ❌ Do not refactor unrelated code during a feature task
