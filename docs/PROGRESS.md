@@ -577,10 +577,39 @@ Ready for Sprint 6 — wire live provider.
 
 ---
 
-## Sprint 6 — (Planned)
+## Sprint 6 — Live Amadeus provider ✅ Complete
 
-**Focus:** Wire `AmadeusFlightsProvider` to `searchFlightOffers` + `mapAmadeusFlightOffersResponse`.  
-See [TODO.md](./TODO.md).
+**Branch:** `cursor/project-principles`  
+**Dates:** July 2026  
+**Status:** Completed — `AmadeusFlightsProvider` uses Flight Offers pipeline (ADR-035).
+
+### Objective
+
+Wire `AmadeusFlightsProvider.search` to `searchFlightOffers` + `mapAmadeusFlightOffersResponse`, with `destinationId` validation, without changing registry selection.
+
+### Definition of Done (verified)
+
+- [x] Provider calls live HTTP + mapper; mock delegation removed
+- [x] Missing `destinationId` → `createProviderError`
+- [x] Factory selection still mock vs Amadeus by env
+- [x] `currencyService` client boundary fixed (mock currency direct; debt recorded)
+- [x] No orchestrator / UI / SearchRequest / registry logic changes
+- [x] Documentation updated (ADR-035, foundation, handoff, progress, todo, current state, roadmap)
+
+### Changes
+
+- Updated `lib/providers/flights/amadeus/provider.ts`
+- Updated `lib/services/currencyService.ts` (client `server-only` boundary)
+- Documented architecture in ADR-035
+
+### Result
+
+```
+AmadeusFlightsProvider.search → searchFlightOffers → mapAmadeusFlightOffersResponse → Flight[]
+USE_MOCK_PROVIDERS=true → mock flights (default)
+```
+
+Flight API sprints 1–6 complete for Amadeus search path.
 
 ---
 

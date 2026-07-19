@@ -79,6 +79,6 @@ AmadeusFlightsProvider.search → still mock (Sprint 5–6)
 ## Next sprint
 
 **Sprint 5 — Flight response mapping** ✅ (done in v0.11.0)  
-**Sprint 6 — Live Amadeus flights provider** — wire `searchFlightOffers` + mapper into `AmadeusFlightsProvider`.
+**Sprint 6 — Live Amadeus flights provider** ✅ (done in v0.12.0 / `flight-api-v1`)
 
 See `docs/TODO.md` and `docs/CURRENT_STATE.md`.

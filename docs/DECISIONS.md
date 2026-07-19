@@ -880,7 +880,7 @@ searchFlightOffers(SearchRequest)
 - App UX stays on mock flights until mapping + provider wiring land together
 
 **Consequences:**
-- `searchFlightOffers` is available for smoke tests / Sprint 6 wiring but unused by the live search path
+- `searchFlightOffers` unused by live path until Sprint 6 (ADR-035) wired the provider
 - GET MVP only (POST multi-city deferred)
 - Mapping landed in Sprint 5 (ADR-034); live provider wiring = Sprint 6
 
@@ -932,7 +932,50 @@ AmadeusFlightOffersResponse
 - `rating` is always `0` (Amadeus provides no rating; do not fabricate)
 
 **Consequences:**
-- Mapper requires `destinationId` from the caller (from enriched `SearchRequest` in Sprint 6)
+- Mapper requires `destinationId` from the caller (from enriched `SearchRequest`)
 - Outbound itinerary only drives schedule fields on the card; price is offer total
 - Shared stub `lib/providers/flights/mappers.ts` is unused — logic lives under `amadeus/`
-- Live Amadeus results in the UI = Sprint 6
+- Live Amadeus provider wiring completed in Sprint 6 (ADR-035)
+
+---
+
+## ADR-035: Live Amadeus FlightsProvider wiring (Sprint 6)
+
+**Decision:** Replace mock delegation in `AmadeusFlightsProvider.search` with the existing Flight Offers pipeline (`searchFlightOffers` → `mapAmadeusFlightOffersResponse`). Validate `destinationId` before mapping. Do not change the registry/factories selection logic.
+
+**Context:** Sprints 4–5 delivered HTTP + mapping. Live UI results require the provider to call them. Default `USE_MOCK_PROVIDERS=true` keeps the app on mock flights until operators opt in.
+
+**Provider pipeline:**
+```
+AmadeusFlightsProvider.search(request)
+  → destinationId = request.destinationId?.trim()
+      missing → createProviderError (do not call mapper with "")
+  → searchFlightOffers(request)
+  → mapAmadeusFlightOffersResponse(raw, { destinationId })
+  → Flight[]
+```
+
+**Provider selection (unchanged factories):**
+
+| Condition | Provider |
+|-----------|----------|
+| `USE_MOCK_PROVIDERS=true` | mock |
+| `USE_MOCK_PROVIDERS=false` + Amadeus configured | amadeus (live) |
+| Amadeus selected, keys missing | mock fallback |
+
+**currencyService adjustment (technical debt):**
+
+- Client budget UI imports `getCurrencies` → previously pulled registry → factories → Amadeus `server-only` into the client bundle after provider wiring
+- Fix: `currencyService` calls `mockCurrencyProvider` directly (currencies were already always mock)
+- **Debt:** restore DI/registry for currencies without importing server-only flight adapters on the client (e.g. split client-safe factories)
+
+**Rationale:**
+- Reuses HTTP + mapper without new business logic in the orchestrator/UI
+- Explicit `destinationId` check avoids invalid mapper context
+- Factory selection stays the single switch for mock vs live Amadeus
+- Temporary currencyService bypass unblocks build while documenting cleanup
+
+**Consequences:**
+- Live Amadeus results appear when env selects Amadeus (not under default mock flag)
+- Flights `ProviderError` still fails the whole orchestrator `Promise.all` (partial failure deferred)
+- currencyService no longer participates in `setServiceProviders` injection for currencies

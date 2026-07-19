@@ -78,7 +78,7 @@ AmadeusFlightOffersResponse
 
 ## Next sprint
 
-**Sprint 6 — Wire live Amadeus provider**  
+**Sprint 6 — Wire live Amadeus provider** ✅ (done in v0.12.0 / `flight-api-v1`)  
 Replace mock delegation in `AmadeusFlightsProvider` with `searchFlightOffers` + `mapAmadeusFlightOffersResponse`.
 
 See `docs/TODO.md` and `docs/CURRENT_STATE.md`.

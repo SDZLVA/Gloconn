@@ -1,6 +1,6 @@
 # API Foundation — Architecture Reference
 
-This document is the single reference for the Glooconn API foundation (v0.11.0). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
+This document is the single reference for the Glooconn API foundation (v0.12.0). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
 
 ---
 
@@ -42,7 +42,7 @@ This document is the single reference for the Glooconn API foundation (v0.11.0).
                     amadeus/client.ts       → amadeusFetch() infrastructure
                     amadeus/flightOffers.ts → GET /v2/shopping/flight-offers (raw JSON)
                     amadeus/mappers.ts      → raw JSON → Flight[] (public: mapAmadeusFlightOffersResponse)
-                    amadeus/provider.ts     → still mocks (Sprint 6 wires live search)
+                    amadeus/provider.ts     → live pipeline (searchFlightOffers + mapper)
         │                   │                   │
         └───────────────────┴───────────────────┘
                             │
@@ -123,7 +123,7 @@ Step list:
 |---------|-------|----------------|
 | Data enrichment | `lib/services/iataResolution.ts` | Map places → catalog destinations → optional IATA codes |
 | Business rule | `searchOrchestrator` | Fail when flights are requested but airports cannot be resolved |
-| Flight HTTP | `searchFlightOffers()` ready (Sprint 4); mapping ready (Sprint 5); provider still mocks (Sprint 6) |
+| Flight HTTP | Live Amadeus pipeline when selected (Sprints 4–6); default app path still mock via `USE_MOCK_PROVIDERS` |
 
 **Why enrichment is in the orchestrator path (via helper):**
 
@@ -258,26 +258,52 @@ AmadeusFlightOffersResponse                    [raw JSON from searchFlightOffers
 - `mappingHelpers.ts` and `types.ts` are implementation details that can change without a public API break
 - `mapAmadeusOfferToFlight` is an internal building block of the response mapper
 
-**Why provider integration is deferred to Sprint 6:**
+**Why provider integration was deferred to Sprint 6:**
 
-- Mapping can be reviewed and tested without changing app search UX
+- Mapping could be reviewed without changing app search UX
 - Wiring is a thin step: `searchFlightOffers` → `mapAmadeusFlightOffersResponse` → `Flight[]`
 - Unsupported currency already throws `createProviderError` — live path must handle that deliberately
 
-### Remaining work (Sprint 6)
+### Live Amadeus provider (Sprint 6 — complete)
 
-| Step | File | Action |
-|------|------|--------|
-| 1 | `lib/providers/flights/amadeus/provider.ts` | Replace mock with `searchFlightOffers` + `mapAmadeusFlightOffersResponse` |
-| 2 | `.env.local` | `USE_MOCK_PROVIDERS=false`, `FLIGHTS_PROVIDER=amadeus`, keys |
-| 3 | Optional | Partial provider failure, mapper unit tests |
+```
+AmadeusFlightsProvider.search(request)
+  → require destinationId (trimmed) or createProviderError
+  → searchFlightOffers(request)
+  → mapAmadeusFlightOffersResponse(raw, { destinationId })
+  → Flight[]
+```
 
-**Already ready (not live in UI yet):**
+**Provider selection (`createFlightsProvider` — unchanged in Sprint 6):**
 
-- `createFlightsProvider()` returns `amadeusFlightsProvider` when configured
+| Condition | Active provider |
+|-----------|-----------------|
+| `USE_MOCK_PROVIDERS=true` (default) | `mock` |
+| `USE_MOCK_PROVIDERS=false` + `FLIGHTS_PROVIDER=amadeus` + keys | `amadeus` (live pipeline) |
+| Amadeus selected but keys missing | `mock` (factory fallback + warning) |
+
+**`destinationId` validation:** missing/blank `request.destinationId` → `createProviderError` before HTTP or mapping. Do not pass empty context into the mapper.
+
+**currencyService technical debt (Sprint 6):**
+
+- `getCurrencies()` calls `mockCurrencyProvider` directly instead of `getServiceProviders()`
+- **Why:** wiring Amadeus HTTP into `AmadeusFlightsProvider` pulled `server-only` modules into the client bundle via `currencyService` → registry → factories → Amadeus
+- Currencies remain mock-only; behavior for the budget UI is unchanged
+- **Debt:** restore registry/DI for currencies without importing server-only flight adapters into client components (split client-safe factories / lazy Amadeus load)
+
+### Remaining work (post–Sprint 6)
+
+| Step | Action |
+|------|--------|
+| 1 | Partial provider failure (hotels/transport if flights fail) |
+| 2 | Mapper / Flight Offers unit tests |
+| 3 | Optional: enable live flights in `.env.local` for manual QA |
+
+**Live when configured:**
+
+- `AmadeusFlightsProvider.search` → Flight Offers HTTP + mapping
 - IATA enrichment + flight airport validation in the orchestrator
-- OAuth + TTL cache + `amadeusFetch` + `searchFlightOffers`
-- `mapAmadeusFlightOffersResponse()` (Sprint 5)
+- Factory selection of Amadeus vs mock as above
 
 ---
 
@@ -294,7 +320,9 @@ Services use `runService()` — never raw try/catch.
 
 **Flight IATA validation:** when `productTypes` includes `"flights"` and `originIata` or `destinationIata` is missing after enrichment, the orchestrator throws `createValidationError(...)` asking the user to pick cities from autocomplete. `runService` maps this to a failed `ServiceResult`; the UI shows the exact message.
 
-**Flight Offers HTTP errors:** `searchFlightOffers()` maps Amadeus HTTP failures to `createProviderError` using safe `title`/`detail` from the error body — never tokens or credentials. Not surfaced in the app UI until the provider is wired in Sprint 6.
+**Flight Offers HTTP errors:** `searchFlightOffers()` maps Amadeus HTTP failures to `createProviderError` using safe `title`/`detail` from the error body — never tokens or credentials. Surfaced when the Amadeus provider is selected (not when `USE_MOCK_PROVIDERS=true`).
+
+**Missing `destinationId` on Amadeus search:** `AmadeusFlightsProvider` throws `createProviderError` (programming/config error — orchestrator should have enriched the request).
 
 **Flight mapping currency errors:** unsupported or missing offer currency throws `createProviderError` (does not silently drop the offer). Propagates from `mapAmadeusFlightOffersResponse`.
 
@@ -343,8 +371,8 @@ afterEach(() => resetServiceProviders());
 
 ## Planned (not implemented)
 
-- Wire `AmadeusFlightsProvider` to `searchFlightOffers` + `mapAmadeusFlightOffersResponse` (Sprint 6)
 - Partial provider failure (show hotels/transport if flights fail)
+- Restore currencyService → registry DI without client importing Amadeus `server-only` (technical debt from Sprint 6)
 - `SearchResponse` wrapper model in orchestrator
 - Move mock datasets from `lib/results/mock*.ts` into `lib/providers/*/mock/data.ts`
 - Booking, Omio, Google Maps adapter folders (same pattern as Amadeus)
