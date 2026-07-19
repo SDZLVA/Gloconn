@@ -422,10 +422,51 @@ No client import of `searchService`. API keys and real provider HTTP clients can
 
 ---
 
-## Sprint 2 — (Planned)
+## Sprint 2 — IATA resolution ✅ Complete
 
-**Focus:** IATA airport resolution and flight provider preparation (prerequisite for Amadeus).  
-See [TODO.md](./TODO.md) and [CURRENT_STATE.md](./CURRENT_STATE.md).
+**Branch:** `cursor/project-principles`  
+**Dates:** July 2026  
+**Status:** Completed — enrichment + flight airport validation documented (ADR-031)
+
+### Objective
+
+Resolve origin/destination airport IATA codes on the server before flight providers run, without coupling the UI or flight adapters to the destination catalog.
+
+### Definition of Done (verified)
+
+- [x] Optional `originIata` / `destinationIata` on `SearchRequest`
+- [x] `lib/services/iataResolution.ts` helper (enrichment only)
+- [x] Orchestrator enriches via helper before providers
+- [x] Flights requested + missing IATA → clear validation error (no silent skip)
+- [x] Hotels/transport-only searches work without IATA
+- [x] No Amadeus / OAuth / UI changes
+- [x] Documentation updated (`API_FOUNDATION.md`, `AI_HANDOFF.md`, ADR-031, `TODO.md`, `CURRENT_STATE.md`)
+
+### Changes
+
+- Extended `types/models/search-request.ts` with optional IATA fields
+- Added `lib/services/iataResolution.ts` — `enrichSearchRequestWithAirports()`, `AirportRef`, etc.
+- Wired enrichment into `searchOrchestrator.enrichSearchRequest()`
+- Added `assertFlightAirportsResolved()` in the orchestrator
+- Updated foundation docs and ADR-031
+
+### Result
+
+```
+POST /api/search → searchTrips()
+  → enrichSearchRequestWithAirports()
+  → assertFlightAirportsResolved()   (flights only)
+  → hotels / flights / transport
+```
+
+Ready for Sprint 3 — Amadeus client can consume `originIata` / `destinationIata`.
+
+---
+
+## Sprint 3 — (Planned)
+
+**Focus:** Amadeus OAuth + Flight Offers Search + mappers.  
+See [TODO.md](./TODO.md).
 
 ---
 

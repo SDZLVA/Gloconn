@@ -70,6 +70,20 @@ export type SearchRequest = {
   originId?: string;
 
   /**
+   * Origin airport IATA code (e.g. "MXP").
+   * Optional — populated by the service layer when flights need airport codes.
+   * Hotels and ground transport ignore this field.
+   */
+  originIata?: string;
+
+  /**
+   * Destination airport IATA code (e.g. "CDG").
+   * Optional — populated by the service layer when flights need airport codes.
+   * Hotels and ground transport ignore this field.
+   */
+  destinationIata?: string;
+
+  /**
    * Which result domains to query. Defaults to all three when omitted.
    */
   productTypes?: SearchProductType[];

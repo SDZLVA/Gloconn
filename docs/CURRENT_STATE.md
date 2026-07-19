@@ -1,6 +1,6 @@
 # Glooconn — Current State
 
-**Last updated:** July 13, 2026  
+**Last updated:** July 19, 2026  
 **Active branch:** `cursor/project-principles`  
 **Current version:** 0.8.0
 
@@ -11,7 +11,8 @@
 | Sprint | Name | Status | Branch |
 |--------|------|--------|--------|
 | Sprint 1 | Server search boundary | ✅ Complete | `cursor/project-principles` |
-| Sprint 2 | IATA resolution & flight prep | 📋 Planned | TBD |
+| Sprint 2 | IATA resolution | ✅ Complete | `cursor/project-principles` |
+| Sprint 3 | Amadeus flight integration | 📋 Planned | TBD |
 
 ---
 
@@ -20,6 +21,9 @@
 - Home page with full search form (origin, destination, dates, budget, travelers, product types)
 - Search results page with mock hotels, flights, buses, trains
 - Trip search runs **server-side** via `POST /api/search`
+- Server enriches `SearchRequest` with optional `originIata` / `destinationIata`
+- Flights-requested searches fail with a clear validation error when airports cannot be resolved
+- Hotels/transport-only searches work without IATA
 - Supabase auth (Google + email), profile, saved trips
 - Provider architecture with mock adapters and Amadeus stub
 - CI: typecheck, lint, test, build
@@ -30,7 +34,6 @@
 
 - `/destinations` and `/about` pages (nav links 404)
 - Real flight data (Amadeus not implemented — stub delegates to mock)
-- IATA airport code resolution for flight searches
 - OAuth token caching for Amadeus
 - Partial provider failure (one provider error fails entire search)
 
@@ -38,9 +41,9 @@
 
 ## Active technical focus
 
-**Next:** Sprint 2 — prepare flight search for Amadeus by resolving origin/destination to IATA codes before calling the flights provider.
+**Next:** Sprint 3 — implement Amadeus OAuth + Flight Offers Search using enriched IATA fields on `SearchRequest`.
 
-**Not yet:** Full Amadeus HTTP integration (Sprint 3).
+**Done:** Sprint 2 IATA enrichment + flight airport validation (ADR-031).
 
 ---
 
@@ -52,15 +55,16 @@
 
 ---
 
-## Key architecture (post–Sprint 1)
+## Key architecture (post–Sprint 2)
 
 ```
 SearchResultsPage (client)
   → postSearchTrips()
     → POST /api/search
       → searchTrips() [server-only]
-        → searchOrchestrator
-          → hotels / flights / transport providers
+        → enrichSearchRequestWithAirports()
+        → assertFlightAirportsResolved()   (when flights selected)
+        → hotels / flights / transport providers
 ```
 
 ---
@@ -76,4 +80,5 @@ SearchResultsPage (client)
 | [DECISIONS.md](./DECISIONS.md) | Architecture decisions |
 | [API_FOUNDATION.md](./API_FOUNDATION.md) | Provider architecture |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | Developer / AI context |
+| [SPRINT_2_SUMMARY.md](./SPRINT_2_SUMMARY.md) | Sprint 2 completion summary |
 | [../PROJECT_PRINCIPLES.md](../PROJECT_PRINCIPLES.md) | Mission and values |

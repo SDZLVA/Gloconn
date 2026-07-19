@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | Week 2+ — auth, saved trips, and API foundation live |
+| Stage | Week 2+ — auth, API foundation, server search, IATA enrichment |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers (default) |
 
 ---
@@ -108,7 +108,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `filterResults`, `sortResults` | `lib/results/` | Client-side filter and sort helpers |
 | `searchTrips` | `lib/services/searchService.ts` | **Server only** — validated search via orchestrator + providers |
 | `serviceResultFromApiResponse` | `lib/api/responses.ts` | Converts Route Handler JSON → `ServiceResult` |
-| `orchestrateTripSearch` | `lib/services/searchOrchestrator.ts` | Parallel hotels / flights / transport calls |
+| `iataResolution` | `lib/services/iataResolution.ts` | Enrich SearchRequest with optional origin/destination IATA |
+| `orchestrateTripSearch` | `lib/services/searchOrchestrator.ts` | IATA enrichment + flight airport validation + parallel providers |
 | `getServiceProviders` | `lib/services/context.ts` | Returns injected or registry-backed providers |
 | Provider registry | `lib/providers/core/registry.ts` | Central `get*Provider()` selection |
 | Provider factories | `lib/providers/core/factories.ts` | Env-based mock vs external selection |
@@ -142,13 +143,20 @@ SearchResultsPage (client)
       → searchTrips()                     [lib/services/searchService.ts — server only]
         → validateSearchRequest()
         → searchOrchestrator.orchestrateTripSearch(request)
-          → getServiceProviders()
+          → enrichSearchRequestWithAirports()   [iataResolution — data only]
+          → assertFlightAirportsResolved()      [fail if flights + missing IATA]
           → Promise.all([hotels, flights, transport])
           → mergeSearchResults()
       → toJsonResponse() → serviceResultFromApiResponse()
     → useServiceQuery sets loading / data / error
   → filterResults() + sortResults() in the browser
 ```
+
+**IATA notes (ADR-031):**
+- Helper enriches only — does not throw for missing codes
+- Orchestrator validates when `productTypes` includes `"flights"`
+- Hotels/transport-only searches do not require IATA
+- UI never collects or displays IATA fields
 
 Destination autocomplete still calls `lib/services` directly (mock provider, no external API keys yet).
 
@@ -242,7 +250,8 @@ lib/providers/        → provider adapters (mock + future external APIs)
   ground/             → mock, omio (planned)
 lib/services/         → server-side service layer (searchService is server-only)
   context.ts          → getServiceProviders / setServiceProviders (simple DI)
-  searchOrchestrator  → parallel provider calls + merge
+  iataResolution.ts   → enrich SearchRequest with optional airport IATA codes
+  searchOrchestrator  → enrichment + flight IATA validation + parallel providers
 lib/providers/core/   → registry + config (selects active adapters)
 app/api/search/       → POST /api/search Route Handler
 lib/                  → other plain TS modules (navigation, styles, utils)
@@ -314,6 +323,8 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 
 - ❌ Do not call `searchTrips()` or `searchService` from client components — use `postSearchTrips()` from `@/lib/api`
 - ❌ Do not call provider modules directly from UI — use services (server) or HTTP clients (browser)
+- ❌ Do not put flight IATA validation inside `iataResolution.ts` — enrichment only; orchestrator owns product rules
+- ❌ Do not resolve IATA inside `FlightsProvider` / Amadeus — use enriched `SearchRequest` fields
 - ❌ Do not add external API integrations without being asked
 - ❌ Do not install UI libraries (shadcn, MUI) without approval
 - ❌ Do not refactor unrelated code during a feature task

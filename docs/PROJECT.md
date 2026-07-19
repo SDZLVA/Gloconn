@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.8.0 (Sprint 1 — server search boundary complete)
+**Current version:** 0.8.0 (Sprint 2 — IATA resolution complete; Amadeus next)
 
 ---
 
@@ -74,11 +74,12 @@ Gloconn/
 │   │   ├── flights/        # mock ✅, amadeus/ stub ✅
 │   │   ├── ground/         # mock ✅, omio (planned)
 │   │   └── mock/           # Shared mock helpers (filter, pricing)
-│   ├── services/           # Service layer — UI calls these, not providers
+│   ├── services/           # Service layer — trip search is server-only
 │   │   ├── context.ts      # getServiceProviders / setServiceProviders (DI)
 │   │   ├── destinationService.ts
-│   │   ├── searchService.ts
-│   │   └── searchOrchestrator.ts  # Parallel domain provider calls
+│   │   ├── searchService.ts       # server-only — called from POST /api/search
+│   │   ├── iataResolution.ts      # Enrich SearchRequest with optional IATA codes
+│   │   └── searchOrchestrator.ts  # Enrichment + flight IATA validation + providers
 │   ├── trips/              # Saved trip queries and server actions
 │   ├── budget/             # Currency options, limits, and budget formatting
 │   ├── calendar/           # Date helpers for the travel calendar

@@ -743,3 +743,46 @@ SearchResultsPage (client)
 - Destination and currency services may still run from the client (mock-only today)
 - Filters and sorting remain client-side after results load
 - Future Amadeus work plugs into the existing server path without UI changes
+
+---
+
+## ADR-031: IATA resolution in the orchestrator (Sprint 2)
+
+**Decision:** Resolve airport IATA codes on the server during trip search orchestration. A dedicated helper enriches `SearchRequest`; the orchestrator enforces flight-specific validation. Flight providers never call the destination catalog.
+
+**Context:** Amadeus (and similar APIs) require origin/destination airport codes. Sprint 1 moved search to the server. Catalog cities already expose optional `Destination.iataCode`.
+
+**Structure:**
+```
+orchestrateTripSearch(request)
+  → enrichSearchRequestWithAirports()     [lib/services/iataResolution.ts]
+      — DestinationProvider → originId / destinationId / originIata / destinationIata
+  → assertFlightAirportsResolved()        [searchOrchestrator business rule]
+      — if flights requested and IATA missing → createValidationError
+  → hotels / flights / transport.search(enrichedRequest)
+```
+
+**Model:**
+- `SearchRequest.originIata?` and `SearchRequest.destinationIata?` are optional
+- Not collected by the UI or URL — filled only by server enrichment
+- Hotels and transport ignore these fields
+
+**Responsibilities:**
+
+| Layer | Role |
+|-------|------|
+| `iataResolution.ts` | Data enrichment only — no product-type policy, no throws for missing codes |
+| `searchOrchestrator` | Business decision — fail when flights need airports that cannot be resolved |
+| `FlightsProvider` | Consumes IATA on `SearchRequest` (Amadeus in Sprint 3) |
+| UI | Unchanged — never imports IATA helpers or Amadeus |
+
+**Rationale:**
+- Keeps providers independent of the destination catalog
+- Keeps the helper reusable for future airport metadata (`AirportRef`)
+- Optional IATA preserves hotels/transport-only searches
+- Clear validation errors instead of silently skipping flights
+
+**Consequences:**
+- Free-typed cities without catalog match fail when flights are selected (user must pick autocomplete)
+- Multi-airport cities use one primary `iataCode` for MVP
+- Amadeus client can assume IATA is present when flights run (or receive validation failure earlier)

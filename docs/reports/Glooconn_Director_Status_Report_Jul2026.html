@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Glooconn — Director Status Report</title>
+  <style>
+    @page { size: A4; margin: 18mm 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Calibri, Arial, sans-serif;
+      color: #1e293b;
+      line-height: 1.45;
+      font-size: 11pt;
+      margin: 0;
+      padding: 0;
+    }
+    .cover {
+      border-bottom: 4px solid #1d4ed8;
+      padding-bottom: 16px;
+      margin-bottom: 22px;
+    }
+    .brand {
+      color: #1d4ed8;
+      font-size: 22pt;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+    .doc-title {
+      font-size: 16pt;
+      font-weight: 600;
+      margin: 8px 0 4px;
+    }
+    .meta {
+      color: #64748b;
+      font-size: 10pt;
+    }
+    h2 {
+      color: #1d4ed8;
+      font-size: 12.5pt;
+      margin: 20px 0 8px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+    }
+    p { margin: 0 0 10px; }
+    ul { margin: 0 0 12px; padding-left: 18px; }
+    li { margin-bottom: 4px; }
+    .box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 10px 0 14px;
+    }
+    .score {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 10px 0 14px;
+    }
+    .score-card {
+      flex: 1 1 140px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 10px 12px;
+      text-align: center;
+    }
+    .score-card strong {
+      display: block;
+      font-size: 18pt;
+      color: #1d4ed8;
+      line-height: 1.1;
+    }
+    .score-card span {
+      font-size: 9pt;
+      color: #475569;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 14px;
+      font-size: 10.5pt;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 7px 9px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #1d4ed8;
+      color: white;
+      font-weight: 600;
+    }
+    tr:nth-child(even) td { background: #f8fafc; }
+    .ok { color: #15803d; font-weight: 600; }
+    .next { color: #b45309; font-weight: 600; }
+    .wait { color: #64748b; }
+    .footer {
+      margin-top: 28px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 9pt;
+      color: #64748b;
+    }
+    .motto {
+      font-style: italic;
+      color: #1d4ed8;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <p class="brand">Glooconn</p>
+    <p class="doc-title">Project Status Report for Leadership</p>
+    <p class="meta">
+      Prepared by: Engineering Management<br />
+      Date: 19 July 2026<br />
+      Audience: Directors / Non-technical stakeholders<br />
+      Product version: 0.8.0
+    </p>
+  </div>
+
+  <h2>1. What is Glooconn?</h2>
+  <p>
+    Glooconn is a travel planning website. Our goal is simple:
+    help people plan a full trip — flights, hotels, and transport —
+    in one place, within their budget, without confusion.
+  </p>
+  <p class="motto">Plan smarter. Travel easier. Spend less.</p>
+
+  <h2>2. Where we are today (in plain language)</h2>
+  <div class="box">
+    <strong>Bottom line:</strong>
+    The product foundation is strong. Users can already search for trips,
+    see sample results, create an account, and save trips.
+    We are not yet showing live airline prices — that is the next major step.
+  </div>
+
+  <div class="score">
+    <div class="score-card">
+      <strong>~70%</strong>
+      <span>Overall project progress<br />(toward a solid working product)</span>
+    </div>
+    <div class="score-card">
+      <strong>~95%</strong>
+      <span>Core website &amp; user account features</span>
+    </div>
+    <div class="score-card">
+      <strong>~10%</strong>
+      <span>Live travel data<br />(real airline connections)</span>
+    </div>
+  </div>
+
+  <h2>3. What already works</h2>
+  <ul>
+    <li>Home page with a clear trip search form</li>
+    <li>Search results for hotels, flights, buses, and trains (sample / demo data)</li>
+    <li>User login (Google or email), profile page, and saved trips</li>
+    <li>Mobile-friendly design</li>
+    <li>Secure setup so future airline connections can be added safely</li>
+    <li>Clear project documentation and quality checks</li>
+  </ul>
+
+  <h2>4. What is not ready yet</h2>
+  <ul>
+    <li>Live flight prices from real airlines (still using sample data)</li>
+    <li>“Destinations” and “About” pages (links exist, pages not built)</li>
+    <li>AI trip recommendations (planned for later years)</li>
+  </ul>
+
+  <h2>5. Pace of progress</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Period</th>
+        <th>Focus</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Early phase</td>
+        <td>Website foundation, search form, design</td>
+        <td class="ok">Complete</td>
+      </tr>
+      <tr>
+        <td>Mid phase</td>
+        <td>Results page, accounts, save trips</td>
+        <td class="ok">Complete</td>
+      </tr>
+      <tr>
+        <td>Recent sprint (Sprint 1)</td>
+        <td>Moved search to a secure server path (needed before live airline data)</td>
+        <td class="ok">Complete</td>
+      </tr>
+      <tr>
+        <td>Next sprint (Sprint 2)</td>
+        <td>Prepare airport codes so live flights can work correctly</td>
+        <td class="next">Ready to start</td>
+      </tr>
+      <tr>
+        <td>Following sprint (Sprint 3)</td>
+        <td>Connect first real flight data provider</td>
+        <td class="wait">Planned</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    <strong>Pace assessment:</strong>
+    Steady and healthy. We prioritize a stable foundation over rushing unfinished features.
+    That reduces risk when we connect real travel partners.
+  </p>
+
+  <h2>6. Short-term recommendations (next 4–8 weeks)</h2>
+  <ol>
+    <li><strong>Finish flight preparation, then connect real flights</strong> — highest business value.</li>
+    <li><strong>Build Destinations and About pages</strong> — so every menu link works for demos and investors.</li>
+    <li><strong>Merge finished work into the main product line</strong> — keep one clear official version.</li>
+    <li><strong>Add a branded “page not found” screen</strong> — small polish that looks professional.</li>
+  </ol>
+
+  <h2>7. Long-term recommendations (2026–2030)</h2>
+  <ol>
+    <li>Add hotels and ground transport from real partners after flights.</li>
+    <li>Improve recommendations that match budget and travel style.</li>
+    <li>Build AI-assisted trip planning (our long-term differentiator).</li>
+    <li>Test with real users and refine based on feedback.</li>
+    <li>Target a polished public release around <strong>2030</strong>, as stated in project principles.</li>
+  </ol>
+
+  <h2>8. Risks to watch (simple view)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Risk</th>
+        <th>Why it matters</th>
+        <th>Our approach</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Connecting live flights too early</td>
+        <td>Wrong prices or broken searches hurt trust</td>
+        <td>Complete preparation sprint first</td>
+      </tr>
+      <tr>
+        <td>Incomplete public pages</td>
+        <td>Looks unfinished in demos</td>
+        <td>Add Destinations &amp; About soon</td>
+      </tr>
+      <tr>
+        <td>Too many parallel workstreams</td>
+        <td>Slows delivery and quality</td>
+        <td>One clear sprint focus at a time</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>9. Recommendation to leadership</h2>
+  <div class="box">
+    Approve continuing the planned path:
+    <strong>Sprint 2 (flight preparation) → Sprint 3 (first live flights)</strong>,
+    while scheduling Destinations and About pages for demo readiness.
+    This balances product credibility with technical safety.
+  </div>
+
+  <div class="footer">
+    <p>
+      This report is intended for non-technical leadership.
+      Detailed engineering documents live in the project <code>docs/</code> folder.
+    </p>
+    <p>Glooconn Engineering Management · Confidential for internal use</p>
+  </div>
+</body>
+</html>
