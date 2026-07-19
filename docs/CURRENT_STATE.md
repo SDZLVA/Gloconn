@@ -2,8 +2,9 @@
 
 **Last updated:** July 19, 2026  
 **Active branch:** `cursor/project-principles`  
-**Current version:** 0.12.0  
-**Milestone:** `flight-api-v1` (Amadeus flight search foundation, Sprints 1–6)
+**Current version:** 0.13.0  
+**Release milestone:** Flight API v1 (architecture ✅ · automated tests ✅ · documentation ✅)  
+**Architecture tag:** `flight-api-v1` (Sprint 6) · **Release:** `v0.13.0` (Sprint 7)
 
 ---
 
@@ -17,6 +18,7 @@
 | Sprint 4 | Flight Offers HTTP | ✅ Complete | `cursor/project-principles` |
 | Sprint 5 | Flight response mapping | ✅ Complete | `cursor/project-principles` |
 | Sprint 6 | Wire live Amadeus provider | ✅ Complete | `cursor/project-principles` |
+| Sprint 7 | Flight API automated testing | ✅ Complete | `cursor/project-principles` |
 
 ---
 
@@ -25,12 +27,8 @@
 - Home page with full search form (origin, destination, dates, budget, travelers, product types)
 - Search results page with hotels, flights, buses, trains
 - Trip search runs **server-side** via `POST /api/search`
-- Server enriches `SearchRequest` with optional `originIata` / `destinationIata` / `destinationId`
-- Flights-requested searches fail with a clear validation error when airports cannot be resolved
-- Amadeus OAuth + TTL cache + `amadeusFetch` (test env)
-- `AmadeusFlightsProvider` live pipeline: `searchFlightOffers` → `mapAmadeusFlightOffersResponse` → `Flight[]`
-- Default `USE_MOCK_PROVIDERS=true` still serves mock flights (no keys required)
-- Live Amadeus when `USE_MOCK_PROVIDERS=false`, `FLIGHTS_PROVIDER=amadeus`, and keys set
+- Amadeus live pipeline when env-selected (default remains mock)
+- **85 automated tests** covering Flight API helpers, mappers, query builder, cache, and provider (mocked fetch)
 - Supabase auth (Google + email), profile, saved trips
 - CI: typecheck, lint, test, build
 
@@ -40,40 +38,37 @@
 
 - `/destinations` and `/about` pages (nav links 404)
 - Partial provider failure (one provider error fails entire search)
-- currencyService registry DI (temporarily uses mock currency directly — ADR-035 debt)
+- currencyService registry DI (ADR-035 debt)
+- Manual Amadeus sandbox smoke (live OAuth / offers) — not automated
 
 ---
 
 ## Active technical focus
 
-**Done:** Sprint 6 — live Amadeus flights provider (ADR-035). Flight API foundation sprints 1–6 complete.
+**Done:** Sprint 7 — Flight API automated testing.
 
-**Next (backlog):** partial provider failure, mapper tests, currencyService client-boundary cleanup.
+**Next (backlog):** partial provider failure, currencyService cleanup, manual sandbox QA when enabling live Amadeus.
 
 ---
 
 ## Environment notes
 
 - Default: `USE_MOCK_PROVIDERS=true` — mock flights; no Amadeus keys required
-- Live Amadeus: `USE_MOCK_PROVIDERS=false`, `FLIGHTS_PROVIDER=amadeus`, `AMADEUS_API_KEY`, `AMADEUS_API_SECRET`
-- Supabase optional — auth/trips disabled without `.env.local`
-- Test host: `test.api.amadeus.com`
+- Live Amadeus: `USE_MOCK_PROVIDERS=false`, `FLIGHTS_PROVIDER=amadeus`, keys
+- Test host: `test.api.amadeus.com` (manual sandbox only — not used by CI)
 
 ---
 
-## Key architecture (post–Sprint 6)
+## Key architecture (post–Sprint 7)
 
 ```
-SearchResultsPage (client)
-  → postSearchTrips()
-    → POST /api/search
-      → searchTrips() [server-only]
-        → enrichSearchRequestWithAirports()
-        → assertFlightAirportsResolved()
-        → hotels / flights / transport
-            AmadeusFlightsProvider.search (when selected)
-              → require destinationId
-              → searchFlightOffers → mapAmadeusFlightOffersResponse → Flight[]
+AmadeusFlightsProvider.search (when selected)
+  → require destinationId
+  → searchFlightOffers → mapAmadeusFlightOffersResponse → Flight[]
+
+Automated tests (npm test):
+  fixtures + mocked fetch + server-only stub
+  → no real Amadeus network in CI
 ```
 
 ---
@@ -94,4 +89,5 @@ SearchResultsPage (client)
 | [SPRINT_4_SUMMARY.md](./SPRINT_4_SUMMARY.md) | Sprint 4 completion summary |
 | [SPRINT_5_SUMMARY.md](./SPRINT_5_SUMMARY.md) | Sprint 5 completion summary |
 | [SPRINT_6_SUMMARY.md](./SPRINT_6_SUMMARY.md) | Sprint 6 completion summary |
+| [SPRINT_7_SUMMARY.md](./SPRINT_7_SUMMARY.md) | Sprint 7 completion summary |
 | [../PROJECT_PRINCIPLES.md](../PROJECT_PRINCIPLES.md) | Mission and values |

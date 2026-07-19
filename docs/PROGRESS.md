@@ -613,4 +613,34 @@ Flight API sprints 1–6 complete for Amadeus search path.
 
 ---
 
+## Sprint 7 — Flight API automated testing ✅ Complete
+
+**Branch:** `cursor/project-principles`  
+**Dates:** July 2026  
+**Status:** Completed — unit + integration tests for Flight API (mocked fetch; no live Amadeus in CI).
+
+### Objective
+
+Add a comprehensive automated test suite for helpers, mappers, query builder, TTL cache, and `AmadeusFlightsProvider.search` without changing production Flight API behavior.
+
+### Definition of Done (verified)
+
+- [x] Fixtures + `server-only` test stub
+- [x] `mappingHelpers.test.ts`
+- [x] `mappers.test.ts`
+- [x] `flightOffers.test.ts` (query builder) + `cache.test.ts`
+- [x] `provider.test.ts` (mocked fetch integration)
+- [x] `npm test` green — **85** automated tests
+- [x] Documentation updated
+
+### Result
+
+```
+Unit: helpers, mappers, buildFlightOffersSearchParams, cache
+Integration: AmadeusFlightsProvider.search (mocked token + offers)
+Manual Amadeus sandbox → future work
+```
+
+---
+
 ## Week 2 — (Historical)

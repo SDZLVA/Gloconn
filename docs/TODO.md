@@ -51,12 +51,21 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [x] currencyService client boundary fix + debt recorded (ADR-035)
 - [x] Documentation — ADR-035, foundation, handoff, progress, current state
 
-### Post–Sprint 6 backlog
+### Sprint 7 — Flight API automated testing ✅ Complete
+
+- [x] Fixtures + `server-only` test stub
+- [x] Helper unit tests — `mappingHelpers.test.ts`
+- [x] Mapper unit tests — `mappers.test.ts`
+- [x] Query builder + TTL cache tests
+- [x] Provider integration tests (mocked fetch)
+- [x] Documentation — foundation, handoff, progress, current state, roadmap
+
+### Post–Sprint 7 backlog
 
 - [ ] Partial provider failure — show hotels/transport if flights fail
-- [ ] Unit / integration tests for mapper and Flight Offers
 - [ ] Restore currencyService → registry DI without client importing Amadeus `server-only`
 - [ ] Enable live flights in local/prod when ready (`USE_MOCK_PROVIDERS=false`, keys)
+- [ ] Manual Amadeus sandbox smoke (OAuth + live offers) — not automated CI
 
 ---
 

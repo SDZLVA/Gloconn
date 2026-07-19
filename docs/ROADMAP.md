@@ -79,13 +79,17 @@ This roadmap outlines planned development phases. Dates are approximate and will
 | Sprint 4 | Flight Offers HTTP (`searchFlightOffers` raw JSON) | ✅ Complete |
 | Sprint 5 | Map Amadeus offers → `Flight` (mapper only) | ✅ Complete |
 | Sprint 6 | Wire live Amadeus provider | ✅ Complete |
+| Sprint 7 | Flight API automated testing | ✅ Complete |
+
+**Release milestone — Flight API v1** (checkpoint before production hardening): architecture ✅ · automated tests ✅ · documentation ✅ (`v0.13.0`)
 
 | Item | Notes |
 |------|-------|
 | Destinations API | Google Places, GeoNames, or CMS — swap mock destination provider |
-| **Flights API (Amadeus)** | ✅ Sprints 1–6 complete — enable via env for live results |
+| **Flights API (Amadeus)** | ✅ Sprints 1–7 complete (live provider + automated tests); enable via env |
 | Hotels / flights API | Amadeus flights ready; Booking.com hotels later |
 | Partial provider failure | Show hotels/transport if flights fail |
+| Manual Amadeus sandbox | Future — live OAuth/offers smoke (not CI) |
 | currencyService client boundary | Technical debt (ADR-035) — restore DI without Amadeus `server-only` on client |
 | Ground transport API | Omio or similar for buses and trains |
 | Caching and rate limiting | Protect Route Handlers and provider quotas |

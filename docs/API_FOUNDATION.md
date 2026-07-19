@@ -1,6 +1,6 @@
 # API Foundation — Architecture Reference
 
-This document is the single reference for the Glooconn API foundation (v0.12.0). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
+This document is the single reference for the Glooconn API foundation (v0.13.0). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
 
 ---
 
@@ -296,14 +296,48 @@ AmadeusFlightsProvider.search(request)
 | Step | Action |
 |------|--------|
 | 1 | Partial provider failure (hotels/transport if flights fail) |
-| 2 | Mapper / Flight Offers unit tests |
-| 3 | Optional: enable live flights in `.env.local` for manual QA |
+| 2 | Optional: enable live flights in `.env.local` for manual sandbox QA |
+| 3 | Manual Amadeus sandbox / OAuth smoke (not in CI) |
 
 **Live when configured:**
 
 - `AmadeusFlightsProvider.search` → Flight Offers HTTP + mapping
 - IATA enrichment + flight airport validation in the orchestrator
 - Factory selection of Amadeus vs mock as above
+
+### Flight API automated testing (Sprint 7 — complete)
+
+**Strategy:** unit tests for pure logic; integration tests with **mocked `fetch`** for the provider pipeline; **no real Amadeus calls in CI**. Manual sandbox testing remains future work.
+
+**Architecture:**
+```
+npm test  (tsx --test + server-only stub register)
+  ├── Unit: mappingHelpers, mappers, buildFlightOffersSearchParams, cache
+  ├── Integration: AmadeusFlightsProvider.search (mocked fetch + fixtures)
+  └── Existing: lib/search/search.test.ts
+```
+
+**Covered components:**
+
+| Area | Test file |
+|------|-----------|
+| Helpers | `amadeus/mappingHelpers.test.ts` |
+| Mapper | `amadeus/mappers.test.ts` |
+| Query builder | `amadeus/flightOffers.test.ts` |
+| TTL cache | `lib/api/cache.test.ts` |
+| Provider | `amadeus/provider.test.ts` |
+
+**Infrastructure:**
+
+| Piece | Role |
+|-------|------|
+| `amadeus/__fixtures__/flightOffers.sample.ts` | Checked-in Amadeus JSON variants |
+| `test/stubs/server-only.js` + `test/register-server-only.mjs` | Allow Amadeus modules under `tsx` |
+| Mocked `globalThis.fetch` | Token + Flight Offers HTTP without network |
+
+**Automated suite size:** **85** tests (`npm test`) — includes search request tests + Flight API tests.
+
+**Not in CI:** live Amadeus sandbox smoke, OAuth against real test host, Playwright E2E.
 
 ---
 
@@ -373,6 +407,7 @@ afterEach(() => resetServiceProviders());
 
 - Partial provider failure (show hotels/transport if flights fail)
 - Restore currencyService → registry DI without client importing Amadeus `server-only` (technical debt from Sprint 6)
+- Manual Amadeus sandbox smoke (OAuth + live offers) — not automated CI
 - `SearchResponse` wrapper model in orchestrator
 - Move mock datasets from `lib/results/mock*.ts` into `lib/providers/*/mock/data.ts`
 - Booking, Omio, Google Maps adapter folders (same pattern as Amadeus)

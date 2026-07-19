@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | Week 2+ — Amadeus Flight Offers live provider wired (default still mock via env) |
+| Stage | Week 2+ — Flight API complete through testing (Sprint 7); default travel data still mock via env |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers (default) |
 
 ---
@@ -179,6 +179,17 @@ AmadeusFlightsProvider.search(request)
 - Unsupported currency throws `createProviderError` — do not silently skip those offers
 - `rating` is always `0` (do not fabricate)
 - **Debt:** `currencyService` uses `mockCurrencyProvider` directly so the client budget UI does not import Amadeus `server-only` via the registry
+
+**Flight API tests (Sprint 7):**
+```
+npm test  → 85 automated tests (node:test via tsx)
+  helpers / mappers / query builder / cache / provider (mocked fetch)
+  fixtures: amadeus/__fixtures__/
+  server-only stub: test/register-server-only.mjs
+```
+- Do not call real Amadeus in CI — use mocked `fetch`
+- Manual sandbox / live OAuth smoke remains future work
+- Keep `npm test` green when changing Amadeus adapter code
 
 ### Error handling flow
 
@@ -359,6 +370,7 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 - ❌ Do not import Amadeus `mappingHelpers`, `mapAmadeusOfferToFlight`, or `types` outside the Amadeus package — use the barrel’s `mapAmadeusFlightOffersResponse`
 - ❌ Do not silently skip offers for unsupported currency — surface `createProviderError`
 - ❌ Do not fabricate flight ratings (mapper uses `rating: 0`)
+- ❌ Do not call real Amadeus APIs from automated tests — use mocked `fetch` and fixtures (Sprint 7)
 - ❌ Do not reintroduce client imports of the full provider registry that pull Amadeus `server-only` (see currencyService debt / ADR-035)
 - ❌ Do not add external API integrations without being asked
 - ❌ Do not install UI libraries (shadcn, MUI) without approval

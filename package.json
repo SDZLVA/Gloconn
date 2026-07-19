@@ -1,13 +1,13 @@
 {
   "name": "glooconn",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --test lib/**/*.test.ts",
+    "test": "tsx --import ./test/register-server-only.mjs --test lib/**/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
