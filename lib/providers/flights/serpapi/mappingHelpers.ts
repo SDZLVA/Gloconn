@@ -22,37 +22,82 @@ const SUPPORTED_CURRENCY_CODES = new Set<string>([
   "CAD",
 ]);
 
+/**
+ * Default currency when the search request has no budget currency.
+ * SerpAPI defaults to USD; Glooconn prefers EUR for EU-first development.
+ */
+export const DEFAULT_SERPAPI_CURRENCY: CurrencyCode = "EUR";
+
 export type CurrencyValidationResult =
   | { ok: true; currency: CurrencyCode }
   | { ok: false; received: string | undefined };
 
 /**
- * Formats a SerpAPI airport `time` value to display clock time "HH:mm".
- * Accepts forms like "2026-08-01 08:15" or ISO-like strings with HH:mm.
+ * Formats a SerpAPI airport `time` for the `Flight` model.
+ *
+ * Preserves complete local date-time when SerpAPI sends `YYYY-MM-DD HH:mm`
+ * (Sprint 11.2 — live validation showed times like `"2026-09-15 06:30"`).
+ * Compatible with `Flight.departureTime` / `arrivalTime` which already allow
+ * ISO 8601 or localized display strings — no shared model change.
+ *
+ * Falls back to `HH:mm` when only a clock time is available.
  */
-export function formatSerpApiTime(time: string | undefined): string | null {
+export function formatSerpApiDateTime(time: string | undefined): string | null {
   if (!time || typeof time !== "string") {
     return null;
   }
 
-  const match = /(\d{2}):(\d{2})/.exec(time.trim());
-  if (!match) {
+  const trimmed = time.trim();
+  if (!trimmed) {
     return null;
   }
 
-  return `${match[1]}:${match[2]}`;
+  const dateTimeMatch =
+    /^(\d{4}-\d{2}-\d{2})[ T](\d{2}):(\d{2})(?::\d{2})?/.exec(trimmed);
+  if (dateTimeMatch) {
+    return `${dateTimeMatch[1]} ${dateTimeMatch[2]}:${dateTimeMatch[3]}`;
+  }
+
+  const clockMatch = /(\d{2}):(\d{2})/.exec(trimmed);
+  if (!clockMatch) {
+    return null;
+  }
+
+  return `${clockMatch[1]}:${clockMatch[2]}`;
 }
 
 /**
- * Parses SerpAPI numeric price into a finite non-negative number.
- * Returns `null` when missing or unusable.
+ * @deprecated Prefer `formatSerpApiDateTime` — alias retained for existing imports.
  */
-export function mapPrice(price: number | undefined): number | null {
-  if (typeof price !== "number" || !Number.isFinite(price) || price < 0) {
-    return null;
+export function formatSerpApiTime(time: string | undefined): string | null {
+  return formatSerpApiDateTime(time);
+}
+
+/**
+ * Parses SerpAPI price into a finite non-negative number.
+ * Accepts numbers or numeric strings (live payloads are usually numbers).
+ */
+export function mapPrice(price: number | string | undefined): number | null {
+  if (typeof price === "number") {
+    if (!Number.isFinite(price) || price < 0) {
+      return null;
+    }
+    return price;
   }
 
-  return price;
+  if (typeof price === "string") {
+    const normalized = price.trim().replace(/,/g, "");
+    if (!normalized) {
+      return null;
+    }
+    const parsed = Number(normalized);
+    if (!Number.isFinite(parsed) || parsed < 0) {
+      return null;
+    }
+    return parsed;
+  }
+
+  return null;
 }
 
 /**
@@ -147,7 +192,6 @@ export function mapCabin(travelClass: string | undefined): string {
 
 /**
  * Validates that a currency string is representable as Glooconn `CurrencyCode`.
- * Does not invent a fallback — callers must surface `{ ok: false }` as an error.
  */
 export function validateCurrency(
   currency: string | undefined,
@@ -169,8 +213,50 @@ export function validateCurrency(
 }
 
 /**
+ * Resolves currency for mapped flights with ordered fallbacks (Sprint 11.2):
+ * 1. Response `search_parameters.currency`
+ * 2. Request / caller fallback (budget currency)
+ * 3. `DEFAULT_SERPAPI_CURRENCY` (EUR)
+ *
+ * Returns `{ ok: false }` only when a candidate is present but unsupported
+ * (e.g. SEK) — missing currency falls through to EUR.
+ */
+export function resolveFlightCurrency(options: {
+  responseCurrency?: string;
+  requestCurrency?: string;
+}): CurrencyValidationResult {
+  const responseResult = validateCurrency(options.responseCurrency);
+  if (responseResult.ok) {
+    return responseResult;
+  }
+
+  // Explicit unsupported code on the response must not be silently replaced.
+  if (
+    options.responseCurrency !== undefined &&
+    options.responseCurrency.trim() !== "" &&
+    !responseResult.ok
+  ) {
+    return responseResult;
+  }
+
+  const requestResult = validateCurrency(options.requestCurrency);
+  if (requestResult.ok) {
+    return requestResult;
+  }
+
+  if (
+    options.requestCurrency !== undefined &&
+    options.requestCurrency.trim() !== "" &&
+    !requestResult.ok
+  ) {
+    return requestResult;
+  }
+
+  return validateCurrency(DEFAULT_SERPAPI_CURRENCY);
+}
+
+/**
  * Builds a deterministic Flight id from itinerary seed fields.
- * Stable across identical fixtures; prefixed with `serpapi-`.
  */
 export function buildDeterministicFlightId(option: SerpApiFlightOption): string {
   const segmentSeed = (option.flights ?? [])
@@ -195,4 +281,21 @@ export function buildDeterministicFlightId(option: SerpApiFlightOption): string 
 
   const digest = createHash("sha256").update(seed).digest("hex").slice(0, 16);
   return `serpapi-${digest}`;
+}
+
+/**
+ * Deterministic id for an outbound + return package (round-trip).
+ */
+export function buildRoundTripFlightId(
+  outbound: SerpApiFlightOption,
+  returnOption: SerpApiFlightOption,
+): string {
+  const seed = [
+    buildDeterministicFlightId(outbound),
+    buildDeterministicFlightId(returnOption),
+    outbound.departure_token?.trim() ?? "",
+  ].join("::rt::");
+
+  const digest = createHash("sha256").update(seed).digest("hex").slice(0, 16);
+  return `serpapi-rt-${digest}`;
 }

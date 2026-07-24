@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | **v0.16.0** — Milestone 10 Search Experience complete; multi-provider flights (mock · Amadeus · SerpAPI) |
+| Stage | **v0.16.0** — Milestone 10 complete; SerpAPI through Sprint **11.3** (conditional GO for v0.17.0; RT token fix → 11.4) |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers by default; optional live Amadeus / SerpAPI |
 
 ---
@@ -401,7 +401,7 @@ SearchRequest → factory → FlightsProvider (mock | amadeus | serpapi)
 
 **Completed:** Sprints 1–8 (Amadeus path) · Sprint 9.1–9.10 (SerpAPI + docs) · **v0.15.0**
 
-**Known limitations:** SerpAPI not production; round-trip return legs may need `departure_token`; currencyService DI debt; no live vendor calls in CI.
+**Known limitations:** SerpAPI one-way live validated (11.3); RT `departure_token` return fetches currently HTTP 400 → outbound fallback (11.4); currencyService DI debt; no live vendor calls in CI.
 
 ---
 

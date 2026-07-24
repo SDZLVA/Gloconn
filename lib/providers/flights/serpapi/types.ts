@@ -78,9 +78,9 @@ export type SerpApiFlightOption = {
 
   /**
    * Total ticket price in the search currency.
-   * SerpAPI typically returns an integer (sub-unit precision dropped).
+   * SerpAPI typically returns a number; strings are accepted defensively.
    */
-  price?: number;
+  price?: number | string;
 
   /** Trip shape label when present (e.g. "One way", "Round trip"). */
   type?: string;

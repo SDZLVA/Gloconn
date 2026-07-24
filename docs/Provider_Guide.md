@@ -171,7 +171,8 @@ SERPAPI_DEEP_SEARCH=false
 | Shared output | Always `Flight` from `types/models/flight.ts` |
 | `destinationId` | From enriched `SearchRequest` — not invented from vendor city names |
 | Drop incomplete offers | Return `null` and filter when required fields are missing |
-| Currency | Unsupported / missing currency → `createProviderError` (do not silently drop a priced offer) |
+| Currency | Prefer response currency; fall back to request / vendor default when missing; unsupported codes → `createProviderError` (do not silently drop a priced offer) |
+| Schedule times | Prefer full local date-time when the vendor provides it (`Flight` allows ISO / localized strings) |
 | Ratings | Do not fabricate; use `0` when the vendor has no rating |
 | Schedule fields | Prefer outbound/first usable itinerary; document round-trip gaps |
 | Public surface | Prefer one public response mapper; keep helpers package-private |
@@ -279,7 +280,7 @@ Add a `case "<vendor>"` in `createFlightsProvider()` that returns the singleton 
 |--------|------|--------|
 | `mock/` | Default local + CI | Active |
 | `amadeus/` | **Long-term production** | Complete through Sprint 8; maintenance / Enterprise path |
-| `serpapi/` | **Temporary dev/test** | Complete through Sprint 9.10 — shipped in **v0.15.0** (ADR-036) |
+| `serpapi/` | **Temporary dev/test** | Complete through Sprint 9.10 (**v0.15.0**); hardened in **Sprint 11.2** (full date-time, `departure_token` round-trip, currency fallbacks) |
 
 ---
 

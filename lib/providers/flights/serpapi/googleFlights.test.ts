@@ -6,6 +6,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { isApiError } from "@/lib/api/errors";
 import {
+  buildSerpApiReturnSearchParams,
   buildSerpApiSearchParams,
   mapCabinLabelToSerpApiTravelClass,
   mapTravelStyleToSerpApiTravelClass,
@@ -161,14 +162,25 @@ describe("buildSerpApiSearchParams", () => {
     assert.equal(record.currency, "EUR");
   });
 
-  it("omits currency when budget is null", () => {
+  it("defaults currency to EUR when budget is null", () => {
     const record = paramsToRecord(
       buildSerpApiSearchParams(baseRequest({ budget: null }), {
         deepSearch: false,
       }),
     );
 
-    assert.equal(record.currency, undefined);
+    assert.equal(record.currency, "EUR");
+  });
+
+  it("builds return-leg params from departure_token", () => {
+    const record = paramsToRecord(
+      buildSerpApiReturnSearchParams("token-abc", { deepSearch: false }),
+    );
+
+    assert.equal(record.engine, "google_flights");
+    assert.equal(record.departure_token, "token-abc");
+    assert.equal(record.deep_search, "false");
+    assert.equal(record.api_key, undefined);
   });
 
   it("sets deep_search=true when configured", () => {
@@ -194,6 +206,7 @@ describe("buildSerpApiSearchParams", () => {
     assert.deepEqual(keys, [
       "adults",
       "arrival_id",
+      "currency",
       "deep_search",
       "departure_id",
       "engine",

@@ -1,0 +1,166 @@
+{
+  "sprint": "11.3",
+  "generatedAt": "2026-07-24T23:37:09.074Z",
+  "provider": "serpapi",
+  "deepSearchDefault": "false",
+  "scenarios": [
+    {
+      "id": "P1",
+      "label": "One-way international MXP→CDG",
+      "status": "pass",
+      "durationMs": 91,
+      "flightCount": 13,
+      "sample": {
+        "id": "serpapi-5fd96e67c80b365e",
+        "airline": "easyJet",
+        "price": 41,
+        "currency": "EUR",
+        "departureTime": "2026-09-20 08:00",
+        "arrivalTime": "2026-09-20 09:35",
+        "stops": 0
+      },
+      "stopsHistogram": {
+        "0": 10,
+        "1": 3
+      },
+      "notes": [
+        "datetime_preserves_date",
+        "serpapi_id"
+      ]
+    },
+    {
+      "id": "P2",
+      "label": "Round-trip MXP→CDG (departure_token)",
+      "status": "pass",
+      "durationMs": 1385,
+      "flightCount": 14,
+      "sample": {
+        "id": "serpapi-8185ca08e780de4d",
+        "airline": "easyJet",
+        "price": 85,
+        "currency": "EUR",
+        "departureTime": "2026-09-20 08:00",
+        "arrivalTime": "2026-09-20 09:35",
+        "stops": 0
+      },
+      "stopsHistogram": {
+        "0": 10,
+        "1": 4
+      },
+      "notes": [
+        "datetime_preserves_date",
+        "serpapi_id"
+      ]
+    },
+    {
+      "id": "P3",
+      "label": "Domestic JFK→LAX",
+      "status": "pass",
+      "durationMs": 30,
+      "flightCount": 34,
+      "sample": {
+        "id": "serpapi-983bda95b88cf5ee",
+        "airline": "JetBlue",
+        "price": 204,
+        "currency": "USD",
+        "departureTime": "2026-10-05 06:00",
+        "arrivalTime": "2026-10-05 09:05",
+        "stops": 0
+      },
+      "stopsHistogram": {
+        "0": 31,
+        "1": 3
+      },
+      "notes": [
+        "datetime_preserves_date",
+        "serpapi_id"
+      ]
+    },
+    {
+      "id": "P4",
+      "label": "International long-haul MXP→JFK",
+      "status": "pass",
+      "durationMs": 108,
+      "flightCount": 9,
+      "sample": {
+        "id": "serpapi-9cd1f11f5646a214",
+        "airline": "British Airways",
+        "price": 385,
+        "currency": "EUR",
+        "departureTime": "2026-10-12 14:15",
+        "arrivalTime": "2026-10-12 19:40",
+        "stops": 1
+      },
+      "stopsHistogram": {
+        "0": 3,
+        "1": 6
+      },
+      "notes": [
+        "datetime_preserves_date",
+        "serpapi_id"
+      ]
+    },
+    {
+      "id": "P5",
+      "label": "Future-date MXP→AMS (direct + multi-stop)",
+      "status": "pass",
+      "durationMs": 3555,
+      "flightCount": 11,
+      "sample": {
+        "id": "serpapi-b75c5ce1b548859d",
+        "airline": "easyJet",
+        "price": 68,
+        "currency": "EUR",
+        "departureTime": "2026-11-10 20:00",
+        "arrivalTime": "2026-11-10 22:00",
+        "stops": 0
+      },
+      "stopsHistogram": {
+        "0": 1,
+        "1": 10
+      },
+      "notes": [
+        "datetime_preserves_date",
+        "serpapi_id"
+      ]
+    },
+    {
+      "id": "E2",
+      "label": "Empty / unlikely route (ZZZ→YYY via invalid IATA)",
+      "status": "error",
+      "durationMs": 15016,
+      "errorMessage": "SerpAPI flight search timed out. Please try again."
+    },
+    {
+      "id": "E3",
+      "label": "Malformed query (client)",
+      "status": "pass",
+      "durationMs": 1,
+      "errorMessage": "PROVIDER_ERROR: Flight search requires an origin airport code (originIata).",
+      "notes": [
+        "provider_error_surfaced"
+      ]
+    },
+    {
+      "id": "E1",
+      "label": "Invalid API key",
+      "status": "pass",
+      "durationMs": 174,
+      "errorMessage": "SerpAPI authentication failed. Check SERPAPI_API_KEY.",
+      "notes": [
+        "threw_as_expected"
+      ]
+    }
+  ],
+  "deepSearch": {
+    "deepSearchFalseMs": 109,
+    "deepSearchTrueMs": 2586,
+    "deepSearchFalseCount": 13,
+    "deepSearchTrueCount": 13
+  },
+  "notes": [
+    "API key never recorded.",
+    "Provider path includes round-trip departure_token lookups when tripType=round-trip.",
+    "Invalid-key probe restores real key after run."
+  ]
+}

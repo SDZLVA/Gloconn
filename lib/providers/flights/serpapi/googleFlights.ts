@@ -10,6 +10,7 @@
 
 import { createProviderError } from "@/lib/api/errors";
 import type { SerpApiConfig } from "@/lib/config/types";
+import { DEFAULT_SERPAPI_CURRENCY } from "@/lib/providers/flights/serpapi/mappingHelpers";
 import type {
   SearchRequest,
   TravelStyle,
@@ -160,10 +161,33 @@ export function buildSerpApiSearchParams(
     params.set("infants_on_lap", String(request.travelers.infants));
   }
 
-  const currency = request.budget?.currency?.trim().toUpperCase();
-  if (currency) {
-    params.set("currency", currency);
+  // Prefer request budget currency; otherwise EUR (SerpAPI would default to USD).
+  const currency =
+    request.budget?.currency?.trim().toUpperCase() ||
+    DEFAULT_SERPAPI_CURRENCY;
+  params.set("currency", currency);
+
+  return params;
+}
+
+/**
+ * Builds query params for a round-trip **return** search using `departure_token`.
+ * Does not include `api_key` (added by the HTTP client).
+ */
+export function buildSerpApiReturnSearchParams(
+  departureToken: string,
+  config: SerpApiQueryConfig,
+): URLSearchParams {
+  const token = departureToken.trim();
+  if (!token) {
+    throw createProviderError(
+      "Round-trip return search requires a departure_token from the outbound offer.",
+    );
   }
 
+  const params = new URLSearchParams();
+  params.set("engine", "google_flights");
+  params.set("departure_token", token);
+  params.set("deep_search", config.deepSearch ? "true" : "false");
   return params;
 }

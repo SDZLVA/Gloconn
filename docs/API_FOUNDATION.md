@@ -359,9 +359,12 @@ SERPAPI_DEEP_SEARCH=false
 
 - `AmadeusFlightsProvider.search` ? Flight Offers HTTP + mapping (production path)
 - `SerpApiFlightsProvider.search` ? Google Flights query + HTTP + mapping (dev/test)
+  - **Sprint 11.2:** full local date-time on `Flight` times; round-trip return fetch via `departure_token` (capped); currency defaults/fallbacks to EUR
 - IATA enrichment + flight airport validation in the orchestrator
 - Factory selection as above
 - Timeouts + structured logs (vendor-local); Amadeus also has 401 retry / 429 handling
+
+See [SPRINT_11_2_SUMMARY.md](./SPRINT_11_2_SUMMARY.md) and [SPRINT_11_1_VALIDATION.md](./SPRINT_11_1_VALIDATION.md).
 
 ### Flight API automated testing (Sprint 7 ? complete)
 

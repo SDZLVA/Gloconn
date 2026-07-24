@@ -1,9 +1,9 @@
 # Glooconn — Current State
 
-**Last updated:** July 24, 2026  
+**Last updated:** July 25, 2026  
 **Active branch:** `cursor/milestone-10-6-hardening-release`  
 **Current release:** **v0.16.0** — Milestone 10 Search Experience complete  
-**Status:** Production-ready **multi-provider architecture** + **Milestone 10 search experience** (UI, reliability, quality, performance, destinations, hardening)  
+**Status:** Production-ready **multi-provider architecture** + **Milestone 10 search experience**; SerpAPI **Sprint 11.2 hardening** (datetime, round-trip token, currency)  
 **Temporary flight provider (dev/test):** SerpAPI Google Flights  
 **Long-term production flights provider:** Amadeus Enterprise  
 **Markers:** `flight-api-v1` (Sprint 6) · `v0.13.0` (Sprint 7) · `v0.14.0` (Sprint 8) · `v0.15.0` (Sprint 9) · `v0.16.0` (Milestone 10)
@@ -29,6 +29,10 @@
 | Milestone 10.4 | Search Performance (client cache / render) | ✅ Complete | `cursor/milestone-10-4-search-performance` |
 | Milestone 10.5 | Destination Search Quality | ✅ Complete | `cursor/milestone-10-5-destination-quality` |
 | Milestone 10.6 | Hardening & Release (v0.16.0) | ✅ Complete | `cursor/milestone-10-6-hardening-release` |
+| Sprint 11.1 / 11.1b | Live SerpAPI validation | ✅ Complete | `cursor/milestone-10-6-hardening-release` |
+| Sprint 11.2 | SerpAPI production hardening | ✅ Complete | `cursor/milestone-10-6-hardening-release` |
+| Sprint 11.3 | SerpAPI production readiness | ✅ Complete | `cursor/milestone-10-6-hardening-release` |
+| Release v0.17.0 | Live Flights | ⏳ Ready for CTO commit/tag | `cursor/milestone-10-6-hardening-release` |
 
 ---
 
@@ -43,7 +47,7 @@
 - **Client search quality** — richer filters, Recommended/Cheapest/Fastest/Highest rated/Best value sort, deterministic ranking (`lib/results/rank.ts`)
 - **Destination search quality** — IATA/name/country ranking, Cities/Airports grouping, match highlight (`lib/destinations/rank.ts`)
 - **Client search performance** — stable search cache keys, 45s client TTL + in-flight dedupe, keep-previous-data queries, debounced autocomplete/price filters, memoized result cards
-- **267 automated tests** (Flight API + search reliability + results quality + performance + destination quality)
+- **272 automated tests** (Flight API + SerpAPI 11.2 hardening + search reliability + results quality + performance + destination quality)
 - Supabase auth (Google + email), profile, saved trips
 - CI: typecheck, lint, test, build
 - Sprint **10.1** professional results UI
@@ -127,5 +131,9 @@ Details: [releases/v0.16.0.md](./releases/v0.16.0.md) · [ROADMAP.md](./ROADMAP.
 | [Provider_Guide.md](./Provider_Guide.md) | How to add a flights vendor |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | Developer / AI context |
 | [releases/v0.16.0.md](./releases/v0.16.0.md) | v0.16.0 Milestone 10 release notes |
+| [releases/v0.17.0.md](./releases/v0.17.0.md) | v0.17.0 Live Flights release notes |
 | [SPRINT_8_SUMMARY.md](./SPRINT_8_SUMMARY.md) | Sprint 8 completion summary |
+| [SPRINT_11_2_SUMMARY.md](./SPRINT_11_2_SUMMARY.md) | Sprint 11.2 SerpAPI hardening |
+| [SPRINT_11_3_PRODUCTION_READINESS.md](./SPRINT_11_3_PRODUCTION_READINESS.md) | Sprint 11.3 production readiness / v0.17.0 gate |
+| [SPRINT_11_1_VALIDATION.md](./SPRINT_11_1_VALIDATION.md) | Sprint 11.1 / 11.1b live SerpAPI validation |
 | [../PROJECT_PRINCIPLES.md](../PROJECT_PRINCIPLES.md) | Mission and values |

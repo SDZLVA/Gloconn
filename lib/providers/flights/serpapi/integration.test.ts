@@ -481,9 +481,51 @@ describe("Sprint 9.9 — edge cases via full provider path", () => {
     assert.equal(flights[0]?.airline, "Lufthansa");
   });
 
-  it("maps the round-trip fixture", async () => {
+  it("maps the round-trip fixture with departure_token return lookup", async () => {
     const provider = selectSerpApiProvider();
-    mockFetchWithBody(roundTripGoogleFlightsResponse);
+    const requestedUrls: string[] = [];
+    const returnLeg = {
+      flights: [
+        {
+          departure_airport: {
+            id: "CDG",
+            time: "2026-08-10 18:00",
+          },
+          arrival_airport: {
+            id: "MXP",
+            time: "2026-08-10 19:25",
+          },
+          duration: 85,
+          airline: "Air France",
+          travel_class: "Business",
+          flight_number: "AF 1732",
+        },
+      ],
+      total_duration: 85,
+      price: 425,
+      type: "Round trip",
+    };
+
+    globalThis.fetch = (async (input: RequestInfo | URL) => {
+      fetchCallCount += 1;
+      const url =
+        typeof input === "string"
+          ? input
+          : input instanceof URL
+            ? input.href
+            : input.url;
+      requestedUrls.push(url);
+      lastRequestedUrl = url;
+
+      if (url.includes("departure_token=")) {
+        return jsonResponse(200, {
+          search_parameters: { currency: "EUR" },
+          best_flights: [returnLeg],
+        });
+      }
+
+      return jsonResponse(200, roundTripGoogleFlightsResponse);
+    }) as typeof fetch;
 
     const flights = await provider.search(
       baseRequest({
@@ -492,11 +534,15 @@ describe("Sprint 9.9 — edge cases via full provider path", () => {
       }),
     );
 
+    assert.equal(fetchCallCount, 2);
+    assert.ok(requestedUrls[0]?.includes("type=1"));
+    assert.ok(requestedUrls[0]?.includes("return_date=2026-08-10"));
+    assert.ok(requestedUrls[1]?.includes("departure_token="));
     assert.equal(flights.length, 1);
+    assert.match(flights[0]!.id, /^serpapi-rt-/);
     assert.equal(flights[0]?.cabin, "Business");
-    assert.equal(flights[0]?.price, 410);
-    assert.ok(lastRequestedUrl.includes("type=1"));
-    assert.ok(lastRequestedUrl.includes("return_date=2026-08-10"));
+    assert.equal(flights[0]?.price, 425);
+    assert.equal(flights[0]?.departureTime, "2026-08-01 07:00");
   });
 
   it("keeps stable IDs for duplicate itineraries", async () => {

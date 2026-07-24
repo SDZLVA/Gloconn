@@ -1,0 +1,334 @@
+{
+  "sprint": "11.1b",
+  "generatedAt": "2026-07-24T23:18:37.951Z",
+  "deepSearch": "false",
+  "flightsProvider": "serpapi",
+  "useMockProviders": "false",
+  "keyConfigured": true,
+  "results": [
+    {
+      "id": "L1",
+      "label": "One-way international MXP→CDG",
+      "status": "pass",
+      "httpOk": true,
+      "rawBestCount": 3,
+      "rawOtherCount": 10,
+      "mappedCount": 13,
+      "droppedEstimate": 0,
+      "stopsHistogram": {
+        "0": 9,
+        "1": 4
+      },
+      "sampleFlights": [
+        {
+          "id": "serpapi-cf53a56fce2fe082",
+          "airline": "easyJet",
+          "price": 25,
+          "currency": "EUR",
+          "departureTime": "06:30",
+          "arrivalTime": "08:05",
+          "durationMinutes": 95,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "paris"
+        },
+        {
+          "id": "serpapi-4b06775f4d7bfd78",
+          "airline": "easyJet",
+          "price": 33,
+          "currency": "EUR",
+          "departureTime": "15:25",
+          "arrivalTime": "17:00",
+          "durationMinutes": 95,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "paris"
+        },
+        {
+          "id": "serpapi-886a322d4bc4a12b",
+          "airline": "Air France",
+          "price": 103,
+          "currency": "EUR",
+          "departureTime": "18:35",
+          "arrivalTime": "20:05",
+          "durationMinutes": 90,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "paris"
+        }
+      ],
+      "mappingNotes": [
+        "Live option includes carbon_emissions (not mapped to Flight)",
+        "Live option includes booking_token (not typed/mapped)",
+        "Sample departure time format: \"2026-09-15 06:30\"",
+        "Sample price typeof: number"
+      ],
+      "durationMs": 4259
+    },
+    {
+      "id": "L2",
+      "label": "Round-trip international MXP→CDG",
+      "status": "pass",
+      "httpOk": true,
+      "rawBestCount": 5,
+      "rawOtherCount": 7,
+      "mappedCount": 12,
+      "droppedEstimate": 0,
+      "stopsHistogram": {
+        "0": 9,
+        "1": 3
+      },
+      "sampleFlights": [
+        {
+          "id": "serpapi-010d3c6f56e0d74b",
+          "airline": "easyJet",
+          "price": 67,
+          "currency": "EUR",
+          "departureTime": "06:30",
+          "arrivalTime": "08:05",
+          "durationMinutes": 95,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "paris"
+        },
+        {
+          "id": "serpapi-7dabf73a606423fe",
+          "airline": "easyJet",
+          "price": 75,
+          "currency": "EUR",
+          "departureTime": "15:25",
+          "arrivalTime": "17:00",
+          "durationMinutes": 95,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "paris"
+        },
+        {
+          "id": "serpapi-3b8f822ce6845aba",
+          "airline": "easyJet",
+          "price": 99,
+          "currency": "EUR",
+          "departureTime": "08:05",
+          "arrivalTime": "09:40",
+          "durationMinutes": 95,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "paris"
+        }
+      ],
+      "mappingNotes": [
+        "Live option includes carbon_emissions (not mapped to Flight)",
+        "Live option includes departure_token (unused by mapper)",
+        "Sample departure time format: \"2026-09-15 06:30\"",
+        "Sample price typeof: number"
+      ],
+      "durationMs": 1383
+    },
+    {
+      "id": "L3",
+      "label": "Domestic US JFK→LAX one-way",
+      "status": "pass",
+      "httpOk": true,
+      "rawBestCount": 4,
+      "rawOtherCount": 30,
+      "mappedCount": 34,
+      "droppedEstimate": 0,
+      "stopsHistogram": {
+        "0": 31,
+        "1": 3
+      },
+      "sampleFlights": [
+        {
+          "id": "serpapi-983bda95b88cf5ee",
+          "airline": "JetBlue",
+          "price": 204,
+          "currency": "USD",
+          "departureTime": "06:00",
+          "arrivalTime": "09:05",
+          "durationMinutes": 365,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "los-angeles"
+        },
+        {
+          "id": "serpapi-3612d2deb8b78af4",
+          "airline": "JetBlue",
+          "price": 204,
+          "currency": "USD",
+          "departureTime": "07:00",
+          "arrivalTime": "10:08",
+          "durationMinutes": 368,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "los-angeles"
+        },
+        {
+          "id": "serpapi-4cd5842c922a0941",
+          "airline": "JetBlue",
+          "price": 204,
+          "currency": "USD",
+          "departureTime": "09:30",
+          "arrivalTime": "12:45",
+          "durationMinutes": 375,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "los-angeles"
+        }
+      ],
+      "mappingNotes": [
+        "Live option includes carbon_emissions (not mapped to Flight)",
+        "Live option includes booking_token (not typed/mapped)",
+        "Sample departure time format: \"2026-10-05 06:00\"",
+        "Sample price typeof: number"
+      ],
+      "durationMs": 2486
+    },
+    {
+      "id": "L4",
+      "label": "Long-haul international MXP→JFK one-way",
+      "status": "pass",
+      "httpOk": true,
+      "rawBestCount": 4,
+      "rawOtherCount": 5,
+      "mappedCount": 9,
+      "droppedEstimate": 0,
+      "stopsHistogram": {
+        "0": 3,
+        "1": 6
+      },
+      "sampleFlights": [
+        {
+          "id": "serpapi-9cd1f11f5646a214",
+          "airline": "British Airways",
+          "price": 385,
+          "currency": "EUR",
+          "departureTime": "14:15",
+          "arrivalTime": "19:40",
+          "durationMinutes": 685,
+          "stops": 1,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "new-york"
+        },
+        {
+          "id": "serpapi-b9b914bb366b6f2d",
+          "airline": "American",
+          "price": 407,
+          "currency": "EUR",
+          "departureTime": "11:05",
+          "arrivalTime": "14:05",
+          "durationMinutes": 540,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "new-york"
+        },
+        {
+          "id": "serpapi-33829083ee627a9c",
+          "airline": "Delta",
+          "price": 489,
+          "currency": "EUR",
+          "departureTime": "14:15",
+          "arrivalTime": "17:37",
+          "durationMinutes": 562,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "new-york"
+        }
+      ],
+      "mappingNotes": [
+        "Live option includes carbon_emissions (not mapped to Flight)",
+        "Live option includes booking_token (not typed/mapped)",
+        "Sample departure time format: \"2026-10-12 14:15\"",
+        "Sample price typeof: number"
+      ],
+      "durationMs": 4338
+    },
+    {
+      "id": "L5",
+      "label": "Future-date one-way MXP→AMS (direct/multi-stop mix)",
+      "status": "pass",
+      "httpOk": true,
+      "rawBestCount": 5,
+      "rawOtherCount": 5,
+      "mappedCount": 10,
+      "droppedEstimate": 0,
+      "stopsHistogram": {
+        "0": 2,
+        "1": 8
+      },
+      "sampleFlights": [
+        {
+          "id": "serpapi-b513461ff6de4fc3",
+          "airline": "easyJet",
+          "price": 53,
+          "currency": "EUR",
+          "departureTime": "06:55",
+          "arrivalTime": "09:00",
+          "durationMinutes": 125,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "amsterdam"
+        },
+        {
+          "id": "serpapi-ea604130029f26df",
+          "airline": "easyJet",
+          "price": 70,
+          "currency": "EUR",
+          "departureTime": "18:20",
+          "arrivalTime": "20:20",
+          "durationMinutes": 120,
+          "stops": 0,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "amsterdam"
+        },
+        {
+          "id": "serpapi-ffb0ed46563477d5",
+          "airline": "Vueling",
+          "price": 94,
+          "currency": "EUR",
+          "departureTime": "13:10",
+          "arrivalTime": "18:30",
+          "durationMinutes": 320,
+          "stops": 1,
+          "cabin": "Economy",
+          "rating": 0,
+          "destinationId": "amsterdam"
+        }
+      ],
+      "mappingNotes": [
+        "Live option includes carbon_emissions (not mapped to Flight)",
+        "Live option includes booking_token (not typed/mapped)",
+        "Sample departure time format: \"2026-11-20 06:55\"",
+        "Sample price typeof: number"
+      ],
+      "durationMs": 3724
+    },
+    {
+      "id": "L6",
+      "label": "No-result probe obscure route XXX→ZZZ (expect error or empty)",
+      "status": "empty",
+      "httpOk": true,
+      "rawBestCount": 0,
+      "rawOtherCount": 0,
+      "mappedCount": 0,
+      "droppedEstimate": 0,
+      "mappingNotes": [
+        "No best_flights/other_flights in live response"
+      ],
+      "durationMs": 9425
+    }
+  ]
+}
