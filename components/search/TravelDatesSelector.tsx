@@ -264,7 +264,6 @@ export function TravelDatesSelector({
             id={panelId}
             role="dialog"
             aria-label="Select travel dates"
-            aria-modal="true"
             style={{
               position: "fixed",
               top: popoverPosition.top,

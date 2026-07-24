@@ -12,13 +12,13 @@ import {
   orchestrateTripSearch,
 } from "@/lib/services/searchOrchestrator";
 import type { SearchRequest } from "@/types/models/search-request";
-import type { SearchResult } from "@/types/results";
+import type { SearchResponse } from "@/types/models/search-response";
 import type { SearchData, TravelStyle } from "@/types/search";
 
-/** Runs a full validated search and returns hotels, flights, buses, and trains. */
+/** Runs a full validated search and returns a SearchResponse (with optional warnings). */
 export async function searchTrips(
   search: Partial<SearchData> | Partial<SearchRequest>,
-): Promise<ServiceResult<SearchResult[]>> {
+): Promise<ServiceResult<SearchResponse>> {
   const validation = validateSearchRequest(search);
   if (!validation.success) {
     return { success: false, error: validation.error };
@@ -37,7 +37,7 @@ export async function searchTrips(
 export async function searchByDestination(
   destination: string,
   travelStyle: TravelStyle = "standard",
-): Promise<ServiceResult<SearchResult[]>> {
+): Promise<ServiceResult<SearchResponse>> {
   return searchTrips({
     destination,
     travelStyle,
@@ -52,7 +52,9 @@ export async function searchByDestination(
 }
 
 /** Returns the full results catalog via active providers (price-range defaults). */
-export async function getAllSearchResults(): Promise<ServiceResult<SearchResult[]>> {
+export async function getAllSearchResults(): Promise<
+  ServiceResult<SearchResponse>
+> {
   return runService(
     () => getAllTripSearchResults(),
     "Could not load results.",

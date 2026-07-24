@@ -10,6 +10,7 @@ const PROVIDER_NAMES: ProviderName[] = [
   "amadeus",
   "booking",
   "omio",
+  "serpapi",
 ];
 
 /** Reads a trimmed env value, or undefined when missing/empty. */

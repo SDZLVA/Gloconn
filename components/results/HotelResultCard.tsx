@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { ResultDuration } from "@/components/results/ResultDuration";
 import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
@@ -61,7 +60,12 @@ export function HotelResultCard({ result }: HotelResultCardProps) {
                 currency={result.currency}
                 suffix="total"
               />
-              <Button className="shrink-0 px-4 py-2">View deal</Button>
+              <Button
+                className="shrink-0 px-4 py-2"
+                aria-label={`View deal for ${result.name}`}
+              >
+                View deal
+              </Button>
             </div>
           </div>
         </div>

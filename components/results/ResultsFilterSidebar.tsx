@@ -1,33 +1,103 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import { focusRing, formLabel } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import type { ResultType, ResultsFilters } from "@/types/results";
+import type {
+  ResultType,
+  ResultsFilterFacets,
+  ResultsFilters,
+} from "@/types/results";
 import { DEFAULT_RESULTS_FILTERS, RESULT_TYPE_LABELS } from "@/types/results";
+
+/** Debounce price commits so filter/sort/rank do not run on every keystroke. */
+const PRICE_FILTER_DEBOUNCE_MS = 200;
 
 const ALL_TYPES: ResultType[] = ["hotel", "flight", "bus", "train"];
 
 const RATING_OPTIONS = [
   { value: 0, label: "Any rating" },
+  { value: 3, label: "3.0+" },
+  { value: 4, label: "4.0+" },
+  { value: 4.5, label: "4.5+" },
+];
+
+const STAR_OPTIONS = [
+  { value: 0, label: "Any stars" },
   { value: 3, label: "3+ stars" },
   { value: 4, label: "4+ stars" },
-  { value: 4.5, label: "4.5+ stars" },
+  { value: 5, label: "5 stars" },
+];
+
+const STOP_OPTIONS = [
+  { value: null as number | null, label: "Any stops" },
+  { value: 0, label: "Non-stop only" },
+  { value: 1, label: "1 stop or fewer" },
+  { value: 2, label: "2 stops or fewer" },
 ];
 
 type ResultsFilterSidebarProps = {
   filters: ResultsFilters;
   onFiltersChange: (filters: ResultsFilters) => void;
   priceRange: { min: number; max: number };
+  /** Facets derived from the current result set. */
+  facets: ResultsFilterFacets;
   className?: string;
 };
 
-/** Sidebar with transport type, price, and rating filters. */
+function toggleStringValue(values: string[], value: string): string[] {
+  return values.includes(value)
+    ? values.filter((item) => item !== value)
+    : [...values, value];
+}
+
+/** Sidebar with type, price, rating, and model-backed quality filters. */
 export function ResultsFilterSidebar({
   filters,
   onFiltersChange,
   priceRange,
+  facets,
   className,
 }: ResultsFilterSidebarProps) {
+  // Local price draft — UI stays responsive; parent filters update after debounce.
+  const [draftMinPrice, setDraftMinPrice] = useState(filters.minPrice);
+  const [draftMaxPrice, setDraftMaxPrice] = useState(filters.maxPrice);
+  const filtersRef = useRef(filters);
+
+  // Keep latest filters for the debounced commit without reading refs during render.
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+
+  // Sync draft when parent resets filters (clear all / new search baseline).
+  useEffect(() => {
+    setDraftMinPrice(filters.minPrice);
+    setDraftMaxPrice(filters.maxPrice);
+  }, [filters.minPrice, filters.maxPrice]);
+
+  useEffect(() => {
+    if (
+      draftMinPrice === filtersRef.current.minPrice &&
+      draftMaxPrice === filtersRef.current.maxPrice
+    ) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      onFiltersChange({
+        ...filtersRef.current,
+        minPrice: draftMinPrice,
+        maxPrice: draftMaxPrice,
+      });
+    }, PRICE_FILTER_DEBOUNCE_MS);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [draftMinPrice, draftMaxPrice, onFiltersChange]);
+
   function toggleType(type: ResultType) {
     const types = filters.types.includes(type)
       ? filters.types.filter((item) => item !== type)
@@ -47,6 +117,23 @@ export function ResultsFilterSidebar({
     });
   }
 
+  const showFlightFilters =
+    filters.types.includes("flight") &&
+    (facets.airlines.length > 0 ||
+      facets.cabins.length > 0 ||
+      facets.maxStopsInResults >= 0);
+
+  const showOperatorFilters =
+    (filters.types.includes("bus") || filters.types.includes("train")) &&
+    facets.operators.length > 0;
+
+  const showHotelStars =
+    filters.types.includes("hotel");
+
+  const showAmenities =
+    (filters.types.includes("hotel") || filters.types.includes("bus")) &&
+    facets.amenities.length > 0;
+
   return (
     <Card className={cn("p-4 sm:p-5", className)}>
       <div className="flex items-center justify-between gap-2">
@@ -65,7 +152,7 @@ export function ResultsFilterSidebar({
 
       <div className="mt-5 space-y-6">
         <fieldset>
-          <legend className={formLabel}>Transport type</legend>
+          <legend className={formLabel}>Result type</legend>
           <ul className="mt-3 space-y-2">
             {ALL_TYPES.map((type) => (
               <li key={type}>
@@ -99,15 +186,15 @@ export function ResultsFilterSidebar({
                 id="min-price"
                 type="number"
                 min={priceRange.min}
-                max={filters.maxPrice}
-                value={filters.minPrice}
+                max={draftMaxPrice}
+                value={draftMinPrice}
                 onChange={(event) =>
-                  onFiltersChange({
-                    ...filters,
-                    minPrice: Number(event.target.value),
-                  })
+                  setDraftMinPrice(Number(event.target.value))
                 }
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                className={cn(
+                  "w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-800",
+                  focusRing,
+                )}
               />
             </div>
             <div>
@@ -117,16 +204,16 @@ export function ResultsFilterSidebar({
               <input
                 id="max-price"
                 type="number"
-                min={filters.minPrice}
+                min={draftMinPrice}
                 max={priceRange.max}
-                value={filters.maxPrice}
+                value={draftMaxPrice}
                 onChange={(event) =>
-                  onFiltersChange({
-                    ...filters,
-                    maxPrice: Number(event.target.value),
-                  })
+                  setDraftMaxPrice(Number(event.target.value))
                 }
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-800"
+                className={cn(
+                  "w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-800",
+                  focusRing,
+                )}
               />
             </div>
           </div>
@@ -157,6 +244,196 @@ export function ResultsFilterSidebar({
             ))}
           </select>
         </div>
+
+        {showFlightFilters && (
+          <>
+            <div>
+              <label htmlFor="max-stops" className={formLabel}>
+                Flight stops
+              </label>
+              <select
+                id="max-stops"
+                value={filters.maxStops === null ? "" : String(filters.maxStops)}
+                onChange={(event) => {
+                  const raw = event.target.value;
+                  onFiltersChange({
+                    ...filters,
+                    maxStops: raw === "" ? null : Number(raw),
+                  });
+                }}
+                className={cn(
+                  "mt-3 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800",
+                  focusRing,
+                )}
+              >
+                {STOP_OPTIONS.map((option) => (
+                  <option
+                    key={String(option.value)}
+                    value={option.value === null ? "" : String(option.value)}
+                  >
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {facets.cabins.length > 0 && (
+              <fieldset>
+                <legend className={formLabel}>Cabin class</legend>
+                <ul className="mt-3 max-h-40 space-y-2 overflow-y-auto pr-1">
+                  {facets.cabins.map((cabin) => (
+                    <li key={cabin}>
+                      <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
+                        <input
+                          type="checkbox"
+                          checked={filters.cabins.includes(cabin)}
+                          onChange={() =>
+                            onFiltersChange({
+                              ...filters,
+                              cabins: toggleStringValue(filters.cabins, cabin),
+                            })
+                          }
+                          className={cn(
+                            "h-4 w-4 rounded border-slate-300 text-brand-700",
+                            focusRing,
+                          )}
+                        />
+                        {cabin}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </fieldset>
+            )}
+
+            {facets.airlines.length > 0 && (
+              <fieldset>
+                <legend className={formLabel}>Airlines</legend>
+                <ul className="mt-3 max-h-40 space-y-2 overflow-y-auto pr-1">
+                  {facets.airlines.map((airline) => (
+                    <li key={airline}>
+                      <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
+                        <input
+                          type="checkbox"
+                          checked={filters.airlines.includes(airline)}
+                          onChange={() =>
+                            onFiltersChange({
+                              ...filters,
+                              airlines: toggleStringValue(
+                                filters.airlines,
+                                airline,
+                              ),
+                            })
+                          }
+                          className={cn(
+                            "h-4 w-4 rounded border-slate-300 text-brand-700",
+                            focusRing,
+                          )}
+                        />
+                        {airline}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </fieldset>
+            )}
+          </>
+        )}
+
+        {showHotelStars && (
+          <div>
+            <label htmlFor="min-stars" className={formLabel}>
+              Hotel stars
+            </label>
+            <select
+              id="min-stars"
+              value={filters.minStars}
+              onChange={(event) =>
+                onFiltersChange({
+                  ...filters,
+                  minStars: Number(event.target.value),
+                })
+              }
+              className={cn(
+                "mt-3 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800",
+                focusRing,
+              )}
+            >
+              {STAR_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {showOperatorFilters && (
+          <fieldset>
+            <legend className={formLabel}>Operators</legend>
+            <ul className="mt-3 max-h-40 space-y-2 overflow-y-auto pr-1">
+              {facets.operators.map((operator) => (
+                <li key={operator}>
+                  <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={filters.operators.includes(operator)}
+                      onChange={() =>
+                        onFiltersChange({
+                          ...filters,
+                          operators: toggleStringValue(
+                            filters.operators,
+                            operator,
+                          ),
+                        })
+                      }
+                      className={cn(
+                        "h-4 w-4 rounded border-slate-300 text-brand-700",
+                        focusRing,
+                      )}
+                    />
+                    {operator}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </fieldset>
+        )}
+
+        {showAmenities && (
+          <fieldset>
+            <legend className={formLabel}>Amenities</legend>
+            <p className="mt-1 text-xs text-slate-500">
+              Results must include every selected amenity.
+            </p>
+            <ul className="mt-3 max-h-48 space-y-2 overflow-y-auto pr-1">
+              {facets.amenities.map((amenity) => (
+                <li key={amenity}>
+                  <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={filters.amenities.includes(amenity)}
+                      onChange={() =>
+                        onFiltersChange({
+                          ...filters,
+                          amenities: toggleStringValue(
+                            filters.amenities,
+                            amenity,
+                          ),
+                        })
+                      }
+                      className={cn(
+                        "h-4 w-4 rounded border-slate-300 text-brand-700",
+                        focusRing,
+                      )}
+                    />
+                    {amenity}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </fieldset>
+        )}
       </div>
     </Card>
   );
@@ -166,6 +443,8 @@ type MobileFilterToggleProps = {
   isOpen: boolean;
   onToggle: () => void;
   activeFilterCount: number;
+  /** Id of the filters panel this button controls. */
+  controlsId?: string;
 };
 
 /** Mobile button to show/hide the filter sidebar. */
@@ -173,6 +452,7 @@ export function MobileFilterToggle({
   isOpen,
   onToggle,
   activeFilterCount,
+  controlsId = "results-filters-panel",
 }: MobileFilterToggleProps) {
   return (
     <Button
@@ -180,6 +460,7 @@ export function MobileFilterToggle({
       type="button"
       onClick={onToggle}
       aria-expanded={isOpen}
+      aria-controls={controlsId}
       className="w-full lg:hidden"
     >
       {isOpen ? "Hide filters" : "Show filters"}

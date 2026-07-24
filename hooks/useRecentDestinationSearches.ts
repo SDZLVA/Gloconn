@@ -40,7 +40,14 @@ export function useRecentDestinationSearches(
   );
 
   const reload = useCallback(() => {
-    setRecentIds(readRecentDestinationIds(scope));
+    const nextIds = readRecentDestinationIds(scope);
+    // Avoid a re-render when localStorage content is unchanged.
+    setRecentIds((previous) =>
+      previous.length === nextIds.length &&
+      previous.every((id, index) => id === nextIds[index])
+        ? previous
+        : nextIds,
+    );
   }, [scope]);
 
   return { recentDestinations, addRecent, reloadRecent: reload };

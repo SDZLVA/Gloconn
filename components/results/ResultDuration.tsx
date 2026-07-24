@@ -1,5 +1,5 @@
 /** Formats a duration in minutes as "Xh Ym". */
-export function formatDuration(minutes: number): string {
+function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
 

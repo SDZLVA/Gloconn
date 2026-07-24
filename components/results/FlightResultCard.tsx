@@ -74,7 +74,12 @@ export function FlightResultCard({ result }: FlightResultCardProps) {
                 currency={result.currency}
                 suffix="total"
               />
-              <Button className="shrink-0 px-4 py-2">Select flight</Button>
+              <Button
+                className="shrink-0 px-4 py-2"
+                aria-label={`Select flight with ${result.airline}`}
+              >
+                Select flight
+              </Button>
             </div>
           </div>
         </div>

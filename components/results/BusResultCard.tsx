@@ -74,7 +74,12 @@ export function BusResultCard({ result }: BusResultCardProps) {
                 currency={result.currency}
                 suffix="total"
               />
-              <Button className="shrink-0 px-4 py-2">Book bus</Button>
+              <Button
+                className="shrink-0 px-4 py-2"
+                aria-label={`Book bus with ${result.operator}`}
+              >
+                Book bus
+              </Button>
             </div>
           </div>
         </div>

@@ -19,6 +19,7 @@ import type {
   AmadeusConfig,
   AppConfig,
   ProviderName,
+  SerpApiConfig,
 } from "@/lib/config/types";
 import { validateAppConfig } from "@/lib/config/validate";
 
@@ -28,6 +29,7 @@ const PROVIDER_NAMES: ProviderName[] = [
   "amadeus",
   "booking",
   "omio",
+  "serpapi",
 ];
 
 function loadAmadeusEnv(): Pick<
@@ -143,6 +145,48 @@ function loadAmadeusConfig(): AmadeusConfig {
   };
 }
 
+function loadSerpApiDeepSearch(): Pick<
+  SerpApiConfig,
+  "deepSearch" | "deepSearchInput" | "deepSearchInvalid"
+> {
+  const deepSearchInput = readEnv("SERPAPI_DEEP_SEARCH");
+  if (deepSearchInput === undefined) {
+    return { deepSearch: false, deepSearchInvalid: false };
+  }
+
+  if (
+    deepSearchInput === "true" ||
+    deepSearchInput === "1" ||
+    deepSearchInput === "false" ||
+    deepSearchInput === "0"
+  ) {
+    return {
+      deepSearch: deepSearchInput === "true" || deepSearchInput === "1",
+      deepSearchInput,
+      deepSearchInvalid: false,
+    };
+  }
+
+  return {
+    deepSearch: false,
+    deepSearchInput,
+    deepSearchInvalid: true,
+  };
+}
+
+function loadSerpApiConfig(): SerpApiConfig {
+  const apiKey = readEnv("SERPAPI_API_KEY") ?? "";
+  const deepSearch = loadSerpApiDeepSearch();
+
+  return {
+    apiKey,
+    deepSearch: deepSearch.deepSearch,
+    deepSearchInput: deepSearch.deepSearchInput,
+    deepSearchInvalid: deepSearch.deepSearchInvalid,
+    isConfigured: Boolean(apiKey),
+  };
+}
+
 /** Reads raw configuration without caching or validation attachment. */
 export function loadAppConfigRaw(): Omit<AppConfig, "validation"> {
   const supabaseUrl = readEnv("NEXT_PUBLIC_SUPABASE_URL") ?? "";
@@ -150,6 +194,7 @@ export function loadAppConfigRaw(): Omit<AppConfig, "validation"> {
   const mockFlag = loadUseMockProviders();
   const flightsProvider = loadFlightsProvider();
   const amadeus = loadAmadeusConfig();
+  const serpapi = loadSerpApiConfig();
 
   return {
     app: {
@@ -192,6 +237,7 @@ export function loadAppConfigRaw(): Omit<AppConfig, "validation"> {
       },
     },
     amadeus,
+    serpapi,
   };
 }
 

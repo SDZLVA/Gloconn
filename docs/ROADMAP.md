@@ -81,24 +81,34 @@ This roadmap outlines planned development phases. Dates are approximate and will
 | Sprint 6 | Wire live Amadeus provider | ✅ Complete |
 | Sprint 7 | Flight API automated testing | ✅ Complete |
 | Sprint 8 | Flight API production hardening | ✅ Complete |
+| Sprint 9 | SerpAPI multi-provider (dev/test) + docs | ✅ Complete → **v0.15.0** |
+| Milestone 10 | Search Experience (UI → reliability → quality → perf → destinations → hardening) | ✅ Complete → **v0.16.0** |
 
 **Release milestone — Flight API v1** (architecture + tests + docs): ✅ (`v0.13.0`, Sprint 7)
 
-**Release milestone — Flight API v0.14.0** (timeouts, 401/429, config, logging): ✅ (`v0.14.0`, Sprint 8) — **Flight API in maintenance mode**
+**Release milestone — Flight API v0.14.0** (timeouts, 401/429, config, logging): ✅ (`v0.14.0`, Sprint 8)
+
+**Release milestone — Multi-provider v0.15.0** (SerpAPI + factory + Provider Guide): ✅ (`v0.15.0`, Sprint 9)
+
+**Release milestone — Search Experience v0.16.0** (Milestone 10): ✅ (`v0.16.0`, Sprints 10.1–10.6)
 
 | Item | Notes |
 |------|-------|
 | Destinations API | Google Places, GeoNames, or CMS — swap mock destination provider |
-| **Flights API (Amadeus)** | ✅ Sprints 1–8 complete (live provider + tests + hardening); enable via env |
-| Hotels / flights API | Amadeus flights ready; Booking.com hotels later |
-| Partial provider failure | Show hotels/transport if flights fail |
+| **Flights API (Amadeus)** | ✅ Sprints 1–8; long-term production / Enterprise path |
+| **Flights API (SerpAPI)** | ✅ Sprint 9 — temporary **dev/test** only (ADR-036) |
+| **Search Experience** | ✅ Milestone 10 — results UI, reliability, quality, performance, destinations |
+| Hotels / activities API | Booking.com hotels + activities later |
+| Partial provider failure | ✅ Sprint 10.2 / ADR-037 |
 | Manual Amadeus sandbox | Checklist in `SPRINT_8_SUMMARY.md` — execute when enabling live keys |
 | currencyService client boundary | Technical debt (ADR-035) — restore DI without Amadeus `server-only` on client |
+| Monitoring / performance | Ops focus after v0.16.0 |
 | Ground transport API | Omio or similar for buses and trains |
 | Caching and rate limiting | Protect Route Handlers and provider quotas |
 | Budget-aware trip suggestions | Use budget + travel style from search |
 | Interactive maps | Destination locations |
 | Trip sharing | Share itineraries with others |
+| AI travel optimization | Long-term |
 | Mobile app or PWA | Optional long-term |
 | Payment / booking integration | Optional long-term |
 

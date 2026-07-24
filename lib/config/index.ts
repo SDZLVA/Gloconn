@@ -19,6 +19,7 @@ export type {
   NodeEnv,
   ProviderName,
   ProvidersConfig,
+  SerpApiConfig,
   SupabaseConfig,
 } from "@/lib/config/types";
 

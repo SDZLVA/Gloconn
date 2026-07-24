@@ -1,21 +1,30 @@
 import { ResultCard } from "@/components/results/ResultCard";
-import { Card } from "@/components/ui/Card";
+import { ResultsEmptyState } from "@/components/results/ResultsEmptyState";
 import type { SearchResult } from "@/types/results";
 
 type ResultsListProps = {
   results: SearchResult[];
+  /** Shown when filters hide every result. */
+  destination?: string;
+  editSearchHref?: string;
+  onClearFilters?: () => void;
 };
 
-/** Renders a vertical list of result cards. */
-export function ResultsList({ results }: ResultsListProps) {
+/** Renders a vertical list of result cards, or a filter-empty state. */
+export function ResultsList({
+  results,
+  destination,
+  editSearchHref,
+  onClearFilters,
+}: ResultsListProps) {
   if (results.length === 0) {
     return (
-      <Card className="p-8 text-center">
-        <p className="text-lg font-semibold text-slate-900">No results match your filters</p>
-        <p className="mt-2 text-sm text-slate-600">
-          Try adjusting the transport type, price range, or minimum rating.
-        </p>
-      </Card>
+      <ResultsEmptyState
+        variant="no-matches"
+        destination={destination}
+        editSearchHref={editSearchHref}
+        onClearFilters={onClearFilters}
+      />
     );
   }
 

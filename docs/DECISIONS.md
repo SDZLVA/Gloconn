@@ -977,5 +977,134 @@ AmadeusFlightsProvider.search(request)
 
 **Consequences:**
 - Live Amadeus results appear when env selects Amadeus (not under default mock flag)
-- Flights `ProviderError` still fails the whole orchestrator `Promise.all` (partial failure deferred)
+- ~~Flights `ProviderError` still fails the whole orchestrator `Promise.all` (partial failure deferred)~~ → resolved in ADR-037 / Sprint 10.2
 - currencyService no longer participates in `setServiceProviders` injection for currencies
+
+---
+
+## ADR-036: SerpAPI development flights provider (Sprint 9.1 → v0.15.0)
+
+**Status:** Accepted and **implemented** (shipped in **v0.15.0**, Sprint 9.2–9.10).  
+**Date:** July 2026  
+**Product version:** v0.15.0
+
+**Decision:** Add **SerpAPI Google Flights** as a **second** `FlightsProvider` implementation under `lib/providers/flights/serpapi/`, selected only via env (`FLIGHTS_PROVIDER=serpapi`). Use it for **development and testing** until Amadeus Enterprise is available. **Do not modify, remove, or replace** any Amadeus code. Amadeus remains the **future production** flights provider.
+
+### Why SerpAPI is being added
+
+- Local and staging development need live-shaped flight results without waiting for Amadeus Enterprise access.
+- SerpAPI Google Flights can return usable itineraries for sandbox UX and mapper confidence.
+- The existing provider architecture already supports multiple vendors behind one interface.
+
+### Why Amadeus remains the future production provider
+
+- Amadeus is the intended commercial / enterprise flight inventory path (Sprints 3–8 complete: OAuth, HTTP, mapping, live wiring, hardening, tests).
+- Production hardening (timeouts, 401 retry, 429, config, logging) already exists for Amadeus.
+- SerpAPI is a scrape/search proxy suitable for **dev/test**, not the long-term production commercial relationship.
+
+### Why the existing `FlightsProvider` abstraction is sufficient
+
+- Contract is already vendor-neutral: `search(request: SearchRequest): Promise<Flight[]>`.
+- Orchestrator, `POST /api/search`, and UI do not know which vendor is active.
+- Factories already switch on `USE_MOCK_PROVIDERS` + `FLIGHTS_PROVIDER` (extend with one `case`, no interface change).
+- See also [Provider_Guide.md](./Provider_Guide.md).
+
+### Why no shared models will change
+
+- `Flight` and `SearchRequest` are provider-independent (ADR-023).
+- Sprint 2 already enriches `originIata` / `destinationIata` for any flights vendor.
+- Vendor-specific JSON stays inside `serpapi/types.ts` (same rule as Amadeus package-private types).
+
+### Why SerpAPI is development/testing only
+
+- Not the production inventory source of record.
+- Cost, quotas, response shape drift, and `deep_search` latency/timeout risk make it unsuitable as the default production path.
+- Default remains `USE_MOCK_PROVIDERS=true` (mock). CI must not call real SerpAPI.
+- Docs and env comments must label SerpAPI as **dev/test only**.
+
+### Alternatives considered
+
+| Alternative | Rejected because |
+|-------------|------------------|
+| Replace Amadeus with SerpAPI | Throws away production path and Sprint 3–8 investment |
+| Dual-call Amadeus + SerpAPI in one search | Cost, latency, conflicting results, complex merge |
+| Change `Flight` / `SearchRequest` for SerpAPI fields | Couples domain to one vendor; breaks ADR-023 |
+| Call SerpAPI from the browser | Exposes API keys; violates server search boundary (ADR-030) |
+| Put SerpAPI code inside `amadeus/` | Contaminates frozen production adapter |
+
+### Consequences
+
+- Sprint 9.2–9.10 implemented config, HTTP, mappers, factory, tests, and docs under `serpapi/` (and factory only).
+- Config surface: `SERPAPI_API_KEY`, `SERPAPI_DEEP_SEARCH` via `lib/config`.
+- Amadeus package remains the long-term production path (prefer bugfixes unless CTO directs).
+- Product version for the completed SerpAPI adapter: **v0.15.0**.
+- See [releases/v0.15.0.md](./releases/v0.15.0.md) and [Provider_Guide.md](./Provider_Guide.md).
+
+### Known limitations (accepted for v1 SerpAPI)
+
+- Round-trip return legs may need a second SerpAPI request (`departure_token`); v1 may map outbound-focused options and document gaps.
+- `deep_search=true` increases latency and has historically timed out on SerpAPI’s side — default **false**.
+- Response shapes can drift; fixtures + null-filtering required.
+- Unsupported currencies should use `createProviderError` (same as Amadeus), not silent drops.
+- Partial provider failure (orchestrator) remains unchanged backlog.
+
+### Non-goals
+
+- Modifying `lib/providers/flights/amadeus/**` as part of SerpAPI work
+- Changing `FlightsProvider`, `Flight`, or `SearchRequest`
+- Dual-provider fan-out in one search
+- Client-side SerpAPI calls
+- Live SerpAPI (or Amadeus) calls in CI
+- Making SerpAPI the default provider
+- Fixing currencyService DI or partial provider failure in this initiative
+
+---
+
+## ADR-037: SearchResponse + partial provider failure (Sprint 10.2)
+
+**Status:** Accepted and implemented  
+**Date:** July 2026  
+**Milestone:** 10.2 — Search Reliability
+
+**Decision:** Make `SearchResponse` the canonical trip-search success payload end to end (`orchestrateTripSearch` → `searchTrips` → `POST /api/search` → `postSearchTrips`). Isolate domain provider failures with `Promise.allSettled` so successful domains still return results and failed domains become `SearchResponse.warnings`.
+
+### Why SearchResponse is now the live contract
+
+- The model already existed (ADR-023) with `warnings` for partial failure — it was unused while the API returned flat `SearchResult[]`.
+- Grouped domain arrays + `totalCount` + `searchedAt` + optional `warnings` match orchestration reality better than a flat list.
+- The UI still flattens via `searchResponseToResults()` for existing cards/filters — no card redesign required.
+
+### Why partial failure lives only in the orchestrator
+
+- Provider interfaces stay `Promise<T>` that may throw — adapters do not need soft-fail APIs.
+- Product policy (fail-all vs partial) is an orchestration concern, not a vendor concern.
+- Validation (missing IATA when flights requested, invalid request) remains blocking via `createValidationError`.
+
+### Behavior
+
+| Situation | Result |
+|-----------|--------|
+| One/some requested domains fail | HTTP/service **success** with remaining results + `warnings[]` |
+| All requested domains fail | `PROVIDER_ERROR` (hard failure) |
+| Validation / missing flight airports | `VALIDATION_ERROR` (blocking) |
+
+### Warning rules
+
+- Code: `PROVIDER_UNAVAILABLE`
+- Message: provider-agnostic (e.g. “Some travel results are temporarily unavailable. Showing available results.”)
+- Never mention Amadeus, SerpAPI, mock, or other vendor names
+- Domain uses `hotels` | `flights` | `transport` (transport covers buses + trains)
+
+### Consequences
+
+- `searchTrips` / `postSearchTrips` return `ServiceResult<SearchResponse>`
+- Deprecated monolithic `mockSearchProvider` maps `SearchResponse` → `SearchResult[]` for its legacy interface only
+- Domain mock/live providers, factories, registry, `SearchRequest`, and `Flight`/`Hotel`/`Bus`/`Train` models unchanged
+- UI shows `ResultsWarningsBanner` when `warnings` is non-empty
+
+### Non-goals
+
+- Changing provider implementations or interfaces
+- Dual-vendor fan-out
+- Retrying failed domains inside the orchestrator
+- currencyService DI cleanup

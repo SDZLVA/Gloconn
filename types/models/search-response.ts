@@ -13,6 +13,7 @@ import type { Train } from "@/types/models/train";
 export type SearchResponseDomain =
   | "hotels"
   | "flights"
+  | "transport"
   | "buses"
   | "trains"
   | "restaurants"

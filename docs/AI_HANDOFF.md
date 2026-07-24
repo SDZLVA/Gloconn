@@ -14,8 +14,8 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | Week 2+ — Flight API in **maintenance mode** (`v0.14.0`, Sprints 1–8); default travel data still mock via env |
-| APIs | Supabase Auth + PostgreSQL; travel data via mock providers (default) |
+| Stage | **v0.16.0** — Milestone 10 Search Experience complete; multi-provider flights (mock · Amadeus · SerpAPI) |
+| APIs | Supabase Auth + PostgreSQL; travel data via mock providers by default; optional live Amadeus / SerpAPI |
 
 ---
 
@@ -69,9 +69,9 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `TravelersSelector` | `components/search/` | Search-form wrapper around `PassengersSelector` |
 | `PassengersSelector` | `components/ui/` | Reusable Adults / Children / Infants / Rooms picker |
 | `TravelStyleSelector` | `components/search/` | Budget / Standard / Luxury picker |
-| `BudgetSelector` | `components/search/` | Required max budget slider with currency |
+| `BudgetSelector` | `components/search/` | Required max budget numeric input with currency selector |
 | `Button`, `Card`, `InputField` | `components/ui/` | Generic UI primitives |
-| `BudgetSlider` | `components/ui/` | Reusable range slider with currency selector and live value |
+| `BudgetSlider` | `components/ui/` | Reusable range slider (kept; search form uses numeric input) |
 | `CurrencySelector` | `components/ui/` | Currency dropdown backed by mock provider data |
 | `Autocomplete` | `components/ui/` | Reusable accessible combobox (sections, keyboard navigation) |
 | `TravelCalendar` | `components/ui/` | Reusable date picker — single or range, disables past dates |
@@ -80,8 +80,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `SectionHeading` | `components/ui/` | Reusable title + description for sections |
 | `SearchResultsPage` | `components/results/` | Client orchestrator for results layout |
 | `ResultCard` | `components/results/` | Dispatches to hotel/flight/bus/train cards |
-| `ResultsFilterSidebar` | `components/results/` | Transport type, price, rating filters |
-| `ResultsSortBar` | `components/results/` | Sort dropdown and result count |
+| `ResultsFilterSidebar` | `components/results/` | Type, price, rating + model-backed facets (stops, cabin, airlines, stars, operators, amenities) |
+| `ResultsSortBar` | `components/results/` | Sort dropdown (Recommended / Cheapest / Fastest / Highest rated / Best value) |
 | `FormLabel`, `FormError` | `components/ui/FormField.tsx` | Shared form helpers |
 | Budget helpers | `lib/budget/` | Currency options, limits, and formatting |
 | Currency mock provider | `lib/providers/currencies/mock/` | Static currency list for selectors |
@@ -99,13 +99,22 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `buildSearchRequest` | `lib/search/request.ts` | Form state → canonical `SearchRequest` |
 | `validateAndBuildSearchRequest` | `lib/search/request.ts` | Validate form + build `SearchRequest` (submit) |
 | `serializeSearchRequest` | `lib/search/request.ts` | JSON body for `POST /api/search` |
-| `postSearchTrips` | `lib/api/searchClient.ts` | Client HTTP call to `POST /api/search` |
+| `postSearchTrips` | `lib/api/searchClient.ts` | Client HTTP call to `POST /api/search` (45s TTL cache + in-flight dedupe, Sprint 10.4) |
+| `buildSearchCacheKey` | `lib/search/cacheKey.ts` | Stable client cache / query key (sorted productTypes) |
+| `withSearchResultCache` | `lib/api/searchResultCache.ts` | Browser TTL + concurrent fetch dedupe (not server `lib/api/cache.ts`) |
+| `filterDestinationsCached`, `rankDestinationsCached` | `lib/destinations/filterCache.ts` | Cached client destination ranker (Sprint 10.5) |
+| `rankDestinations`, `filterDestinationsRanked` | `lib/destinations/rank.ts` | Deterministic destination scoring (IATA / name / country / words) |
+| `highlightMatchSegments` | `lib/destinations/highlight.ts` | Autocomplete label match highlighting |
+| `destinationToSearchOption` | `lib/destinations/options.ts` | Option label + region · IATA description |
+| `useDebouncedValue` | `hooks/useDebouncedValue.ts` | Debounce expensive UI-driven work |
 | `POST /api/search` | `app/api/search/route.ts` | Route Handler — server-only `searchTrips()` + `toJsonResponse()` |
 | `buildResultsUrl` | `lib/search/params.ts` | Builds `/search/results?...` from form state |
 | `buildResultsUrlFromRequest` | `lib/search/request.ts` | Builds results URL from `SearchRequest` |
 | `parseSearchParams` | `lib/search/params.ts` | Reads URL params back into `SearchData` |
 | `getResultsForSearch` | `lib/results/` | **Deprecated** — use `postSearchTrips()` from `@/lib/api` in UI |
-| `filterResults`, `sortResults` | `lib/results/` | Client-side filter and sort helpers |
+| `filterResults`, `collectFilterFacets`, `countActiveFilters` | `lib/results/filter.ts` | Client-side filters + facets (Sprint 10.3) |
+| `sortResults` | `lib/results/sort.ts` | Client-side sort (recommended / price / duration / rating / value) |
+| `rankResults`, `scoreResult`, `RANK_WEIGHTS` | `lib/results/rank.ts` | Pure deterministic ranking (no AI/ML) |
 | `searchTrips` | `lib/services/searchService.ts` | **Server only** — validated search via orchestrator + providers |
 | `serviceResultFromApiResponse` | `lib/api/responses.ts` | Converts Route Handler JSON → `ServiceResult` |
 | `iataResolution` | `lib/services/iataResolution.ts` | Enrich SearchRequest with optional origin/destination IATA |
@@ -116,7 +125,9 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `searchFlightOffers` | `lib/providers/flights/amadeus/flightOffers.ts` | GET Flight Offers → raw Amadeus JSON (used by Amadeus provider) |
 | `logAmadeusEvent` | `lib/providers/flights/amadeus/log.ts` | Structured server-only Amadeus logs |
 | `mapAmadeusFlightOffersResponse` | `lib/providers/flights/amadeus/` (barrel) | Raw response → `Flight[]` (used by Amadeus provider) |
-| Amadeus flights adapter | `lib/providers/flights/amadeus/` | Live pipeline in `AmadeusFlightsProvider.search` (ADR-035) |
+| Amadeus flights adapter | `lib/providers/flights/amadeus/` | Live pipeline in `AmadeusFlightsProvider.search` (ADR-035) — long-term production |
+| SerpAPI flights adapter | `lib/providers/flights/serpapi/` | Dev/test pipeline in `SerpApiFlightsProvider.search` (ADR-036, v0.15.0) |
+| `createFlightsProvider` | `lib/providers/core/factories.ts` | Selects mock / amadeus / serpapi |
 | `getServiceProviders` | `lib/services/context.ts` | Returns injected or registry-backed providers |
 | Provider registry | `lib/providers/core/registry.ts` | Central `get*Provider()` selection |
 | Provider factories | `lib/providers/core/factories.ts` | Env-based mock vs external selection |
@@ -151,12 +162,36 @@ SearchResultsPage (client)
         → searchOrchestrator.orchestrateTripSearch(request)
           → enrichSearchRequestWithAirports()   [iataResolution — data only]
           → assertFlightAirportsResolved()      [fail if flights + missing IATA]
-          → Promise.all([hotels, flights, transport])
-          → mergeSearchResults()
-      → toJsonResponse() → serviceResultFromApiResponse()
-    → useServiceQuery sets loading / data / error
-  → filterResults() + sortResults() in the browser
+          → Promise.allSettled([hotels, flights, transport])  [ADR-037 partial failure]
+          → buildSearchResponse(+ warnings?)
+      → toJsonResponse() → serviceResultFromApiResponse() → SearchResponse
+    → searchResponseToResults() + filterResults/sortResults(+ budget for recommended)
+    → ResultsWarningsBanner when warnings present
 ```
+
+**Search quality notes (Sprint 10.3 — client only):**
+- Filters / sort / ranking live in `lib/results/*` — do **not** change providers, API, `SearchRequest`, or `SearchResponse` for quality work
+- Default sort is **Recommended** (`rankResults` with optional budget fit)
+- Ranking weights: price 0.35 · rating 0.25 · journey 0.25 · stay 0.15 (documented in `rank.ts`)
+- Facets are derived from the current result set (`collectFilterFacets`)
+
+**Search performance notes (Sprint 10.4 — client only):**
+- Stable `buildSearchCacheKey` prevents false refetches from key-order / `productTypes` order
+- `postSearchTrips` reuses successful responses for **45s** and dedupes in-flight identical POSTs
+- "Try again" clears that cache entry before refetching
+- `useServiceQuery` keeps previous `data` while loading (skeleton only when no data yet)
+- Destination autocomplete: debounce filter (~160ms), short-lived match cache, `onListOpen` only on closed→open
+- Price filter inputs debounce commits (~200ms) so filter/sort/rank are not per-keystroke
+- `ResultCard` is memoized; filter/sort already behind `useMemo`
+- Do **not** use server `lib/api/cache.ts` from the browser
+
+**Destination search quality notes (Sprint 10.5 — client only):**
+- Autocomplete uses `lib/destinations/rank.ts` — **not** provider `filterDestinations` (provider helpers stay untouched)
+- Matching fields from existing `Destination` only: `name`, `country`, `region`, `id`, `iataCode`, `popular`
+- Score ladder (documented in `rank.ts`): IATA exact 120 → name exact 100 → … → id contains 15; soft boosts recent +8, popular +5
+- Dedupes by canonical `destination.id` (keeps higher score)
+- UX: match highlight, Cities / Airports grouping for IATA-like queries, Home/End keyboard jumps
+- Does **not** change trip search execution / orchestrator / API
 
 **IATA notes (ADR-031):**
 - Helper enriches only — does not throw for missing codes
@@ -164,7 +199,16 @@ SearchResultsPage (client)
 - Hotels/transport-only searches do not require IATA
 - UI never collects or displays IATA fields
 
+**Partial failure notes (ADR-037):**
+- One domain failure does not blank the search
+- Warnings are provider-agnostic (`PROVIDER_UNAVAILABLE`) — never vendor names
+- All requested domains failing → hard `PROVIDER_ERROR`
+- Validation errors remain blocking
+- API success payload is `SearchResponse` (not flat `SearchResult[]`)
+
 **Amadeus notes (ADR-032 / ADR-033 / ADR-034 / ADR-035 + Sprint 8 hardening):**
+
+Amadeus package is **frozen** during SerpAPI work (ADR-036). Upcoming SerpAPI adapter is **dev/test only**; planned product version **v0.15.0**.
 ```
 AmadeusFlightsProvider.search(request)
   → require destinationId or createProviderError
@@ -176,25 +220,24 @@ AmadeusFlightsProvider.search(request)
 - Cache is generic; not exported from `@/lib/api` barrel
 - Only `mapAmadeusFlightOffersResponse` is exported from the Amadeus barrel (plus provider)
 - Helpers, `mapAmadeusOfferToFlight`, and Amadeus types stay package-private
-- Selection: `USE_MOCK_PROVIDERS=true` → mock; false + Amadeus keys → live Amadeus
+- Selection: `USE_MOCK_PROVIDERS=true` → mock; false + `FLIGHTS_PROVIDER=amadeus|serpapi` → that vendor (live unset defaults to amadeus)
 - Hosts: `AMADEUS_ENV=test|production` via `getAppConfig().amadeus.baseUrl` (no arbitrary URLs)
 - Timeouts / 401 retry / 429 / structured logs are Amadeus-package concerns (Sprint 8)
+- SerpAPI uses shared `lib/api/httpTimeout.ts` + vendor-local structured logs (Sprint 9)
 - Unsupported currency throws `createProviderError` — do not silently skip those offers
 - `rating` is always `0` (do not fabricate)
 - **Debt:** `currencyService` uses `mockCurrencyProvider` directly so the client budget UI does not import Amadeus `server-only` via the registry
 
-**Flight API tests (Sprints 7–8):**
+**Flight API tests (Sprints 7–9):**
 ```
-npm test  → 115 automated tests (node:test via tsx)
-  helpers / mappers / query builder / cache / provider (mocked fetch)
-  config (AMADEUS_ENV, timeouts, credentials, mock bypass)
-  timeouts / 401 retry / 429 / structured logging
-  fixtures: amadeus/__fixtures__/
+npm test  → 192 automated tests (node:test via tsx)
+  Amadeus: helpers / mappers / query / cache / provider / hardening
+  SerpAPI: config / types / query / client / mappers / provider / factory / integration
+  fixtures + mocked fetch only (no live Amadeus or SerpAPI in CI)
   server-only stub: test/register-server-only.mjs
 ```
-- Do not call real Amadeus in CI — use mocked `fetch`
-- Manual sandbox checklist: `docs/SPRINT_8_SUMMARY.md`
-- Keep `npm test` green when changing Amadeus adapter code
+- Manual Amadeus sandbox checklist: `docs/SPRINT_8_SUMMARY.md`
+- Keep `npm test` green when changing flight adapters
 - Do not log tokens, credentials, Authorization headers, payloads, or PII
 ### Error handling flow
 
@@ -231,11 +274,14 @@ Route Handler + HTTP client
 | `AMADEUS_API_KEY` / `AMADEUS_API_SECRET` | When live Amadeus | **Never** | Server-only API credentials |
 | `AMADEUS_OAUTH_TIMEOUT_MS` | No (default `10000`) | No | OAuth request timeout |
 | `AMADEUS_FETCH_TIMEOUT_MS` | No (default `15000`) | No | Authenticated Amadeus fetch timeout |
+| `FLIGHTS_PROVIDER` | No (live default `amadeus`) | No | `mock` · `amadeus` · `serpapi` |
+| `SERPAPI_API_KEY` | When live SerpAPI | **Never** | SerpAPI Google Flights (dev/test) |
+| `SERPAPI_DEEP_SEARCH` | No (default `false`) | No | SerpAPI `deep_search` flag |
 
 **Rules:**
 - `NEXT_PUBLIC_` only for values safe in the browser
-- API keys (Amadeus, Booking, Omio, Google) — no `NEXT_PUBLIC_` prefix
-- Amadeus host/timeouts/credentials — only via `getAppConfig()` (never `process.env` in Amadeus modules)
+- API keys (Amadeus, SerpAPI, Booking, Omio, Google) — no `NEXT_PUBLIC_` prefix
+- Amadeus / SerpAPI host/timeouts/credentials — only via `getAppConfig()` (never `process.env` in vendor modules)
 - `.env.example` is the committed template; put real secrets only in `.env.local`
 | Calendar date helpers | `lib/calendar/` | ISO formatting, month grids, range checks |
 | `NAV_LINKS` | `lib/navigation.ts` | Single source of truth for nav links |
@@ -255,13 +301,13 @@ Route Handler + HTTP client
 3. **Destination** — required; type to filter mock suggestions; empty field shows recent searches and popular destinations; pick with mouse or arrow keys + Enter; selections persist in localStorage
 4. **Dates** — required; click trigger to open calendar; choose Round-trip or One-way; pick departure (and return for round-trip) on the calendar; past dates are disabled; click Done
 5. **Travelers** — required; click trigger to open panel; adjust Adults, Children, Infants, Rooms with +/- steppers; infants cannot exceed adults; click Done
-6. **Budget** — required slider (€0–€10,000); pick a currency; move slider to set amount
+6. **Budget** — required numeric input (€0–€10,000); pick a currency; type amount (e.g. 1500)
 7. User clicks **Search** button
 8. `actions.submit()` runs `validateAndBuildSearchRequest()` → `SearchRequest`
 9. If invalid → summary alert at top + red error messages under each field
 10. If valid → `router.push(buildResultsUrlFromRequest(request))` navigates to `/search/results`
 11. Results page calls `postSearchTrips()` via `useServiceQuery` → `POST /api/search` (server runs providers)
-12. **No external travel APIs** — mock provider returns static data through the service layer on the server
+12. Providers run **server-side only** — default is mock; optional live Amadeus or SerpAPI via env
 
 Required fields: From, Destination, Departure, Return (round-trip only), Budget, Travelers (≥1 adult, ≥1 room), Travel style, at least one result type.  
 Return date must be ≥ departure date.  
@@ -282,19 +328,14 @@ lib/search/           → search validation, payload, constants
 lib/api/              → env, errors, types, searchClient, validation, HTTP responses
   searchClient.ts     → postSearchTrips() (browser → POST /api/search)
   cache.ts            → generic TTL cache (imported privately by Amadeus auth)
-lib/providers/        → provider adapters (mock + future external APIs)
-  core/               → registry, config, base interfaces (stubs)
+lib/providers/        → provider adapters (mock + external APIs)
+  core/               → registry, config, factories, interfaces
   destinations/       → mock ✅, google-maps (planned)
-  search/             → monolithic mock ✅ (to split into hotels/flights/ground)
+  search/             → monolithic mock ✅ (legacy; prefer domain providers)
   hotels/             → mock, booking (planned)
-  flights/            → mock ✅, amadeus/ (live provider pipeline ✅)
-    amadeus/auth.ts   → getAmadeusAccessToken()
-    amadeus/client.ts → amadeusFetch() HTTP infrastructure
-    amadeus/flightOffers.ts → buildFlightOffersSearchParams + searchFlightOffers
-    amadeus/mappers.ts → mapAmadeusFlightOffersResponse (public)
-    amadeus/mappingHelpers.ts → pure helpers (private)
-    amadeus/types.ts  → internal raw Amadeus response shapes
-    amadeus/provider.ts → searchFlightOffers + mapper (validates destinationId)
+  flights/            → mock ✅, amadeus/ (production path ✅), serpapi/ (dev/test ✅ v0.15.0)
+    amadeus/          → OAuth, client, flightOffers, mappers, provider
+    serpapi/          → googleFlights, client, mappers, provider, fixtures, integration tests
   ground/             → mock, omio (planned)
 lib/services/         → server-side service layer (searchService is server-only)
   context.ts          → getServiceProviders / setServiceProviders (simple DI)
@@ -326,16 +367,41 @@ docs/                 → project documentation
 
 ---
 
-## Common tasks for Week 2
+## Common tasks after v0.16.0
 
-When the user asks to continue development, likely next tasks are:
+**Milestone 10 — Search Experience** is ✅ complete (**v0.16.0**).
+- Sprint **10.1** (Professional Search Results UI) ✅
+- Sprint **10.2** (Search Reliability — `SearchResponse` + partial failure) ✅ ADR-037
+- Sprint **10.3** (Search Quality — filters / sort / ranking) ✅ client-only
+- Sprint **10.4** (Search Performance — cache / debounce / memo) ✅ client-only
+- Sprint **10.5** (Destination Search Quality — match / rank / UX) ✅ client-only
+- Sprint **10.6** (Hardening & Release) ✅
 
-1. **Destinations page** — `app/destinations/page.tsx` + expand `lib/destinations.ts`
-2. **Search results** — navigate after valid search, show mock results
-3. **About page** — static content page
-4. **My Trips page** — empty state placeholder
+Recommended next priorities (see [TODO.md](./TODO.md)):
 
-See [TODO.md](./TODO.md) for the full prioritized list.
+1. **Destinations / About pages** — product pages (nav links still 404)
+2. **Hotels provider** — behind `HotelsProvider`
+3. **Amadeus Enterprise** — enablement + sandbox checklist when credentials are ready
+4. **currencyService DI** — ADR-035 cleanup
+
+---
+
+## Current architecture (flights)
+
+```
+SearchRequest → factory → FlightsProvider (mock | amadeus | serpapi)
+  → query builder → HTTP client → mapper → Flight[]
+```
+
+| Provider | Role |
+|----------|------|
+| `mock` | Default local + CI |
+| `amadeus` | Long-term production |
+| `serpapi` | Temporary development / testing |
+
+**Completed:** Sprints 1–8 (Amadeus path) · Sprint 9.1–9.10 (SerpAPI + docs) · **v0.15.0**
+
+**Known limitations:** SerpAPI not production; round-trip return legs may need `departure_token`; currencyService DI debt; no live vendor calls in CI.
 
 ---
 
@@ -369,20 +435,26 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 
 ## What NOT to do
 
+- ❌ Do not treat SerpAPI as production — it is development/testing only (ADR-036)
+- ❌ Do not modify `lib/providers/flights/amadeus/**` unless CTO-approved (long-term production path)
 - ❌ Do not call `searchTrips()` or `searchService` from client components — use `postSearchTrips()` from `@/lib/api`
+- ❌ Do not assume search success data is `SearchResult[]` — it is `SearchResponse` (flatten with `searchResponseToResults`)
+- ❌ Do not mention vendor names in search warning copy
+- ❌ Do not treat one provider throw as a full search failure in new orchestration code — use settled isolation (ADR-037)
 - ❌ Do not call provider modules directly from UI — use services (server) or HTTP clients (browser)
 - ❌ Do not put flight IATA validation inside `iataResolution.ts` — enrichment only; orchestrator owns product rules
-- ❌ Do not resolve IATA inside `FlightsProvider` / Amadeus — use enriched `SearchRequest` fields
-- ❌ Do not call Amadeus OAuth, `amadeusFetch`, or `searchFlightOffers` from UI / orchestrator — only Amadeus adapter code
+- ❌ Do not resolve IATA inside `FlightsProvider` adapters — use enriched `SearchRequest` fields
+- ❌ Do not call Amadeus OAuth / `amadeusFetch` / `searchFlightOffers` or SerpAPI `searchGoogleFlights` from UI / orchestrator — only vendor adapter code
 - ❌ Do not re-export `lib/api/cache` from the public `@/lib/api` barrel — auth imports it privately
-- ❌ Do not pass empty `destinationId` into `mapAmadeusFlightOffersResponse` — provider must validate first
-- ❌ Do not import Amadeus `mappingHelpers`, `mapAmadeusOfferToFlight`, or `types` outside the Amadeus package — use the barrel’s `mapAmadeusFlightOffersResponse`
+- ❌ Do not pass empty `destinationId` into flight mappers — provider must validate first
+- ❌ Do not import vendor `mappingHelpers` or package-private `types` outside that vendor package — use the public barrel
 - ❌ Do not silently skip offers for unsupported currency — surface `createProviderError`
 - ❌ Do not fabricate flight ratings (mapper uses `rating: 0`)
-- ❌ Do not call real Amadeus APIs from automated tests — use mocked `fetch` and fixtures (Sprint 7+)
+- ❌ Do not call real Amadeus or SerpAPI APIs from automated tests — use mocked `fetch` and fixtures
 - ❌ Do not set arbitrary Amadeus base URLs — use `AMADEUS_ENV=test|production` only
-- ❌ Do not log Amadeus tokens, client id/secret, Authorization headers, payloads, or PII
-- ❌ Do not reintroduce client imports of the full provider registry that pull Amadeus `server-only` (see currencyService debt / ADR-035)
+- ❌ Do not log API keys, tokens, Authorization headers, credentialed URLs, payloads, or PII
+- ❌ Do not reintroduce client imports of the full provider registry that pull `server-only` (see currencyService debt / ADR-035)
+- ❌ Do not change `Flight`, `SearchRequest`, or search orchestration to fit a vendor
 - ❌ Do not add external API integrations without being asked
 - ❌ Do not install UI libraries (shadcn, MUI) without approval
 - ❌ Do not refactor unrelated code during a feature task
@@ -402,9 +474,12 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 | [ROADMAP.md](./ROADMAP.md) | Long-term feature plan |
 | [PROGRESS.md](./PROGRESS.md) | What was completed each week |
 | [TODO.md](./TODO.md) | What to build next |
-| [DECISIONS.md](./DECISIONS.md) | Why things are built this way |
+| [DECISIONS.md](./DECISIONS.md) | Why things are built this way (incl. ADR-036) |
 | [API_FOUNDATION.md](./API_FOUNDATION.md) | API layers, provider swap guide |
-| [CURRENT_STATE.md](./CURRENT_STATE.md) | Latest sprint snapshot |
+| [Provider_Guide.md](./Provider_Guide.md) | How to add a flights vendor |
+| [CURRENT_STATE.md](./CURRENT_STATE.md) | Latest release snapshot |
+| [releases/v0.16.0.md](./releases/v0.16.0.md) | v0.16.0 Milestone 10 Search Experience release |
+| [releases/v0.15.0.md](./releases/v0.15.0.md) | v0.15.0 SerpAPI multi-provider release |
 | [SPRINT_8_SUMMARY.md](./SPRINT_8_SUMMARY.md) | Sprint 8 hardening + sandbox checklist |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | This file — start here |
 

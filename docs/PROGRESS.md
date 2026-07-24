@@ -676,4 +676,203 @@ Debt still open: currencyService DI (ADR-035), partial provider failure
 
 ---
 
+## Flight API — Sprint 9 (SerpAPI multi-provider → v0.15.0)
+
+**Goal:** Add SerpAPI Google Flights as a temporary **dev/test** `FlightsProvider` without changing Amadeus, `Flight`, or search orchestration (ADR-036).
+
+### Done
+
+- [x] ADR-036 + Provider Guide + config (`SerpApiConfig`)
+- [x] `lib/providers/flights/serpapi/` — types, query, HTTP, mapper, provider
+- [x] Factory registration + fail-fast invalid provider
+- [x] Integration / edge / logging / regression tests
+- [x] Docs sync + [releases/v0.15.0.md](./releases/v0.15.0.md)
+- [x] Automated tests — **192** total (`npm test`)
+
+### Result
+
+```
+Providers: mock · amadeus (production path) · serpapi (dev/test)
+Tests: 192
+Release: v0.15.0
+```
+
+**Sprint 9 complete.** Multi-provider architecture shipped as **v0.15.0**.
+
+---
+
+## Milestone 10.1 — Professional Search Results UI ✅ Complete
+
+**Branch:** `cursor/milestone-10-1-results-ui`  
+**Scope:** Presentation only — no API, provider, SearchRequest, or backend changes.
+
+### Done
+
+- [x] Loading skeletons for results list
+- [x] Results header + richer summary bar (origin → destination, criteria chips)
+- [x] Empty states (`no-results` vs `no-matches`) with Edit search / Clear filters
+- [x] Error state with Try again + Edit search
+- [x] Removed “mock provider” copy
+- [x] Spacing / typography / mobile layout polish on `/search/results`
+
+**Files added:** `ResultsLoadingSkeleton.tsx`, `ResultsEmptyState.tsx`, `ResultsErrorState.tsx`, `ResultsHeader.tsx`  
+**Files updated:** `SearchResultsPage.tsx`, `ResultsSummaryBar.tsx`, `ResultsList.tsx`, `ResultsSortBar.tsx`
+
+---
+
+## Milestone 10.2 — Search Reliability ✅ Complete
+
+**Branch:** `cursor/milestone-10-2-search-reliability`  
+**ADR:** ADR-037
+
+### Done
+
+- [x] Orchestrator uses `Promise.allSettled` for hotels / flights / transport
+- [x] `SearchResponse` is the live search success payload (service + API + client)
+- [x] `warnings[]` with provider-agnostic `PROVIDER_UNAVAILABLE` messages
+- [x] All requested domains failing → hard `PROVIDER_ERROR`
+- [x] Validation failures remain blocking
+- [x] Results UI warning banner
+- [x] Automated tests (partial success, all-fail, validation) — **200** total
+- [x] Docs: foundation, handoff, current state, TODO, PROGRESS, ADR-037
+
+**Key files:** `searchOrchestrator.ts`, `searchService.ts`, `searchClient.ts`, `searchMappers.ts`, `SearchResultsPage.tsx`, `ResultsWarningsBanner.tsx`, `searchOrchestrator.test.ts`
+
+---
+
+## Milestone 10.3 — Search Quality ✅ Complete
+
+**Branch:** `cursor/milestone-10-3-search-quality`  
+**Scope:** Client-only — `lib/results`, `components/results`, tests, docs. No provider / API / SearchRequest / SearchResponse / orchestrator changes.
+
+### Done
+
+- [x] Richer filters from shared models: price, rating, type, max stops, cabin, airlines, hotel stars, operators, amenities
+- [x] Facets derived from the current result set (`collectFilterFacets`)
+- [x] Sort options: Recommended · Cheapest · Fastest · Highest rated · Best value
+- [x] Pure deterministic ranking (`lib/results/rank.ts`) with documented weights + budget fit
+- [x] Default sort = Recommended; budget from search request feeds ranking
+- [x] Tests: `filter.test.ts`, `sort.test.ts`, `rank.test.ts`
+
+### Ranking weights (sum = 1.0)
+
+| Signal | Weight | Notes |
+|--------|--------|-------|
+| Price competitiveness | 0.35 | Cheaper relative to the set scores higher |
+| Rating quality | 0.25 | `rating / 5` |
+| Journey efficiency | 0.25 | Duration (70%) + flight stops (30%) |
+| Stay quality | 0.15 | Hotel stars / 5; neutral 0.5 for non-hotels |
+
+Budget fit multiplies the base score: at/under budget → 1.0; over budget → down to 0.5 at 2× budget.
+
+**Files added:** `lib/results/rank.ts`, `lib/results/filter.test.ts`, `lib/results/sort.test.ts`, `lib/results/rank.test.ts`  
+**Files updated:** `types/results.ts`, `lib/results/filter.ts`, `lib/results/sort.ts`, `ResultsFilterSidebar.tsx`, `SearchResultsPage.tsx`, docs
+
+---
+
+## Milestone 10.4 — Search Performance ✅ Complete
+
+**Branch:** `cursor/milestone-10-4-search-performance`  
+**Scope:** Client-only optimizations — no provider / API / SearchRequest / SearchResponse / orchestrator / backend changes. No new product features.
+
+### Done
+
+- [x] Stable `buildSearchCacheKey` (canonical fields + sorted `productTypes`)
+- [x] Client search TTL cache (~45s) + in-flight request dedupe (`searchResultCache`)
+- [x] `useServiceQuery` keeps previous data while loading
+- [x] Results page shows skeleton only when no data yet (cache / remount feel instant)
+- [x] Destination autocomplete: debounce (~160ms), match cache (~8s), `onListOpen` only on open
+- [x] Recent-search reload skips `setState` when IDs unchanged
+- [x] Price filter debounce (~200ms) before filter/sort/rank
+- [x] Memoized `ResultCard`; stable callbacks on results page
+- [x] Tests: `lib/api/searchPerformance.test.ts` — **245** total
+
+### Observed improvements
+
+| Area | Before | After |
+|------|--------|-------|
+| Remount / back-nav same search | Full POST + blank skeleton | Cache hit (≤45s); keep prior data |
+| Concurrent identical POSTs | Multiple network calls | Single shared in-flight promise |
+| Autocomplete keystrokes | Reload recents + filter every key | Open-only reload; debounced + cached filter |
+| Price typing | Filter/sort/rank every input event | Debounced commit (~200ms) |
+| Filter/sidebar churn | All cards re-render | Unchanged cards skipped (`memo`) |
+
+**Files added:** `lib/search/cacheKey.ts`, `lib/api/clientTtlCache.ts`, `lib/api/searchResultCache.ts`, `lib/destinations/filterCache.ts`, `hooks/useDebouncedValue.ts`, `lib/api/searchPerformance.test.ts`  
+**Files updated:** `searchClient.ts`, `useServiceQuery.ts`, `SearchResultsPage.tsx`, `ResultsFilterSidebar.tsx`, `ResultCard.tsx`, `Autocomplete.tsx`, `DestinationAutocomplete.tsx`, `useRecentDestinationSearches.ts`, docs
+
+---
+
+## Milestone 10.5 — Destination Search Quality ✅ Complete
+
+**Branch:** `cursor/milestone-10-5-destination-quality`  
+**Scope:** Client-only destination autocomplete — no providers / API / SearchRequest / SearchResponse / orchestrator / search execution changes.
+
+### Done
+
+- [x] Client ranker (`lib/destinations/rank.ts`) using existing Destination fields only
+- [x] Matching: name, label, id, country, region, IATA (exact + prefix), whole-word
+- [x] Soft boosts: recent (+8), popular (+5)
+- [x] Deduplicate by canonical `destination.id`
+- [x] UX: match highlight, Cities / Airports grouping, IATA in description, Home/End keys
+- [x] Tests: `rank.test.ts`, `autocompleteNav.test.ts` — **267** total
+
+### Ranking algorithm (base score, first match wins)
+
+| Score | Match |
+|------:|-------|
+| 120 | Exact IATA |
+| 100 | Exact name / label |
+| 95 | Exact id |
+| 80 | Name / label prefix |
+| 75 | Id prefix |
+| 70 | IATA prefix |
+| 65 | Whole-word in name / label |
+| 60 | Country prefix |
+| 45 | Country whole-word |
+| 40 | Name / label contains |
+| 30 | Country contains |
+| 20 | Region |
+| 15 | Id contains |
+
+Tie-break: score → name → id. Empty query returns `[]` (idle UI uses recent + popular).
+
+**Files added:** `lib/destinations/normalize.ts`, `match.ts`, `rank.ts`, `options.ts`, `highlight.ts`, `rank.test.ts`, `autocompleteNav.test.ts`  
+**Files updated:** `filterCache.ts`, `DestinationAutocomplete.tsx`, `Autocomplete.tsx`, `AutocompleteDropdown.tsx`, docs
+
+---
+
+## Milestone 10.6 — Hardening & Release ✅ Complete → **v0.16.0**
+
+**Branch:** `cursor/milestone-10-6-hardening-release`  
+**Scope:** Quality only — a11y, cleanup, docs, release. No new features; no provider / API / SearchRequest / SearchResponse / algorithm changes.
+
+### Done
+
+- [x] Regression review of Milestone 10 flows (covered by suite + UI contracts)
+- [x] Accessibility fixes (combobox ARIA, filter `aria-controls`, unique CTA labels, rating label, price focus rings, route “to”, empty autocomplete status)
+- [x] Client cleanup (unused imports/exports, obsolete helpers)
+- [x] Docs sync + [releases/v0.16.0.md](./releases/v0.16.0.md)
+- [x] Production checks: test, typecheck, lint, build
+- [x] Version bump `package.json` → **0.16.0**
+
+**Milestone 10 complete.**
+
+---
+
+## Budget UI — numeric input
+
+**Branch:** `cursor/project-principles`
+
+### Changes
+
+- Replaced the search-form budget **slider** with a **numeric text input** in `BudgetSelector`
+- Kept `CurrencySelector`, existing props (`value`, `currency`, `onChange`, `onCurrencyChange`), and all validation / `SearchRequest` / URL / API contracts
+- Left `BudgetSlider.tsx` in the codebase (unused by the search form)
+- Label: `Budget (€)`; placeholder: `Example: 1500`; visible `€` prefix; digits-only typing
+- Updated `docs/AI_HANDOFF.md`, `docs/PROJECT.md`, `docs/PROGRESS.md`
+
+**Files changed:** `components/search/BudgetSelector.tsx`, docs above
+
+---
+
 ## Week 2 — (Historical)

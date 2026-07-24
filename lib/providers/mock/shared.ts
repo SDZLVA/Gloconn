@@ -4,10 +4,7 @@
  */
 
 import { CATALOG_SEARCH_DESTINATION } from "@/lib/api/searchMappers";
-import {
-  mergeSearchResults,
-  toSearchRequest,
-} from "@/lib/api/searchMappers";
+import { mergeSearchResults } from "@/lib/api/searchMappers";
 import { resolveDestinationIdFromLabel } from "@/lib/providers/destinations/mock/helpers";
 import { MOCK_BUSES } from "@/lib/results/mockBuses";
 import { MOCK_FLIGHTS } from "@/lib/results/mockFlights";
@@ -92,22 +89,26 @@ export function filterByDestination<T extends { destinationId: string }>(
 }
 
 export function toHotel(result: HotelResult): Hotel {
-  const { type: _type, ...hotel } = result;
+  const { type, ...hotel } = result;
+  void type;
   return hotel;
 }
 
 export function toFlight(result: FlightResult): Flight {
-  const { type: _type, ...flight } = result;
+  const { type, ...flight } = result;
+  void type;
   return flight;
 }
 
 export function toBus(result: BusResult): Bus {
-  const { type: _type, ...bus } = result;
+  const { type, ...bus } = result;
+  void type;
   return bus;
 }
 
 export function toTrain(result: TrainResult): Train {
-  const { type: _type, ...train } = result;
+  const { type, ...train } = result;
+  void type;
   return train;
 }
 

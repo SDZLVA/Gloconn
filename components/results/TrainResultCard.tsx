@@ -68,7 +68,12 @@ export function TrainResultCard({ result }: TrainResultCardProps) {
                 currency={result.currency}
                 suffix="total"
               />
-              <Button className="shrink-0 px-4 py-2">Book train</Button>
+              <Button
+                className="shrink-0 px-4 py-2"
+                aria-label={`Book train with ${result.operator}`}
+              >
+                Book train
+              </Button>
             </div>
           </div>
         </div>

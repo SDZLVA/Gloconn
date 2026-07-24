@@ -7,6 +7,7 @@
  * 3. Set env vars in `.env.local` — no service or UI changes required
  */
 
+import { createProviderError } from "@/lib/api/errors";
 import { getAppConfig } from "@/lib/config";
 import type { ProviderName } from "@/lib/config/types";
 import type {
@@ -20,6 +21,7 @@ import { mockCurrencyProvider } from "@/lib/providers/currencies/mock";
 import { mockDestinationProvider } from "@/lib/providers/destinations/mock";
 import { amadeusFlightsProvider } from "@/lib/providers/flights/amadeus";
 import { mockFlightsProvider } from "@/lib/providers/flights/mock";
+import { serpApiFlightsProvider } from "@/lib/providers/flights/serpapi";
 import { mockTransportProvider } from "@/lib/providers/ground/mock";
 import { mockHotelsProvider } from "@/lib/providers/hotels/mock";
 
@@ -33,6 +35,26 @@ function resolveProviderName(
   }
 
   return configured;
+}
+
+/**
+ * Live flights selection when `USE_MOCK_PROVIDERS=false`.
+ * Missing `FLIGHTS_PROVIDER` defaults to Amadeus (Sprint 9.8).
+ */
+function resolveFlightsProviderName(
+  flights: ProviderName,
+  flightsInput: string | undefined,
+  useMockProviders: boolean,
+): ProviderName {
+  if (useMockProviders) {
+    return "mock";
+  }
+
+  if (flightsInput === undefined) {
+    return "amadeus";
+  }
+
+  return flights;
 }
 
 export function createCurrencyProvider(): CurrencyProvider {
@@ -75,8 +97,19 @@ export function createHotelsProvider(): HotelsProvider {
 }
 
 export function createFlightsProvider(): FlightsProvider {
-  const { providers, amadeus } = getAppConfig();
-  const name = resolveProviderName(providers.flights, providers.useMockProviders);
+  const { providers, amadeus, serpapi } = getAppConfig();
+
+  if (providers.flightsInvalid) {
+    throw createProviderError(
+      `Unknown flights provider "${providers.flightsInput}". Supported values: mock, amadeus, serpapi.`,
+    );
+  }
+
+  const name = resolveFlightsProviderName(
+    providers.flights,
+    providers.flightsInput,
+    providers.useMockProviders,
+  );
 
   switch (name) {
     case "amadeus":
@@ -87,8 +120,18 @@ export function createFlightsProvider(): FlightsProvider {
         return mockFlightsProvider;
       }
       return amadeusFlightsProvider;
+    case "serpapi":
+      if (!serpapi.isConfigured) {
+        console.warn(
+          "[Glooconn] FLIGHTS_PROVIDER=serpapi but API key is missing — using mock flights.",
+        );
+        return mockFlightsProvider;
+      }
+      return serpApiFlightsProvider;
     case "mock":
+      return mockFlightsProvider;
     default:
+      // Known ProviderName values that are not flights adapters (e.g. booking).
       return mockFlightsProvider;
   }
 }

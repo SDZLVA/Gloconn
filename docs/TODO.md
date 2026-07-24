@@ -6,6 +6,15 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 ## 🏃 Sprint tracking
 
+### Milestone 10 — Search Experience
+
+- [x] **10.1** Professional Search Results UI (skeletons, header, empty/error, no mock wording)
+- [x] **10.2** Partial provider failure + `SearchResponse` (ADR-037)
+- [x] **10.3** Search quality (filters / sort / light ranking)
+- [x] **10.4** Search performance
+- [x] **10.5** Destination search quality
+- [x] **10.6** Hardening + docs release (v0.16.0)
+
 ### Sprint 1 — Server search boundary ✅ Complete
 
 - [x] Add `lib/api/searchClient.ts` with `postSearchTrips()`
@@ -72,12 +81,35 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 ### Post–Sprint 8 backlog
 
-**Flight API:** maintenance mode (`v0.14.0`). Prefer bugfixes / sandbox enablement over new Flight API features.
+**Amadeus Flight API:** long-term production path (`v0.14.0`+). Prefer bugfixes unless CTO-approved feature work.
 
 - [ ] Execute manual Amadeus sandbox checklist (`docs/SPRINT_8_SUMMARY.md`)
-- [ ] Partial provider failure — show hotels/transport if flights fail
+- [x] Partial provider failure — show hotels/transport if flights fail (Sprint 10.2 / ADR-037)
 - [ ] Restore currencyService → registry DI without client importing Amadeus `server-only`
-- [ ] Enable live flights in local/prod when ready (`USE_MOCK_PROVIDERS=false`, keys, `AMADEUS_ENV`)
+- [ ] Enable live Amadeus flights in local/prod when ready (`USE_MOCK_PROVIDERS=false`, keys, `AMADEUS_ENV`)
+
+### Sprint 9 — SerpAPI development flights provider ✅ Complete (v0.15.0)
+
+**Product version:** **v0.15.0** — [releases/v0.15.0.md](./releases/v0.15.0.md)
+
+#### Sprint 9.1 — Docs & ADR ✅
+
+- [x] ADR-036 — SerpAPI development provider
+- [x] [Provider_Guide.md](./Provider_Guide.md) — generic flights vendor guide
+- [x] Docs sync — foundation, handoff, current state, todo, project
+- [x] `.env.example` documents `FLIGHTS_PROVIDER`, `SERPAPI_API_KEY`, `SERPAPI_DEEP_SEARCH`
+
+#### Sprint 9.2–9.9 — Implementation ✅
+
+- [x] Config load/validate for SerpAPI (`ProviderName` + `SerpApiConfig`)
+- [x] `lib/providers/flights/serpapi/` adapter (HTTP, mappers, provider)
+- [x] Factory `case "serpapi"` + fail-fast invalid provider
+- [x] Automated tests (mocked fetch; no live SerpAPI in CI) — **192** total
+
+#### Sprint 9.10 — Release docs ✅
+
+- [x] Version bump to **v0.15.0** + [release notes](./releases/v0.15.0.md)
+- [x] Provider Guide / API foundation / AI handoff / current state synchronized
 
 ---
 

@@ -6,7 +6,7 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.14.0 (Sprint 8 — Flight API production hardening; 115 tests; Flight API in maintenance mode)
+**Current version:** 0.16.0 (Milestone 10 Search Experience; multi-provider flights — mock · Amadeus · SerpAPI; see [releases/v0.16.0.md](./releases/v0.16.0.md))
 
 ---
 
@@ -66,12 +66,12 @@ Gloconn/
 │   │   ├── responses.ts    # ApiResponse, toJsonResponse() for Route Handlers
 │   │   └── validation.ts   # validateSearchRequest()
 │   ├── auth/               # Supabase clients, session helpers, middleware
-│   ├── providers/          # Provider adapters (mock + future external APIs)
+│   ├── providers/          # Provider adapters (mock + external APIs)
 │   │   ├── core/           # Interfaces, registry, factories (provider selection)
 │   │   ├── destinations/ # mock ✅, google-maps (planned)
 │   │   ├── search/         # Deprecated monolithic provider
 │   │   ├── hotels/         # mock ✅, booking (planned)
-│   │   ├── flights/        # mock ✅, amadeus/ live pipeline ✅ (selected via env)
+│   │   ├── flights/        # mock ✅, amadeus/ ✅, serpapi/ ✅ (dev/test, v0.15.0)
 │   │   ├── ground/         # mock ✅, omio (planned)
 │   │   └── mock/           # Shared mock helpers (filter, pricing)
 │   ├── services/           # Service layer — trip search is server-only
@@ -139,7 +139,7 @@ Gloconn/
 - **Destination** — required autocomplete via `destinationService` (mock provider by default)
 - **Dates** — required travel calendar with round-trip / one-way toggle; return date required for round-trip
 - **Travelers & rooms** — required dropdown with Adults, Children, Infants, and Rooms steppers
-- **Budget** — required slider with currency selector (€0–€10,000)
+- **Budget** — required numeric input with currency selector (€0–€10,000)
 - **Search for** — toggle stays, flights, and ground transport result types
 - **Travel style** — Budget / Standard / Luxury radio group
 - React state management via `useSearchForm` hook
@@ -159,7 +159,8 @@ Gloconn/
 
 ### Reusable UI primitives
 - `Button`, `Card`, `InputField`, `FormField` (label + error)
-- `BudgetSlider` — reusable range control with currency selector and real-time formatted value
+- `BudgetSelector` — numeric budget input with € prefix and currency selector
+- `BudgetSlider` — reusable range control (available; search form uses the numeric input)
 - `Autocomplete` — generic accessible combobox (keyboard navigation, listbox)
 - `TravelCalendar` — reusable date picker with single or range selection
 - `NumberStepper` — +/- counter for bounded numeric values
@@ -219,8 +220,11 @@ See `PROJECT_RULES.md` in the project root for AI and developer guidelines. Key 
 | [TODO.md](./TODO.md) | Active and upcoming tasks |
 | [DECISIONS.md](./DECISIONS.md) | Architecture and design decisions |
 | [API_FOUNDATION.md](./API_FOUNDATION.md) | API layers, provider swap guide, naming |
+| [Provider_Guide.md](./Provider_Guide.md) | How to add a flights vendor |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | Context for AI assistants continuing the project |
-| [CURRENT_STATE.md](./CURRENT_STATE.md) | Latest sprint snapshot and active focus |
+| [CURRENT_STATE.md](./CURRENT_STATE.md) | Latest release snapshot and active focus |
+| [releases/v0.16.0.md](./releases/v0.16.0.md) | v0.16.0 Milestone 10 Search Experience release |
+| [releases/v0.15.0.md](./releases/v0.15.0.md) | v0.15.0 multi-provider / SerpAPI release notes |
 | [SPRINT_2_SUMMARY.md](./SPRINT_2_SUMMARY.md) | Sprint 2 completion summary |
 | [SPRINT_3_SUMMARY.md](./SPRINT_3_SUMMARY.md) | Sprint 3 completion summary |
 | [SPRINT_4_SUMMARY.md](./SPRINT_4_SUMMARY.md) | Sprint 4 completion summary |

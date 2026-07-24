@@ -1,7 +1,9 @@
 "use client";
 
-import { BudgetSlider } from "@/components/ui/BudgetSlider";
-import { BUDGET_LIMITS, type CurrencyCode } from "@/lib/budget";
+import { useId } from "react";
+import { CurrencySelector } from "@/components/ui/CurrencySelector";
+import { FormError, FormLabel } from "@/components/ui/FormField";
+import type { CurrencyCode } from "@/lib/budget";
 import { cn } from "@/lib/utils";
 
 type BudgetSelectorProps = {
@@ -15,9 +17,9 @@ type BudgetSelectorProps = {
 };
 
 /**
- * BudgetSelector — search-form budget field backed by BudgetSlider.
+ * BudgetSelector — search-form budget field with a numeric input and currency selector.
  *
- * Keeps the form's string-based budget value while the slider works with numbers.
+ * Keeps the form's string-based budget value. Validation stays in `validateBudget`.
  */
 export function BudgetSelector({
   value,
@@ -28,29 +30,62 @@ export function BudgetSelector({
   required = false,
   className,
 }: BudgetSelectorProps) {
-  const isSet = value.trim() !== "";
-  const numericValue = isSet ? Number(value) : BUDGET_LIMITS.min;
+  const generatedId = useId();
+  const inputId = `${generatedId}-budget`;
+  const currencyId = `${generatedId}-currency`;
+  const errorId = `${generatedId}-error`;
 
-  function handleSliderChange(next: number) {
-    onChange(String(next));
+  /** Allow digits only (no negatives, no decimals) so typing stays simple. */
+  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const next = event.target.value.replace(/[^\d]/g, "");
+    onChange(next);
   }
 
   return (
-    <BudgetSlider
-      label="Budget"
-      value={numericValue}
-      onChange={handleSliderChange}
-      currency={currency}
-      onCurrencyChange={onCurrencyChange}
-      min={BUDGET_LIMITS.min}
-      max={BUDGET_LIMITS.max}
-      step={BUDGET_LIMITS.step}
-      isSet={isSet}
-      unsetLabel="Slide to set your budget"
-      onClear={required ? undefined : () => onChange("")}
-      error={error}
-      required={required}
-      className={cn(className)}
-    />
+    <div className={cn("flex flex-col gap-2", className)}>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <FormLabel htmlFor={inputId} required={required}>
+          Budget (€)
+        </FormLabel>
+
+        <CurrencySelector
+          id={currencyId}
+          value={currency}
+          onChange={onCurrencyChange}
+        />
+      </div>
+
+      <div
+        className={cn(
+          "flex w-full items-center gap-2 rounded-xl border bg-white px-4 py-3 motion-safe:transition-all motion-safe:duration-200 focus-within:outline-none focus-within:ring-2",
+          error
+            ? "border-red-300 focus-within:border-red-500 focus-within:ring-red-100"
+            : "border-slate-200 motion-safe:hover:border-slate-300 focus-within:border-brand-700 focus-within:ring-brand-100",
+        )}
+      >
+        <span
+          className="shrink-0 text-base font-semibold text-slate-600 sm:text-sm"
+          aria-hidden="true"
+        >
+          €
+        </span>
+        <input
+          id={inputId}
+          type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
+          autoComplete="off"
+          placeholder="Example: 1500"
+          value={value}
+          onChange={handleInputChange}
+          required={required}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          className="min-w-0 flex-1 border-0 bg-transparent p-0 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:text-sm"
+        />
+      </div>
+
+      {error && <FormError id={errorId} message={error} />}
+    </div>
   );
 }

@@ -1,12 +1,16 @@
 /**
  * Search orchestration — coordinates domain providers from the service layer.
+ *
+ * Provider failures are isolated: successful domains still return results, and
+ * failed domains become SearchResponse.warnings (Sprint 10.2).
  */
 
 import {
+  buildSearchResponse,
   createCatalogSearchRequest,
-  mergeSearchResults,
+  createProviderUnavailableWarning,
 } from "@/lib/api/searchMappers";
-import { createValidationError } from "@/lib/api/errors";
+import { createProviderError, createValidationError } from "@/lib/api/errors";
 import { normalizeProductTypes } from "@/lib/search/productTypes";
 import { getServiceProviders } from "@/lib/services/context";
 import {
@@ -14,35 +18,15 @@ import {
   hasResolvedFlightAirports,
 } from "@/lib/services/iataResolution";
 import type { ServiceProviders } from "@/lib/services/types";
+import type { Bus, Flight, Hotel, Train } from "@/types/models";
 import type { SearchRequest } from "@/types/models/search-request";
-import type { SearchResult } from "@/types/results";
+import type {
+  SearchResponse,
+  SearchResponseWarning,
+} from "@/types/models/search-response";
+import type { TransportSearchResult } from "@/lib/providers/core/types";
 
-/** Runs selected search domains in parallel and merges into the UI result union. */
-async function searchAllDomains(
-  request: SearchRequest,
-  providers: ServiceProviders,
-): Promise<SearchResult[]> {
-  const productTypes = normalizeProductTypes(request.productTypes);
-
-  const [hotels, flights, transport] = await Promise.all([
-    productTypes.includes("hotels")
-      ? providers.hotels.search(request)
-      : Promise.resolve([]),
-    productTypes.includes("flights")
-      ? providers.flights.search(request)
-      : Promise.resolve([]),
-    productTypes.includes("transport")
-      ? providers.transport.search(request)
-      : Promise.resolve({ buses: [], trains: [] }),
-  ]);
-
-  return mergeSearchResults(
-    hotels,
-    flights,
-    transport.buses,
-    transport.trains,
-  );
-}
+type DomainKey = "hotels" | "flights" | "transport";
 
 /**
  * Enriches a search request with catalog ids and optional IATA codes.
@@ -100,11 +84,106 @@ function assertFlightAirportsResolved(request: SearchRequest): void {
   );
 }
 
+function emptyTransport(): TransportSearchResult {
+  return { buses: [], trains: [] };
+}
+
+/**
+ * Runs selected search domains in parallel with partial-failure isolation.
+ * Throws only when every requested domain fails.
+ */
+async function searchAllDomains(
+  request: SearchRequest,
+  providers: ServiceProviders,
+): Promise<SearchResponse> {
+  const productTypes = normalizeProductTypes(request.productTypes);
+  const requested: DomainKey[] = [];
+
+  if (productTypes.includes("hotels")) {
+    requested.push("hotels");
+  }
+  if (productTypes.includes("flights")) {
+    requested.push("flights");
+  }
+  if (productTypes.includes("transport")) {
+    requested.push("transport");
+  }
+
+  const hotelsPromise: Promise<Hotel[]> = requested.includes("hotels")
+    ? providers.hotels.search(request)
+    : Promise.resolve([]);
+  const flightsPromise: Promise<Flight[]> = requested.includes("flights")
+    ? providers.flights.search(request)
+    : Promise.resolve([]);
+  const transportPromise: Promise<TransportSearchResult> = requested.includes(
+    "transport",
+  )
+    ? providers.transport.search(request)
+    : Promise.resolve(emptyTransport());
+
+  const [hotelsSettled, flightsSettled, transportSettled] =
+    await Promise.allSettled([hotelsPromise, flightsPromise, transportPromise]);
+
+  let hotels: Hotel[] = [];
+  let flights: Flight[] = [];
+  let buses: Bus[] = [];
+  let trains: Train[] = [];
+  const warnings: SearchResponseWarning[] = [];
+  let succeeded = 0;
+  let failed = 0;
+
+  if (requested.includes("hotels")) {
+    if (hotelsSettled.status === "fulfilled") {
+      hotels = hotelsSettled.value;
+      succeeded += 1;
+    } else {
+      failed += 1;
+      warnings.push(createProviderUnavailableWarning("hotels"));
+    }
+  }
+
+  if (requested.includes("flights")) {
+    if (flightsSettled.status === "fulfilled") {
+      flights = flightsSettled.value;
+      succeeded += 1;
+    } else {
+      failed += 1;
+      warnings.push(createProviderUnavailableWarning("flights"));
+    }
+  }
+
+  if (requested.includes("transport")) {
+    if (transportSettled.status === "fulfilled") {
+      buses = transportSettled.value.buses;
+      trains = transportSettled.value.trains;
+      succeeded += 1;
+    } else {
+      failed += 1;
+      warnings.push(createProviderUnavailableWarning("transport"));
+    }
+  }
+
+  // Every requested domain failed — surface a hard provider error (not partial).
+  if (requested.length > 0 && succeeded === 0 && failed > 0) {
+    throw createProviderError(
+      "Could not load travel results. Please try again.",
+    );
+  }
+
+  return buildSearchResponse({
+    hotels,
+    flights,
+    buses,
+    trains,
+    warnings,
+  });
+}
+
 /** Runs hotels, flights, and transport providers in parallel. */
 export async function orchestrateTripSearch(
   request: SearchRequest,
   providers: ServiceProviders = getServiceProviders(),
-): Promise<SearchResult[]> {
+): Promise<SearchResponse> {
   const enriched = await enrichSearchRequest(request, providers);
   assertFlightAirportsResolved(enriched);
   return searchAllDomains(enriched, providers);
@@ -113,6 +192,6 @@ export async function orchestrateTripSearch(
 /** Returns the full result catalog via active providers (price-range defaults). */
 export async function getAllTripSearchResults(
   providers: ServiceProviders = getServiceProviders(),
-): Promise<SearchResult[]> {
+): Promise<SearchResponse> {
   return searchAllDomains(createCatalogSearchRequest(), providers);
 }

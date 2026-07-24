@@ -16,7 +16,13 @@ export type SupabaseConfig = {
   isConfigured: boolean;
 };
 
-export type ProviderName = "mock" | "google-maps" | "amadeus" | "booking" | "omio";
+export type ProviderName =
+  | "mock"
+  | "google-maps"
+  | "amadeus"
+  | "booking"
+  | "omio"
+  | "serpapi";
 
 /** Amadeus Self-Service environment (maps to a known host). */
 export type AmadeusEnvName = "test" | "production";
@@ -53,6 +59,29 @@ export type AmadeusConfig = {
 
   /** Present when `AMADEUS_FETCH_TIMEOUT_MS` was set but not a positive integer. */
   fetchTimeoutInvalidRaw?: string;
+};
+
+/**
+ * SerpAPI Google Flights settings — loaded only via `lib/config`.
+ * Dev/test flights provider (ADR-036). No HTTP or adapter code in Sprint 9.2.
+ */
+export type SerpApiConfig = {
+  apiKey: string;
+
+  /**
+   * Maps to SerpAPI `deep_search`.
+   * Default `false` — `true` increases latency and timeout risk.
+   */
+  deepSearch: boolean;
+
+  /** Raw `SERPAPI_DEEP_SEARCH` when present. */
+  deepSearchInput?: string;
+
+  /** True when `SERPAPI_DEEP_SEARCH` is set to an unsupported value. */
+  deepSearchInvalid: boolean;
+
+  /** True when `SERPAPI_API_KEY` is non-empty. */
+  isConfigured: boolean;
 };
 
 export type ProvidersConfig = {
@@ -107,6 +136,7 @@ export type AppConfig = {
   providers: ProvidersConfig;
   apiKeys: ApiKeysConfig;
   amadeus: AmadeusConfig;
+  serpapi: SerpApiConfig;
   validation: ConfigValidation;
 };
 

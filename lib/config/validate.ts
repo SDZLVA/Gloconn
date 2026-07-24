@@ -77,6 +77,11 @@ function collectProviderKeyErrors(
       continue;
     }
 
+    // SerpAPI credentials live on config.serpapi (validated separately).
+    if (provider === "serpapi") {
+      continue;
+    }
+
     if (!isProviderConfigured(provider, apiKeys)) {
       const requirement = PROVIDER_REQUIRED_KEYS[provider];
       issues.push({
@@ -94,6 +99,15 @@ function isLiveAmadeusIntended(config: Omit<AppConfig, "validation">): boolean {
     !config.providers.useMockProviders &&
     !config.providers.useMockProvidersInvalid &&
     config.providers.flights === "amadeus" &&
+    !config.providers.flightsInvalid
+  );
+}
+
+function isLiveSerpapiIntended(config: Omit<AppConfig, "validation">): boolean {
+  return (
+    !config.providers.useMockProviders &&
+    !config.providers.useMockProvidersInvalid &&
+    config.providers.flights === "serpapi" &&
     !config.providers.flightsInvalid
   );
 }
@@ -130,7 +144,7 @@ export function validateAppConfig(
   if (config.providers.flightsInvalid) {
     errors.push({
       env: "FLIGHTS_PROVIDER",
-      message: `FLIGHTS_PROVIDER must be mock, google-maps, amadeus, booking, or omio (got "${config.providers.flightsInput}").`,
+      message: `FLIGHTS_PROVIDER must be mock, google-maps, amadeus, booking, omio, or serpapi (got "${config.providers.flightsInput}").`,
     });
   }
 
@@ -155,6 +169,13 @@ export function validateAppConfig(
     });
   }
 
+  if (config.serpapi.deepSearchInvalid) {
+    errors.push({
+      env: "SERPAPI_DEEP_SEARCH",
+      message: `SERPAPI_DEEP_SEARCH must be true, false, 1, or 0 (got "${config.serpapi.deepSearchInput}").`,
+    });
+  }
+
   if (!config.providers.useMockProviders && !config.providers.useMockProvidersInvalid) {
     const providerKeyErrors = collectProviderKeyErrors(
       config.providers,
@@ -172,6 +193,13 @@ export function validateAppConfig(
           (issue) => !issue.message.includes('flights provider "amadeus"'),
         ),
       );
+    } else if (isLiveSerpapiIntended(config) && !config.serpapi.isConfigured) {
+      errors.push({
+        env: "SERPAPI_API_KEY",
+        message:
+          "Live SerpAPI flights require SERPAPI_API_KEY. Set the credential, or keep USE_MOCK_PROVIDERS=true.",
+      });
+      errors.push(...providerKeyErrors);
     } else {
       errors.push(...providerKeyErrors);
     }

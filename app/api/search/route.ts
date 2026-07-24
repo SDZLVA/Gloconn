@@ -1,6 +1,7 @@
 /**
  * POST /api/search — runs a validated trip search via the service layer.
- * Body: partial or full SearchRequest JSON (same shape as serializeSearchRequest).
+ * Body: partial or full SearchRequest JSON.
+ * Success data: SearchResponse (domain arrays + optional warnings).
  */
 
 import { toErrorJsonResponse, toJsonResponse } from "@/lib/api/responses";

@@ -31,6 +31,8 @@ type AutocompleteProps = {
   className?: string;
   /** Called when the suggestion list opens (focus or typing). */
   onListOpen?: () => void;
+  /** When set, matching text in suggestion labels is highlighted. */
+  highlightQuery?: string;
 };
 
 /**
@@ -54,6 +56,7 @@ export function Autocomplete({
   noResultsMessage = "No matches found.",
   className,
   onListOpen,
+  highlightQuery,
 }: AutocompleteProps) {
   const generatedId = useId();
   const inputId = idProp ?? generatedId;
@@ -91,10 +94,15 @@ export function Autocomplete({
 
   const showList = isOpen && (flatOptions.length > 0 || value.trim().length > 0);
 
+  /**
+   * Opens the list. `onListOpen` runs only on closed→open so parents
+   * (e.g. reload recent searches) are not called on every keystroke.
+   */
   function openList() {
-    onListOpen?.();
+    if (!isOpen) {
+      onListOpen?.();
+    }
     setIsOpen(true);
-    setHighlightedIndex(-1);
   }
 
   function closeList() {
@@ -112,6 +120,8 @@ export function Autocomplete({
   function handleInputChange(nextValue: string) {
     onChange(nextValue);
     openList();
+    // Reset highlight when the query changes so keyboard nav stays sane.
+    setHighlightedIndex(-1);
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -149,6 +159,20 @@ export function Autocomplete({
       case "Escape": {
         event.preventDefault();
         closeList();
+        break;
+      }
+      case "Home": {
+        event.preventDefault();
+        if (flatOptions.length > 0) {
+          setHighlightedIndex(0);
+        }
+        break;
+      }
+      case "End": {
+        event.preventDefault();
+        if (flatOptions.length > 0) {
+          setHighlightedIndex(flatOptions.length - 1);
+        }
         break;
       }
       case "Tab": {
@@ -210,7 +234,8 @@ export function Autocomplete({
           placeholder={placeholder}
           required={required}
           aria-expanded={showList}
-          aria-controls={listboxId}
+          aria-haspopup="listbox"
+          aria-controls={showList ? listboxId : undefined}
           aria-activedescendant={activeDescendant}
           aria-autocomplete="list"
           aria-invalid={error ? true : undefined}
@@ -239,6 +264,7 @@ export function Autocomplete({
           onHighlight={setHighlightedIndex}
           onSelect={selectOption}
           noResultsMessage={noResultsMessage}
+          highlightQuery={highlightQuery}
         />
       )}
 

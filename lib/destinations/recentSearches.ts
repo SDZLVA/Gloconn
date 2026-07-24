@@ -66,21 +66,6 @@ export function addRecentDestinationId(
   return next;
 }
 
-/** Clears all recent searches for a scope (e.g. settings page). */
-export function clearRecentDestinationIds(
-  scope: RecentSearchScope = "destination",
-): void {
-  if (!isBrowser()) {
-    return;
-  }
-
-  try {
-    window.localStorage.removeItem(storageKey(scope));
-  } catch {
-    // ignore quota / privacy errors
-  }
-}
-
 /** Saves a matching place to recent searches after form submit. */
 export function rememberRecentPlace(
   scope: RecentSearchScope,
