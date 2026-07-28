@@ -1,0 +1,609 @@
+{
+  "sprint": "12.3",
+  "generatedAt": "2026-07-28T14:14:24.585Z",
+  "deepSearch": "false",
+  "hotelsProvider": "serpapi",
+  "flightsProvider": "serpapi",
+  "useMockProviders": "false",
+  "keyConfigured": true,
+  "factory": {
+    "hotelsProviderName": "serpapi",
+    "flightsProviderName": "serpapi"
+  },
+  "hotelResults": [
+    {
+      "id": "H1",
+      "label": "Paris hotels — 3 nights, 2 adults, EUR",
+      "status": "pass",
+      "httpOk": true,
+      "rawPropertyCount": 20,
+      "rawAdsCount": 9,
+      "mappedCount": 20,
+      "droppedEstimate": 0,
+      "responseCurrency": "EUR",
+      "requestCurrency": "EUR",
+      "sampleHotels": [
+        {
+          "id": "serpapi-hotel-b98f6c0b29c441bf",
+          "name": "Novotel Suites Paris Stade de France",
+          "price": 413,
+          "currency": "EUR",
+          "rating": 4.3,
+          "stars": 4,
+          "nights": 3,
+          "location": "Jesse Owens",
+          "destinationId": "paris",
+          "amenitiesCount": 10,
+          "amenitiesSample": [
+            "Breakfast ($)",
+            "Free Wi-Fi",
+            "Parking ($)",
+            "Air conditioning",
+            "Pet-friendly"
+          ]
+        },
+        {
+          "id": "serpapi-hotel-e369aee436247b57",
+          "name": "The Playce Hotel by HappyCulture",
+          "price": 245,
+          "currency": "EUR",
+          "rating": 4.5,
+          "stars": 0,
+          "nights": 3,
+          "location": "Château Rouge",
+          "destinationId": "paris",
+          "amenitiesCount": 9,
+          "amenitiesSample": [
+            "Breakfast ($)",
+            "Free Wi-Fi",
+            "Air conditioning",
+            "Pet-friendly",
+            "Bar"
+          ]
+        },
+        {
+          "id": "serpapi-hotel-0e7695842281d2b1",
+          "name": "The People",
+          "price": 396,
+          "currency": "EUR",
+          "rating": 4,
+          "stars": 0,
+          "nights": 3,
+          "location": "Sainte-Chapelle",
+          "destinationId": "paris",
+          "amenitiesCount": 7,
+          "amenitiesSample": [
+            "Breakfast ($)",
+            "Free Wi-Fi",
+            "Parking ($)",
+            "Bar",
+            "Restaurant"
+          ]
+        }
+      ],
+      "fieldCoverage": {
+        "id": true,
+        "destinationId": true,
+        "price": true,
+        "currency": true,
+        "rating": true,
+        "name": true,
+        "stars": true,
+        "amenities": true,
+        "nights": true,
+        "location": true
+      },
+      "mappingNotes": [
+        "properties=20, ads=9",
+        "search_parameters.currency=EUR",
+        "dates echoed: 2026-09-15 → 2026-09-18",
+        "sample.type=hotel",
+        "sample.price sources: total_rate=413, extracted_price=n/a, rate_per_night=138",
+        "sample.stars sources: extracted_hotel_class=4, hotel_class=4-star tourist hotel",
+        "sample.overall_rating=4.3",
+        "sample.amenities=10",
+        "sample includes gps_coordinates (not on Hotel model)",
+        "sample includes images/thumbnail (not on Hotel model)",
+        "sample includes property_token (vendor-only)"
+      ],
+      "durationMs": 3075
+    },
+    {
+      "id": "H2",
+      "label": "Milan hotels — 2 nights, 1 adult, EUR",
+      "status": "pass",
+      "httpOk": true,
+      "rawPropertyCount": 20,
+      "rawAdsCount": 9,
+      "mappedCount": 20,
+      "droppedEstimate": 0,
+      "responseCurrency": "EUR",
+      "requestCurrency": "EUR",
+      "sampleHotels": [
+        {
+          "id": "serpapi-hotel-a3347822020d517c",
+          "name": "Combo",
+          "price": 87,
+          "currency": "EUR",
+          "rating": 4.3,
+          "stars": 3,
+          "nights": 2,
+          "location": "Leonardo da Vinci Museum of Science and Technology",
+          "destinationId": "milan",
+          "amenitiesCount": 8,
+          "amenitiesSample": [
+            "Breakfast ($)",
+            "Free Wi-Fi",
+            "Air conditioning",
+            "Pet-friendly",
+            "Bar"
+          ]
+        },
+        {
+          "id": "serpapi-hotel-8a45307c3ac71495",
+          "name": "Corte Milano",
+          "price": 202,
+          "currency": "EUR",
+          "rating": 4.6,
+          "stars": 0,
+          "nights": 2,
+          "location": "Via Grandi V.le Toscana (Rozzano)",
+          "destinationId": "milan",
+          "amenitiesCount": 10,
+          "amenitiesSample": [
+            "Breakfast ($)",
+            "Free Wi-Fi",
+            "Free parking",
+            "Air conditioning",
+            "Pet-friendly"
+          ]
+        },
+        {
+          "id": "serpapi-hotel-a40223a12c386769",
+          "name": "Boutique Hotel Washington Milano",
+          "price": 250,
+          "currency": "EUR",
+          "rating": 4.9,
+          "stars": 0,
+          "nights": 2,
+          "location": "Milan hotels",
+          "destinationId": "milan",
+          "amenitiesCount": 3,
+          "amenitiesSample": [
+            "Free Wi-Fi",
+            "Parking ($)",
+            "Air conditioning"
+          ]
+        }
+      ],
+      "fieldCoverage": {
+        "id": true,
+        "destinationId": true,
+        "price": true,
+        "currency": true,
+        "rating": true,
+        "name": true,
+        "stars": true,
+        "amenities": true,
+        "nights": true,
+        "location": true
+      },
+      "mappingNotes": [
+        "properties=20, ads=9",
+        "search_parameters.currency=EUR",
+        "dates echoed: 2026-10-01 → 2026-10-03",
+        "sample.type=hotel",
+        "sample.price sources: total_rate=87, extracted_price=n/a, rate_per_night=44",
+        "sample.stars sources: extracted_hotel_class=3, hotel_class=3-star hotel",
+        "sample.overall_rating=4.3",
+        "sample.amenities=8",
+        "sample includes gps_coordinates (not on Hotel model)",
+        "sample includes images/thumbnail (not on Hotel model)",
+        "sample includes property_token (vendor-only)"
+      ],
+      "durationMs": 2075
+    },
+    {
+      "id": "H3",
+      "label": "Rome hotels — 5 nights, 2 adults + 1 child, EUR (post children_ages fix)",
+      "status": "pass",
+      "httpOk": true,
+      "rawPropertyCount": 20,
+      "mappedCount": 18,
+      "responseCurrency": "EUR",
+      "requestCurrency": "EUR",
+      "children": "1",
+      "childrenAges": "8",
+      "sampleHotels": [
+        {
+          "id": "serpapi-hotel-99d4546909de3d1d",
+          "name": "BDC - Prestige 3Bdr 3Bath in Monti District",
+          "price": 1782,
+          "currency": "EUR",
+          "rating": 4.559162,
+          "stars": 0,
+          "nights": 5,
+          "location": "Cavour",
+          "destinationId": "rome",
+          "amenitiesCount": 16
+        },
+        {
+          "id": "serpapi-hotel-aae857e414d96edf",
+          "name": "VATICAN PITTORE HOUSE - Entire Place",
+          "price": 738,
+          "currency": "EUR",
+          "rating": 4.6210527,
+          "stars": 0,
+          "nights": 5,
+          "location": "Appiano",
+          "destinationId": "rome",
+          "amenitiesCount": 12
+        }
+      ],
+      "durationMs": 3189,
+      "mappingNotes": [
+        "Re-validated after children_ages default fix"
+      ],
+      "droppedEstimate": 2,
+      "fieldCoverage": {
+        "id": true,
+        "destinationId": true,
+        "price": true,
+        "currency": true,
+        "rating": true,
+        "name": true,
+        "stars": true,
+        "amenities": true,
+        "nights": true,
+        "location": true
+      }
+    },
+    {
+      "id": "H4",
+      "label": "Tokyo hotels — 4 nights, 2 adults, USD",
+      "status": "pass",
+      "httpOk": true,
+      "rawPropertyCount": 20,
+      "rawAdsCount": 9,
+      "mappedCount": 20,
+      "droppedEstimate": 0,
+      "responseCurrency": "USD",
+      "requestCurrency": "USD",
+      "sampleHotels": [
+        {
+          "id": "serpapi-hotel-850454cf3a5609f8",
+          "name": "Shinjuku Granbell Hotel",
+          "price": 510,
+          "currency": "USD",
+          "rating": 4,
+          "stars": 4,
+          "nights": 4,
+          "location": "Shinjuku Golden-Gai",
+          "destinationId": "tokyo",
+          "amenitiesCount": 6,
+          "amenitiesSample": [
+            "Free Wi-Fi",
+            "Parking ($)",
+            "Bar",
+            "Restaurant",
+            "Kitchen in some rooms"
+          ]
+        },
+        {
+          "id": "serpapi-hotel-a79b0ad8ebe1c8e4",
+          "name": "Tokyo Bay Shiomi Prince Hotel",
+          "price": 641,
+          "currency": "USD",
+          "rating": 4.4,
+          "stars": 4,
+          "nights": 4,
+          "location": "Tokyo Bay Shiomi Prince Hotel",
+          "destinationId": "tokyo",
+          "amenitiesCount": 10,
+          "amenitiesSample": [
+            "Public bath",
+            "Private bath",
+            "Sauna",
+            "Free Wi-Fi",
+            "Parking ($)"
+          ]
+        },
+        {
+          "id": "serpapi-hotel-6f2aae66bc357261",
+          "name": "ONE@Tokyo by insomnia",
+          "price": 588,
+          "currency": "USD",
+          "rating": 4.3,
+          "stars": 3,
+          "nights": 4,
+          "location": "Tokyo Skytree",
+          "destinationId": "tokyo",
+          "amenitiesCount": 3,
+          "amenitiesSample": [
+            "Free Wi-Fi",
+            "Accessible",
+            "Kid-friendly"
+          ]
+        }
+      ],
+      "fieldCoverage": {
+        "id": true,
+        "destinationId": true,
+        "price": true,
+        "currency": true,
+        "rating": true,
+        "name": true,
+        "stars": true,
+        "amenities": true,
+        "nights": true,
+        "location": true
+      },
+      "mappingNotes": [
+        "properties=20, ads=9",
+        "search_parameters.currency=USD",
+        "dates echoed: 2026-11-05 → 2026-11-09",
+        "sample.type=hotel",
+        "sample.price sources: total_rate=510, extracted_price=n/a, rate_per_night=128",
+        "sample.stars sources: extracted_hotel_class=4, hotel_class=4-star hotel",
+        "sample.overall_rating=4",
+        "sample.amenities=6",
+        "sample includes gps_coordinates (not on Hotel model)",
+        "sample includes images/thumbnail (not on Hotel model)",
+        "sample includes property_token (vendor-only)"
+      ],
+      "durationMs": 1985
+    },
+    {
+      "id": "H5",
+      "label": "New York hotels — 1 night, 2 adults, USD",
+      "status": "pass",
+      "httpOk": true,
+      "rawPropertyCount": 20,
+      "rawAdsCount": 9,
+      "mappedCount": 20,
+      "droppedEstimate": 0,
+      "responseCurrency": "USD",
+      "requestCurrency": "USD",
+      "sampleHotels": [
+        {
+          "id": "serpapi-hotel-1cadf8b9caf24826",
+          "name": "31 Street Broadway Hotel",
+          "price": 262,
+          "currency": "USD",
+          "rating": 2.6,
+          "stars": 3,
+          "nights": 1,
+          "location": "Empire State Building",
+          "destinationId": "new-york",
+          "amenitiesCount": 4,
+          "amenitiesSample": [
+            "Wi-Fi ($)",
+            "Pet-friendly",
+            "Kitchen",
+            "Kid-friendly"
+          ]
+        },
+        {
+          "id": "serpapi-hotel-7b02c4b46deadc61",
+          "name": "The Central Park North",
+          "price": 152,
+          "currency": "USD",
+          "rating": 3.9,
+          "stars": 3,
+          "nights": 1,
+          "location": "Central Park",
+          "destinationId": "new-york",
+          "amenitiesCount": 3,
+          "amenitiesSample": [
+            "Free Wi-Fi",
+            "Air conditioning",
+            "Smoke-free property"
+          ]
+        },
+        {
+          "id": "serpapi-hotel-7097e7e5a2688aed",
+          "name": "Hilton Garden Inn New York/Staten Island",
+          "price": 131,
+          "currency": "USD",
+          "rating": 4.2,
+          "stars": 3,
+          "nights": 1,
+          "location": "South Ave/Lois Ln",
+          "destinationId": "new-york",
+          "amenitiesCount": 12,
+          "amenitiesSample": [
+            "Breakfast ($)",
+            "Free Wi-Fi",
+            "Free parking",
+            "Air conditioning",
+            "Pet-friendly"
+          ]
+        }
+      ],
+      "fieldCoverage": {
+        "id": true,
+        "destinationId": true,
+        "price": true,
+        "currency": true,
+        "rating": true,
+        "name": true,
+        "stars": true,
+        "amenities": true,
+        "nights": true,
+        "location": true
+      },
+      "mappingNotes": [
+        "properties=20, ads=9",
+        "search_parameters.currency=USD",
+        "dates echoed: 2026-12-01 → 2026-12-02",
+        "sample.type=hotel",
+        "sample.price sources: total_rate=262, extracted_price=n/a, rate_per_night=262",
+        "sample.stars sources: extracted_hotel_class=3, hotel_class=3-star hotel",
+        "sample.overall_rating=2.6",
+        "sample.amenities=4",
+        "sample includes gps_coordinates (not on Hotel model)",
+        "sample includes images/thumbnail (not on Hotel model)",
+        "sample includes property_token (vendor-only)"
+      ],
+      "durationMs": 2639
+    },
+    {
+      "id": "H6",
+      "label": "Low-result probe — obscure query",
+      "status": "pass",
+      "httpOk": true,
+      "rawPropertyCount": 20,
+      "rawAdsCount": 9,
+      "mappedCount": 20,
+      "droppedEstimate": 0,
+      "responseCurrency": "EUR",
+      "requestCurrency": "EUR",
+      "sampleHotels": [
+        {
+          "id": "serpapi-hotel-0d1d5d89291f51f9",
+          "name": "The Block Hotel & Commons",
+          "price": 53,
+          "currency": "EUR",
+          "rating": 4.7,
+          "stars": 0,
+          "nights": 1,
+          "location": "Dillon Reservoir",
+          "destinationId": "nowhere",
+          "amenitiesCount": 9,
+          "amenitiesSample": [
+            "Free Wi-Fi",
+            "Free parking",
+            "Hot tub",
+            "Air conditioning",
+            "Pet-friendly"
+          ]
+        },
+        {
+          "id": "serpapi-hotel-d1a0dee6bdd64444",
+          "name": "V Azul Vallarta - Luxury Vacation Rental- Adults Only",
+          "price": 221,
+          "currency": "EUR",
+          "rating": 4.8,
+          "stars": 0,
+          "nights": 1,
+          "location": "Los Muertos - Villas Tizoc",
+          "destinationId": "nowhere",
+          "amenitiesCount": 14,
+          "amenitiesSample": [
+            "Air conditioning",
+            "Balcony",
+            "Elevator",
+            "Heating",
+            "Ironing board"
+          ]
+        },
+        {
+          "id": "serpapi-hotel-dc0f47ce3226c976",
+          "name": "Mandalay Bay",
+          "price": 99,
+          "currency": "EUR",
+          "rating": 4.4,
+          "stars": 5,
+          "nights": 1,
+          "location": "Luxor Hotel & Casino",
+          "destinationId": "nowhere",
+          "amenitiesCount": 16,
+          "amenitiesSample": [
+            "Breakfast",
+            "Wi-Fi ($)",
+            "Parking",
+            "Outdoor pool",
+            "Hot tub"
+          ]
+        }
+      ],
+      "fieldCoverage": {
+        "id": true,
+        "destinationId": true,
+        "price": true,
+        "currency": true,
+        "rating": true,
+        "name": true,
+        "stars": true,
+        "amenities": true,
+        "nights": true,
+        "location": true
+      },
+      "mappingNotes": [
+        "properties=20, ads=9",
+        "search_parameters.currency=EUR",
+        "dates echoed: 2026-09-20 → 2026-09-21",
+        "sample.type=hotel",
+        "sample.price sources: total_rate=53, extracted_price=n/a, rate_per_night=53",
+        "sample.stars sources: extracted_hotel_class=n/a, hotel_class=n/a",
+        "sample.overall_rating=4.7",
+        "sample.amenities=9",
+        "sample includes gps_coordinates (not on Hotel model)",
+        "sample includes images/thumbnail (not on Hotel model)",
+        "sample includes property_token (vendor-only)"
+      ],
+      "durationMs": 3796
+    },
+    {
+      "id": "E0",
+      "label": "Missing returnDate → ProviderError (no invented checkout)",
+      "status": "expected_error",
+      "errorMessage": "Hotel search requires a check-out date (returnDate). One-way trips without returnDate are not supported for live hotel search.",
+      "durationMs": 1
+    },
+    {
+      "id": "E1",
+      "label": "Invalid API key → ProviderError",
+      "status": "expected_error",
+      "errorMessage": "SerpAPI authentication failed. Check SERPAPI_API_KEY.",
+      "durationMs": 127
+    }
+  ],
+  "combinedResults": [
+    {
+      "id": "C1",
+      "label": "Same search — flights + hotels to Paris",
+      "status": "pass",
+      "hotelCount": 20,
+      "flightCount": 12,
+      "hotelDestinationIds": [
+        "paris"
+      ],
+      "flightDestinationIds": [
+        "paris"
+      ],
+      "destinationMatch": true,
+      "sampleHotel": {
+        "id": "serpapi-hotel-e369aee436247b57",
+        "name": "The Playce Hotel by HappyCulture",
+        "price": 245,
+        "currency": "EUR",
+        "rating": 4.5,
+        "stars": 0,
+        "nights": 3,
+        "location": "Château Rouge",
+        "destinationId": "paris",
+        "amenitiesCount": 9,
+        "amenitiesSample": [
+          "Breakfast ($)",
+          "Free Wi-Fi",
+          "Air conditioning",
+          "Pet-friendly",
+          "Bar"
+        ]
+      },
+      "sampleFlight": {
+        "id": "serpapi-ff65647a50c63d5b",
+        "airline": "easyJet",
+        "price": 131,
+        "currency": "EUR",
+        "destinationId": "paris"
+      },
+      "durationMs": 5522,
+      "hotelsWarning": "hotelsProviderMs≈2713",
+      "flightsWarning": "flightsProviderMs≈2807"
+    }
+  ],
+  "h3RerunNote": "H3 initially failed without children_ages; critical adapter fix applied and re-validated",
+  "apiSearchNote": "POST /api/search hotels+flights Paris returned HTTP 200 with serpapi-hotel-* and serpapi-* ids"
+}

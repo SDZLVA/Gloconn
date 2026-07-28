@@ -6,8 +6,8 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** **0.17.0** — Live Flights (Milestone **11** complete; SerpAPI production-capable; Amadeus long-term Enterprise path). See [releases/v0.17.0.md](./releases/v0.17.0.md) · [../CHANGELOG.md](../CHANGELOG.md)  
-**Next:** Milestone **12** — Hotel Search Integration
+**Current version:** **0.17.0** released (Live Flights) · **v0.18.0** prep (Live Hotels)  
+**Milestones:** **11** ✅ Live Flights · **12** ✅ Hotel Search Integration (release tagging next). See [releases/v0.17.0.md](./releases/v0.17.0.md) · [../CHANGELOG.md](../CHANGELOG.md)
 
 ---
 
@@ -71,7 +71,7 @@ Gloconn/
 │   │   ├── core/           # Interfaces, registry, factories (provider selection)
 │   │   ├── destinations/ # mock ✅, google-maps (planned)
 │   │   ├── search/         # Deprecated monolithic provider
-│   │   ├── hotels/         # mock ✅, booking (planned)
+│   │   ├── hotels/         # mock ✅, serpapi/ ✅ (live, v0.18.0 prep), booking (stub → mock)
 │   │   ├── flights/        # mock ✅, serpapi/ ✅ (live, production-capable, v0.17.0), amadeus/ ✅ (long-term Enterprise)
 │   │   ├── ground/         # mock ✅, omio (planned)
 │   │   └── mock/           # Shared mock helpers (filter, pricing)
@@ -150,14 +150,20 @@ Gloconn/
 - **Route:** `/search/results` — reads search criteria from URL query params
 - **Data:** `postSearchTrips()` → `POST /api/search` → server `searchTrips()` / orchestrator
 - **Live Flight Search:** SerpAPI when `FLIGHTS_PROVIDER=serpapi` (v0.17.0, production-capable)
+- **Live Hotel Search:** SerpAPI when `HOTELS_PROVIDER=serpapi` (Milestone 12, production-capable when configured)
 - **Cards:** Hotel, flight, bus, and train result cards
 - **Filters / sorting / ranking:** Milestone 10 client quality + performance
-- Hotels / buses / trains remain **mock** until Milestone 12+
+- Buses / trains remain **mock** until a future milestone
 
 ### Live Flights (v0.17.0)
 - Multi-provider `FlightsProvider`: mock · **serpapi** · amadeus
 - Unified `Flight` model; SerpAPI maps full date-time and currencies
 - Amadeus remains the long-term Enterprise flights path
+
+### Live Hotels (Milestone 12 — v0.18.0 prep)
+- Multi-provider `HotelsProvider`: mock · **serpapi** · booking (stub → mock)
+- Unified `Hotel` model; SerpAPI Google Hotels maps price, rating, stars, amenities, nights
+- Shared `SERPAPI_API_KEY` with flights; mock remains default
 
 ### Reusable UI primitives
 - `Button`, `Card`, `InputField`, `FormField` (label + error)
@@ -177,7 +183,7 @@ Gloconn/
 | Route | Status | Description |
 |-------|--------|-------------|
 | `/` | ✅ Live | Home page with hero and search card |
-| `/search/results` | ✅ Live | Search results; live flights when SerpAPI configured |
+| `/search/results` | ✅ Live | Search results; live flights and hotels when SerpAPI configured |
 | `/destinations` | ⏳ Planned | Destination browsing (nav link exists, page not built) |
 | `/my-trips` | ✅ Live | Saved trips list (protected, Supabase) |
 | `/profile` | ✅ Live | User profile (protected) |
@@ -194,7 +200,7 @@ npm run build       # Production build
 npm run start       # Run production build locally
 npm run lint        # Run ESLint
 npm run typecheck   # TypeScript check
-npm test            # Automated tests (272)
+npm test            # Automated tests (317)
 ```
 
 ### Windows note
@@ -224,7 +230,7 @@ See `PROJECT_RULES.md` in the project root for AI and developer guidelines. Key 
 | [TODO.md](./TODO.md) | Active and upcoming tasks |
 | [DECISIONS.md](./DECISIONS.md) | Architecture and design decisions |
 | [API_FOUNDATION.md](./API_FOUNDATION.md) | API layers, provider swap guide, naming |
-| [Provider_Guide.md](./Provider_Guide.md) | How to add a flights vendor |
+| [Provider_Guide.md](./Provider_Guide.md) | How to add flights and hotels vendors |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | Context for AI assistants continuing the project |
 | [CURRENT_STATE.md](./CURRENT_STATE.md) | Latest release snapshot and active focus |
 | [releases/v0.17.0.md](./releases/v0.17.0.md) | v0.17.0 Live Flights release |
@@ -232,4 +238,6 @@ See `PROJECT_RULES.md` in the project root for AI and developer guidelines. Key 
 | [releases/v0.15.0.md](./releases/v0.15.0.md) | v0.15.0 multi-provider / SerpAPI adapter |
 | [../CHANGELOG.md](../CHANGELOG.md) | Release history |
 | [SPRINT_11_3_PRODUCTION_READINESS.md](./SPRINT_11_3_PRODUCTION_READINESS.md) | Milestone 11 readiness gate |
+| [SPRINT_12_3_VALIDATION.md](./SPRINT_12_3_VALIDATION.md) | Milestone 12 live hotels validation |
+| [SPRINT_12_4_PRODUCTION_READINESS.md](./SPRINT_12_4_PRODUCTION_READINESS.md) | Milestone 12 hotels hardening |
 | [../PROJECT_PRINCIPLES.md](../PROJECT_PRINCIPLES.md) | Mission, vision, and decision-making rules |

@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | **v0.17.0** — Milestone **11** complete (Live Flights); SerpAPI **production-capable**; next **Milestone 12** (hotels) |
+| Stage | **v0.17.0** flights released; **Milestone 12** complete — **v0.18.0** release prep |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers by default; optional live **SerpAPI** / Amadeus |
 
 ---
@@ -39,7 +39,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 
 ### Live routes
 - `/` — Home page with `HeroSection` + `SearchCard`
-- `/search/results` — Search results (filters + sorting); **live flights** when SerpAPI is configured
+- `/search/results` — Search results (filters + sorting); **live flights and hotels** when SerpAPI is configured
 - `/login`, `/signup` — Google and email authentication
 - `/profile` — Protected user profile
 - `/my-trips` — Protected saved trips list
@@ -230,9 +230,10 @@ AmadeusFlightsProvider.search(request)
 
 **Flight API tests (Sprints 7–11):**
 ```
-npm test  → 272 automated tests (node:test via tsx)
+npm test  → 317 automated tests (node:test via tsx)
   Amadeus: helpers / mappers / query / cache / provider / hardening
-  SerpAPI: config / types / query / client / mappers / provider / factory / integration
+  SerpAPI flights: config / types / query / client / mappers / provider / factory / integration
+  SerpAPI hotels: query / client / mapper / provider / factory / integration
   fixtures + mocked fetch only (no live Amadeus or SerpAPI in CI)
   server-only stub: test/register-server-only.mjs
 ```
@@ -307,7 +308,7 @@ Route Handler + HTTP client
 9. If invalid → summary alert at top + red error messages under each field
 10. If valid → `router.push(buildResultsUrlFromRequest(request))` navigates to `/search/results`
 11. Results page calls `postSearchTrips()` via `useServiceQuery` → `POST /api/search` (server runs providers)
-12. Providers run **server-side only** — default is mock; optional live Amadeus or SerpAPI via env
+12. Providers run **server-side only** — default is mock; optional live SerpAPI (flights + hotels) or Amadeus flights via env
 
 Required fields: From, Destination, Departure, Return (round-trip only), Budget, Travelers (≥1 adult, ≥1 room), Travel style, at least one result type.  
 Return date must be ≥ departure date.  
@@ -332,7 +333,8 @@ lib/providers/        → provider adapters (mock + external APIs)
   core/               → registry, config, factories, interfaces
   destinations/       → mock ✅, google-maps (planned)
   search/             → monolithic mock ✅ (legacy; prefer domain providers)
-  hotels/             → mock, booking (planned)
+  hotels/             → mock, serpapi/ (live ✅ v0.18.0 prep), booking (stub → mock)
+    serpapi/          → googleHotels, client, mappers, provider, fixtures, integration tests
   flights/            → mock ✅, serpapi/ (live, production-capable ✅ v0.17.0), amadeus/ (long-term Enterprise ✅)
     amadeus/          → OAuth, client, flightOffers, mappers, provider
     serpapi/          → googleFlights, client, mappers, provider, fixtures, integration tests
@@ -369,7 +371,7 @@ docs/                 → project documentation
 
 ## Common tasks after v0.17.0
 
-**Milestone 11 — Live Flights** is ✅ complete (**v0.17.0**). Next: **Milestone 12 — Hotel Search Integration**.
+**Milestone 11 — Live Flights** is ✅ complete (**v0.17.0**). **Milestone 12** SerpAPI Hotels is ✅ complete through Sprint **12.4** (v0.18.0 release prep).
 - Sprint **10.1** (Professional Search Results UI) ✅
 - Sprint **10.2** (Search Reliability — `SearchResponse` + partial failure) ✅ ADR-037
 - Sprint **10.3** (Search Quality — filters / sort / ranking) ✅ client-only
@@ -379,7 +381,7 @@ docs/                 → project documentation
 
 Recommended next priorities (see [TODO.md](./TODO.md)):
 
-1. **Milestone 12 — Hotel Search Integration**
+1. **v0.18.0 release** — tag + release notes (hotels)
 2. SerpAPI round-trip `departure_token` enrichment polish (carry-forward)
 3. **Destinations / About pages** — product pages (nav links still 404)
 4. **Amadeus Enterprise** — enablement + sandbox checklist when credentials are ready
@@ -387,22 +389,27 @@ Recommended next priorities (see [TODO.md](./TODO.md)):
 
 ---
 
-## Current architecture (flights)
+## Current architecture (flights + hotels)
 
 ```
 SearchRequest → factory → FlightsProvider (mock | serpapi | amadeus)
   → query builder → HTTP client → mapper → Flight[]
+
+SearchRequest → factory → HotelsProvider (mock | serpapi | booking stub)
+  → query builder → HTTP client → mapper → Hotel[]
 ```
 
-| Provider | Role |
-|----------|------|
-| `mock` | Default local + CI |
-| `serpapi` | **Live flights — production-capable (v0.17.0)** |
-| `amadeus` | Long-term Enterprise / future production path |
+| Domain | Provider | Role |
+|--------|----------|------|
+| Flights | `mock` | Default local + CI |
+| Flights | `serpapi` | **Live flights — production-capable (v0.17.0)** |
+| Flights | `amadeus` | Long-term Enterprise / future production path |
+| Hotels | `mock` | Default local + CI |
+| Hotels | `serpapi` | **Live hotels — production-capable when configured (v0.18.0 prep)** |
 
-**Completed:** Sprints 1–8 (Amadeus path) · Sprint 9 · Milestone 10 · **Milestone 11 → v0.17.0**
+**Completed:** Sprints 1–8 (Amadeus path) · Sprint 9 · Milestone 10 · **Milestone 11 → v0.17.0** · **Milestone 12 → v0.18.0 prep**
 
-**Known limitations:** RT `departure_token` return fetches may HTTP 400 → outbound fallback; currencyService DI debt; no live vendor calls in CI; hotels still mock.
+**Known limitations:** RT `departure_token` return fetches may HTTP 400 → outbound fallback; hotels require `returnDate`; `children_ages` defaults to `8`; currencyService DI debt; no live vendor calls in CI.
 
 ---
 

@@ -3,8 +3,8 @@
 High-level product roadmap. Dates are approximate.
 
 **Current release:** **v0.17.0** — Live Flights  
-**Completed milestone:** **Milestone 11**  
-**Next milestone:** **Milestone 12** — Hotel Search Integration
+**Completed milestone:** **Milestone 12** — Hotel Search Integration (Sprints 12.1–12.4)  
+**Next:** **v0.18.0** release (tag + release notes — not started)
 
 ---
 
@@ -38,7 +38,7 @@ Supabase auth, profile, protected routes, saved trips.
 
 ---
 
-## Phase 5 — External APIs ✅ through Milestone 11
+## Phase 5 — External APIs ✅ through Milestone 12
 
 **Goal:** Real travel data behind the existing service layer.
 
@@ -48,6 +48,7 @@ Supabase auth, profile, protected routes, saved trips.
 | Sprint 9 | SerpAPI multi-provider adapter | ✅ Complete → **v0.15.0** |
 | Milestone 10 | Search Experience | ✅ Complete → **v0.16.0** |
 | **Milestone 11** | **Live Flights (SerpAPI validation + hardening + readiness)** | ✅ **Complete → v0.17.0** |
+| **Milestone 12** | **Live Hotels (SerpAPI discovery + adapter + validation + hardening)** | ✅ **Complete → v0.18.0 prep** |
 
 ### Provider posture (current)
 
@@ -55,21 +56,16 @@ Supabase auth, profile, protected routes, saved trips.
 |--------|--------|
 | **Flights — SerpAPI** | ✅ Live, **production-capable** (v0.17.0) |
 | **Flights — Amadeus** | ✅ Path complete; **long-term Enterprise / future production** vendor |
-| Hotels | Mock only → **Milestone 12** |
+| **Hotels — SerpAPI** | ✅ Live, **production-capable when configured** (v0.18.0 prep) |
 | Destinations / ground | Mock (live providers later) |
 
 ---
 
-## Milestone 12 — Hotel Search Integration
+## v0.18.0 — Live Hotels release
 
-**Goal:** Add a live (or staged live) hotels search path behind the existing `HotelsProvider` abstraction — same architecture as flights (factory → vendor adapter → shared hotel model → orchestrator).
+**Goal:** Tag and publish Milestone 12 (SerpAPI Google Hotels) as **v0.18.0**.
 
-High-level scope (detail in [TODO.md](./TODO.md)):
-
-- Hotels provider selection and configuration
-- Vendor adapter (query → HTTP → map to shared hotel model)
-- Wire into `orchestrateTripSearch` without redesigning the search stack
-- Tests + docs
+- Release notes + version bump (not started)
 - Carry-forward polish from Milestone 11 where needed (e.g. SerpAPI round-trip `departure_token` enrichment)
 
 ---
@@ -82,14 +78,14 @@ High-level scope (detail in [TODO.md](./TODO.md)):
 | Ops | Caching, rate limits, monitoring |
 | Long-term | Activities, ground transport APIs, maps, trip sharing, AI optimization, PWA |
 
-Technical debt (ongoing): currencyService registry DI (ADR-035).
+Technical debt (ongoing): currencyService registry DI (ADR-035); hotel `children_ages` default; no hotel `rooms` param; page-1 results only.
 
 ---
 
 ## Out of scope (for now)
 
-- **Booking / payment checkout** (live **search** for flights is in scope as of v0.17.0)
+- **Booking / payment checkout** (live **search** for flights and hotels is in scope)
 - Multi-language support
 - Native mobile apps
 
-These may be revisited after hotel search and core product pages are in place.
+These may be revisited after core product pages and release cadence are in place.

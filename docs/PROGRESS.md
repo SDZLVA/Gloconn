@@ -896,6 +896,46 @@ Tie-break: score → name → id. Empty query returns `[]` (idle UI uses recent 
 
 ---
 
+## Milestone 12 — Live Hotels (v0.18.0 prep)
+
+**Dates:** July 2026  
+**Branch:** `milestone-12-hotel-search`  
+**Release:** **v0.18.0** — release tagging not started · [../CHANGELOG.md](../CHANGELOG.md)
+
+### Sprint 12.1 — SerpAPI Hotels discovery
+
+- API capability matrix, shared `Hotel` mapping table, architecture compatibility assessment
+- Risks, testing strategy, Sprint 12.2 proposal
+
+### Sprint 12.2 — SerpAPI Hotels adapter
+
+- `lib/providers/hotels/serpapi/` — query, client, mapper, provider, fixtures, tests
+- Factory: `HOTELS_PROVIDER=serpapi`; shared `SERPAPI_API_KEY` with flights
+- Automated tests with mocked HTTP only
+
+### Sprint 12.3 — Live validation
+
+- Live searches: Milan, Rome, Paris, Tokyo, New York; currency, guests, empty results
+- Critical fix: `children_ages` default when `children > 0`
+- Evidence: [SPRINT_12_3_VALIDATION.md](./SPRINT_12_3_VALIDATION.md)
+
+### Sprint 12.4 — Production hardening
+
+- Consolidated SerpAPI logging; expanded error handling and test coverage
+- Documentation sync (Provider Guide, API_FOUNDATION, CURRENT_STATE, CHANGELOG)
+- Automated tests — suite at **317**
+- Report: [SPRINT_12_4_PRODUCTION_READINESS.md](./SPRINT_12_4_PRODUCTION_READINESS.md)
+
+### Release prep (next)
+
+- [ ] Version bump `package.json` → **0.18.0**
+- [ ] Release notes + tag
+- [ ] Sprint 12.5 audit blockers resolved (docs sync + M12 commit)
+
+**Milestone 12 complete** — awaiting v0.18.0 release.
+
+---
+
 ## Budget UI — numeric input
 
 **Branch:** `cursor/project-principles`

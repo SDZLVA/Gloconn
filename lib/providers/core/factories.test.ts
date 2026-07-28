@@ -1,5 +1,5 @@
 /**
- * Sprint 9.8 — FlightsProvider factory selection tests.
+ * Sprint 9.8 / 12.4 — Provider factory selection tests.
  * No HTTP — asserts which adapter instance is returned.
  */
 
@@ -7,16 +7,25 @@ import { afterEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { isApiError } from "@/lib/api/errors";
 import { resetAppConfig } from "@/lib/config";
-import { createFlightsProvider } from "@/lib/providers/core/factories";
-import type { FlightsProvider } from "@/lib/providers/core/types";
+import {
+  createFlightsProvider,
+  createHotelsProvider,
+} from "@/lib/providers/core/factories";
+import type {
+  FlightsProvider,
+  HotelsProvider,
+} from "@/lib/providers/core/types";
 import { amadeusFlightsProvider } from "@/lib/providers/flights/amadeus";
 import { serpApiFlightsProvider } from "@/lib/providers/flights/serpapi";
+import { mockHotelsProvider } from "@/lib/providers/hotels/mock";
+import { serpApiHotelsProvider } from "@/lib/providers/hotels/serpapi";
 
 type SavedEnv = Record<string, string | undefined>;
 
 const ENV_KEYS = [
   "USE_MOCK_PROVIDERS",
   "FLIGHTS_PROVIDER",
+  "HOTELS_PROVIDER",
   "SERPAPI_API_KEY",
   "SERPAPI_DEEP_SEARCH",
   "AMADEUS_API_KEY",
@@ -55,6 +64,11 @@ function setEnv(
 }
 
 function assertFlightsProvider(provider: FlightsProvider): void {
+  assert.equal(typeof provider.name, "string");
+  assert.equal(typeof provider.search, "function");
+}
+
+function assertHotelsProvider(provider: HotelsProvider): void {
   assert.equal(typeof provider.name, "string");
   assert.equal(typeof provider.search, "function");
 }
@@ -138,5 +152,46 @@ describe("createFlightsProvider — selection", () => {
     const provider = createFlightsProvider();
 
     assertFlightsProvider(provider);
+  });
+});
+
+describe("createHotelsProvider — selection", () => {
+  it("defaults to mock when USE_MOCK_PROVIDERS=true", () => {
+    setEnv({
+      USE_MOCK_PROVIDERS: "true",
+      HOTELS_PROVIDER: "serpapi",
+      SERPAPI_API_KEY: "serp-test-key",
+    });
+
+    const provider = createHotelsProvider();
+
+    assertHotelsProvider(provider);
+    assert.equal(provider, mockHotelsProvider);
+  });
+
+  it("selects SerpAPI when HOTELS_PROVIDER=serpapi and key is present", () => {
+    setEnv({
+      USE_MOCK_PROVIDERS: "false",
+      HOTELS_PROVIDER: "serpapi",
+      SERPAPI_API_KEY: "serp-test-key",
+    });
+
+    const provider = createHotelsProvider();
+
+    assertHotelsProvider(provider);
+    assert.equal(provider, serpApiHotelsProvider);
+    assert.equal(provider.name, "serpapi");
+  });
+
+  it("falls back to mock when HOTELS_PROVIDER=serpapi but key is missing", () => {
+    setEnv({
+      USE_MOCK_PROVIDERS: "false",
+      HOTELS_PROVIDER: "serpapi",
+    });
+
+    const provider = createHotelsProvider();
+
+    assertHotelsProvider(provider);
+    assert.equal(provider, mockHotelsProvider);
   });
 });

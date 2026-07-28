@@ -2,34 +2,36 @@
 
 Active and upcoming tasks. Check items off as they are completed and move done items to [PROGRESS.md](./PROGRESS.md).
 
-**Current release:** **v0.17.0**  
+**Current release:** **v0.17.0** (flights) · **v0.18.0 prep** (hotels)  
 **Completed milestone:** **Milestone 11** (Live Flights)  
-**Active milestone:** **Milestone 12** — Hotel Search Integration
+**Active milestone:** **Milestone 12** — Hotel Search Integration (adapter + validation + hardening ✅)
 
 ---
 
 ## 🏃 Milestone 12 — Hotel Search Integration
 
-**Goal:** Live (or staged live) hotel search behind the existing `HotelsProvider` abstraction — same architecture as flights.
+**Goal:** Live hotel search behind `HotelsProvider` — same architecture as flights.
 
 ### Foundation
-- [ ] Confirm `HotelsProvider` contract and shared hotel model remain sufficient
-- [ ] Env / config for hotel vendor selection (mirror flights factory pattern)
-- [ ] Document hotel vendor in Provider Guide / API foundation
+- [x] Confirm `HotelsProvider` contract and shared hotel model remain sufficient
+- [x] Env / config for hotel vendor selection (mirror flights factory pattern)
+- [x] Document hotel vendor in Provider Guide / API foundation
 
 ### Adapter
-- [ ] Implement hotel vendor adapter under `lib/providers/hotels/<vendor>/`
-- [ ] Query builder → HTTP client → mapper → shared hotel model
-- [ ] Wire factory selection; keep mock default for CI/local
+- [x] Implement SerpAPI adapter under `lib/providers/hotels/serpapi/`
+- [x] Query builder → HTTP client → mapper → shared hotel model
+- [x] Wire factory selection; keep mock default for CI/local
 
 ### Integration
-- [ ] Orchestrator already calls hotels — verify live path end-to-end
-- [ ] Partial failure / warnings behavior unchanged (ADR-037)
-- [ ] Automated tests (mocked fetch; no live vendor in CI)
+- [x] Orchestrator live path verified (12.3)
+- [x] Partial failure / warnings behavior unchanged (ADR-037)
+- [x] Automated tests (mocked fetch; no live vendor in CI)
 
 ### Docs & release readiness
-- [ ] Update CURRENT_STATE / ROADMAP / release notes when hotels go live
-- [ ] Operator env examples in `.env.example`
+- [x] CURRENT_STATE / CHANGELOG / Provider Guide / API foundation updated
+- [x] Operator env in `.env.example`
+- [x] Production hardening (12.4)
+- [ ] **v0.18.0 release** — tag, release notes (next sprint)
 
 ### Carry-forward from Milestone 11 (optional / polish)
 - [ ] SerpAPI round-trip `departure_token` return enrichment (fix HTTP 400 request shape)

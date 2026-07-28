@@ -3,8 +3,8 @@
 Travel planning web application — discover destinations, plan trips, and manage travel in one place.
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
-**Version:** **v0.17.0** — Live Flights (Milestone 11 complete)  
-**Next:** Milestone 12 — Hotel Search Integration
+**Version:** **v0.17.0** released (Live Flights) · **v0.18.0** prep (Live Hotels)  
+**Milestones:** **11** ✅ Live Flights · **12** ✅ Hotel Search Integration (release tagging next)
 
 ## Tech stack
 
@@ -51,6 +51,18 @@ Restart the Next.js server after changing `.env.local`.
 
 **Amadeus** remains the long-term Enterprise flights path (`FLIGHTS_PROVIDER=amadeus` + Amadeus keys). See [docs/Provider_Guide.md](./docs/Provider_Guide.md).
 
+### Live hotel search (SerpAPI)
+
+To enable **live hotel search** via SerpAPI Google Hotels (Milestone 12 — production-capable when configured):
+
+```env
+USE_MOCK_PROVIDERS=false
+HOTELS_PROVIDER=serpapi
+SERPAPI_API_KEY=<your-key>
+```
+
+Uses the same `SERPAPI_API_KEY` as flights. Hotels require a checkout date (`returnDate` on round-trip searches). See [docs/Provider_Guide.md](./docs/Provider_Guide.md).
+
 ### Windows note
 
 If PowerShell blocks `npm`, use `npm.cmd run dev` or:
@@ -68,7 +80,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 | `npm run start` | Run production build locally |
 | `npm run lint` | Run ESLint |
 | `npm run typecheck` | TypeScript (`tsc --noEmit`) |
-| `npm test` | Automated test suite (272 tests) |
+| `npm test` | Automated test suite (317 tests) |
 
 ## Architecture overview
 
@@ -82,13 +94,14 @@ UI (search form / results)
        └── Promise.allSettled(hotels | flights | transport)
   → SearchResponse (+ optional warnings)
 
-FlightsProvider (factory):
-  mock (default) | serpapi (live, production-capable) | amadeus (long-term Enterprise)
-       └── Query → HTTP → Mapper → shared Flight model
+Provider factory (per domain):
+  FlightsProvider: mock (default) | serpapi (live) | amadeus (Enterprise)
+  HotelsProvider:  mock (default) | serpapi (live) | booking (stub → mock)
+       └── Query → HTTP → Mapper → shared Flight / Hotel model
 ```
 
-- **Provider abstraction** — `FlightsProvider` / hotels / transport interfaces in `lib/providers/core/`
-- **Unified `Flight` model** — `types/models/flight.ts` (vendor-agnostic)
+- **Provider abstraction** — `FlightsProvider` / `HotelsProvider` / transport interfaces in `lib/providers/core/`
+- **Unified domain models** — `types/models/flight.ts`, `types/models/hotel.ts` (vendor-agnostic)
 - **Search orchestrator** — `lib/services/searchOrchestrator.ts`
 - **Partial failure** — one domain can fail without blanking the search (ADR-037)
 
@@ -106,7 +119,7 @@ Gloconn/
 │   ├── providers/          # Domain adapters
 │   │   ├── core/           # Interfaces, registry, factories
 │   │   ├── flights/        # mock · amadeus · serpapi
-│   │   ├── hotels/         # mock (+ booking planned)
+│   │   ├── hotels/         # mock · serpapi (live)
 │   │   ├── ground/         # mock (+ omio planned)
 │   │   └── destinations/   # mock (+ google-maps planned)
 │   ├── services/           # searchService, orchestrator, IATA enrichment
@@ -124,7 +137,7 @@ Gloconn/
 | [docs/CURRENT_STATE.md](./docs/CURRENT_STATE.md) | Latest release snapshot |
 | [docs/ROADMAP.md](./docs/ROADMAP.md) | Product roadmap |
 | [docs/PROGRESS.md](./docs/PROGRESS.md) | Completed work log |
-| [docs/TODO.md](./docs/TODO.md) | Active tasks (Milestone 12) |
+| [docs/TODO.md](./docs/TODO.md) | Active tasks (v0.18.0 release prep) |
 | [docs/API_FOUNDATION.md](./docs/API_FOUNDATION.md) | Provider architecture |
 | [docs/Provider_Guide.md](./docs/Provider_Guide.md) | How to add a flights vendor |
 | [docs/DECISIONS.md](./docs/DECISIONS.md) | Architecture decisions (ADRs) |
@@ -134,13 +147,16 @@ Gloconn/
 
 ## Current status
 
-- **Release:** **v0.17.0** — Milestone **11** complete (Live Flights)
-- **Live Flight Search:** available via SerpAPI (`FLIGHTS_PROVIDER=serpapi`) — **production-capable**
-- **Amadeus:** long-term future / Enterprise flights provider
+- **Released:** **v0.17.0** — Milestone **11** (Live Flights)
+- **In progress:** **v0.18.0** release prep — Milestone **12** complete (Live Hotels)
+- **Live Flight Search:** SerpAPI (`FLIGHTS_PROVIDER=serpapi`) — **production-capable**
+- **Live Hotel Search:** SerpAPI (`HOTELS_PROVIDER=serpapi`) — **production-capable when configured**
+- **Amadeus:** long-term Enterprise flights provider
 - **Default mode:** mock providers (`USE_MOCK_PROVIDERS=true`) until live env is configured
+- **Tests:** **317** automated tests (typecheck, lint, test, build green)
 - **Live routes:** `/`, `/search/results`, `/login`, `/signup`, `/profile`, `/my-trips`
 - **Auth:** Google OAuth and email/password via Supabase
-- **Next:** Milestone **12** — Hotel Search Integration
+- **Next:** v0.18.0 tag and release notes
 - **Planned routes:** `/destinations`, `/about`
 
-See [docs/TODO.md](./docs/TODO.md) for Milestone 12 tasks.
+See [docs/CURRENT_STATE.md](./docs/CURRENT_STATE.md) and [docs/TODO.md](./docs/TODO.md).

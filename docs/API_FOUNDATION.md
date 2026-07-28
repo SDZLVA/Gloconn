@@ -330,12 +330,38 @@ Browser-only autocomplete improvements ? does not change trip search execution o
 
 | Step | Action |
 |------|--------|
-| 1 | **Milestone 12** — Hotel Search Integration |
+| 1 | **v0.18.0** — Live Hotels release (Milestone 12 complete; tag not started) |
 | 2 | SerpAPI round-trip `departure_token` enrichment polish |
 | 3 | currencyService registry DI cleanup (ADR-035) |
 | 4 | Execute manual Amadeus sandbox checklist (`docs/SPRINT_8_SUMMARY.md`) |
 | 5 | Destinations / About product pages |
 | 6 | Monitoring for live providers (ongoing) |
+
+### SerpAPI live hotels provider (Milestone 12)
+
+| Item | Status |
+|------|--------|
+| Discovery (12.1) | ✅ Complete |
+| Adapter + factory (12.2) | ✅ Complete |
+| Live validation (12.3) | ✅ Complete |
+| Production hardening (12.4) | ✅ Complete |
+| Role | **Live hotels — production-capable** when configured |
+
+**Env:**
+
+```env
+USE_MOCK_PROVIDERS=false
+HOTELS_PROVIDER=serpapi
+SERPAPI_API_KEY=
+```
+
+**Live pipeline when configured:**
+
+- `SerpApiHotelsProvider.search` → Google Hotels query + HTTP + mapping → `Hotel[]`
+- Shared SerpAPI config/key with flights; structured logs (`operation: googleHotels`)
+- Requires `destinationId` + `returnDate` (check-out); no invented checkout dates
+
+See [SPRINT_12_3_VALIDATION.md](./SPRINT_12_3_VALIDATION.md) and [SPRINT_12_4_PRODUCTION_READINESS.md](./SPRINT_12_4_PRODUCTION_READINESS.md).
 
 ### SerpAPI live flights provider (ADR-036 → hardened in Milestone 11 / v0.17.0)
 

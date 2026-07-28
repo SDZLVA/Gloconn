@@ -274,13 +274,49 @@ Add a `case "<vendor>"` in `createFlightsProvider()` that returns the singleton 
 
 ---
 
+## Hotels provider (SerpAPI — Milestone 12)
+
+Same layered pattern as flights. Orchestrator calls `hotels.search(enrichedRequest)` when `"hotels"` is in `productTypes`.
+
+```
+lib/providers/hotels/
+  mock/                 # Default / CI
+  serpapi/              # Live Google Hotels (Sprint 12.2–12.4)
+    index.ts
+    provider.ts         # HotelsProvider
+    query.ts            # SearchRequest → google_hotels params
+    client.ts           # HTTP (shared SerpAPI log + search URL)
+    mapper.ts           # properties[] → Hotel[]
+    mappingHelpers.ts   # Hotel-specific + shared currency helpers
+    types.ts            # Vendor JSON (package-private)
+    __fixtures__/
+    *.test.ts
+```
+
+**Factory:** `HOTELS_PROVIDER=serpapi` when `USE_MOCK_PROVIDERS=false` and `SERPAPI_API_KEY` is set. Missing key → mock + console warning.
+
+**Env (shared SerpAPI key with flights):**
+
+```env
+USE_MOCK_PROVIDERS=false
+HOTELS_PROVIDER=serpapi
+SERPAPI_API_KEY=
+```
+
+**Documented limitations:** requires `returnDate` for check-out; `children_ages` defaults to `8` per child until ages exist on `SearchRequest`; no hotel `rooms` API param; maps `properties[]` only (not `ads[]`).
+
+**Evidence:** [SPRINT_12_3_VALIDATION.md](./SPRINT_12_3_VALIDATION.md) · [SPRINT_12_4_PRODUCTION_READINESS.md](./SPRINT_12_4_PRODUCTION_READINESS.md)
+
+---
+
 ## Current vendors
 
 | Folder | Role | Status |
 |--------|------|--------|
 | `mock/` | Default local + CI | Active |
 | `amadeus/` | **Long-term production** | Complete through Sprint 8; maintenance / Enterprise path |
-| `serpapi/` | **Live — production-capable** | Shipped v0.15.0; hardened Milestone **11** → **v0.17.0** (datetime, round-trip token path, currency) |
+| `serpapi/` (flights) | **Live — production-capable** | v0.17.0 |
+| `serpapi/` (hotels) | **Live — production-capable** | Milestone 12 — release prep v0.18.0 |
 
 ---
 

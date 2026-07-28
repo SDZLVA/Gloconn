@@ -24,6 +24,7 @@ import { mockFlightsProvider } from "@/lib/providers/flights/mock";
 import { serpApiFlightsProvider } from "@/lib/providers/flights/serpapi";
 import { mockTransportProvider } from "@/lib/providers/ground/mock";
 import { mockHotelsProvider } from "@/lib/providers/hotels/mock";
+import { serpApiHotelsProvider } from "@/lib/providers/hotels/serpapi";
 
 /** Resolves the active provider name, forcing mock when the global flag is set. */
 function resolveProviderName(
@@ -81,10 +82,18 @@ export function createDestinationProvider(): DestinationProvider {
 }
 
 export function createHotelsProvider(): HotelsProvider {
-  const { providers } = getAppConfig();
+  const { providers, serpapi } = getAppConfig();
   const name = resolveProviderName(providers.hotels, providers.useMockProviders);
 
   switch (name) {
+    case "serpapi":
+      if (!serpapi.isConfigured) {
+        console.warn(
+          "[Glooconn] HOTELS_PROVIDER=serpapi but API key is missing — using mock hotels.",
+        );
+        return mockHotelsProvider;
+      }
+      return serpApiHotelsProvider;
     case "booking":
       console.warn(
         "[Glooconn] Booking hotels provider not implemented — using mock.",

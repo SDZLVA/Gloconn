@@ -11,6 +11,7 @@ type SavedEnv = Record<string, string | undefined>;
 const ENV_KEYS = [
   "USE_MOCK_PROVIDERS",
   "FLIGHTS_PROVIDER",
+  "HOTELS_PROVIDER",
   "SERPAPI_API_KEY",
   "SERPAPI_DEEP_SEARCH",
   "AMADEUS_API_KEY",
@@ -114,7 +115,29 @@ describe("SerpAPI configuration — missing API key", () => {
       config.validation.errors.some(
         (issue) =>
           issue.env === "SERPAPI_API_KEY" &&
-          issue.message.includes("Live SerpAPI flights require SERPAPI_API_KEY"),
+          issue.message.includes("Live SerpAPI") &&
+          issue.message.includes("SERPAPI_API_KEY"),
+      ),
+    );
+  });
+
+  it("fails when live SerpAPI hotels is intended but SERPAPI_API_KEY is missing", () => {
+    setEnv({
+      USE_MOCK_PROVIDERS: "false",
+      HOTELS_PROVIDER: "serpapi",
+      FLIGHTS_PROVIDER: "mock",
+    });
+
+    const config = loadAppConfig();
+
+    assert.equal(config.serpapi.isConfigured, false);
+    assert.equal(config.validation.isValid, false);
+    assert.ok(
+      config.validation.errors.some(
+        (issue) =>
+          issue.env === "SERPAPI_API_KEY" &&
+          issue.message.includes("Live SerpAPI") &&
+          issue.message.includes("SERPAPI_API_KEY"),
       ),
     );
   });

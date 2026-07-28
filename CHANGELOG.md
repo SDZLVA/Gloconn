@@ -4,6 +4,22 @@ All notable product releases for Glooconn are listed here. Detailed notes live u
 
 ---
 
+## [Unreleased] — Live Hotels (v0.18.0 prep)
+
+**Milestone 12 — Hotel Search Integration** (Sprints 12.1–12.4 complete; release tagging not started).
+
+- SerpAPI Google Hotels adapter (`lib/providers/hotels/serpapi/`)
+- Factory selection: `HOTELS_PROVIDER=serpapi` (mock default)
+- Shared `SERPAPI_API_KEY` with flights — no duplicate config
+- Live validation + production hardening
+- **317** automated tests
+
+**Evidence:** [docs/SPRINT_12_3_VALIDATION.md](./docs/SPRINT_12_3_VALIDATION.md) · [docs/SPRINT_12_4_PRODUCTION_READINESS.md](./docs/SPRINT_12_4_PRODUCTION_READINESS.md)
+
+**Known limitations:** requires `returnDate` for checkout; `children_ages` defaults to `8`; no hotel `rooms` param; page-1 results only.
+
+---
+
 ## [v0.17.0] — Live Flights (July 2026)
 
 **Milestone 11 complete.** Production-capable live flight search via SerpAPI Google Flights, behind the existing multi-provider architecture.

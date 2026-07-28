@@ -104,12 +104,18 @@ function isLiveAmadeusIntended(config: Omit<AppConfig, "validation">): boolean {
 }
 
 function isLiveSerpapiIntended(config: Omit<AppConfig, "validation">): boolean {
-  return (
-    !config.providers.useMockProviders &&
-    !config.providers.useMockProvidersInvalid &&
-    config.providers.flights === "serpapi" &&
-    !config.providers.flightsInvalid
-  );
+  if (
+    config.providers.useMockProviders ||
+    config.providers.useMockProvidersInvalid
+  ) {
+    return false;
+  }
+
+  const liveFlights =
+    config.providers.flights === "serpapi" && !config.providers.flightsInvalid;
+  const liveHotels = config.providers.hotels === "serpapi";
+
+  return liveFlights || liveHotels;
 }
 
 /** Validates configuration and returns errors + warnings. */
@@ -197,7 +203,7 @@ export function validateAppConfig(
       errors.push({
         env: "SERPAPI_API_KEY",
         message:
-          "Live SerpAPI flights require SERPAPI_API_KEY. Set the credential, or keep USE_MOCK_PROVIDERS=true.",
+          "Live SerpAPI (flights or hotels) requires SERPAPI_API_KEY. Set the credential, or keep USE_MOCK_PROVIDERS=true.",
       });
       errors.push(...providerKeyErrors);
     } else {

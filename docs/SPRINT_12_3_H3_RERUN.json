@@ -1,0 +1,39 @@
+{
+  "id": "H3",
+  "label": "Rome hotels — 5 nights, 2 adults + 1 child, EUR (post children_ages fix)",
+  "status": "pass",
+  "httpOk": true,
+  "rawPropertyCount": 20,
+  "mappedCount": 18,
+  "responseCurrency": "EUR",
+  "requestCurrency": "EUR",
+  "children": "1",
+  "childrenAges": "8",
+  "sampleHotels": [
+    {
+      "id": "serpapi-hotel-99d4546909de3d1d",
+      "name": "BDC - Prestige 3Bdr 3Bath in Monti District",
+      "price": 1782,
+      "currency": "EUR",
+      "rating": 4.559162,
+      "stars": 0,
+      "nights": 5,
+      "location": "Cavour",
+      "destinationId": "rome",
+      "amenitiesCount": 16
+    },
+    {
+      "id": "serpapi-hotel-aae857e414d96edf",
+      "name": "VATICAN PITTORE HOUSE - Entire Place",
+      "price": 738,
+      "currency": "EUR",
+      "rating": 4.6210527,
+      "stars": 0,
+      "nights": 5,
+      "location": "Appiano",
+      "destinationId": "rome",
+      "amenitiesCount": 12
+    }
+  ],
+  "durationMs": 3189
+}

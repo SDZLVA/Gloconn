@@ -1,0 +1,14 @@
+{
+  "origin": "Milan, Italy",
+  "originId": "milan",
+  "destination": "Paris, France",
+  "destinationId": "paris",
+  "tripType": "round-trip",
+  "departureDate": "2026-09-15",
+  "returnDate": "2026-09-18",
+  "budget": { "amount": 900, "currency": "EUR" },
+  "travelers": { "adults": 2, "children": 0, "infants": 0, "rooms": 1 },
+  "totalGuests": 2,
+  "travelStyle": "standard",
+  "productTypes": ["hotels", "flights"]
+}
