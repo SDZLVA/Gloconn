@@ -153,7 +153,7 @@ FLIGHTS_PROVIDER=<vendor>
 <VENDOR>_API_KEY=
 ```
 
-**SerpAPI (dev/test):**
+**SerpAPI (live / production-capable):**
 
 ```env
 USE_MOCK_PROVIDERS=false
@@ -280,7 +280,7 @@ Add a `case "<vendor>"` in `createFlightsProvider()` that returns the singleton 
 |--------|------|--------|
 | `mock/` | Default local + CI | Active |
 | `amadeus/` | **Long-term production** | Complete through Sprint 8; maintenance / Enterprise path |
-| `serpapi/` | **Temporary dev/test** | Complete through Sprint 9.10 (**v0.15.0**); hardened in **Sprint 11.2** (full date-time, `departure_token` round-trip, currency fallbacks) |
+| `serpapi/` | **Live — production-capable** | Shipped v0.15.0; hardened Milestone **11** → **v0.17.0** (datetime, round-trip token path, currency) |
 
 ---
 

@@ -1,10 +1,10 @@
-# API Foundation ? Architecture Reference
+# API Foundation — Architecture Reference
 
-This document is the single reference for the Glooconn API foundation (**v0.16.0** ? Milestone 10 Search Experience + multi-provider flights). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
+This document is the single reference for the Glooconn API foundation (**v0.17.0** — Live Flights + multi-provider architecture + Milestone 10 search experience). It describes how data flows from the UI to providers and how to swap mock adapters for real APIs.
 
-**Flights providers:** `mock` (default) ? `amadeus` (long-term production) ? `serpapi` (temporary **dev/test**, ADR-036). See [Provider_Guide.md](./Provider_Guide.md) and [releases/v0.15.0.md](./releases/v0.15.0.md).
+**Flights providers:** `mock` (default) · `serpapi` (**live, production-capable**, v0.17.0) · `amadeus` (long-term Enterprise path). See [Provider_Guide.md](./Provider_Guide.md) and [releases/v0.17.0.md](./releases/v0.17.0.md).
 
-**Search contract:** success payload is `SearchResponse` (ADR-037) ? domain arrays + optional `warnings`.
+**Search contract:** success payload is `SearchResponse` (ADR-037) — domain arrays + optional `warnings`.
 
 ---
 
@@ -48,7 +48,7 @@ This document is the single reference for the Glooconn API foundation (**v0.16.0
          amadeus/                    serpapi/
          auth + client               googleFlights + client
          flightOffers                mappers + provider
-         mappers + provider          (dev/test only)
+         mappers + provider          (live, production-capable)
         ?                   ?                   ?
         ?????????????????????????????????????????
                             ?
@@ -83,7 +83,7 @@ Cross-cutting:
 | `lib/providers/flights/amadeus/mappingHelpers.ts` | Pure parse/map helpers (package-private) |
 | `lib/providers/flights/amadeus/httpTimeout.ts` | Timeout helpers for Amadeus OAuth + fetch |
 | `lib/providers/flights/amadeus/types.ts` | Internal Amadeus response/error shapes |
-| `lib/providers/flights/serpapi/` | SerpAPI Google Flights adapter (dev/test, v0.15.0) |
+| `lib/providers/flights/serpapi/` | SerpAPI Google Flights adapter (live, production-capable, v0.17.0) |
 | `lib/api/httpTimeout.ts` | Shared timeout helpers (used by SerpAPI; prefer reuse) |
 | `lib/providers/core/` | Interfaces, registry, factories |
 | `lib/providers/<domain>/mock/` | Mock adapter class |
@@ -289,7 +289,7 @@ AmadeusFlightsProvider.search(request)
 | `USE_MOCK_PROVIDERS=true` (default) | `mock` |
 | `USE_MOCK_PROVIDERS=false` + `FLIGHTS_PROVIDER` unset | `amadeus` (default live) |
 | `USE_MOCK_PROVIDERS=false` + `FLIGHTS_PROVIDER=amadeus` + keys | `amadeus` |
-| `USE_MOCK_PROVIDERS=false` + `FLIGHTS_PROVIDER=serpapi` + key | `serpapi` (dev/test) |
+| `USE_MOCK_PROVIDERS=false` + `FLIGHTS_PROVIDER=serpapi` + key | `serpapi` (live, production-capable) |
 | Vendor selected but keys missing | `mock` (factory fallback + warning) |
 | Invalid `FLIGHTS_PROVIDER` | `ProviderError` (fail fast) |
 
@@ -326,25 +326,26 @@ Browser-only autocomplete improvements ? does not change trip search execution o
 - Client dead-code cleanup; docs + [releases/v0.16.0.md](./releases/v0.16.0.md)
 - Production verification: test, typecheck, lint, build
 
-### Remaining work (post?v0.16.0)
+### Remaining work (post–v0.17.0)
 
 | Step | Action |
 |------|--------|
-| 1 | currencyService registry DI cleanup (ADR-035) |
-| 2 | Execute manual Amadeus sandbox checklist (`docs/SPRINT_8_SUMMARY.md`) |
-| 3 | Hotels + activities providers |
-| 4 | Destinations / About product pages |
-| 5 | Monitoring for live providers (ongoing) |
+| 1 | **Milestone 12** — Hotel Search Integration |
+| 2 | SerpAPI round-trip `departure_token` enrichment polish |
+| 3 | currencyService registry DI cleanup (ADR-035) |
+| 4 | Execute manual Amadeus sandbox checklist (`docs/SPRINT_8_SUMMARY.md`) |
+| 5 | Destinations / About product pages |
+| 6 | Monitoring for live providers (ongoing) |
 
-### SerpAPI development provider (ADR-036 ? shipped in v0.15.0)
+### SerpAPI live flights provider (ADR-036 → hardened in Milestone 11 / v0.17.0)
 
 | Item | Status |
 |------|--------|
-| ADR-036 + Provider Guide + docs | ? Complete |
-| Config / `serpapi/` adapter / factory / tests (Sprint 9.2?9.9) | ? Complete |
-| Release docs (Sprint 9.10) | ? Complete ? **v0.15.0** |
-| Role | **Dev/test only** ? not production |
-| Amadeus | Long-term production path; prefer bugfixes unless CTO-approved |
+| ADR-036 + Provider Guide + docs | ✅ Complete (v0.15.0) |
+| Config / `serpapi/` adapter / factory / tests | ✅ Complete |
+| Milestone 11 validation + hardening + readiness | ✅ Complete → **v0.17.0** |
+| Role | **Live flights — production-capable** (Amadeus remains long-term Enterprise) |
+| Amadeus | Long-term Enterprise path; prefer bugfixes unless CTO-approved |
 
 **Env:**
 
@@ -358,7 +359,7 @@ SERPAPI_DEEP_SEARCH=false
 **Live pipelines when configured:**
 
 - `AmadeusFlightsProvider.search` ? Flight Offers HTTP + mapping (production path)
-- `SerpApiFlightsProvider.search` ? Google Flights query + HTTP + mapping (dev/test)
+- `SerpApiFlightsProvider.search` — Google Flights query + HTTP + mapping (live, production-capable)
   - **Sprint 11.2:** full local date-time on `Flight` times; round-trip return fetch via `departure_token` (capped); currency defaults/fallbacks to EUR
 - IATA enrichment + flight airport validation in the orchestrator
 - Factory selection as above
@@ -457,7 +458,7 @@ See `.env.example`. Summary:
 - `FLIGHTS_PROVIDER=amadeus|serpapi|mock` ? selects flights adapter (when mock flag is false; unset defaults to amadeus)
 - `AMADEUS_ENV=test|production` ? known hosts only (default `test`)
 - `AMADEUS_OAUTH_TIMEOUT_MS` / `AMADEUS_FETCH_TIMEOUT_MS` ? optional (defaults 10000 / 15000)
-- `SERPAPI_API_KEY` / `SERPAPI_DEEP_SEARCH` ? SerpAPI Google Flights (dev/test only)
+- `SERPAPI_API_KEY` / `SERPAPI_DEEP_SEARCH` — SerpAPI Google Flights (live / production-capable)
 - API keys are **server-only** (no `NEXT_PUBLIC_` prefix)
 - Read via `getAppConfig()` ? never `process.env` in components or vendor modules outside `lib/config`
 

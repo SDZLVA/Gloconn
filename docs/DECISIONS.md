@@ -984,11 +984,11 @@ AmadeusFlightsProvider.search(request)
 
 ## ADR-036: SerpAPI development flights provider (Sprint 9.1 → v0.15.0)
 
-**Status:** Accepted and **implemented** (shipped in **v0.15.0**, Sprint 9.2–9.10).  
+**Status:** Accepted and **implemented** (shipped in **v0.15.0**). **Status update (v0.17.0 / Milestone 11):** SerpAPI is now the **production-capable live flights** path after validation and hardening. Amadeus remains the **long-term Enterprise / future commercial** flights provider.  
 **Date:** July 2026  
-**Product version:** v0.15.0
+**Product version:** originally v0.15.0; current live posture **v0.17.0**
 
-**Decision:** Add **SerpAPI Google Flights** as a **second** `FlightsProvider` implementation under `lib/providers/flights/serpapi/`, selected only via env (`FLIGHTS_PROVIDER=serpapi`). Use it for **development and testing** until Amadeus Enterprise is available. **Do not modify, remove, or replace** any Amadeus code. Amadeus remains the **future production** flights provider.
+**Decision:** Add **SerpAPI Google Flights** as a **second** `FlightsProvider` implementation under `lib/providers/flights/serpapi/`, selected only via env (`FLIGHTS_PROVIDER=serpapi`). **Do not modify, remove, or replace** any Amadeus code. Amadeus remains the **future Enterprise** flights provider.
 
 ### Why SerpAPI is being added
 
@@ -1015,12 +1015,15 @@ AmadeusFlightsProvider.search(request)
 - Sprint 2 already enriches `originIata` / `destinationIata` for any flights vendor.
 - Vendor-specific JSON stays inside `serpapi/types.ts` (same rule as Amadeus package-private types).
 
-### Why SerpAPI is development/testing only
+### Why SerpAPI was initially development/testing only
 
-- Not the production inventory source of record.
-- Cost, quotas, response shape drift, and `deep_search` latency/timeout risk make it unsuitable as the default production path.
-- Default remains `USE_MOCK_PROVIDERS=true` (mock). CI must not call real SerpAPI.
-- Docs and env comments must label SerpAPI as **dev/test only**.
+*(Historical rationale at ADR acceptance — superseded for live posture by Milestone 11 / **v0.17.0** status update above.)*
+
+- Not the long-term commercial inventory source of record.
+- Cost, quotas, response shape drift, and `deep_search` latency/timeout risk remain operational concerns.
+- Amadeus remains the intended Enterprise commercial relationship.
+
+**v0.17.0 posture:** SerpAPI is **production-capable for live flight search**; operators may enable it via env. Docs should state this clearly while keeping Amadeus as the **long-term Enterprise** path. Default remains `USE_MOCK_PROVIDERS=true` for local/CI; CI must not call real SerpAPI.
 
 ### Alternatives considered
 
@@ -1036,9 +1039,9 @@ AmadeusFlightsProvider.search(request)
 
 - Sprint 9.2–9.10 implemented config, HTTP, mappers, factory, tests, and docs under `serpapi/` (and factory only).
 - Config surface: `SERPAPI_API_KEY`, `SERPAPI_DEEP_SEARCH` via `lib/config`.
-- Amadeus package remains the long-term production path (prefer bugfixes unless CTO directs).
-- Product version for the completed SerpAPI adapter: **v0.15.0**.
-- See [releases/v0.15.0.md](./releases/v0.15.0.md) and [Provider_Guide.md](./Provider_Guide.md).
+- Amadeus package remains the long-term **Enterprise** path (prefer bugfixes unless CTO directs).
+- Product versions: adapter introduced **v0.15.0**; live production-capable posture **v0.17.0**.
+- See [releases/v0.17.0.md](./releases/v0.17.0.md) and [Provider_Guide.md](./Provider_Guide.md).
 
 ### Known limitations (accepted for v1 SerpAPI)
 

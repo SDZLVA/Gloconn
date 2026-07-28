@@ -1,124 +1,95 @@
 # Glooconn — Product Roadmap
 
-This roadmap outlines planned development phases. Dates are approximate and will be updated as the project progresses.
+High-level product roadmap. Dates are approximate.
+
+**Current release:** **v0.17.0** — Live Flights  
+**Completed milestone:** **Milestone 11**  
+**Next milestone:** **Milestone 12** — Hotel Search Integration
 
 ---
 
-## Phase 1 — Foundation (Week 1) ✅ Complete
+## Phase 1 — Foundation ✅ Complete
 
-**Goal:** Set up the project, layout, and home page search UI.
+Project setup, layout, home search UI, documentation baseline.
+
+---
+
+## Phase 2 — Core pages
 
 | Item | Status |
 |------|--------|
-| Next.js + TypeScript + Tailwind project setup | ✅ Done |
-| Git repository and GitHub integration | ✅ Done |
-| Main layout (navbar, footer, responsive shell) | ✅ Done |
-| Home page hero section | ✅ Done |
-| Search card with all form fields | ✅ Done |
-| React state + client-side validation | ✅ Done |
-| Search button → console logging | ✅ Done |
-| UI polish (cards, hover, typography) | ✅ Done |
-| Code structure refactor | ✅ Done |
-| Project documentation (`docs/`) | ✅ Done |
+| Search results page | ✅ Done |
+| My Trips / auth-backed trips | ✅ Done |
+| Destinations page | Planned |
+| About page | Planned |
+| Branded 404 | Planned |
 
 ---
 
-## Phase 2 — Core pages (Week 2–3)
+## Phase 3 — Data and persistence ✅ Complete
 
-**Goal:** Build the remaining navigation pages and connect search to results.
-
-| Item | Priority | Notes |
-|------|----------|-------|
-| Destinations page | High | Grid of destination cards using `Card` component |
-| Search results page | High | ✅ Mock hotels, flights, buses, trains; filters; sorting; URL params |
-| About page | Medium | Company/product information |
-| My Trips page | Medium | Placeholder UI for saved trips |
-| 404 / not-found page styling | Low | Match Glooconn brand |
+Provider-based service layer, mock destinations, search → results via `searchService` / `POST /api/search`, Supabase saved trips, travel calendar.
 
 ---
 
-## Phase 3 — Data and persistence (Week 4–5) 🚧 In progress
+## Phase 4 — Backend and auth ✅ Complete
 
-**Goal:** Replace direct mock access with a provider-based service layer.
-
-| Item | Priority | Notes |
-|------|----------|-------|
-| API foundation (providers + services) | High | ✅ Mock providers; ✅ folder scaffold for multi-provider |
-| Mock destination dataset | High | ✅ In mock provider; expand for Destinations page |
-| Search → results data flow | High | ✅ Via `searchService` with URL params |
-| Local storage for saved trips | Medium | ✅ Supabase `saved_trips` (replaces browser-only plan) |
-| Date picker improvements | Medium | ✅ Custom `TravelCalendar` component |
-| Connect external travel APIs | Low | Out of scope until foundation is stable |
+Supabase auth, profile, protected routes, saved trips.
 
 ---
 
-## Phase 4 — Backend and auth (Week 6+) ✅ Complete
+## Phase 5 — External APIs ✅ through Milestone 11
 
-**Goal:** User accounts and server-side data.
+**Goal:** Real travel data behind the existing service layer.
 
-| Item | Priority | Notes |
-|------|----------|-------|
-| Database selection and setup | High | ✅ Supabase PostgreSQL |
-| User authentication | High | ✅ Google + email via Supabase |
-| Save trips to user account | High | ✅ `saved_trips` table + save button on results |
-| User profile page | High | ✅ `/profile` |
-| Protected routes | High | ✅ Proxy for `/my-trips`, `/profile` |
-| Destination API or CMS | Medium | Dynamic destination content |
+| Milestone / sprint | Focus | Status |
+|--------------------|--------|--------|
+| Sprints 1–8 | Amadeus Flight API path | ✅ Complete |
+| Sprint 9 | SerpAPI multi-provider adapter | ✅ Complete → **v0.15.0** |
+| Milestone 10 | Search Experience | ✅ Complete → **v0.16.0** |
+| **Milestone 11** | **Live Flights (SerpAPI validation + hardening + readiness)** | ✅ **Complete → v0.17.0** |
+
+### Provider posture (current)
+
+| Domain | Status |
+|--------|--------|
+| **Flights — SerpAPI** | ✅ Live, **production-capable** (v0.17.0) |
+| **Flights — Amadeus** | ✅ Path complete; **long-term Enterprise / future production** vendor |
+| Hotels | Mock only → **Milestone 12** |
+| Destinations / ground | Mock (live providers later) |
 
 ---
 
-## Phase 5 — External APIs (In progress)
+## Milestone 12 — Hotel Search Integration
 
-**Goal:** Connect real travel data providers behind the existing service layer.
+**Goal:** Add a live (or staged live) hotels search path behind the existing `HotelsProvider` abstraction — same architecture as flights (factory → vendor adapter → shared hotel model → orchestrator).
 
-| Sprint | Focus | Status |
-|--------|-------|--------|
-| Sprint 1 | Server search boundary (`POST /api/search`) | ✅ Complete |
-| Sprint 2 | IATA resolution (orchestrator enrichment + validation) | ✅ Complete |
-| Sprint 3 | Amadeus OAuth + token cache + `amadeusFetch` | ✅ Complete |
-| Sprint 4 | Flight Offers HTTP (`searchFlightOffers` raw JSON) | ✅ Complete |
-| Sprint 5 | Map Amadeus offers → `Flight` (mapper only) | ✅ Complete |
-| Sprint 6 | Wire live Amadeus provider | ✅ Complete |
-| Sprint 7 | Flight API automated testing | ✅ Complete |
-| Sprint 8 | Flight API production hardening | ✅ Complete |
-| Sprint 9 | SerpAPI multi-provider (dev/test) + docs | ✅ Complete → **v0.15.0** |
-| Milestone 10 | Search Experience (UI → reliability → quality → perf → destinations → hardening) | ✅ Complete → **v0.16.0** |
+High-level scope (detail in [TODO.md](./TODO.md)):
 
-**Release milestone — Flight API v1** (architecture + tests + docs): ✅ (`v0.13.0`, Sprint 7)
+- Hotels provider selection and configuration
+- Vendor adapter (query → HTTP → map to shared hotel model)
+- Wire into `orchestrateTripSearch` without redesigning the search stack
+- Tests + docs
+- Carry-forward polish from Milestone 11 where needed (e.g. SerpAPI round-trip `departure_token` enrichment)
 
-**Release milestone — Flight API v0.14.0** (timeouts, 401/429, config, logging): ✅ (`v0.14.0`, Sprint 8)
+---
 
-**Release milestone — Multi-provider v0.15.0** (SerpAPI + factory + Provider Guide): ✅ (`v0.15.0`, Sprint 9)
+## Later horizons
 
-**Release milestone — Search Experience v0.16.0** (Milestone 10): ✅ (`v0.16.0`, Sprints 10.1–10.6)
+| Horizon | Focus |
+|---------|--------|
+| Mid-term | Destinations / About pages; destinations API; Amadeus Enterprise enablement |
+| Ops | Caching, rate limits, monitoring |
+| Long-term | Activities, ground transport APIs, maps, trip sharing, AI optimization, PWA |
 
-| Item | Notes |
-|------|-------|
-| Destinations API | Google Places, GeoNames, or CMS — swap mock destination provider |
-| **Flights API (Amadeus)** | ✅ Sprints 1–8; long-term production / Enterprise path |
-| **Flights API (SerpAPI)** | ✅ Sprint 9 — temporary **dev/test** only (ADR-036) |
-| **Search Experience** | ✅ Milestone 10 — results UI, reliability, quality, performance, destinations |
-| Hotels / activities API | Booking.com hotels + activities later |
-| Partial provider failure | ✅ Sprint 10.2 / ADR-037 |
-| Manual Amadeus sandbox | Checklist in `SPRINT_8_SUMMARY.md` — execute when enabling live keys |
-| currencyService client boundary | Technical debt (ADR-035) — restore DI without Amadeus `server-only` on client |
-| Monitoring / performance | Ops focus after v0.16.0 |
-| Ground transport API | Omio or similar for buses and trains |
-| Caching and rate limiting | Protect Route Handlers and provider quotas |
-| Budget-aware trip suggestions | Use budget + travel style from search |
-| Interactive maps | Destination locations |
-| Trip sharing | Share itineraries with others |
-| AI travel optimization | Long-term |
-| Mobile app or PWA | Optional long-term |
-| Payment / booking integration | Optional long-term |
+Technical debt (ongoing): currencyService registry DI (ADR-035).
 
 ---
 
 ## Out of scope (for now)
 
-- Real hotel or flight booking APIs
-- Payment processing
+- **Booking / payment checkout** (live **search** for flights is in scope as of v0.17.0)
 - Multi-language support
 - Native mobile apps
 
-These may be revisited after core pages and user accounts are in place.
+These may be revisited after hotel search and core product pages are in place.

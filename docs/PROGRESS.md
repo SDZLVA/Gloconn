@@ -859,6 +859,43 @@ Tie-break: score → name → id. Empty query returns `[]` (idle UI uses recent 
 
 ---
 
+## Milestone 11 — Live Flights (v0.17.0)
+
+**Dates:** July 2026  
+**Branch:** `cursor/milestone-10-6-hardening-release`  
+**Release:** **v0.17.0** — [releases/v0.17.0.md](./releases/v0.17.0.md) · [../CHANGELOG.md](../CHANGELOG.md)
+
+### Sprint 11.1 / 11.1b — Live validation
+
+- Confirmed existing SerpAPI adapter against live Google Flights API
+- Matrix: one-way, round-trip, domestic, international, empty/invalid IATA
+- Evidence: [SPRINT_11_1_VALIDATION.md](./SPRINT_11_1_VALIDATION.md), [SPRINT_11_1B_LIVE_RESULTS.json](./SPRINT_11_1B_LIVE_RESULTS.json)
+
+### Sprint 11.2 — Production hardening
+
+- Full date-time mapping (`YYYY-MM-DD HH:mm`)
+- Currency fallbacks (response → request → EUR)
+- Round-trip `departure_token` return lookups (capped; outbound fallback)
+- Automated tests updated — suite at **272**
+- Summary: [SPRINT_11_2_SUMMARY.md](./SPRINT_11_2_SUMMARY.md)
+
+### Sprint 11.3 — Production readiness
+
+- End-to-end UI + API validation; performance (`deep_search` on/off); error experience
+- Conditional GO for v0.17.0; RT token HTTP 400 documented as follow-up
+- Report: [SPRINT_11_3_PRODUCTION_READINESS.md](./SPRINT_11_3_PRODUCTION_READINESS.md)
+
+### Release
+
+- [x] Version bump `package.json` → **0.17.0**
+- [x] Release notes + changelog
+- [x] Health check (typecheck, test, build) green
+- [x] Milestone **11** marked complete; Milestone **12** (hotels) is next
+
+**Milestone 11 complete.**
+
+---
+
 ## Budget UI — numeric input
 
 **Branch:** `cursor/project-principles`

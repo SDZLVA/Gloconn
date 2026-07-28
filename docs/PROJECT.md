@@ -6,7 +6,8 @@ Glooconn is a travel planning web application that helps users discover destinat
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
 **Owner:** Shehan De Silva (@SDZLVA)  
-**Current version:** 0.16.0 (Milestone 10 Search Experience; multi-provider flights — mock · Amadeus · SerpAPI; see [releases/v0.16.0.md](./releases/v0.16.0.md))
+**Current version:** **0.17.0** — Live Flights (Milestone **11** complete; SerpAPI production-capable; Amadeus long-term Enterprise path). See [releases/v0.17.0.md](./releases/v0.17.0.md) · [../CHANGELOG.md](../CHANGELOG.md)  
+**Next:** Milestone **12** — Hotel Search Integration
 
 ---
 
@@ -36,7 +37,7 @@ Gloconn/
 │   ├── page.tsx            # Home page
 │   ├── search/
 │   │   └── results/
-│   │       └── page.tsx    # Search results (mock data, filters, sorting)
+│   │       └── page.tsx    # Search results (live or mock via providers)
 │   └── globals.css         # Global CSS, brand colors, typography
 ├── components/
 │   ├── home/               # Home page sections (HeroSection)
@@ -71,7 +72,7 @@ Gloconn/
 │   │   ├── destinations/ # mock ✅, google-maps (planned)
 │   │   ├── search/         # Deprecated monolithic provider
 │   │   ├── hotels/         # mock ✅, booking (planned)
-│   │   ├── flights/        # mock ✅, amadeus/ ✅, serpapi/ ✅ (dev/test, v0.15.0)
+│   │   ├── flights/        # mock ✅, serpapi/ ✅ (live, production-capable, v0.17.0), amadeus/ ✅ (long-term Enterprise)
 │   │   ├── ground/         # mock ✅, omio (planned)
 │   │   └── mock/           # Shared mock helpers (filter, pricing)
 │   ├── services/           # Service layer — trip search is server-only
@@ -120,7 +121,7 @@ Gloconn/
 
 ---
 
-## Current features (Week 1)
+## Current features
 
 ### Layout
 - Sticky navigation bar with `BrandLogo` and links (Home, Destinations, My Trips, About)
@@ -132,7 +133,7 @@ Gloconn/
 - Hero section with `SectionHeading`, subtitle, and centered search card
 - Modern travel-themed design (brand blues, soft gradients, rounded cards)
 
-### Search form (UI + client logic, mock provider)
+### Search form (UI + client logic)
 - **Architecture** — `useSearchForm` (logic) → `SearchForm` (UI) → `SearchCard` (home page chrome)
 - **Layout** — grouped sections (Where, When, Trip details, Preferences) with responsive grids and dividers
 - **From** — required origin autocomplete (departure city)
@@ -142,20 +143,21 @@ Gloconn/
 - **Budget** — required numeric input with currency selector (€0–€10,000)
 - **Search for** — toggle stays, flights, and ground transport result types
 - **Travel style** — Budget / Standard / Luxury radio group
-- React state management via `useSearchForm` hook
-- Submit builds a canonical `SearchRequest` via `lib/search/request.ts` (ready for future `POST /api/search`)
-- Required-field validation on Search click with inline errors and a summary alert
+- Submit builds a canonical `SearchRequest` via `lib/search/request.ts`
 - Successful searches navigate to `/search/results` with URL query params
-- Results route and `POST /api/search` use `SearchRequest` end to end
 
-### Search results (mock provider via service layer)
+### Search results (providers via service layer)
 - **Route:** `/search/results` — reads search criteria from URL query params
-- **Data:** Loaded via `postSearchTrips()` → `POST /api/search` → server `searchTrips()` (providers run server-side only)
-- **Cards:** Hotel, flight, bus, and train result cards with modern layout
-- **Filters:** Sidebar with transport type, price range, and minimum rating
-- **Sorting:** Price, rating, and duration options
-- **Responsive:** Collapsible filter panel on mobile; sticky sidebar on desktop
-- **Reusable parts:** `ResultCard`, `ResultPrice`, `ResultRating`, `ResultTypeBadge`, etc.
+- **Data:** `postSearchTrips()` → `POST /api/search` → server `searchTrips()` / orchestrator
+- **Live Flight Search:** SerpAPI when `FLIGHTS_PROVIDER=serpapi` (v0.17.0, production-capable)
+- **Cards:** Hotel, flight, bus, and train result cards
+- **Filters / sorting / ranking:** Milestone 10 client quality + performance
+- Hotels / buses / trains remain **mock** until Milestone 12+
+
+### Live Flights (v0.17.0)
+- Multi-provider `FlightsProvider`: mock · **serpapi** · amadeus
+- Unified `Flight` model; SerpAPI maps full date-time and currencies
+- Amadeus remains the long-term Enterprise flights path
 
 ### Reusable UI primitives
 - `Button`, `Card`, `InputField`, `FormField` (label + error)
@@ -175,7 +177,7 @@ Gloconn/
 | Route | Status | Description |
 |-------|--------|-------------|
 | `/` | ✅ Live | Home page with hero and search card |
-| `/search/results` | ✅ Live | Search results with mock hotels, flights, buses, trains |
+| `/search/results` | ✅ Live | Search results; live flights when SerpAPI configured |
 | `/destinations` | ⏳ Planned | Destination browsing (nav link exists, page not built) |
 | `/my-trips` | ✅ Live | Saved trips list (protected, Supabase) |
 | `/profile` | ✅ Live | User profile (protected) |
@@ -187,10 +189,12 @@ Gloconn/
 ## Development commands
 
 ```bash
-npm run dev      # Start development server → http://localhost:3000
-npm run build    # Production build
-npm run start    # Run production build locally
-npm run lint     # Run ESLint
+npm run dev         # Start development server → http://localhost:3000
+npm run build       # Production build
+npm run start       # Run production build locally
+npm run lint        # Run ESLint
+npm run typecheck   # TypeScript check
+npm test            # Automated tests (272)
 ```
 
 ### Windows note
@@ -223,13 +227,9 @@ See `PROJECT_RULES.md` in the project root for AI and developer guidelines. Key 
 | [Provider_Guide.md](./Provider_Guide.md) | How to add a flights vendor |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | Context for AI assistants continuing the project |
 | [CURRENT_STATE.md](./CURRENT_STATE.md) | Latest release snapshot and active focus |
-| [releases/v0.16.0.md](./releases/v0.16.0.md) | v0.16.0 Milestone 10 Search Experience release |
-| [releases/v0.15.0.md](./releases/v0.15.0.md) | v0.15.0 multi-provider / SerpAPI release notes |
-| [SPRINT_2_SUMMARY.md](./SPRINT_2_SUMMARY.md) | Sprint 2 completion summary |
-| [SPRINT_3_SUMMARY.md](./SPRINT_3_SUMMARY.md) | Sprint 3 completion summary |
-| [SPRINT_4_SUMMARY.md](./SPRINT_4_SUMMARY.md) | Sprint 4 completion summary |
-| [SPRINT_5_SUMMARY.md](./SPRINT_5_SUMMARY.md) | Sprint 5 completion summary |
-| [SPRINT_6_SUMMARY.md](./SPRINT_6_SUMMARY.md) | Sprint 6 completion summary (`flight-api-v1`) |
-| [SPRINT_7_SUMMARY.md](./SPRINT_7_SUMMARY.md) | Sprint 7 completion summary (Flight API v1 release) |
-| [SPRINT_8_SUMMARY.md](./SPRINT_8_SUMMARY.md) | Sprint 8 completion summary (production hardening) |
+| [releases/v0.17.0.md](./releases/v0.17.0.md) | v0.17.0 Live Flights release |
+| [releases/v0.16.0.md](./releases/v0.16.0.md) | v0.16.0 Milestone 10 Search Experience |
+| [releases/v0.15.0.md](./releases/v0.15.0.md) | v0.15.0 multi-provider / SerpAPI adapter |
+| [../CHANGELOG.md](../CHANGELOG.md) | Release history |
+| [SPRINT_11_3_PRODUCTION_READINESS.md](./SPRINT_11_3_PRODUCTION_READINESS.md) | Milestone 11 readiness gate |
 | [../PROJECT_PRINCIPLES.md](../PROJECT_PRINCIPLES.md) | Mission, vision, and decision-making rules |

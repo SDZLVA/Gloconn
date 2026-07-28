@@ -14,8 +14,8 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | **v0.16.0** — Milestone 10 complete; SerpAPI through Sprint **11.3** (conditional GO for v0.17.0; RT token fix → 11.4) |
-| APIs | Supabase Auth + PostgreSQL; travel data via mock providers by default; optional live Amadeus / SerpAPI |
+| Stage | **v0.17.0** — Milestone **11** complete (Live Flights); SerpAPI **production-capable**; next **Milestone 12** (hotels) |
+| APIs | Supabase Auth + PostgreSQL; travel data via mock providers by default; optional live **SerpAPI** / Amadeus |
 
 ---
 
@@ -39,7 +39,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 
 ### Live routes
 - `/` — Home page with `HeroSection` + `SearchCard`
-- `/search/results` — Search results with mock hotels, flights, buses, trains (filters + sorting)
+- `/search/results` — Search results (filters + sorting); **live flights** when SerpAPI is configured
 - `/login`, `/signup` — Google and email authentication
 - `/profile` — Protected user profile
 - `/my-trips` — Protected saved trips list
@@ -126,7 +126,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `logAmadeusEvent` | `lib/providers/flights/amadeus/log.ts` | Structured server-only Amadeus logs |
 | `mapAmadeusFlightOffersResponse` | `lib/providers/flights/amadeus/` (barrel) | Raw response → `Flight[]` (used by Amadeus provider) |
 | Amadeus flights adapter | `lib/providers/flights/amadeus/` | Live pipeline in `AmadeusFlightsProvider.search` (ADR-035) — long-term production |
-| SerpAPI flights adapter | `lib/providers/flights/serpapi/` | Dev/test pipeline in `SerpApiFlightsProvider.search` (ADR-036, v0.15.0) |
+| SerpAPI flights adapter | `lib/providers/flights/serpapi/` | Live pipeline in `SerpApiFlightsProvider.search` (production-capable, v0.17.0; ADR-036) |
 | `createFlightsProvider` | `lib/providers/core/factories.ts` | Selects mock / amadeus / serpapi |
 | `getServiceProviders` | `lib/services/context.ts` | Returns injected or registry-backed providers |
 | Provider registry | `lib/providers/core/registry.ts` | Central `get*Provider()` selection |
@@ -208,7 +208,7 @@ SearchResultsPage (client)
 
 **Amadeus notes (ADR-032 / ADR-033 / ADR-034 / ADR-035 + Sprint 8 hardening):**
 
-Amadeus package is **frozen** during SerpAPI work (ADR-036). Upcoming SerpAPI adapter is **dev/test only**; planned product version **v0.15.0**.
+Amadeus remains the **long-term Enterprise** flights path. Prefer not to modify `amadeus/` unless CTO-approved. SerpAPI is the **current production-capable live flights** path (**v0.17.0**, Milestone 11).
 ```
 AmadeusFlightsProvider.search(request)
   → require destinationId or createProviderError
@@ -223,14 +223,14 @@ AmadeusFlightsProvider.search(request)
 - Selection: `USE_MOCK_PROVIDERS=true` → mock; false + `FLIGHTS_PROVIDER=amadeus|serpapi` → that vendor (live unset defaults to amadeus)
 - Hosts: `AMADEUS_ENV=test|production` via `getAppConfig().amadeus.baseUrl` (no arbitrary URLs)
 - Timeouts / 401 retry / 429 / structured logs are Amadeus-package concerns (Sprint 8)
-- SerpAPI uses shared `lib/api/httpTimeout.ts` + vendor-local structured logs (Sprint 9)
+- SerpAPI uses shared `lib/api/httpTimeout.ts` + vendor-local structured logs (Sprint 9+)
 - Unsupported currency throws `createProviderError` — do not silently skip those offers
 - `rating` is always `0` (do not fabricate)
 - **Debt:** `currencyService` uses `mockCurrencyProvider` directly so the client budget UI does not import Amadeus `server-only` via the registry
 
-**Flight API tests (Sprints 7–9):**
+**Flight API tests (Sprints 7–11):**
 ```
-npm test  → 192 automated tests (node:test via tsx)
+npm test  → 272 automated tests (node:test via tsx)
   Amadeus: helpers / mappers / query / cache / provider / hardening
   SerpAPI: config / types / query / client / mappers / provider / factory / integration
   fixtures + mocked fetch only (no live Amadeus or SerpAPI in CI)
@@ -275,7 +275,7 @@ Route Handler + HTTP client
 | `AMADEUS_OAUTH_TIMEOUT_MS` | No (default `10000`) | No | OAuth request timeout |
 | `AMADEUS_FETCH_TIMEOUT_MS` | No (default `15000`) | No | Authenticated Amadeus fetch timeout |
 | `FLIGHTS_PROVIDER` | No (live default `amadeus`) | No | `mock` · `amadeus` · `serpapi` |
-| `SERPAPI_API_KEY` | When live SerpAPI | **Never** | SerpAPI Google Flights (dev/test) |
+| `SERPAPI_API_KEY` | When live SerpAPI | **Never** | SerpAPI Google Flights (live / production-capable) |
 | `SERPAPI_DEEP_SEARCH` | No (default `false`) | No | SerpAPI `deep_search` flag |
 
 **Rules:**
@@ -333,7 +333,7 @@ lib/providers/        → provider adapters (mock + external APIs)
   destinations/       → mock ✅, google-maps (planned)
   search/             → monolithic mock ✅ (legacy; prefer domain providers)
   hotels/             → mock, booking (planned)
-  flights/            → mock ✅, amadeus/ (production path ✅), serpapi/ (dev/test ✅ v0.15.0)
+  flights/            → mock ✅, serpapi/ (live, production-capable ✅ v0.17.0), amadeus/ (long-term Enterprise ✅)
     amadeus/          → OAuth, client, flightOffers, mappers, provider
     serpapi/          → googleFlights, client, mappers, provider, fixtures, integration tests
   ground/             → mock, omio (planned)
@@ -367,9 +367,9 @@ docs/                 → project documentation
 
 ---
 
-## Common tasks after v0.16.0
+## Common tasks after v0.17.0
 
-**Milestone 10 — Search Experience** is ✅ complete (**v0.16.0**).
+**Milestone 11 — Live Flights** is ✅ complete (**v0.17.0**). Next: **Milestone 12 — Hotel Search Integration**.
 - Sprint **10.1** (Professional Search Results UI) ✅
 - Sprint **10.2** (Search Reliability — `SearchResponse` + partial failure) ✅ ADR-037
 - Sprint **10.3** (Search Quality — filters / sort / ranking) ✅ client-only
@@ -379,29 +379,30 @@ docs/                 → project documentation
 
 Recommended next priorities (see [TODO.md](./TODO.md)):
 
-1. **Destinations / About pages** — product pages (nav links still 404)
-2. **Hotels provider** — behind `HotelsProvider`
-3. **Amadeus Enterprise** — enablement + sandbox checklist when credentials are ready
-4. **currencyService DI** — ADR-035 cleanup
+1. **Milestone 12 — Hotel Search Integration**
+2. SerpAPI round-trip `departure_token` enrichment polish (carry-forward)
+3. **Destinations / About pages** — product pages (nav links still 404)
+4. **Amadeus Enterprise** — enablement + sandbox checklist when credentials are ready
+5. **currencyService DI** — ADR-035 cleanup
 
 ---
 
 ## Current architecture (flights)
 
 ```
-SearchRequest → factory → FlightsProvider (mock | amadeus | serpapi)
+SearchRequest → factory → FlightsProvider (mock | serpapi | amadeus)
   → query builder → HTTP client → mapper → Flight[]
 ```
 
 | Provider | Role |
 |----------|------|
 | `mock` | Default local + CI |
-| `amadeus` | Long-term production |
-| `serpapi` | Temporary development / testing |
+| `serpapi` | **Live flights — production-capable (v0.17.0)** |
+| `amadeus` | Long-term Enterprise / future production path |
 
-**Completed:** Sprints 1–8 (Amadeus path) · Sprint 9.1–9.10 (SerpAPI + docs) · **v0.15.0**
+**Completed:** Sprints 1–8 (Amadeus path) · Sprint 9 · Milestone 10 · **Milestone 11 → v0.17.0**
 
-**Known limitations:** SerpAPI one-way live validated (11.3); RT `departure_token` return fetches currently HTTP 400 → outbound fallback (11.4); currencyService DI debt; no live vendor calls in CI.
+**Known limitations:** RT `departure_token` return fetches may HTTP 400 → outbound fallback; currencyService DI debt; no live vendor calls in CI; hotels still mock.
 
 ---
 
@@ -435,8 +436,8 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 
 ## What NOT to do
 
-- ❌ Do not treat SerpAPI as production — it is development/testing only (ADR-036)
-- ❌ Do not modify `lib/providers/flights/amadeus/**` unless CTO-approved (long-term production path)
+- ❌ Do not treat SerpAPI as a throwaway prototype — it is the **production-capable live flights** path (v0.17.0); still keep Amadeus as the long-term Enterprise path
+- ❌ Do not modify `lib/providers/flights/amadeus/**` unless CTO-approved (long-term Enterprise path)
 - ❌ Do not call `searchTrips()` or `searchService` from client components — use `postSearchTrips()` from `@/lib/api`
 - ❌ Do not assume search success data is `SearchResult[]` — it is `SearchResponse` (flatten with `searchResponseToResults`)
 - ❌ Do not mention vendor names in search warning copy
@@ -458,7 +459,6 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 - ❌ Do not add external API integrations without being asked
 - ❌ Do not install UI libraries (shadcn, MUI) without approval
 - ❌ Do not refactor unrelated code during a feature task
-- ❌ Do not remove console logging until search results page replaces it
 - ❌ Do not duplicate nav links outside `lib/navigation.ts`
 - ❌ Do not duplicate brand markup — use `BrandLogo`
 - ❌ Do not duplicate heading styles — use `SectionHeading`
@@ -478,8 +478,10 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 | [API_FOUNDATION.md](./API_FOUNDATION.md) | API layers, provider swap guide |
 | [Provider_Guide.md](./Provider_Guide.md) | How to add a flights vendor |
 | [CURRENT_STATE.md](./CURRENT_STATE.md) | Latest release snapshot |
+| [releases/v0.17.0.md](./releases/v0.17.0.md) | v0.17.0 Live Flights (Milestone 11) |
 | [releases/v0.16.0.md](./releases/v0.16.0.md) | v0.16.0 Milestone 10 Search Experience release |
 | [releases/v0.15.0.md](./releases/v0.15.0.md) | v0.15.0 SerpAPI multi-provider release |
+| [../CHANGELOG.md](../CHANGELOG.md) | Release history |
 | [SPRINT_8_SUMMARY.md](./SPRINT_8_SUMMARY.md) | Sprint 8 hardening + sandbox checklist |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | This file — start here |
 
