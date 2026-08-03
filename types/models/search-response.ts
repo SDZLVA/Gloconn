@@ -8,6 +8,7 @@ import type { Flight } from "@/types/models/flight";
 import type { Hotel } from "@/types/models/hotel";
 import type { Restaurant } from "@/types/models/restaurant";
 import type { Train } from "@/types/models/train";
+import type { TravelPackage } from "@/types/models/travel-package";
 
 /** Domain that produced a warning during search orchestration. */
 export type SearchResponseDomain =
@@ -58,7 +59,17 @@ export type SearchResponse = {
   /** Points of interest — populated when attraction search is enabled. */
   attractions: Attraction[];
 
-  /** Total count of all results across every category. */
+  /**
+   * Recommended flight + hotel packages composed after domain search.
+   * Empty when either domain is missing, failed, or returned no results.
+   * Not counted in `totalCount` (packages are derived from flights/hotels).
+   */
+  packages: TravelPackage[];
+
+  /**
+   * Total count of provider domain results (hotels, flights, buses, trains,
+   * restaurants, attractions). Does not include derived `packages`.
+   */
   totalCount: number;
 
   /** ISO 8601 timestamp when the search completed. */

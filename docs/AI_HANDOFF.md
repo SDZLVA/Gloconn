@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | **v0.17.0** flights released; **Milestone 12** complete — **v0.18.0** release prep |
+| Stage | **v0.19.0** Travel Packages released; awaiting next milestone |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers by default; optional live **SerpAPI** / Amadeus |
 
 ---
@@ -39,7 +39,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 
 ### Live routes
 - `/` — Home page with `HeroSection` + `SearchCard`
-- `/search/results` — Search results (filters + sorting); **live flights and hotels** when SerpAPI is configured
+- `/search/results` — Search results (filters + sorting); **live flights and hotels** when SerpAPI is configured; **Recommended Packages** when both domains return results
 - `/login`, `/signup` — Google and email authentication
 - `/profile` — Protected user profile
 - `/my-trips` — Protected saved trips list
@@ -79,6 +79,8 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `PassengersSelector` | `components/ui/` | Reusable passengers & rooms dropdown with steppers |
 | `SectionHeading` | `components/ui/` | Reusable title + description for sections |
 | `SearchResultsPage` | `components/results/` | Client orchestrator for results layout |
+| `RecommendedPackagesSection` | `components/results/` | Hero packages list (hidden when empty) |
+| `TravelPackageCard` | `components/results/` | Informational flight+hotel package card |
 | `ResultCard` | `components/results/` | Dispatches to hotel/flight/bus/train cards |
 | `ResultsFilterSidebar` | `components/results/` | Type, price, rating + model-backed facets (stops, cabin, airlines, stars, operators, amenities) |
 | `ResultsSortBar` | `components/results/` | Sort dropdown (Recommended / Cheapest / Fastest / Highest rated / Best value) |
@@ -333,20 +335,21 @@ lib/providers/        → provider adapters (mock + external APIs)
   core/               → registry, config, factories, interfaces
   destinations/       → mock ✅, google-maps (planned)
   search/             → monolithic mock ✅ (legacy; prefer domain providers)
-  hotels/             → mock, serpapi/ (live ✅ v0.18.0 prep), booking (stub → mock)
+  hotels/             → mock, serpapi/ (live ✅ v0.18.0), booking (stub → mock)
     serpapi/          → googleHotels, client, mappers, provider, fixtures, integration tests
   flights/            → mock ✅, serpapi/ (live, production-capable ✅ v0.17.0), amadeus/ (long-term Enterprise ✅)
     amadeus/          → OAuth, client, flightOffers, mappers, provider
     serpapi/          → googleFlights, client, mappers, provider, fixtures, integration tests
   ground/             → mock, omio (planned)
+lib/packages/         → PackageComposer (TravelPackage composition + scoring) — product layer, not a provider
 lib/services/         → server-side service layer (searchService is server-only)
   context.ts          → getServiceProviders / setServiceProviders (simple DI)
   iataResolution.ts   → enrich SearchRequest with optional airport IATA codes
-  searchOrchestrator  → enrichment + flight IATA validation + parallel providers
+  searchOrchestrator  → enrichment + flight IATA validation + parallel providers + package compose
 lib/providers/core/   → registry + config (selects active adapters)
 app/api/search/       → POST /api/search Route Handler
 lib/                  → other plain TS modules (navigation, styles, utils)
-types/models/         → shared domain models (import from @/types)
+types/models/         → shared domain models incl. TravelPackage (import from @/types)
 types/search.ts       → form types; SearchData legacy alias
 types/results.ts      → SearchResult union
 docs/                 → project documentation
@@ -369,27 +372,26 @@ docs/                 → project documentation
 
 ---
 
-## Common tasks after v0.17.0
+## Common tasks after v0.19.0
 
-**Milestone 11 — Live Flights** is ✅ complete (**v0.17.0**). **Milestone 12** SerpAPI Hotels is ✅ complete through Sprint **12.4** (v0.18.0 release prep).
-- Sprint **10.1** (Professional Search Results UI) ✅
-- Sprint **10.2** (Search Reliability — `SearchResponse` + partial failure) ✅ ADR-037
-- Sprint **10.3** (Search Quality — filters / sort / ranking) ✅ client-only
-- Sprint **10.4** (Search Performance — cache / debounce / memo) ✅ client-only
-- Sprint **10.5** (Destination Search Quality — match / rank / UX) ✅ client-only
-- Sprint **10.6** (Hardening & Release) ✅
+**Milestone 13 — Travel Packages** is ✅ complete and released as **v0.19.0**.
+- Sprint **13.2** `TravelPackage` + `PackageComposer` ✅
+- Sprint **13.3** Orchestrator + `SearchResponse.packages` ✅
+- Sprint **13.4** Recommended Packages UI ✅
+- Sprint **13.5** Live validation + hardening ✅
+- Sprint **13.6** Release **v0.19.0** ✅
 
 Recommended next priorities (see [TODO.md](./TODO.md)):
 
-1. **v0.18.0 release** — tag + release notes (hotels)
+1. Package UX polish (UI top-N cap, diversify hotel candidates) — optional
 2. SerpAPI round-trip `departure_token` enrichment polish (carry-forward)
 3. **Destinations / About pages** — product pages (nav links still 404)
 4. **Amadeus Enterprise** — enablement + sandbox checklist when credentials are ready
-5. **currencyService DI** — ADR-035 cleanup
+5. Await founder/CTO for Milestone 14 authorization
 
 ---
 
-## Current architecture (flights + hotels)
+## Current architecture (flights + hotels + packages)
 
 ```
 SearchRequest → factory → FlightsProvider (mock | serpapi | amadeus)
@@ -397,6 +399,9 @@ SearchRequest → factory → FlightsProvider (mock | serpapi | amadeus)
 
 SearchRequest → factory → HotelsProvider (mock | serpapi | booking stub)
   → query builder → HTTP client → mapper → Hotel[]
+
+Flight[] + Hotel[] + SearchRequest → PackageComposer → TravelPackage[]
+  → SearchResponse.packages (product layer — never a provider)
 ```
 
 | Domain | Provider | Role |
@@ -405,11 +410,12 @@ SearchRequest → factory → HotelsProvider (mock | serpapi | booking stub)
 | Flights | `serpapi` | **Live flights — production-capable (v0.17.0)** |
 | Flights | `amadeus` | Long-term Enterprise / future production path |
 | Hotels | `mock` | Default local + CI |
-| Hotels | `serpapi` | **Live hotels — production-capable when configured (v0.18.0 prep)** |
+| Hotels | `serpapi` | **Live hotels — production-capable (v0.18.0)** |
+| Packages | *(none)* | Composed in orchestrator via `lib/packages` |
 
-**Completed:** Sprints 1–8 (Amadeus path) · Sprint 9 · Milestone 10 · **Milestone 11 → v0.17.0** · **Milestone 12 → v0.18.0 prep**
+**Completed:** Sprints 1–8 · Sprint 9 · Milestone 10 · **Milestone 11 → v0.17.0** · **Milestone 12 → v0.18.0** · **Milestone 13 → v0.19.0**
 
-**Known limitations:** RT `departure_token` return fetches may HTTP 400 → outbound fallback; hotels require `returnDate`; `children_ages` defaults to `8`; currencyService DI debt; no live vendor calls in CI.
+**Known limitations:** RT `departure_token` return fetches may HTTP 400 → outbound fallback; hotels require `returnDate`; `children_ages` defaults to `8`; package candidates skew budget; currencyService DI debt; no live vendor calls in CI.
 
 ---
 

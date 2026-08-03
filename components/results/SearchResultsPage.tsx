@@ -17,6 +17,7 @@ import {
   MobileFilterToggle,
   ResultsFilterSidebar,
 } from "@/components/results/ResultsFilterSidebar";
+import { RecommendedPackagesSection } from "@/components/results/RecommendedPackagesSection";
 import { ResultsEmptyState } from "@/components/results/ResultsEmptyState";
 import { ResultsErrorState } from "@/components/results/ResultsErrorState";
 import { ResultsHeader } from "@/components/results/ResultsHeader";
@@ -29,6 +30,7 @@ import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchResponseWarning } from "@/types/models/search-response";
+import type { TravelPackage } from "@/types/models/travel-package";
 import {
   DEFAULT_RESULTS_FILTERS,
   type ResultsFilters,
@@ -43,6 +45,7 @@ type SearchResultsPageProps = {
 /** Stable empty list so loading renders do not churn filter defaults. */
 const EMPTY_RESULTS: SearchResult[] = [];
 const EMPTY_WARNINGS: SearchResponseWarning[] = [];
+const EMPTY_PACKAGES: TravelPackage[] = [];
 
 function filtersBaselineKey(
   searchKey: string,
@@ -77,6 +80,8 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     }
     return searchResponseToResults(resultsState.data);
   }, [resultsState.data]);
+
+  const packages = resultsState.data?.packages ?? EMPTY_PACKAGES;
 
   const warnings = resultsState.data?.warnings ?? EMPTY_WARNINGS;
 
@@ -232,12 +237,15 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
               )}
 
               {hasData && !hasNoResults && (
-                <ResultsList
-                  results={sorted}
-                  destination={destination}
-                  editSearchHref={editSearchHref}
-                  onClearFilters={clearFilters}
-                />
+                <>
+                  <RecommendedPackagesSection packages={packages} />
+                  <ResultsList
+                    results={sorted}
+                    destination={destination}
+                    editSearchHref={editSearchHref}
+                    onClearFilters={clearFilters}
+                  />
+                </>
               )}
             </div>
           </div>

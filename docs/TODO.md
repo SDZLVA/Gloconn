@@ -2,41 +2,42 @@
 
 Active and upcoming tasks. Check items off as they are completed and move done items to [PROGRESS.md](./PROGRESS.md).
 
-**Current release:** **v0.17.0** (flights) · **v0.18.0 prep** (hotels)  
-**Completed milestone:** **Milestone 11** (Live Flights)  
-**Active milestone:** **Milestone 12** — Hotel Search Integration (adapter + validation + hardening ✅)
+**Current release:** **v0.19.0** (travel packages)  
+**Completed milestone:** **Milestone 13** (Travel Packages — Sprints 13.1–13.6 ✅)  
+**Next:** Awaiting founder/CTO authorization for the next milestone
 
 ---
 
-## 🏃 Milestone 12 — Hotel Search Integration
+## ✅ Milestone 13 — Travel Packages (archived)
 
-**Goal:** Live hotel search behind `HotelsProvider` — same architecture as flights.
+**Release:** **v0.19.0** — [releases/v0.19.0.md](./releases/v0.19.0.md)
 
-### Foundation
-- [x] Confirm `HotelsProvider` contract and shared hotel model remain sufficient
-- [x] Env / config for hotel vendor selection (mirror flights factory pattern)
-- [x] Document hotel vendor in Provider Guide / API foundation
+- [x] Sprint 13.1 — Architecture discovery + CTO approval
+- [x] Sprint 13.2 — `TravelPackage` model + pure `PackageComposer`
+- [x] Sprint 13.3 — Orchestrator integration + `SearchResponse.packages`
+- [x] Sprint 13.4 — Recommended Packages UI
+- [x] Sprint 13.5 — Live validation + hardening + docs
+- [x] Sprint 13.6 — Release **v0.19.0**
 
-### Adapter
-- [x] Implement SerpAPI adapter under `lib/providers/hotels/serpapi/`
-- [x] Query builder → HTTP client → mapper → shared hotel model
-- [x] Wire factory selection; keep mock default for CI/local
-
-### Integration
-- [x] Orchestrator live path verified (12.3)
-- [x] Partial failure / warnings behavior unchanged (ADR-037)
-- [x] Automated tests (mocked fetch; no live vendor in CI)
-
-### Docs & release readiness
-- [x] CURRENT_STATE / CHANGELOG / Provider Guide / API foundation updated
-- [x] Operator env in `.env.example`
-- [x] Production hardening (12.4)
-- [ ] **v0.18.0 release** — tag, release notes (next sprint)
-
-### Carry-forward from Milestone 11 (optional / polish)
-- [ ] SerpAPI round-trip `departure_token` return enrichment (fix HTTP 400 request shape)
+### Carry-forward / polish (optional)
+- [ ] UI display cap for packages (top 5–8)
+- [ ] Diversify package hotel candidates beyond cheapest-first
+- [ ] SerpAPI round-trip `departure_token` return enrichment (from M11)
 - [ ] Flight card trip-type label (one-way vs round-trip)
 - [ ] Investigate `SectionHeading` hydration warning
+
+---
+
+## ✅ Milestone 12 — Live Hotels (archived)
+
+**Release:** **v0.18.0** — [releases/v0.18.0.md](./releases/v0.18.0.md)
+
+- [x] **12.1** SerpAPI Hotels discovery
+- [x] **12.2** SerpAPI Hotels adapter
+- [x] **12.3** Live hotels validation
+- [x] **12.4** Production hardening
+
+Evidence: [SPRINT_12_3_VALIDATION.md](./SPRINT_12_3_VALIDATION.md) · [SPRINT_12_4_PRODUCTION_READINESS.md](./SPRINT_12_4_PRODUCTION_READINESS.md)
 
 ---
 
@@ -45,26 +46,19 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 **Release:** **v0.17.0** — [releases/v0.17.0.md](./releases/v0.17.0.md)
 
 - [x] **11.1 / 11.1b** Live SerpAPI discovery & validation
-- [x] **11.2** Production hardening (datetime, currency, `departure_token` path, tests)
+- [x] **11.2** Production hardening
 - [x] **11.3** Production readiness & operational validation
 - [x] Release docs + health check → **v0.17.0**
-
-Evidence: [SPRINT_11_1_VALIDATION.md](./SPRINT_11_1_VALIDATION.md) · [SPRINT_11_2_SUMMARY.md](./SPRINT_11_2_SUMMARY.md) · [SPRINT_11_3_PRODUCTION_READINESS.md](./SPRINT_11_3_PRODUCTION_READINESS.md)
 
 ---
 
 ## ✅ Milestone 10 — Search Experience (archived)
 
-- [x] **10.1** Professional Search Results UI
-- [x] **10.2** Partial provider failure + `SearchResponse` (ADR-037)
-- [x] **10.3** Search quality (filters / sort / ranking)
-- [x] **10.4** Search performance
-- [x] **10.5** Destination search quality
-- [x] **10.6** Hardening + docs release (**v0.16.0**)
+- [x] **10.1**–**10.6** → **v0.16.0**
 
 ---
 
-## 🔴 High priority — Product pages (parallel / after M12 kickoff)
+## 🔴 High priority — Product pages
 
 - [ ] **Destinations page** (`app/destinations/page.tsx`)
 - [ ] **About page** (`app/about/page.tsx`)
@@ -80,20 +74,10 @@ Evidence: [SPRINT_11_1_VALIDATION.md](./SPRINT_11_1_VALIDATION.md) · [SPRINT_11
 
 ---
 
-## 🟢 Low priority — Backlog
+## 🟢 Lower priority / later horizons
 
-- [ ] Connect first external destination provider
-- [ ] Add favicon and Open Graph metadata
-- [ ] Add static assets to `public/`
-- [ ] Expand mock destination dataset for Destinations page
-- [ ] Ground transport live provider (Omio or similar)
-
----
-
-## How to use this file
-
-1. Pick a task from **Milestone 12** or High priority
-2. Create a feature branch: `cursor/task-name`
-3. Complete the task following `PROJECT_RULES.md`
-4. Commit, push, and open a PR
-5. Check off the item here and add details to `PROGRESS.md`
+- [ ] Activities / attractions live providers
+- [ ] Ground transport live providers
+- [ ] Saved package contents (not just search criteria)
+- [ ] AI trip planner / price prediction
+- [ ] Booking integrations

@@ -17,6 +17,8 @@ export type { Hotel } from "@/types/models/hotel";
 
 export type { Flight } from "@/types/models/flight";
 
+export type { TravelPackage } from "@/types/models/travel-package";
+
 export type { Bus } from "@/types/models/bus";
 
 export type { Train } from "@/types/models/train";

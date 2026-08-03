@@ -19,6 +19,7 @@ export type {
   SearchResponseWarning,
   Train,
   Traveler,
+  TravelPackage,
   TravelStyle,
   TripType,
 } from "@/types/models";

@@ -1,0 +1,648 @@
+{
+  "sprint": "13.5",
+  "generatedAt": "2026-08-03T15:43:18.591Z",
+  "stay": {
+    "departureDate": "2026-09-15",
+    "returnDate": "2026-09-22"
+  },
+  "config": {
+    "USE_MOCK_PROVIDERS": "false",
+    "FLIGHTS_PROVIDER": "serpapi",
+    "HOTELS_PROVIDER": "serpapi",
+    "SERPAPI_DEEP_SEARCH": "false",
+    "SERPAPI_API_KEY": "REDACTED"
+  },
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "errored": 0,
+    "total": 5
+  },
+  "results": [
+    {
+      "id": "P1",
+      "label": "Milan → Tokyo",
+      "status": "pass",
+      "flightCount": 10,
+      "hotelCount": 20,
+      "packageCount": 20,
+      "expectedNights": 7,
+      "checks": [
+        {
+          "name": "flights_returned",
+          "ok": true,
+          "detail": "count=10"
+        },
+        {
+          "name": "hotels_returned",
+          "ok": true,
+          "detail": "count=20"
+        },
+        {
+          "name": "packages_generated",
+          "ok": true,
+          "detail": "count=20"
+        },
+        {
+          "name": "total_price_correct",
+          "ok": true,
+          "detail": "flight.price + hotel.price"
+        },
+        {
+          "name": "currency_consistent",
+          "ok": true
+        },
+        {
+          "name": "nights_correct",
+          "ok": true,
+          "detail": "expected≈7"
+        },
+        {
+          "name": "hotel_matches_destination",
+          "ok": true,
+          "detail": "destinationId=tokyo"
+        },
+        {
+          "name": "flight_dates_align_with_stay",
+          "ok": true,
+          "detail": "stay 2026-09-15 → 2026-09-22 (7 nights)"
+        },
+        {
+          "name": "ranking_score_order",
+          "ok": true
+        }
+      ],
+      "topPackage": {
+        "id": "pkg-serpapi-102ee48c7f5a0978-serpapi-hotel-d284783411dd2ad9",
+        "totalPrice": 2173,
+        "currency": "EUR",
+        "nights": 7,
+        "score": 66.9,
+        "flightId": "serpapi-102ee48c7f5a0978",
+        "hotelId": "serpapi-hotel-d284783411dd2ad9",
+        "airline": "LOT",
+        "hotelName": "Tokyo Guest House Ouji Music Lounge",
+        "flightPrice": 1923,
+        "hotelPrice": 250,
+        "flightCurrency": "EUR",
+        "hotelCurrency": "EUR",
+        "hotelDestinationId": "tokyo",
+        "flightDestinationId": "tokyo"
+      },
+      "samplePackages": [
+        {
+          "id": "pkg-serpapi-102ee48c7f5a0978-serpapi-hotel-d284783411dd2ad9",
+          "totalPrice": 2173,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 66.9,
+          "flightId": "serpapi-102ee48c7f5a0978",
+          "hotelId": "serpapi-hotel-d284783411dd2ad9",
+          "airline": "LOT",
+          "hotelName": "Tokyo Guest House Ouji Music Lounge",
+          "flightPrice": 1923,
+          "hotelPrice": 250,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "tokyo",
+          "flightDestinationId": "tokyo"
+        },
+        {
+          "id": "pkg-serpapi-68de4265b62688e6-serpapi-hotel-d284783411dd2ad9",
+          "totalPrice": 2126,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 66,
+          "flightId": "serpapi-68de4265b62688e6",
+          "hotelId": "serpapi-hotel-d284783411dd2ad9",
+          "airline": "Finnair",
+          "hotelName": "Tokyo Guest House Ouji Music Lounge",
+          "flightPrice": 1876,
+          "hotelPrice": 250,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "tokyo",
+          "flightDestinationId": "tokyo"
+        },
+        {
+          "id": "pkg-serpapi-102ee48c7f5a0978-serpapi-hotel-3130a1cf67fc316c",
+          "totalPrice": 2259,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 64.6,
+          "flightId": "serpapi-102ee48c7f5a0978",
+          "hotelId": "serpapi-hotel-3130a1cf67fc316c",
+          "airline": "LOT",
+          "hotelName": "TOKYO-W-inn Asakusa",
+          "flightPrice": 1923,
+          "hotelPrice": 336,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "tokyo",
+          "flightDestinationId": "tokyo"
+        }
+      ],
+      "durationMs": 2937
+    },
+    {
+      "id": "P2",
+      "label": "Milan → New York",
+      "status": "pass",
+      "flightCount": 9,
+      "hotelCount": 20,
+      "packageCount": 20,
+      "expectedNights": 7,
+      "checks": [
+        {
+          "name": "flights_returned",
+          "ok": true,
+          "detail": "count=9"
+        },
+        {
+          "name": "hotels_returned",
+          "ok": true,
+          "detail": "count=20"
+        },
+        {
+          "name": "packages_generated",
+          "ok": true,
+          "detail": "count=20"
+        },
+        {
+          "name": "total_price_correct",
+          "ok": true,
+          "detail": "flight.price + hotel.price"
+        },
+        {
+          "name": "currency_consistent",
+          "ok": true
+        },
+        {
+          "name": "nights_correct",
+          "ok": true,
+          "detail": "expected≈7"
+        },
+        {
+          "name": "hotel_matches_destination",
+          "ok": true,
+          "detail": "destinationId=new-york"
+        },
+        {
+          "name": "flight_dates_align_with_stay",
+          "ok": true,
+          "detail": "stay 2026-09-15 → 2026-09-22 (7 nights)"
+        },
+        {
+          "name": "ranking_score_order",
+          "ok": true
+        }
+      ],
+      "topPackage": {
+        "id": "pkg-serpapi-db5e62c92967b90b-serpapi-hotel-e4dce0a84d4159b4",
+        "totalPrice": 2023,
+        "currency": "USD",
+        "nights": 7,
+        "score": 76.2,
+        "flightId": "serpapi-db5e62c92967b90b",
+        "hotelId": "serpapi-hotel-e4dce0a84d4159b4",
+        "airline": "American",
+        "hotelName": "Harbor House Bed & Breakfast",
+        "flightPrice": 1203,
+        "hotelPrice": 820,
+        "flightCurrency": "USD",
+        "hotelCurrency": "USD",
+        "hotelDestinationId": "new-york",
+        "flightDestinationId": "new-york"
+      },
+      "samplePackages": [
+        {
+          "id": "pkg-serpapi-db5e62c92967b90b-serpapi-hotel-e4dce0a84d4159b4",
+          "totalPrice": 2023,
+          "currency": "USD",
+          "nights": 7,
+          "score": 76.2,
+          "flightId": "serpapi-db5e62c92967b90b",
+          "hotelId": "serpapi-hotel-e4dce0a84d4159b4",
+          "airline": "American",
+          "hotelName": "Harbor House Bed & Breakfast",
+          "flightPrice": 1203,
+          "hotelPrice": 820,
+          "flightCurrency": "USD",
+          "hotelCurrency": "USD",
+          "hotelDestinationId": "new-york",
+          "flightDestinationId": "new-york"
+        },
+        {
+          "id": "pkg-serpapi-db5e62c92967b90b-serpapi-hotel-fe609f9373869759",
+          "totalPrice": 2234,
+          "currency": "USD",
+          "nights": 7,
+          "score": 75.6,
+          "flightId": "serpapi-db5e62c92967b90b",
+          "hotelId": "serpapi-hotel-fe609f9373869759",
+          "airline": "American",
+          "hotelName": "Fairfield by Marriott Inn & Suites New York Staten Island",
+          "flightPrice": 1203,
+          "hotelPrice": 1031,
+          "flightCurrency": "USD",
+          "hotelCurrency": "USD",
+          "hotelDestinationId": "new-york",
+          "flightDestinationId": "new-york"
+        },
+        {
+          "id": "pkg-serpapi-904172f2514868e3-serpapi-hotel-e4dce0a84d4159b4",
+          "totalPrice": 2187,
+          "currency": "USD",
+          "nights": 7,
+          "score": 73.8,
+          "flightId": "serpapi-904172f2514868e3",
+          "hotelId": "serpapi-hotel-e4dce0a84d4159b4",
+          "airline": "Delta",
+          "hotelName": "Harbor House Bed & Breakfast",
+          "flightPrice": 1367,
+          "hotelPrice": 820,
+          "flightCurrency": "USD",
+          "hotelCurrency": "USD",
+          "hotelDestinationId": "new-york",
+          "flightDestinationId": "new-york"
+        }
+      ],
+      "durationMs": 5749
+    },
+    {
+      "id": "P3",
+      "label": "Paris → Bangkok",
+      "status": "pass",
+      "flightCount": 10,
+      "hotelCount": 20,
+      "packageCount": 20,
+      "expectedNights": 7,
+      "checks": [
+        {
+          "name": "flights_returned",
+          "ok": true,
+          "detail": "count=10"
+        },
+        {
+          "name": "hotels_returned",
+          "ok": true,
+          "detail": "count=20"
+        },
+        {
+          "name": "packages_generated",
+          "ok": true,
+          "detail": "count=20"
+        },
+        {
+          "name": "total_price_correct",
+          "ok": true,
+          "detail": "flight.price + hotel.price"
+        },
+        {
+          "name": "currency_consistent",
+          "ok": true
+        },
+        {
+          "name": "nights_correct",
+          "ok": true,
+          "detail": "expected≈7"
+        },
+        {
+          "name": "hotel_matches_destination",
+          "ok": true,
+          "detail": "destinationId=bangkok"
+        },
+        {
+          "name": "flight_dates_align_with_stay",
+          "ok": true,
+          "detail": "stay 2026-09-15 → 2026-09-22 (7 nights)"
+        },
+        {
+          "name": "ranking_score_order",
+          "ok": true
+        }
+      ],
+      "topPackage": {
+        "id": "pkg-serpapi-f0c632440fb2ce24-serpapi-hotel-9a1d59d78c66f1c3",
+        "totalPrice": 1271,
+        "currency": "EUR",
+        "nights": 7,
+        "score": 69.2,
+        "flightId": "serpapi-f0c632440fb2ce24",
+        "hotelId": "serpapi-hotel-9a1d59d78c66f1c3",
+        "airline": "Austrian",
+        "hotelName": "NASA BANGKOK - Airport Rail Link Ramkhamhaeng",
+        "flightPrice": 1167,
+        "hotelPrice": 104,
+        "flightCurrency": "EUR",
+        "hotelCurrency": "EUR",
+        "hotelDestinationId": "bangkok",
+        "flightDestinationId": "bangkok"
+      },
+      "samplePackages": [
+        {
+          "id": "pkg-serpapi-f0c632440fb2ce24-serpapi-hotel-9a1d59d78c66f1c3",
+          "totalPrice": 1271,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 69.2,
+          "flightId": "serpapi-f0c632440fb2ce24",
+          "hotelId": "serpapi-hotel-9a1d59d78c66f1c3",
+          "airline": "Austrian",
+          "hotelName": "NASA BANGKOK - Airport Rail Link Ramkhamhaeng",
+          "flightPrice": 1167,
+          "hotelPrice": 104,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "bangkok",
+          "flightDestinationId": "bangkok"
+        },
+        {
+          "id": "pkg-serpapi-f0c632440fb2ce24-serpapi-hotel-f18b10ec47cea7a7",
+          "totalPrice": 1257,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 69,
+          "flightId": "serpapi-f0c632440fb2ce24",
+          "hotelId": "serpapi-hotel-f18b10ec47cea7a7",
+          "airline": "Austrian",
+          "hotelName": "Sunday Platinum Suites",
+          "flightPrice": 1167,
+          "hotelPrice": 90,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "bangkok",
+          "flightDestinationId": "bangkok"
+        },
+        {
+          "id": "pkg-serpapi-31ba8e2328e0ae55-serpapi-hotel-9a1d59d78c66f1c3",
+          "totalPrice": 1279,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 68.6,
+          "flightId": "serpapi-31ba8e2328e0ae55",
+          "hotelId": "serpapi-hotel-9a1d59d78c66f1c3",
+          "airline": "SWISS",
+          "hotelName": "NASA BANGKOK - Airport Rail Link Ramkhamhaeng",
+          "flightPrice": 1175,
+          "hotelPrice": 104,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "bangkok",
+          "flightDestinationId": "bangkok"
+        }
+      ],
+      "durationMs": 7576
+    },
+    {
+      "id": "P4",
+      "label": "Rome → Dubai",
+      "status": "pass",
+      "flightCount": 9,
+      "hotelCount": 20,
+      "packageCount": 20,
+      "expectedNights": 7,
+      "checks": [
+        {
+          "name": "flights_returned",
+          "ok": true,
+          "detail": "count=9"
+        },
+        {
+          "name": "hotels_returned",
+          "ok": true,
+          "detail": "count=20"
+        },
+        {
+          "name": "packages_generated",
+          "ok": true,
+          "detail": "count=20"
+        },
+        {
+          "name": "total_price_correct",
+          "ok": true,
+          "detail": "flight.price + hotel.price"
+        },
+        {
+          "name": "currency_consistent",
+          "ok": true
+        },
+        {
+          "name": "nights_correct",
+          "ok": true,
+          "detail": "expected≈7"
+        },
+        {
+          "name": "hotel_matches_destination",
+          "ok": true,
+          "detail": "destinationId=dubai"
+        },
+        {
+          "name": "flight_dates_align_with_stay",
+          "ok": true,
+          "detail": "stay 2026-09-15 → 2026-09-22 (7 nights)"
+        },
+        {
+          "name": "ranking_score_order",
+          "ok": true
+        }
+      ],
+      "topPackage": {
+        "id": "pkg-serpapi-4f8c92ceec3b9f2a-serpapi-hotel-9e6bfc4136a1727a",
+        "totalPrice": 1818,
+        "currency": "EUR",
+        "nights": 7,
+        "score": 71,
+        "flightId": "serpapi-4f8c92ceec3b9f2a",
+        "hotelId": "serpapi-hotel-9e6bfc4136a1727a",
+        "airline": "Emirates",
+        "hotelName": "Signature Hotel Apartments & Spa Marina",
+        "flightPrice": 1553,
+        "hotelPrice": 265,
+        "flightCurrency": "EUR",
+        "hotelCurrency": "EUR",
+        "hotelDestinationId": "dubai",
+        "flightDestinationId": "dubai"
+      },
+      "samplePackages": [
+        {
+          "id": "pkg-serpapi-4f8c92ceec3b9f2a-serpapi-hotel-9e6bfc4136a1727a",
+          "totalPrice": 1818,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 71,
+          "flightId": "serpapi-4f8c92ceec3b9f2a",
+          "hotelId": "serpapi-hotel-9e6bfc4136a1727a",
+          "airline": "Emirates",
+          "hotelName": "Signature Hotel Apartments & Spa Marina",
+          "flightPrice": 1553,
+          "hotelPrice": 265,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "dubai",
+          "flightDestinationId": "dubai"
+        },
+        {
+          "id": "pkg-serpapi-4f8c92ceec3b9f2a-serpapi-hotel-e7f7fa8238c92905",
+          "totalPrice": 1782,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 70.8,
+          "flightId": "serpapi-4f8c92ceec3b9f2a",
+          "hotelId": "serpapi-hotel-e7f7fa8238c92905",
+          "airline": "Emirates",
+          "hotelName": "Four Points by Sheraton Production City, Dubai",
+          "flightPrice": 1553,
+          "hotelPrice": 229,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "dubai",
+          "flightDestinationId": "dubai"
+        },
+        {
+          "id": "pkg-serpapi-b264f350696833eb-serpapi-hotel-9e6bfc4136a1727a",
+          "totalPrice": 968,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 70.6,
+          "flightId": "serpapi-b264f350696833eb",
+          "hotelId": "serpapi-hotel-9e6bfc4136a1727a",
+          "airline": "Royal Jordanian",
+          "hotelName": "Signature Hotel Apartments & Spa Marina",
+          "flightPrice": 703,
+          "hotelPrice": 265,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "dubai",
+          "flightDestinationId": "dubai"
+        }
+      ],
+      "durationMs": 4252
+    },
+    {
+      "id": "P5",
+      "label": "London → Barcelona",
+      "status": "pass",
+      "flightCount": 10,
+      "hotelCount": 20,
+      "packageCount": 20,
+      "expectedNights": 7,
+      "checks": [
+        {
+          "name": "flights_returned",
+          "ok": true,
+          "detail": "count=10"
+        },
+        {
+          "name": "hotels_returned",
+          "ok": true,
+          "detail": "count=20"
+        },
+        {
+          "name": "packages_generated",
+          "ok": true,
+          "detail": "count=20"
+        },
+        {
+          "name": "total_price_correct",
+          "ok": true,
+          "detail": "flight.price + hotel.price"
+        },
+        {
+          "name": "currency_consistent",
+          "ok": true
+        },
+        {
+          "name": "nights_correct",
+          "ok": true,
+          "detail": "expected≈7"
+        },
+        {
+          "name": "hotel_matches_destination",
+          "ok": true,
+          "detail": "destinationId=barcelona"
+        },
+        {
+          "name": "flight_dates_align_with_stay",
+          "ok": true,
+          "detail": "stay 2026-09-15 → 2026-09-22 (7 nights)"
+        },
+        {
+          "name": "ranking_score_order",
+          "ok": true
+        }
+      ],
+      "topPackage": {
+        "id": "pkg-serpapi-354574a826275702-serpapi-hotel-21ad5729cac5740d",
+        "totalPrice": 751,
+        "currency": "EUR",
+        "nights": 7,
+        "score": 77,
+        "flightId": "serpapi-354574a826275702",
+        "hotelId": "serpapi-hotel-21ad5729cac5740d",
+        "airline": "Vueling",
+        "hotelName": "Urbany Hostel BCN GO!",
+        "flightPrice": 239,
+        "hotelPrice": 512,
+        "flightCurrency": "EUR",
+        "hotelCurrency": "EUR",
+        "hotelDestinationId": "barcelona",
+        "flightDestinationId": "barcelona"
+      },
+      "samplePackages": [
+        {
+          "id": "pkg-serpapi-354574a826275702-serpapi-hotel-21ad5729cac5740d",
+          "totalPrice": 751,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 77,
+          "flightId": "serpapi-354574a826275702",
+          "hotelId": "serpapi-hotel-21ad5729cac5740d",
+          "airline": "Vueling",
+          "hotelName": "Urbany Hostel BCN GO!",
+          "flightPrice": 239,
+          "hotelPrice": 512,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "barcelona",
+          "flightDestinationId": "barcelona"
+        },
+        {
+          "id": "pkg-serpapi-354574a826275702-serpapi-hotel-41bf5df0c4e18d46",
+          "totalPrice": 651,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 76.6,
+          "flightId": "serpapi-354574a826275702",
+          "hotelId": "serpapi-hotel-41bf5df0c4e18d46",
+          "airline": "Vueling",
+          "hotelName": "Hostelfly Fira Barcelona",
+          "flightPrice": 239,
+          "hotelPrice": 412,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "barcelona",
+          "flightDestinationId": "barcelona"
+        },
+        {
+          "id": "pkg-serpapi-354574a826275702-serpapi-hotel-6a87a95f4720ad13",
+          "totalPrice": 736,
+          "currency": "EUR",
+          "nights": 7,
+          "score": 76.6,
+          "flightId": "serpapi-354574a826275702",
+          "hotelId": "serpapi-hotel-6a87a95f4720ad13",
+          "airline": "Vueling",
+          "hotelName": "Inout Hostel",
+          "flightPrice": 239,
+          "hotelPrice": 497,
+          "flightCurrency": "EUR",
+          "hotelCurrency": "EUR",
+          "hotelDestinationId": "barcelona",
+          "flightDestinationId": "barcelona"
+        }
+      ],
+      "durationMs": 2272
+    }
+  ]
+}

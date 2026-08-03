@@ -40,6 +40,7 @@ function emptyResponse(): SearchResponse {
     trains: [],
     restaurants: [],
     attractions: [],
+    packages: [],
     totalCount: 0,
     searchedAt: "2026-07-24T00:00:00.000Z",
   };

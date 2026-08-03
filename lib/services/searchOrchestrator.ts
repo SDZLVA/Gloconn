@@ -3,6 +3,9 @@
  *
  * Provider failures are isolated: successful domains still return results, and
  * failed domains become SearchResponse.warnings (Sprint 10.2).
+ *
+ * Travel packages are composed after flights + hotels resolve (Sprint 13.3).
+ * Packages are product-layer only — never trigger provider calls.
  */
 
 import {
@@ -11,6 +14,7 @@ import {
   createProviderUnavailableWarning,
 } from "@/lib/api/searchMappers";
 import { createProviderError, createValidationError } from "@/lib/api/errors";
+import { composePackages } from "@/lib/packages";
 import { normalizeProductTypes } from "@/lib/search/productTypes";
 import { getServiceProviders } from "@/lib/services/context";
 import {
@@ -18,7 +22,7 @@ import {
   hasResolvedFlightAirports,
 } from "@/lib/services/iataResolution";
 import type { ServiceProviders } from "@/lib/services/types";
-import type { Bus, Flight, Hotel, Train } from "@/types/models";
+import type { Bus, Flight, Hotel, Train, TravelPackage } from "@/types/models";
 import type { SearchRequest } from "@/types/models/search-request";
 import type {
   SearchResponse,
@@ -170,13 +174,32 @@ async function searchAllDomains(
     );
   }
 
+  const packages = composePackagesIfPossible(flights, hotels, request);
+
   return buildSearchResponse({
     hotels,
     flights,
     buses,
     trains,
+    packages,
     warnings,
   });
+}
+
+/**
+ * Composes TravelPackage[] when both flights and hotels have results.
+ * Never calls providers. Empty when either side is missing or empty.
+ */
+function composePackagesIfPossible(
+  flights: Flight[],
+  hotels: Hotel[],
+  request: SearchRequest,
+): TravelPackage[] {
+  if (flights.length === 0 || hotels.length === 0) {
+    return [];
+  }
+
+  return composePackages(flights, hotels, request);
 }
 
 /** Runs hotels, flights, and transport providers in parallel. */

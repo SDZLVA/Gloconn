@@ -4,6 +4,23 @@ All notable product releases for Glooconn are listed here. Detailed notes live u
 
 ---
 
+## [v0.19.0] — Travel Packages (August 2026)
+
+**Milestone 13 complete.** Recommended flight + hotel packages via product-layer composition above existing providers (no PackagesProvider).
+
+- Shared `TravelPackage` model
+- Pure `PackageComposer` (`lib/packages/`) — deterministic scoring, currency match, candidate caps
+- `SearchResponse.packages` composed in `SearchOrchestrator` after flights + hotels
+- Recommended Packages UI hero section on results (hidden when empty)
+- Live SerpAPI product validation + production hardening (Sprints 13.1–13.5)
+- **358** automated tests
+
+**Details:** [docs/releases/v0.19.0.md](./docs/releases/v0.19.0.md)
+
+**Known limitations:** SerpAPI RT `departure_token` still falls back to outbound-only; package candidates skew budget; UI shows up to composer max (20).
+
+---
+
 ## [v0.18.0] — Live Hotels (July 2026)
 
 **Milestone 12 complete.** Production-capable live hotel search via SerpAPI Google Hotels, behind the existing multi-provider architecture.

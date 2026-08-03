@@ -3,7 +3,7 @@
  * No provider or mock data imports here.
  */
 
-import type { Bus, Flight, Hotel, Train } from "@/types/models";
+import type { Bus, Flight, Hotel, Train, TravelPackage } from "@/types/models";
 import type { SearchRequest } from "@/types/models/search-request";
 import type {
   SearchResponse,
@@ -76,6 +76,7 @@ type BuildSearchResponseInput = {
   trains?: Train[];
   restaurants?: SearchResponse["restaurants"];
   attractions?: SearchResponse["attractions"];
+  packages?: TravelPackage[];
   warnings?: SearchResponseWarning[];
   searchedAt?: string;
 };
@@ -90,6 +91,7 @@ export function buildSearchResponse(
   const trains = input.trains ?? [];
   const restaurants = input.restaurants ?? [];
   const attractions = input.attractions ?? [];
+  const packages = input.packages ?? [];
   const warnings = input.warnings?.length ? input.warnings : undefined;
 
   return {
@@ -99,6 +101,7 @@ export function buildSearchResponse(
     trains,
     restaurants,
     attractions,
+    packages,
     totalCount:
       hotels.length +
       flights.length +

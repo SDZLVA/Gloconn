@@ -936,6 +936,51 @@ Tie-break: score → name → id. Empty query returns `[]` (idle UI uses recent 
 
 ---
 
+## Milestone 13 — Travel Packages (v0.19.0 prep)
+
+**Dates:** August 2026  
+**Branch:** `milestone-12-hotel-search`  
+**Release:** **v0.19.0** — release tagging not started · [../CHANGELOG.md](../CHANGELOG.md)
+
+### Sprint 13.1 — Discovery
+
+- Architecture: compose above FlightsProvider + HotelsProvider (no PackagesProvider)
+- CTO approval: TravelPackage model, caps, scoring weights, partial-failure policy
+
+### Sprint 13.2 — TravelPackage + PackageComposer
+
+- Shared `TravelPackage` model; pure `composePackages` + isolated scoring
+- Currency match, candidate caps, stable ids, deterministic ranking
+- Unit tests for composer + score helpers
+
+### Sprint 13.3 — Orchestrator integration
+
+- `SearchResponse.packages` always present (`[]` when none)
+- Compose after domain settle; ADR-037 unchanged; packages never call providers
+- Integration tests with mock providers
+
+### Sprint 13.4 — Recommended Packages UI
+
+- `RecommendedPackagesSection` + `TravelPackageCard` (memoized)
+- Hero above existing results list; hidden when empty; informational only
+
+### Sprint 13.5 — Validation & hardening
+
+- Live SerpAPI routes P1–P5 all **pass** (packages price/currency/nights/destination/ranking)
+- Label fix: package timeline Arrive (not misleading Return under RT fallback)
+- Docs sync; suite **358**; typecheck + build green
+- Report: [SPRINT_13_5_PRODUCTION_READINESS.md](./SPRINT_13_5_PRODUCTION_READINESS.md)
+
+### Release
+
+- [x] Version bump `package.json` → **0.19.0**
+- [x] Release notes `docs/releases/v0.19.0.md` + changelog
+- [x] Annotated tag **v0.19.0**
+
+**Milestone 13 complete. Released as v0.19.0.**
+
+---
+
 ## Budget UI — numeric input
 
 **Branch:** `cursor/project-principles`
