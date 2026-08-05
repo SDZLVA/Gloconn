@@ -3,7 +3,11 @@
 import { useId } from "react";
 import { CurrencySelector } from "@/components/ui/CurrencySelector";
 import { FormError, FormLabel } from "@/components/ui/FormField";
-import type { CurrencyCode } from "@/lib/budget";
+import {
+  formatBudgetFieldLabel,
+  getCurrencySymbol,
+  type CurrencyCode,
+} from "@/lib/budget";
 import { cn } from "@/lib/utils";
 
 type BudgetSelectorProps = {
@@ -19,6 +23,7 @@ type BudgetSelectorProps = {
 /**
  * BudgetSelector — search-form budget field with a numeric input and currency selector.
  *
+ * Label and prefix symbol follow the selected currency (Sprint 14.3).
  * Keeps the form's string-based budget value. Validation stays in `validateBudget`.
  */
 export function BudgetSelector({
@@ -34,6 +39,8 @@ export function BudgetSelector({
   const inputId = `${generatedId}-budget`;
   const currencyId = `${generatedId}-currency`;
   const errorId = `${generatedId}-error`;
+  const label = formatBudgetFieldLabel(currency);
+  const symbol = getCurrencySymbol(currency);
 
   /** Allow digits only (no negatives, no decimals) so typing stays simple. */
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -45,13 +52,14 @@ export function BudgetSelector({
     <div className={cn("flex flex-col gap-2", className)}>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <FormLabel htmlFor={inputId} required={required}>
-          Budget (€)
+          {label}
         </FormLabel>
 
         <CurrencySelector
           id={currencyId}
           value={currency}
           onChange={onCurrencyChange}
+          aria-label="Budget currency"
         />
       </div>
 
@@ -67,7 +75,7 @@ export function BudgetSelector({
           className="shrink-0 text-base font-semibold text-slate-600 sm:text-sm"
           aria-hidden="true"
         >
-          €
+          {symbol}
         </span>
         <input
           id={inputId}

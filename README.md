@@ -3,8 +3,8 @@
 Travel planning web application — discover destinations, plan trips, and manage travel in one place.
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
-**Version:** **v0.17.0** released (Live Flights) · **v0.18.0** prep (Live Hotels)  
-**Milestones:** **11** ✅ Live Flights · **12** ✅ Hotel Search Integration (release tagging next)
+**Version:** **v0.19.0** — Travel Packages  
+**Milestones:** **13** ✅ Packages · **14** ✅ MVP Focus (release commit pending)
 
 ## Tech stack
 
@@ -80,7 +80,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 | `npm run start` | Run production build locally |
 | `npm run lint` | Run ESLint |
 | `npm run typecheck` | TypeScript (`tsc --noEmit`) |
-| `npm test` | Automated test suite (317 tests) |
+| `npm test` | Automated test suite (381 tests) |
 
 ## Architecture overview
 
@@ -137,26 +137,24 @@ Gloconn/
 | [docs/CURRENT_STATE.md](./docs/CURRENT_STATE.md) | Latest release snapshot |
 | [docs/ROADMAP.md](./docs/ROADMAP.md) | Product roadmap |
 | [docs/PROGRESS.md](./docs/PROGRESS.md) | Completed work log |
-| [docs/TODO.md](./docs/TODO.md) | Active tasks (v0.18.0 release prep) |
+| [docs/TODO.md](./docs/TODO.md) | Active tasks |
 | [docs/API_FOUNDATION.md](./docs/API_FOUNDATION.md) | Provider architecture |
 | [docs/Provider_Guide.md](./docs/Provider_Guide.md) | How to add a flights vendor |
 | [docs/DECISIONS.md](./docs/DECISIONS.md) | Architecture decisions (ADRs) |
 | [docs/AI_HANDOFF.md](./docs/AI_HANDOFF.md) | Guide for AI assistants |
-| [docs/releases/v0.17.0.md](./docs/releases/v0.17.0.md) | v0.17.0 Live Flights release notes |
+| [docs/releases/v0.19.0.md](./docs/releases/v0.19.0.md) | v0.19.0 Travel Packages release notes |
 | [PROJECT_RULES.md](./PROJECT_RULES.md) | Development guidelines |
 
 ## Current status
 
-- **Released:** **v0.17.0** — Milestone **11** (Live Flights)
-- **In progress:** **v0.18.0** release prep — Milestone **12** complete (Live Hotels)
-- **Live Flight Search:** SerpAPI (`FLIGHTS_PROVIDER=serpapi`) — **production-capable**
-- **Live Hotel Search:** SerpAPI (`HOTELS_PROVIDER=serpapi`) — **production-capable when configured**
-- **Amadeus:** long-term Enterprise flights provider
-- **Default mode:** mock providers (`USE_MOCK_PROVIDERS=true`) until live env is configured
-- **Tests:** **317** automated tests (typecheck, lint, test, build green)
+- **Released:** **v0.19.0** — Milestone **13** (Travel Packages)
+- **In progress:** Milestone **14** MVP Focus complete — release commit pending (optional v0.20.0)
+- **MVP surface:** Search flights + stays → Recommended Packages → Browse Flights / Hotels
+- **Live Flight / Hotel Search:** SerpAPI when configured — **production-capable**
+- **Default mode:** mock providers until live env is configured
+- **Tests:** **381** automated tests
 - **Live routes:** `/`, `/search/results`, `/login`, `/signup`, `/profile`, `/my-trips`
 - **Auth:** Google OAuth and email/password via Supabase
-- **Next:** v0.18.0 tag and release notes
-- **Planned routes:** `/destinations`, `/about`
+- **Next:** Commit Milestone 14 work; CTO may authorize **v0.20.0**
 
 See [docs/CURRENT_STATE.md](./docs/CURRENT_STATE.md) and [docs/TODO.md](./docs/TODO.md).

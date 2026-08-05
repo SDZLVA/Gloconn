@@ -11,11 +11,13 @@ import type {
   ResultsFilters,
 } from "@/types/results";
 import { DEFAULT_RESULTS_FILTERS, RESULT_TYPE_LABELS } from "@/types/results";
+import { MVP_RESULT_TYPES } from "@/lib/results/mvpUi";
 
 /** Debounce price commits so filter/sort/rank do not run on every keystroke. */
 const PRICE_FILTER_DEBOUNCE_MS = 200;
 
-const ALL_TYPES: ResultType[] = ["hotel", "flight", "bus", "train"];
+/** Sprint 14.2 MVP — hotel + flight only (bus/train filters hidden). */
+const FILTERABLE_TYPES = MVP_RESULT_TYPES;
 
 const RATING_OPTIONS = [
   { value: 0, label: "Any rating" },
@@ -123,16 +125,11 @@ export function ResultsFilterSidebar({
       facets.cabins.length > 0 ||
       facets.maxStopsInResults >= 0);
 
-  const showOperatorFilters =
-    (filters.types.includes("bus") || filters.types.includes("train")) &&
-    facets.operators.length > 0;
+  const showHotelStars = filters.types.includes("hotel");
 
-  const showHotelStars =
-    filters.types.includes("hotel");
-
+  // Sprint 14.2 MVP: hotel amenities only (bus amenities / operators hidden).
   const showAmenities =
-    (filters.types.includes("hotel") || filters.types.includes("bus")) &&
-    facets.amenities.length > 0;
+    filters.types.includes("hotel") && facets.amenities.length > 0;
 
   return (
     <Card className={cn("p-4 sm:p-5", className)}>
@@ -154,7 +151,7 @@ export function ResultsFilterSidebar({
         <fieldset>
           <legend className={formLabel}>Result type</legend>
           <ul className="mt-3 space-y-2">
-            {ALL_TYPES.map((type) => (
+            {FILTERABLE_TYPES.map((type) => (
               <li key={type}>
                 <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
                   <input
@@ -366,38 +363,6 @@ export function ResultsFilterSidebar({
               ))}
             </select>
           </div>
-        )}
-
-        {showOperatorFilters && (
-          <fieldset>
-            <legend className={formLabel}>Operators</legend>
-            <ul className="mt-3 max-h-40 space-y-2 overflow-y-auto pr-1">
-              {facets.operators.map((operator) => (
-                <li key={operator}>
-                  <label className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
-                    <input
-                      type="checkbox"
-                      checked={filters.operators.includes(operator)}
-                      onChange={() =>
-                        onFiltersChange({
-                          ...filters,
-                          operators: toggleStringValue(
-                            filters.operators,
-                            operator,
-                          ),
-                        })
-                      }
-                      className={cn(
-                        "h-4 w-4 rounded border-slate-300 text-brand-700",
-                        focusRing,
-                      )}
-                    />
-                    {operator}
-                  </label>
-                </li>
-              ))}
-            </ul>
-          </fieldset>
         )}
 
         {showAmenities && (

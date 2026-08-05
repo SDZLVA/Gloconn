@@ -12,6 +12,7 @@ import {
   formatPackageNightsLabel,
   formatPackageScoreLabel,
   formatPackageStopsLabel,
+  formatFlightTripPriceLabel,
   selectPackagesForDisplay,
   shouldShowRecommendedPackages,
 } from "@/lib/results/packagesUi";
@@ -103,7 +104,16 @@ describe("package label formatters", () => {
     assert.equal(formatPackageNightsLabel(1), "1 night");
     assert.equal(formatPackageNightsLabel(7), "7 nights");
   });
+
+  it("formats flight trip price labels by trip type", () => {
+    assert.equal(formatFlightTripPriceLabel("one-way"), "One-way · per person");
+    assert.equal(
+      formatFlightTripPriceLabel("round-trip"),
+      "Round-trip · per person",
+    );
+  });
 });
+
 
 describe("RecommendedPackagesSection rendering", () => {
   it("renders nothing when packages is empty", () => {
@@ -131,6 +141,7 @@ describe("RecommendedPackagesSection rendering", () => {
 
     assert.match(html, /Recommended Packages/);
     assert.match(html, /recommended-packages-heading/);
+    assert.match(html, /⭐/);
     assert.match(html, /Air France/);
     assert.match(html, /Hotel Paris/);
     assert.match(html, /Lufthansa/);
@@ -138,20 +149,20 @@ describe("RecommendedPackagesSection rendering", () => {
     assert.match(html, /aria-label="Recommended travel packages"/);
   });
 
-  it("keeps package cards before any sibling results list in page order contract", () => {
-    // Ordering contract for SearchResultsPage: packages section markup, then results list.
+  it("keeps package cards before any sibling browse sections in page order contract", () => {
+    // Ordering contract for SearchResultsPage: packages section markup, then browse headings.
     const packagesHtml = renderToStaticMarkup(
       createElement(RecommendedPackagesSection, {
         packages: [travelPackage()],
       }),
     );
-    const resultsMarker = '<ul aria-label="Search results">';
-    const combined = `${packagesHtml}${resultsMarker}`;
+    const browseMarker = '<h2 id="browse-flights-heading">Browse Flights</h2>';
+    const combined = `${packagesHtml}${browseMarker}`;
 
     const packagesIndex = combined.indexOf("Recommended Packages");
-    const resultsIndex = combined.indexOf('aria-label="Search results"');
+    const browseIndex = combined.indexOf("Browse Flights");
     assert.ok(packagesIndex >= 0);
-    assert.ok(resultsIndex > packagesIndex);
+    assert.ok(browseIndex > packagesIndex);
   });
 });
 

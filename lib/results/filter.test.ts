@@ -127,6 +127,8 @@ function withDefaults(
 ): ResultsFilters {
   return {
     ...DEFAULT_RESULTS_FILTERS,
+    // Unit tests cover all result types; MVP UI defaults to hotel+flight only.
+    types: ["hotel", "flight", "bus", "train"],
     minPrice: 0,
     maxPrice: 10_000,
     ...overrides,

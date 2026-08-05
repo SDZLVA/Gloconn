@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ResultDuration } from "@/components/results/ResultDuration";
 import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
@@ -11,7 +10,11 @@ type BusResultCardProps = {
   result: BusResult;
 };
 
-/** Card displaying a bus search result. */
+/**
+ * Card displaying a bus search result.
+ * Kept for architecture; Sprint 14.2 MVP hides bus results from the list.
+ * Informational only — no fake booking CTA.
+ */
 export function BusResultCard({ result }: BusResultCardProps) {
   return (
     <Card hoverable className="overflow-hidden">
@@ -68,19 +71,11 @@ export function BusResultCard({ result }: BusResultCardProps) {
 
           <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
             <p className="text-sm text-slate-500">One-way · per person</p>
-            <div className="flex items-center gap-3">
-              <ResultPrice
-                price={result.price}
-                currency={result.currency}
-                suffix="total"
-              />
-              <Button
-                className="shrink-0 px-4 py-2"
-                aria-label={`Book bus with ${result.operator}`}
-              >
-                Book bus
-              </Button>
-            </div>
+            <ResultPrice
+              price={result.price}
+              currency={result.currency}
+              suffix="total"
+            />
           </div>
         </div>
       </div>

@@ -33,6 +33,19 @@ export function formatPackageStopsLabel(stops: number): string {
   return `${stops} stop${stops > 1 ? "s" : ""}`;
 }
 
+/**
+ * Price footnote for flight result cards.
+ * Matches the search trip type so one-way searches are not labeled round-trip.
+ */
+export function formatFlightTripPriceLabel(
+  tripType: "round-trip" | "one-way" | null | undefined,
+): string {
+  if (tripType === "one-way") {
+    return "One-way · per person";
+  }
+  return "Round-trip · per person";
+}
+
 /** Compact score label for package cards (0–100). */
 export function formatPackageScoreLabel(score: number): string {
   const rounded = Math.round(score * 10) / 10;

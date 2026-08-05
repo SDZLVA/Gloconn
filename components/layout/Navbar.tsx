@@ -101,13 +101,7 @@ export function Navbar() {
               </li>
             ))}
             <li className="border-t border-slate-100 pt-3">
-              <NavLinkItem
-                href="/login"
-                label="Sign in"
-                isActive={pathname === "/login"}
-                onNavigate={closeMobileMenu}
-                variant="stack"
-              />
+              <UserMenu variant="mobile" onNavigate={closeMobileMenu} />
             </li>
           </ul>
         </div>

@@ -31,6 +31,7 @@ function RecommendedPackagesSectionComponent({
           id="recommended-packages-heading"
           className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl"
         >
+          <span aria-hidden="true">⭐ </span>
           Recommended Packages
         </h2>
         <p className="text-sm text-slate-600">

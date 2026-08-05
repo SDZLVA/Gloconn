@@ -61,7 +61,8 @@ export type ResultsFilters = {
 };
 
 export const DEFAULT_RESULTS_FILTERS: ResultsFilters = {
-  types: ["hotel", "flight", "bus", "train"],
+  /** Sprint 14.2 MVP — hotels + flights only in the UI filter defaults. */
+  types: ["hotel", "flight"],
   minPrice: 0,
   maxPrice: 10_000,
   minRating: 0,

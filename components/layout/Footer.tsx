@@ -20,8 +20,7 @@ export function Footer() {
           <div className="sm:col-span-2 lg:col-span-1">
             <BrandLogo variant="text" />
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-slate-600 sm:text-base sm:leading-7">
-              Plan trips, discover destinations, and keep your travel in one
-              place.
+              Plan trips and keep your travel in one place.
             </p>
           </div>
 

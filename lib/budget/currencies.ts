@@ -1,5 +1,8 @@
 import type { CurrencyCode } from "@/types/models/currency";
-import { getCurrencyOptions } from "@/lib/providers/currencies/mock/helpers";
+import {
+  findCurrencyByCode,
+  getCurrencyOptions,
+} from "@/lib/providers/currencies/mock/helpers";
 
 export type { CurrencyCode };
 
@@ -20,4 +23,14 @@ export function formatBudget(amount: number, currency: CurrencyCode): string {
     currency,
     maximumFractionDigits: 0,
   }).format(amount);
+}
+
+/** Visible budget field label, e.g. `Budget (USD)`. */
+export function formatBudgetFieldLabel(currency: CurrencyCode): string {
+  return `Budget (${currency})`;
+}
+
+/** Currency symbol for the budget input prefix (falls back to the ISO code). */
+export function getCurrencySymbol(currency: CurrencyCode): string {
+  return findCurrencyByCode(currency)?.symbol ?? currency;
 }

@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | **v0.19.0** Travel Packages released; awaiting next milestone |
+| Stage | **v0.19.0** released; **Milestone 14** MVP Focus validated (release commit pending) |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers by default; optional live **SerpAPI** / Amadeus |
 
 ---
@@ -44,9 +44,9 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 - `/profile` — Protected user profile
 - `/my-trips` — Protected saved trips list
 
-### Nav links (pages NOT built yet — will 404)
-- `/destinations`
-- `/about`
+### Nav (MVP)
+- Logo, **Search**, **My Trips**, Sign in / Profile
+- `/destinations` and `/about` pages are **not linked** in MVP (pages still unbuilt)
 
 ### Key components
 
@@ -372,22 +372,18 @@ docs/                 → project documentation
 
 ---
 
-## Common tasks after v0.19.0
+## Common tasks after Milestone 14
 
-**Milestone 13 — Travel Packages** is ✅ complete and released as **v0.19.0**.
-- Sprint **13.2** `TravelPackage` + `PackageComposer` ✅
-- Sprint **13.3** Orchestrator + `SearchResponse.packages` ✅
-- Sprint **13.4** Recommended Packages UI ✅
-- Sprint **13.5** Live validation + hardening ✅
-- Sprint **13.6** Release **v0.19.0** ✅
+**Milestone 13 — Travel Packages** ✅ **v0.19.0**. **Milestone 14 — MVP Focus** ✅ (14.1–14.4).
 
 Recommended next priorities (see [TODO.md](./TODO.md)):
 
-1. Package UX polish (UI top-N cap, diversify hotel candidates) — optional
-2. SerpAPI round-trip `departure_token` enrichment polish (carry-forward)
-3. **Destinations / About pages** — product pages (nav links still 404)
-4. **Amadeus Enterprise** — enablement + sandbox checklist when credentials are ready
-5. Await founder/CTO for Milestone 14 authorization
+1. **Commit Milestone 14** work; optional **v0.20.0** release (CTO)
+2. Package UX polish (UI top-N cap, diversify hotel candidates) — optional
+3. SerpAPI round-trip `departure_token` enrichment polish (carry-forward)
+4. **Destinations / About pages** — then restore nav links
+5. **Amadeus Enterprise** — enablement when credentials are ready
+6. Fix `SectionHeading` hydration warning (dev overlay)
 
 ---
 

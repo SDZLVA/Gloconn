@@ -981,6 +981,41 @@ Tie-break: score → name → id. Empty query returns `[]` (idle UI uses recent 
 
 ---
 
+## Milestone 14 — MVP Focus
+
+**Dates:** August 2026  
+**Branch:** `milestone-12-hotel-search`  
+**Release:** optional **v0.20.0** — not tagged yet · [../CHANGELOG.md](../CHANGELOG.md)
+
+### Sprint 14.1 — Discovery
+
+- KEEP / HIDE / REMOVE audit for first-search MVP
+
+### Sprint 14.2 — UI simplification
+
+- Hide Travel Style, Rooms, transport toggles/results/filters (architecture retained)
+- Remove Destinations/About nav and fake booking CTAs
+- Default product types: hotels + flights
+
+### Sprint 14.3 — UX polish
+
+- Origin ↔ destination swap; dynamic `Budget (CODE)` label
+- Flight trip-type wording; Browse Flights / Browse Hotels hierarchy
+- Mobile auth menu parity
+
+### Sprint 14.4 — Validation
+
+- E2E MVP journey validated (packages, flights, hotels, filters, edit/save chrome)
+- **381** tests; typecheck + build green
+- Docs synchronized
+
+- [ ] Commit Milestone 14
+- [ ] Optional v0.20.0 tag (CTO)
+
+**Milestone 14 engineering complete — awaiting commit / release authorization.**
+
+---
+
 ## Budget UI — numeric input
 
 **Branch:** `cursor/project-principles`

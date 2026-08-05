@@ -25,8 +25,8 @@ export function ResultsHeader({
     : `Results for ${place}`;
 
   const description = from
-    ? "Compare hotels, flights, and ground transport for your trip."
-    : "Compare hotels, flights, buses, and trains side by side.";
+    ? "Compare hotels and flights for your trip."
+    : "Compare hotels and flights side by side.";
 
   return (
     <header className={cn("space-y-1", className)}>

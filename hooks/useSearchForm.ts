@@ -13,6 +13,7 @@ import {
   rememberOriginById,
   rememberOriginByLabel,
 } from "@/lib/destinations/recentSearches";
+import { swapOriginDestinationFields } from "@/lib/search/swapPlaces";
 import {
   INITIAL_SEARCH_FORM,
   type SearchFormActions,
@@ -123,6 +124,32 @@ export function useSearchForm(
     clearError("productTypes");
   }
 
+  function swapOriginAndDestination() {
+    setForm((current) => ({
+      ...current,
+      ...swapOriginDestinationFields(current),
+    }));
+    setErrors((current) => {
+      if (!current.origin && !current.destination) {
+        return current;
+      }
+      const next = { ...current };
+      const originError = current.origin;
+      const destinationError = current.destination;
+      if (destinationError) {
+        next.origin = destinationError;
+      } else {
+        delete next.origin;
+      }
+      if (originError) {
+        next.destination = originError;
+      } else {
+        delete next.destination;
+      }
+      return next;
+    });
+  }
+
   function submit() {
     const result = validateAndBuildSearchRequest(form);
 
@@ -156,6 +183,7 @@ export function useSearchForm(
     updateTripType,
     updateDates,
     updateProductTypes,
+    swapOriginAndDestination,
     submit,
   };
 

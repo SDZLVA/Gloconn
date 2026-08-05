@@ -14,9 +14,12 @@ export const TRAVEL_STYLE_OPTIONS = [
   { value: "luxury", label: "Luxury" },
 ] as const satisfies ReadonlyArray<{ value: TravelStyle; label: string }>;
 
-/** Labels for hotels / flights / transport toggles on the search card. */
+/**
+ * Labels for product toggles on the search card.
+ * Sprint 14.2 MVP: transport ("Trains & buses") is omitted from the UI only.
+ * The `transport` product type remains in models / orchestrator.
+ */
 export const SEARCH_PRODUCT_TYPE_OPTIONS = [
   { value: "hotels", label: "Stays" },
   { value: "flights", label: "Flights" },
-  { value: "transport", label: "Trains & buses" },
 ] as const satisfies ReadonlyArray<{ value: SearchProductType; label: string }>;

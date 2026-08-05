@@ -57,6 +57,10 @@ export {
 } from "@/lib/search/travelers";
 export { validateBudget } from "@/lib/search/budget";
 export {
+  swapOriginDestinationFields,
+  type SwappablePlaces,
+} from "@/lib/search/swapPlaces";
+export {
   countSearchFormErrors,
   hasSearchFormErrors,
   validateSearchForm,

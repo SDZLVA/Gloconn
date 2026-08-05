@@ -13,7 +13,7 @@ type TravelersSelectorProps = {
 
 /**
  * TravelersSelector — search-form wrapper around the reusable PassengersSelector.
- * Uses the "Travelers & rooms" label expected on the home page search card.
+ * Sprint 14.2 MVP: Rooms stepper is hidden (rooms remain 1 in form state / model).
  */
 export function TravelersSelector({
   value,
@@ -29,8 +29,10 @@ export function TravelersSelector({
       error={error}
       required={required}
       className={className}
-      label="Travelers & rooms"
-      panelAriaLabel="Select travelers and rooms"
+      label="Travelers"
+      fields={["adults", "children", "infants"]}
+      includeRoomsInSummary={false}
+      panelAriaLabel="Select travelers"
     />
   );
 }

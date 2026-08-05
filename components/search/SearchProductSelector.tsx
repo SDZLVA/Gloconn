@@ -12,11 +12,13 @@ type SearchProductSelectorProps = {
   error?: string;
   required?: boolean;
   className?: string;
+  /** When false, the visible "Search for" label is omitted (parent section titles it). */
+  showLabel?: boolean;
 };
 
 /**
- * SearchProductSelector — choose which result types to search (stays, flights, transport).
- * At least one type must remain selected.
+ * SearchProductSelector — choose which result types to search (stays, flights).
+ * Sprint 14.2 MVP: transport toggle is hidden; at least one type must remain selected.
  */
 export function SearchProductSelector({
   value,
@@ -24,6 +26,7 @@ export function SearchProductSelector({
   error,
   required = false,
   className,
+  showLabel = true,
 }: SearchProductSelectorProps) {
   function toggleType(type: SearchProductType) {
     const isSelected = value.includes(type);
@@ -38,10 +41,16 @@ export function SearchProductSelector({
 
   return (
     <fieldset className={cn("flex flex-col gap-3", className)}>
-      <FormLabel required={required}>Search for</FormLabel>
+      {showLabel ? (
+        <FormLabel required={required}>Search for</FormLabel>
+      ) : (
+        <legend className="sr-only">
+          Search for{required ? " (required)" : ""}
+        </legend>
+      )}
 
       <div
-        className="grid grid-cols-1 gap-2 sm:grid-cols-3"
+        className="grid grid-cols-1 gap-2 sm:grid-cols-2"
         role="group"
         aria-label="Result types to search"
         aria-describedby={error ? "search-product-types-error" : undefined}

@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
 import { ResultPrice } from "@/components/results/ResultPrice";
@@ -10,7 +9,10 @@ type HotelResultCardProps = {
   result: HotelResult;
 };
 
-/** Card displaying a hotel search result. */
+/**
+ * Card displaying a hotel search result.
+ * Sprint 14.2 MVP: informational only — no fake booking CTA.
+ */
 export function HotelResultCard({ result }: HotelResultCardProps) {
   return (
     <Card hoverable className="overflow-hidden">
@@ -54,19 +56,11 @@ export function HotelResultCard({ result }: HotelResultCardProps) {
             <p className="text-sm text-slate-500">
               {result.nights} nights · per room
             </p>
-            <div className="flex items-center gap-3">
-              <ResultPrice
-                price={result.price}
-                currency={result.currency}
-                suffix="total"
-              />
-              <Button
-                className="shrink-0 px-4 py-2"
-                aria-label={`View deal for ${result.name}`}
-              >
-                View deal
-              </Button>
-            </div>
+            <ResultPrice
+              price={result.price}
+              currency={result.currency}
+              suffix="total"
+            />
           </div>
         </div>
       </div>

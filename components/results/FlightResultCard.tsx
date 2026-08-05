@@ -1,20 +1,31 @@
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ResultDuration } from "@/components/results/ResultDuration";
 import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
 import { ResultTypeBadge } from "@/components/results/ResultTypeBadge";
+import { formatFlightTripPriceLabel } from "@/lib/results/packagesUi";
+import type { TripType } from "@/types/models/search-request";
 import type { FlightResult } from "@/types/results";
 
 type FlightResultCardProps = {
   result: FlightResult;
+  /** Search trip type — drives "One-way" vs "Round-trip" footnote. */
+  tripType?: TripType;
 };
 
-/** Card displaying a flight search result. */
-export function FlightResultCard({ result }: FlightResultCardProps) {
+/**
+ * Card displaying a flight search result.
+ * Sprint 14.2 MVP: informational only — no fake booking CTA.
+ * Sprint 14.3: trip-type wording matches the active search.
+ */
+export function FlightResultCard({
+  result,
+  tripType = "round-trip",
+}: FlightResultCardProps) {
   const stopsLabel =
     result.stops === 0 ? "Direct" : `${result.stops} stop${result.stops > 1 ? "s" : ""}`;
+  const tripPriceLabel = formatFlightTripPriceLabel(tripType);
 
   return (
     <Card hoverable className="overflow-hidden">
@@ -67,20 +78,12 @@ export function FlightResultCard({ result }: FlightResultCardProps) {
           </div>
 
           <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
-            <p className="text-sm text-slate-500">Round-trip · per person</p>
-            <div className="flex items-center gap-3">
-              <ResultPrice
-                price={result.price}
-                currency={result.currency}
-                suffix="total"
-              />
-              <Button
-                className="shrink-0 px-4 py-2"
-                aria-label={`Select flight with ${result.airline}`}
-              >
-                Select flight
-              </Button>
-            </div>
+            <p className="text-sm text-slate-500">{tripPriceLabel}</p>
+            <ResultPrice
+              price={result.price}
+              currency={result.currency}
+              suffix="total"
+            />
           </div>
         </div>
       </div>

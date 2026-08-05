@@ -16,12 +16,6 @@ type ResultsSummaryBarProps = {
   search: Partial<SearchRequest>;
 };
 
-const styleLabels = {
-  budget: "Budget",
-  standard: "Standard",
-  luxury: "Luxury",
-} as const;
-
 const productTypeLabels: Record<SearchProductType, string> = {
   hotels: "Stays",
   flights: "Flights",
@@ -48,12 +42,11 @@ export function ResultsSummaryBar({ search }: ResultsSummaryBarProps) {
     search.returnDate ?? "",
   );
   const travelers = search.travelers
-    ? formatPassengersSummary(search.travelers)
-    : "2 adults · 1 room";
-  const style = search.travelStyle
-    ? styleLabels[search.travelStyle]
-    : "Standard";
-  const productTypes = normalizeProductTypes(search.productTypes);
+    ? formatPassengersSummary(search.travelers, { includeRooms: false })
+    : "2 Adults";
+  const productTypes = normalizeProductTypes(search.productTypes).filter(
+    (type) => type === "hotels" || type === "flights",
+  );
   const lookingFor = productTypes
     .map((type) => productTypeLabels[type])
     .join(" · ");
@@ -91,7 +84,6 @@ export function ResultsSummaryBar({ search }: ResultsSummaryBarProps) {
             <div className="flex flex-wrap gap-2">
               <SummaryChip>{dates}</SummaryChip>
               <SummaryChip>{travelers}</SummaryChip>
-              <SummaryChip>{style}</SummaryChip>
               {lookingFor && <SummaryChip>{lookingFor}</SummaryChip>}
               {budgetLabel && <SummaryChip>{budgetLabel}</SummaryChip>}
             </div>

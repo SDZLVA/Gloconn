@@ -66,6 +66,8 @@ export type SearchFormActions = {
   updateTripType: (tripType: TripType) => void;
   updateDates: (departureDate: string, returnDate: string) => void;
   updateProductTypes: (productTypes: SearchProductType[]) => void;
+  /** Swaps origin and destination (labels + ids) without clearing other fields. */
+  swapOriginAndDestination: () => void;
   /** Validates the form and navigates to search results on success. */
   submit: () => void;
 };

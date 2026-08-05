@@ -33,6 +33,11 @@ type PassengersSelectorProps = {
   label?: string;
   /** Which rows to show in the panel. Defaults to all four fields. */
   fields?: readonly PassengerField[];
+  /**
+   * Whether the trigger summary includes rooms.
+   * Sprint 14.2 MVP travelers UI sets this false when rooms are hidden.
+   */
+  includeRoomsInSummary?: boolean;
   /** Accessible name for the dropdown panel. */
   panelAriaLabel?: string;
 };
@@ -49,6 +54,7 @@ export function PassengersSelector({
   className,
   label = "Passengers & rooms",
   fields = DEFAULT_FIELDS,
+  includeRoomsInSummary = true,
   panelAriaLabel = "Select passengers and rooms",
 }: PassengersSelectorProps) {
   const triggerId = useId();
@@ -60,7 +66,9 @@ export function PassengersSelector({
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const summary = formatPassengersSummary(value);
+  const summary = formatPassengersSummary(value, {
+    includeRooms: includeRoomsInSummary,
+  });
   const visibleFields = PASSENGERS_FIELD_CONFIG.filter((field) =>
     fields.includes(field.key),
   );

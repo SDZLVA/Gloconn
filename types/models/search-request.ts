@@ -14,11 +14,14 @@ export type TripType = "round-trip" | "one-way";
 /** Which travel domains the orchestrator should query. */
 export type SearchProductType = "hotels" | "flights" | "transport";
 
-/** Default — search stays, flights, and ground transport together. */
+/**
+ * Default product domains for a new search.
+ * Sprint 14.2 MVP focuses on stays + flights (packages). Transport remains
+ * available in the architecture when explicitly requested.
+ */
 export const DEFAULT_SEARCH_PRODUCT_TYPES: SearchProductType[] = [
   "hotels",
   "flights",
-  "transport",
 ];
 
 /**

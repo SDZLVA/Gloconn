@@ -40,7 +40,11 @@ export function getTotalPassengers(passengers: PassengersState): number {
 }
 
 /** Builds a readable summary for the passengers trigger button. */
-export function formatPassengersSummary(passengers: PassengersState): string {
+export function formatPassengersSummary(
+  passengers: PassengersState,
+  options: { includeRooms?: boolean } = {},
+): string {
+  const includeRooms = options.includeRooms ?? true;
   const parts: string[] = [];
 
   parts.push(
@@ -61,9 +65,11 @@ export function formatPassengersSummary(passengers: PassengersState): string {
     );
   }
 
-  parts.push(
-    passengers.rooms === 1 ? "1 Room" : `${passengers.rooms} Rooms`,
-  );
+  if (includeRooms) {
+    parts.push(
+      passengers.rooms === 1 ? "1 Room" : `${passengers.rooms} Rooms`,
+    );
+  }
 
   return parts.join(" · ");
 }

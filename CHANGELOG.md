@@ -4,6 +4,18 @@ All notable product releases for Glooconn are listed here. Detailed notes live u
 
 ---
 
+## [Unreleased] — MVP Focus (Milestone 14)
+
+**Milestone 14 — MVP Focus** (Sprints 14.1–14.4 complete; release tagging not started).
+
+- Focused first-search UI: Flights + Stays + Recommended Packages
+- Hidden: Travel Style, Rooms, transport toggles/results/filters (architecture retained)
+- Removed from UI: Destinations/About nav, fake booking CTAs
+- UX polish: origin ↔ destination swap, dynamic budget label, trip-type wording, Browse Flights/Hotels hierarchy, mobile auth menu
+- **381** automated tests
+
+---
+
 ## [v0.19.0] — Travel Packages (August 2026)
 
 **Milestone 13 complete.** Recommended flight + hotel packages via product-layer composition above existing providers (no PackagesProvider).

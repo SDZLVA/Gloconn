@@ -6,6 +6,7 @@ import {
   countActiveFilters,
   filterResults,
 } from "@/lib/results/filter";
+import { filterMvpVisibleResults } from "@/lib/results/mvpUi";
 import { sortResults } from "@/lib/results/sort";
 import { getApiErrorMessage, postSearchTrips } from "@/lib/api";
 import { clearCachedSearchResult } from "@/lib/api/searchResultCache";
@@ -78,7 +79,10 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     if (!resultsState.data) {
       return EMPTY_RESULTS;
     }
-    return searchResponseToResults(resultsState.data);
+    // Sprint 14.2 MVP: hide bus/train from the results surface (providers unchanged).
+    return filterMvpVisibleResults(
+      searchResponseToResults(resultsState.data),
+    );
   }, [resultsState.data]);
 
   const packages = resultsState.data?.packages ?? EMPTY_PACKAGES;
@@ -244,6 +248,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     destination={destination}
                     editSearchHref={editSearchHref}
                     onClearFilters={clearFilters}
+                    tripType={search.tripType}
                   />
                 </>
               )}

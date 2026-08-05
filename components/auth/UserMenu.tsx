@@ -6,18 +6,51 @@ import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { focusRing } from "@/lib/styles";
 
+type UserMenuProps = {
+  /**
+   * `desktop` — navbar pill (md+).
+   * `mobile` — stack links inside the hamburger drawer.
+   */
+  variant?: "desktop" | "mobile";
+  /** Called after a mobile nav link is activated (closes the drawer). */
+  onNavigate?: () => void;
+};
+
 /** Navbar auth controls — sign in link or signed-in user menu. */
-export function UserMenu() {
+export function UserMenu({
+  variant = "desktop",
+  onNavigate,
+}: UserMenuProps) {
   const { user, loading } = useAuth();
   const [open, setOpen] = useState(false);
 
   if (loading) {
+    if (variant === "mobile") {
+      return (
+        <span className="block h-11 w-full animate-pulse rounded-xl bg-slate-100" />
+      );
+    }
     return (
       <span className="hidden h-9 w-20 animate-pulse rounded-xl bg-slate-100 md:inline-block" />
     );
   }
 
   if (!user) {
+    if (variant === "mobile") {
+      return (
+        <Link
+          href="/login"
+          onClick={onNavigate}
+          className={cn(
+            "flex min-h-11 items-center rounded-xl px-3 py-2.5 text-base font-semibold text-slate-800 motion-safe:hover:bg-slate-50",
+            focusRing,
+          )}
+        >
+          Sign in
+        </Link>
+      );
+    }
+
     return (
       <Link
         href="/login"
@@ -38,16 +71,58 @@ export function UserMenu() {
     .slice(0, 2)
     .toUpperCase();
 
+  if (variant === "mobile") {
+    return (
+      <div className="flex flex-col gap-1">
+        <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
+          Account
+        </p>
+        <Link
+          href="/profile"
+          onClick={onNavigate}
+          className={cn(
+            "flex min-h-11 items-center rounded-xl px-3 py-2.5 text-base font-medium text-slate-800 motion-safe:hover:bg-slate-50",
+            focusRing,
+          )}
+        >
+          Profile
+        </Link>
+        <Link
+          href="/my-trips"
+          onClick={onNavigate}
+          className={cn(
+            "flex min-h-11 items-center rounded-xl px-3 py-2.5 text-base font-medium text-slate-800 motion-safe:hover:bg-slate-50",
+            focusRing,
+          )}
+        >
+          My Trips
+        </Link>
+        <form action="/auth/signout" method="post">
+          <button
+            type="submit"
+            className={cn(
+              "flex min-h-11 w-full items-center rounded-xl px-3 py-2.5 text-left text-base font-medium text-red-600 motion-safe:hover:bg-red-50",
+              focusRing,
+            )}
+          >
+            Sign out
+          </button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="relative hidden md:block">
       <button
         type="button"
         className={cn(
-          "inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 motion-safe:transition-colors motion-safe:hover:bg-slate-50",
+          "inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 motion-safe:transition-colors motion-safe:hover:bg-slate-50",
           focusRing,
         )}
         aria-expanded={open}
         aria-haspopup="menu"
+        aria-label={`Account menu for ${user.displayName}`}
         onClick={() => setOpen((value) => !value)}
       >
         {user.avatarUrl ? (
