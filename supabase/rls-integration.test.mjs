@@ -254,13 +254,15 @@ console.log("\n▶ DELETE\n");
 
 await test("User B CANNOT DELETE User A's trip", async () => {
   assert.ok(userATripId, "Skipped: User A's INSERT did not produce a trip ID");
-  await restRequest("DELETE", `/saved_trips?id=eq.${userATripId}`, null, userB.access_token);
+  const delRes = await restRequest("DELETE", `/saved_trips?id=eq.${userATripId}`, null, userB.access_token);
+  console.log(`    [debug] User B DELETE status: ${delRes.status}`);
   // RLS silently filters: PostgREST returns 204 with 0 rows affected rather
   // than 403. Confirm the row still exists using the service role (bypasses RLS).
   const verify = await serviceRequest("GET", `/saved_trips?id=eq.${userATripId}`);
+  console.log(`    [debug] service-role verify status: ${verify.status} body: ${verify.text}`);
   assert.ok(
     Array.isArray(verify.body) && verify.body.length === 1,
-    "User A's trip must still exist after User B's DELETE attempt",
+    `User A's trip must still exist after User B's DELETE attempt — verify: ${verify.text}`,
   );
 });
 
