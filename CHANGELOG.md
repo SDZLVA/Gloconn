@@ -4,7 +4,7 @@ All notable product releases for Glooconn are listed here. Detailed notes live u
 
 ---
 
-## [Unreleased] — MVP Conversion (Milestones 14 + 15)
+## [v0.20.0] — MVP Focus (August 2026)
 
 **Milestone 14 — MVP Focus** (Sprints 14.1–14.4 complete).
 
@@ -20,7 +20,9 @@ All notable product releases for Glooconn are listed here. Detailed notes live u
 - **Flexible budget (Sprint 15.4):** Budget is now **optional** — empty input accepted; placeholder "Any budget"; no required asterisk; currency + input on same row on desktop
 - **Budget compatibility warning (Sprint 15.4):** Banner above Recommended Packages when a budget is set but all same-currency packages exceed it; correctly suppressed when no currency matches (no FX conversion)
 - **Flight price wording (M15 closeout):** Individual flight browse cards now read "per person" instead of bare "total"
-- **551** automated tests; 0 vulnerabilities; typecheck clean; build clean
+- **552** automated tests; 0 vulnerabilities; typecheck clean; build clean
+
+**Details:** [docs/releases/v0.20.0.md](./docs/releases/v0.20.0.md)
 
 ---
 

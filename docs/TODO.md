@@ -15,8 +15,8 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [x] Sprint 15.3 — Recommended Package UX
 - [x] Sprint 15.4 — Flexible budget + budget compatibility warning
 - [x] M15 closeout — documentation sync + flight price wording fix
-- [ ] Commit all Milestone 15 changes (includes M14)
-- [ ] **v0.20.0** version bump + release notes + tag (CTO)
+- [x] Commit all Milestone 15 changes (includes M14)
+- [x] **v0.20.0** version bump + release notes + tag
 
 ---
 

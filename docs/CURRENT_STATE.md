@@ -2,12 +2,12 @@
 
 **Last updated:** August 19, 2026  
 **Active branch:** `milestone-12-hotel-search`  
-**Current release:** **v0.19.0** — Travel Packages  
-**Completed:** **Milestone 15** — MVP Conversion (Sprints 15.1–15.4; release commit pending)  
+**Current release:** **v0.20.0** — MVP Focus  
+**Completed:** **Milestone 15** — MVP Conversion (Sprints 15.1–15.4; tagged as v0.20.0)  
 **Status:** Focused MVP UI — flights + hotels + Recommended Packages; live SerpAPI when configured  
 **Live providers:** SerpAPI Google Flights · SerpAPI Google Hotels  
 **Long-term flights:** Amadeus Enterprise  
-**Markers:** `v0.17.0` · `v0.18.0` · **`v0.19.0`** · Milestone 15 MVP Conversion (unreleased)
+**Markers:** `v0.17.0` · `v0.18.0` · `v0.19.0` · **`v0.20.0`**
 
 ---
 
@@ -21,7 +21,7 @@
 | Sprint 15.2 | Price Trust + Critical MVP Fixes | ✅ Complete | `milestone-12-hotel-search` |
 | Sprint 15.3 | Recommended Package UX | ✅ Complete | `milestone-12-hotel-search` |
 | Sprint 15.4 | Flexible Budget + Budget Compatibility Warning | ✅ Complete | `milestone-12-hotel-search` |
-| **Next** | Commit M15 + **v0.20.0** release (CTO) | ⏳ | — |
+| **v0.20.0** | MVP Focus release | ✅ Tagged | `milestone-12-hotel-search` |
 
 ---
 
@@ -69,6 +69,7 @@
 
 | Doc | Purpose |
 |-----|---------|
+| [releases/v0.20.0.md](./releases/v0.20.0.md) | MVP Focus release (current) |
 | [releases/v0.19.0.md](./releases/v0.19.0.md) | Travel Packages release |
 | [TODO.md](./TODO.md) | Active tasks |
 | [ROADMAP.md](./ROADMAP.md) | Product roadmap |
