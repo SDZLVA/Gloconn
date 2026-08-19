@@ -27,3 +27,9 @@ create policy "Users can delete own trips"
   on public.saved_trips
   for delete
   using (auth.uid() = user_id);
+
+-- Grant table-level permissions to the authenticated role so PostgREST can
+-- execute DML. RLS policies still restrict which rows are accessible.
+-- The anon role intentionally receives no grants — unauthenticated callers
+-- cannot touch this table at all.
+grant select, insert, delete on public.saved_trips to authenticated;

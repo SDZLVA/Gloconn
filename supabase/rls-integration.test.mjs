@@ -204,12 +204,14 @@ await test("User A can SELECT their own trips", async () => {
 });
 
 await test("User A CANNOT SELECT User B's trips (direct ID query)", async () => {
+  assert.ok(userBTripId, "Skipped: User B's INSERT did not produce a trip ID");
   const res = await restRequest("GET", `/saved_trips?id=eq.${userBTripId}`, null, userA.access_token);
   assert.equal(res.status, 200, "RLS returns 200 with empty array (not 403)");
   assert.ok(Array.isArray(res.body) && res.body.length === 0, "User A must get 0 rows for User B's trip");
 });
 
 await test("User B CANNOT SELECT User A's trips (direct ID query)", async () => {
+  assert.ok(userATripId, "Skipped: User A's INSERT did not produce a trip ID");
   const res = await restRequest("GET", `/saved_trips?id=eq.${userATripId}`, null, userB.access_token);
   assert.equal(res.status, 200);
   assert.ok(Array.isArray(res.body) && res.body.length === 0, "User B must get 0 rows for User A's trip");
@@ -229,6 +231,7 @@ await test("SELECT * returns only owned rows for each user (no cross-user leakag
 console.log("\n▶ DELETE\n");
 
 await test("User B CANNOT DELETE User A's trip", async () => {
+  assert.ok(userATripId, "Skipped: User A's INSERT did not produce a trip ID");
   const res = await restRequest("DELETE", `/saved_trips?id=eq.${userATripId}`, null, userB.access_token);
   // RLS returns 204 with 0 rows affected (PostgREST does not return 403 for DELETE).
   // Verify the row still exists via service role.
@@ -240,6 +243,7 @@ await test("User B CANNOT DELETE User A's trip", async () => {
 });
 
 await test("User A CAN DELETE their own trip", async () => {
+  assert.ok(userATripId, "Skipped: User A's INSERT did not produce a trip ID");
   const res = await restRequest("DELETE", `/saved_trips?id=eq.${userATripId}`, null, userA.access_token);
   assert.equal(res.status, 204, `Expected 204, got ${res.status}`);
   // Verify the row is gone.
@@ -257,6 +261,7 @@ await test("User A CAN DELETE their own trip", async () => {
 console.log("\n▶ UPDATE (no policy — must be denied)\n");
 
 await test("UPDATE is denied for User B's own trip (no UPDATE policy)", async () => {
+  assert.ok(userBTripId, "Skipped: User B's INSERT did not produce a trip ID");
   const res = await restRequest(
     "PATCH",
     `/saved_trips?id=eq.${userBTripId}`,
