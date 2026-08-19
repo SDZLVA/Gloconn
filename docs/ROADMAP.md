@@ -2,9 +2,9 @@
 
 High-level product roadmap. Dates are approximate.
 
-**Current release:** **v0.19.0** — Travel Packages  
-**Completed milestone:** **Milestone 14** — MVP Focus (Sprints 14.1–14.4; release tagging pending)  
-**Next:** Commit M14 work · optional **v0.20.0** MVP Focus release (CTO)
+**Current release:** **v0.19.0** — Travel Packages (v0.20.0 pending)  
+**Completed milestone:** **Milestone 15** — MVP Conversion (Sprints 15.1–15.4; release tagging pending)  
+**Next:** Commit M15 work · **v0.20.0** release (CTO)
 
 ---
 
@@ -48,7 +48,8 @@ Supabase auth, profile, protected routes, saved trips.
 | Milestone 11 | Live Flights | ✅ Complete → **v0.17.0** |
 | Milestone 12 | Live Hotels | ✅ Complete → **v0.18.0** |
 | Milestone 13 | Travel Packages | ✅ Complete → **v0.19.0** |
-| **Milestone 14** | **MVP Focus (simplify + polish + validate)** | ✅ **Complete — release pending** |
+| **Milestone 14** | **MVP Focus (simplify + polish + validate)** | ✅ **Complete** |
+| **Milestone 15** | **MVP Conversion (price trust, package UX, budget, warning)** | ✅ **Complete — release pending** |
 
 ### Provider posture (current)
 
@@ -62,7 +63,7 @@ Supabase auth, profile, protected routes, saved trips.
 
 ---
 
-## Milestone 14 — MVP Focus
+## Milestone 14 — MVP Focus ✅
 
 **Goal:** A polished first-search experience — flights + hotels + packages only.
 
@@ -71,7 +72,21 @@ Supabase auth, profile, protected routes, saved trips.
 | 14.1 | Discovery audit (KEEP / HIDE / REMOVE) | ✅ |
 | 14.2 | UI simplification (hide transport, travel style, rooms; remove fake CTAs & dead nav) | ✅ |
 | 14.3 | UX polish (swap, budget label, trip wording, hierarchy, mobile auth) | ✅ |
-| 14.4 | Validation & release readiness | ✅ (await CTO) |
+| 14.4 | Validation & release readiness | ✅ |
+
+---
+
+## Milestone 15 — MVP Conversion ✅
+
+**Goal:** Make the MVP trustworthy and clearly communicative before v0.20.0.
+
+| Sprint | Focus | Status |
+|--------|--------|--------|
+| 15.1 | Discovery audit | ✅ |
+| 15.2 | Price trust + critical fixes (per-person/per-room labels, quality badge, unrated hotels) | ✅ |
+| 15.3 | Recommended Package UX (5-cap + Show more, includes summary, route context, 6+2 pool) | ✅ |
+| 15.4 | Flexible budget (optional) + budget compatibility warning + currency edge-case fix | ✅ |
+| Closeout | Docs sync + flight price wording fix | ✅ |
 
 ---
 

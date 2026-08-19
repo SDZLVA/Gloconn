@@ -1012,7 +1012,55 @@ Tie-break: score → name → id. Empty query returns `[]` (idle UI uses recent 
 - [ ] Commit Milestone 14
 - [ ] Optional v0.20.0 tag (CTO)
 
-**Milestone 14 engineering complete — awaiting commit / release authorization.**
+**Milestone 14 engineering complete — included in M15 commit.**
+
+---
+
+## Milestone 15 — MVP Conversion
+
+**Dates:** August 19, 2026  
+**Branch:** `milestone-12-hotel-search`  
+**Release:** **v0.20.0** — not tagged yet · [../CHANGELOG.md](../CHANGELOG.md)
+
+### Sprint 15.1 — Discovery audit
+
+- CTO-level product audit of the MVP as a new user
+- Identified gaps in price honesty, package UX, and budget UX
+
+### Sprint 15.2 — Price Trust + Critical MVP Fixes
+
+- Flight price explicitly labeled "per person" on flight cards and package flight box
+- Hotel price labeled "N nights · 1 room" on hotel cards and package hotel box
+- Package footer: "Flight (per person) + hotel (N nights, 1 room) · est. total"
+- Quality badge ("Top Pick" / "Good Match") replaces opaque numeric score
+- Zero-star hotels show "Unrated" instead of an empty string
+- Multi-room warning for groups > 2 adults
+
+### Sprint 15.3 — Recommended Package UX
+
+- Packages capped at 5 initially with "Show N more packages" toggle
+- One-line "What's included" summary per card ("Flight + N nights at Hotel")
+- Result counts ("X flights · Y hotels") in sort bar
+- Flight route context (e.g. LHR → CDG) on flight cards and package cards
+- One-way hotel warning banner when return date is missing
+- Quality-aware "6+2" candidate pool (6 cheapest + 2 highest-rated)
+
+### Sprint 15.4 — Flexible Budget + Budget Compatibility Warning
+
+- Budget is now **optional** — empty input passes validation; `buildSearchRequest` emits `null` budget
+- `BudgetSelector`: currency + input side-by-side on desktop; stacked on mobile; no required asterisk; placeholder "Any budget"
+- Budget compatibility warning banner above Recommended Packages when all same-currency packages exceed the user's budget
+- Currency-safe logic: warning suppressed when no packages share the budget's currency (no FX conversion)
+- `shouldShowBudgetCompatibilityWarning` pure helper in `lib/results/packagesUi.ts`
+
+### M15 Closeout — Documentation + Flight Price Wording
+
+- Flight browse cards (`FlightResultCard`) now show "per person" suffix instead of "total"
+- All documentation synchronized (AI_HANDOFF, CURRENT_STATE, CHANGELOG, TODO, ROADMAP, README, PROGRESS)
+
+**Result:** 551 tests · typecheck clean · build clean · 0 vulnerabilities · security S1–S4 intact
+
+**Milestone 15 complete — awaiting commit / v0.20.0 release authorization.**
 
 ---
 

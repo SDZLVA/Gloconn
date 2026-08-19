@@ -11,7 +11,7 @@ export function validateBudget(
   const trimmed = budget.trim();
 
   if (!trimmed) {
-    return `Please set your trip budget (${formatBudget(BUDGET_LIMITS.min, currency)}–${formatBudget(BUDGET_LIMITS.max, currency)}).`;
+    return undefined;
   }
 
   const amount = Number(trimmed);

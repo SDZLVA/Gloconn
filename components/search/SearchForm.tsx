@@ -152,7 +152,6 @@ export function SearchForm({
               actions.updateField("budgetCurrency", value)
             }
             error={errors.budget}
-            required
           />
         </div>
       </SearchFormSection>

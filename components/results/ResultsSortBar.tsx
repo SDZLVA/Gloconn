@@ -7,19 +7,45 @@ type ResultsSortBarProps = {
   sortBy: SortOption;
   onSortChange: (sort: SortOption) => void;
   resultCount: number;
+  /** When provided, renders a breakdown such as "12 flights · 8 hotels". */
+  flightCount?: number;
+  hotelCount?: number;
   /** When true, count text is muted (e.g. while loading). */
   isLoading?: boolean;
   className?: string;
 };
+
+/**
+ * Builds a compact type-breakdown string for display.
+ * Only includes types that have at least one result.
+ * Returns null when no breakdown is meaningful.
+ */
+export function formatResultCountBreakdown(
+  flightCount: number | undefined,
+  hotelCount: number | undefined,
+): string | null {
+  const parts: string[] = [];
+  if (typeof flightCount === "number" && flightCount > 0) {
+    parts.push(`${flightCount} ${flightCount === 1 ? "flight" : "flights"}`);
+  }
+  if (typeof hotelCount === "number" && hotelCount > 0) {
+    parts.push(`${hotelCount} ${hotelCount === 1 ? "hotel" : "hotels"}`);
+  }
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
 
 /** Sort dropdown and result count above the results list. */
 export function ResultsSortBar({
   sortBy,
   onSortChange,
   resultCount,
+  flightCount,
+  hotelCount,
   isLoading = false,
   className,
 }: ResultsSortBarProps) {
+  const breakdown = formatResultCountBreakdown(flightCount, hotelCount);
+
   return (
     <div
       className={cn(
@@ -27,21 +53,24 @@ export function ResultsSortBar({
         className,
       )}
     >
-      <p
+      <div
         className={cn(
           "text-sm font-medium text-slate-600",
           isLoading && "text-slate-400",
         )}
       >
         {isLoading ? (
-          "Searching…"
+          <span>Searching…</span>
         ) : (
-          <>
+          <span>
             <span className="font-bold text-slate-900">{resultCount}</span>{" "}
             {resultCount === 1 ? "result" : "results"} found
-          </>
+            {breakdown && (
+              <span className="ml-2 text-slate-400">({breakdown})</span>
+            )}
+          </span>
         )}
-      </p>
+      </div>
 
       <div className="flex items-center gap-2">
         <label htmlFor="sort-results" className="text-sm font-medium text-slate-600">

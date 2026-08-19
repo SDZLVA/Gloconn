@@ -10,15 +10,25 @@ type ResultCardProps = {
   result: SearchResult;
   /** Used for flight trip-type wording (Sprint 14.3). */
   tripType?: TripType;
+  /** Task 4 (Sprint 15.3): route context for flight cards. */
+  originIata?: string | null;
+  destinationIata?: string | null;
 };
 
 /** Dispatches to the correct card component based on result type. */
-function ResultCardComponent({ result, tripType }: ResultCardProps) {
+function ResultCardComponent({ result, tripType, originIata, destinationIata }: ResultCardProps) {
   switch (result.type) {
     case "hotel":
       return <HotelResultCard result={result} />;
     case "flight":
-      return <FlightResultCard result={result} tripType={tripType} />;
+      return (
+        <FlightResultCard
+          result={result}
+          tripType={tripType}
+          originIata={originIata}
+          destinationIata={destinationIata}
+        />
+      );
     case "bus":
       return <BusResultCard result={result} />;
     case "train":

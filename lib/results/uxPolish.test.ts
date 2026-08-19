@@ -195,6 +195,19 @@ describe("results hierarchy headings", () => {
   });
 });
 
+describe("FlightResultCard price suffix", () => {
+  it("renders 'per person' as the price suffix — not 'total'", () => {
+    const html = renderToStaticMarkup(
+      createElement(FlightResultCard, {
+        result: flightResult,
+        tripType: "round-trip",
+      }),
+    );
+    assert.match(html, /per person/);
+    assert.doesNotMatch(html, />total</);
+  });
+});
+
 describe("swap control accessibility contract", () => {
   it("documents the required accessible name for the swap control", () => {
     // SearchForm uses this exact aria-label on the swap button.

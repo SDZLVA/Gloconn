@@ -1,13 +1,13 @@
 # Glooconn — Current State
 
-**Last updated:** August 5, 2026  
+**Last updated:** August 19, 2026  
 **Active branch:** `milestone-12-hotel-search`  
 **Current release:** **v0.19.0** — Travel Packages  
-**In progress:** **Milestone 14** — MVP Focus (Sprints 14.1–14.4 validation complete; release commit pending)  
+**Completed:** **Milestone 15** — MVP Conversion (Sprints 15.1–15.4; release commit pending)  
 **Status:** Focused MVP UI — flights + hotels + Recommended Packages; live SerpAPI when configured  
 **Live providers:** SerpAPI Google Flights · SerpAPI Google Hotels  
 **Long-term flights:** Amadeus Enterprise  
-**Markers:** `v0.17.0` · `v0.18.0` · **`v0.19.0`** · Milestone 14 MVP polish (unreleased)
+**Markers:** `v0.17.0` · `v0.18.0` · **`v0.19.0`** · Milestone 15 MVP Conversion (unreleased)
 
 ---
 
@@ -16,23 +16,32 @@
 | Sprint | Name | Status | Branch |
 |--------|------|--------|--------|
 | Milestone 13 / **v0.19.0** | Travel Packages | ✅ Released | `milestone-12-hotel-search` |
-| Sprint 14.1 | MVP discovery audit | ✅ Complete | `milestone-12-hotel-search` |
-| Sprint 14.2 | MVP UI simplification | ✅ Complete | `milestone-12-hotel-search` |
-| Sprint 14.3 | UX polish | ✅ Complete | `milestone-12-hotel-search` |
-| Sprint 14.4 | MVP validation & release readiness | ✅ Complete (await CTO) | `milestone-12-hotel-search` |
-| **Next** | Commit M14 + optional **v0.20.0** release (CTO) | ⏳ | — |
+| Sprint 14.1–14.4 | MVP Focus | ✅ Complete | `milestone-12-hotel-search` |
+| Sprint 15.1 | MVP Conversion discovery audit | ✅ Complete | `milestone-12-hotel-search` |
+| Sprint 15.2 | Price Trust + Critical MVP Fixes | ✅ Complete | `milestone-12-hotel-search` |
+| Sprint 15.3 | Recommended Package UX | ✅ Complete | `milestone-12-hotel-search` |
+| Sprint 15.4 | Flexible Budget + Budget Compatibility Warning | ✅ Complete | `milestone-12-hotel-search` |
+| **Next** | Commit M15 + **v0.20.0** release (CTO) | ⏳ | — |
 
 ---
 
 ## What works today
 
-- Focused search form: From, Destination (with **swap**), Dates, Travelers, Budget (dynamic currency label), Stays, Flights
-- Results: **⭐ Recommended Packages** → **Browse Flights** → **Browse Hotels**
+- Focused search form: From, Destination (with **swap**), Dates, Travelers, Optional Budget (dynamic currency label), Stays, Flights
+- Budget is **optional** — leave empty to search without a budget constraint
+- Results: **⭐ Recommended Packages** (up to 5 initially, "Show more") → **Browse Flights** → **Browse Hotels**
+- Package quality badges: "Top Pick" (≥80) · "Good Match" (≥60) — replaces opaque numeric score
+- Package breakdown: "Flight (per person) + hotel (N nights, 1 room)" + "est. total"
+- **Budget compatibility warning** — shown above Recommended Packages when all same-currency packages exceed the user's budget; suppressed when currencies don't match (no FX conversion)
+- Package candidate selection: quality-aware "6+2" pool (6 cheapest + 2 highest-rated)
 - Filters (hotels/flights only) + sort; Edit search; Save trip (when Supabase configured)
+- Flight price labeled "per person"; hotel price labeled "N nights · 1 room"
+- Flight route context (e.g. LHR → CDG) shown when IATA codes are available
+- One-way search hotel warning when return date is missing
 - Nav: Logo, Search, My Trips, Sign in / Profile (no Destinations/About links)
 - Trip search via `POST /api/search`; packages via `PackageComposer`
 - Live SerpAPI flights & hotels when env-configured; mock default
-- **381 automated tests**; typecheck + build green
+- **551 automated tests**; typecheck + build green; 0 vulnerabilities
 
 ---
 
@@ -44,6 +53,7 @@
 - Supabase unset → auth / saved trips disabled locally
 - SerpAPI RT `departure_token` outbound fallback; hotel `children_ages` default `8`
 - Cosmetic: `SectionHeading` hydration warning in dev overlay
+- currencyService DI debt (ADR-035)
 
 ---
 

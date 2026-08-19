@@ -108,35 +108,88 @@ export function composePackages(
   return packages.slice(0, maxPackages);
 }
 
-/** Pre-select flights: price asc, then rating desc, then id (deterministic). */
+/**
+ * P1.7 (Sprint 15.3) — Quality-aware candidate selection.
+ *
+ * Previous behavior: pure price-ascending selection gave all 8 slots to the
+ * cheapest options, preventing high-quality but moderately expensive candidates
+ * from entering composition at all.
+ *
+ * New behavior: "6 + 2" split —
+ *   - First (limit - QUALITY_SLOTS) slots: cheapest by price (preserves budget bias)
+ *   - Remaining QUALITY_SLOTS slots: highest rating among candidates NOT already
+ *     in the price window (gives quality options a guaranteed entry point)
+ *
+ * When limit ≤ QUALITY_SLOTS, all slots are filled by quality ranking (edge case).
+ * Deduplication ensures no candidate appears twice. Order within the result set
+ * is price-asc first, then quality additions — deterministic via id tiebreaker.
+ */
+const QUALITY_SLOTS = 2;
+
+/** Pre-select flights using quality-aware "6 + 2" candidate selection. */
 function selectFlightCandidates(
   flights: Flight[],
   limit: number,
 ): Flight[] {
-  const sorted = [...flights].sort((a, b) => {
-    if (a.price !== b.price) {
-      return a.price - b.price;
-    }
-    if (a.rating !== b.rating) {
-      return b.rating - a.rating;
-    }
-    return a.id.localeCompare(b.id);
-  });
-  return sorted.slice(0, limit);
+  return selectQualityAwareCandidates(flights, limit);
 }
 
-/** Pre-select hotels: price asc, then rating desc, then id (deterministic). */
+/** Pre-select hotels using quality-aware "6 + 2" candidate selection. */
 function selectHotelCandidates(hotels: Hotel[], limit: number): Hotel[] {
-  const sorted = [...hotels].sort((a, b) => {
-    if (a.price !== b.price) {
-      return a.price - b.price;
-    }
-    if (a.rating !== b.rating) {
-      return b.rating - a.rating;
-    }
-    return a.id.localeCompare(b.id);
-  });
-  return sorted.slice(0, limit);
+  return selectQualityAwareCandidates(hotels, limit);
+}
+
+/**
+ * Quality-aware "N-2 + 2" candidate selection.
+ *
+ * - (limit - QUALITY_SLOTS) slots → cheapest by price (budget bias preserved)
+ * - QUALITY_SLOTS slots → highest-rated from the remaining pool (quality diversity)
+ *
+ * Guarantees no duplicates. Result count equals min(items.length, limit).
+ */
+function selectQualityAwareCandidates<T extends { price: number; rating: number; id: string }>(
+  items: T[],
+  limit: number,
+): T[] {
+  if (items.length <= limit) {
+    return [...items].sort(byPriceAscRatingDesc);
+  }
+
+  const priceSlots = Math.max(0, limit - QUALITY_SLOTS);
+  const byPrice = [...items].sort(byPriceAscRatingDesc);
+
+  // Price window: cheapest priceSlots items.
+  const priceWindow = byPrice.slice(0, priceSlots);
+
+  // Quality additions: highest-rated items NOT in the price window.
+  // Since byPrice is sorted, remaining items are those beyond the price window.
+  const remaining = byPrice.slice(priceSlots);
+  const qualityAdditions = [...remaining]
+    .sort(byRatingDescPriceAsc)
+    .slice(0, QUALITY_SLOTS);
+
+  // Sort quality additions by price for a stable, predictable final order.
+  const qualityAdditionsSorted = [...qualityAdditions].sort(byPriceAscRatingDesc);
+
+  return [...priceWindow, ...qualityAdditionsSorted];
+}
+
+function byPriceAscRatingDesc(
+  a: { price: number; rating: number; id: string },
+  b: { price: number; rating: number; id: string },
+): number {
+  if (a.price !== b.price) return a.price - b.price;
+  if (a.rating !== b.rating) return b.rating - a.rating;
+  return a.id.localeCompare(b.id);
+}
+
+function byRatingDescPriceAsc(
+  a: { price: number; rating: number; id: string },
+  b: { price: number; rating: number; id: string },
+): number {
+  if (a.rating !== b.rating) return b.rating - a.rating;
+  if (a.price !== b.price) return a.price - b.price;
+  return a.id.localeCompare(b.id);
 }
 
 /** Higher score first, then lower totalPrice, then id. */

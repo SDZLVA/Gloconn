@@ -28,8 +28,8 @@ export function SearchCard({ className, initialForm }: SearchCardProps) {
     >
       <SectionHeading
         className="mb-7 space-y-1 sm:mb-8"
-        title="Plan your trip"
-        description="Start planning your next adventure"
+        title="Find flights + hotels"
+        description="Search by destination, dates, and budget to see recommended packages."
       />
 
       <SearchForm controller={controller} />

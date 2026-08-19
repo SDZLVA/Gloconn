@@ -25,9 +25,14 @@ export type BuildSearchRequestResult =
   | { ok: true; request: SearchRequest }
   | { ok: false; errors: SearchFormErrors };
 
-function budgetFromForm(form: SearchFormState): Budget {
+function budgetFromForm(form: SearchFormState): Budget | null {
+  const trimmed = form.budget.trim();
+  if (!trimmed) {
+    return null;
+  }
+
   return {
-    amount: Number(form.budget.trim()),
+    amount: Number(trimmed),
     currency: form.budgetCurrency,
   };
 }

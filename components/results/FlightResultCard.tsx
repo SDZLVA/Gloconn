@@ -4,7 +4,7 @@ import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderIm
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
 import { ResultTypeBadge } from "@/components/results/ResultTypeBadge";
-import { formatFlightTripPriceLabel } from "@/lib/results/packagesUi";
+import { formatFlightRoute, formatFlightTripPriceLabel } from "@/lib/results/packagesUi";
 import type { TripType } from "@/types/models/search-request";
 import type { FlightResult } from "@/types/results";
 
@@ -12,20 +12,30 @@ type FlightResultCardProps = {
   result: FlightResult;
   /** Search trip type — drives "One-way" vs "Round-trip" footnote. */
   tripType?: TripType;
+  /**
+   * Task 4 (Sprint 15.3): IATA codes from the search request.
+   * When present, renders "LHR → CDG" route context below the airline name.
+   * Omitted when unavailable — no placeholder is shown.
+   */
+  originIata?: string | null;
+  destinationIata?: string | null;
 };
 
 /**
  * Card displaying a flight search result.
- * Sprint 14.2 MVP: informational only — no fake booking CTA.
- * Sprint 14.3: trip-type wording matches the active search.
+ * Informational only — no fake booking CTA.
+ * Task 4: shows route context when IATA codes are available.
  */
 export function FlightResultCard({
   result,
   tripType = "round-trip",
+  originIata,
+  destinationIata,
 }: FlightResultCardProps) {
   const stopsLabel =
     result.stops === 0 ? "Direct" : `${result.stops} stop${result.stops > 1 ? "s" : ""}`;
   const tripPriceLabel = formatFlightTripPriceLabel(tripType);
+  const routeLabel = formatFlightRoute(originIata, destinationIata);
 
   return (
     <Card hoverable className="overflow-hidden">
@@ -48,6 +58,11 @@ export function FlightResultCard({
               <h3 className="text-lg font-bold text-slate-900">
                 {result.airline}
               </h3>
+              {routeLabel && (
+                <p className="text-sm font-semibold tracking-wide text-brand-700">
+                  {routeLabel}
+                </p>
+              )}
             </div>
             <ResultRating rating={result.rating} />
           </div>
@@ -82,7 +97,7 @@ export function FlightResultCard({
             <ResultPrice
               price={result.price}
               currency={result.currency}
-              suffix="total"
+              suffix="per person"
             />
           </div>
         </div>

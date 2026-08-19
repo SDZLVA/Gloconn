@@ -12,6 +12,9 @@ type ResultsListProps = {
   onClearFilters?: () => void;
   /** Drives flight card one-way / round-trip wording. */
   tripType?: TripType;
+  /** Task 4 (Sprint 15.3): route context for flight cards. */
+  originIata?: string | null;
+  destinationIata?: string | null;
 };
 
 type BrowseSectionProps = {
@@ -20,6 +23,8 @@ type BrowseSectionProps = {
   results: SearchResult[];
   tripType?: TripType;
   listAriaLabel: string;
+  originIata?: string | null;
+  destinationIata?: string | null;
 };
 
 function BrowseSection({
@@ -28,6 +33,8 @@ function BrowseSection({
   results,
   tripType,
   listAriaLabel,
+  originIata,
+  destinationIata,
 }: BrowseSectionProps) {
   if (results.length === 0) {
     return null;
@@ -44,7 +51,12 @@ function BrowseSection({
       <ul className="flex flex-col gap-4" aria-label={listAriaLabel}>
         {results.map((result) => (
           <li key={result.id}>
-            <ResultCard result={result} tripType={tripType} />
+            <ResultCard
+              result={result}
+              tripType={tripType}
+              originIata={originIata}
+              destinationIata={destinationIata}
+            />
           </li>
         ))}
       </ul>
@@ -54,7 +66,7 @@ function BrowseSection({
 
 /**
  * Renders browse sections for flights and hotels, or a filter-empty state.
- * Sprint 14.3: "Browse Flights" / "Browse Hotels" hierarchy under packages.
+ * Task 4 (Sprint 15.3): threads originIata/destinationIata to flight cards.
  */
 export function ResultsList({
   results,
@@ -62,6 +74,8 @@ export function ResultsList({
   editSearchHref,
   onClearFilters,
   tripType,
+  originIata,
+  destinationIata,
 }: ResultsListProps) {
   if (results.length === 0) {
     return (
@@ -84,6 +98,8 @@ export function ResultsList({
         results={flights}
         tripType={tripType}
         listAriaLabel="Flight results"
+        originIata={originIata}
+        destinationIata={destinationIata}
       />
       <BrowseSection
         title="Browse Hotels"

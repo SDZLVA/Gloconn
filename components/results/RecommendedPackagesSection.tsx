@@ -1,22 +1,45 @@
-import { memo } from "react";
+"use client";
+
+import { memo, useState } from "react";
 import { TravelPackageCard } from "@/components/results/TravelPackageCard";
 import { shouldShowRecommendedPackages } from "@/lib/results/packagesUi";
+import { focusRing } from "@/lib/styles";
+import { cn } from "@/lib/utils";
 import type { TravelPackage } from "@/types/models/travel-package";
+
+/** Number of packages shown initially before "Show more" is needed. */
+export const PACKAGES_INITIAL_VISIBLE = 5;
 
 type RecommendedPackagesSectionProps = {
   packages: readonly TravelPackage[];
+  /** Task 4 (Sprint 15.3): route context threaded to package cards. */
+  originIata?: string | null;
+  destinationIata?: string | null;
 };
 
 /**
  * Hero section for recommended travel packages.
+ *
+ * Task 1 (Sprint 15.3): Shows only the top PACKAGES_INITIAL_VISIBLE packages
+ * by default. A "Show more" button reveals the remainder without losing the
+ * full API response or changing the composer output.
+ *
  * Renders nothing when `packages` is empty (no empty state).
  */
 function RecommendedPackagesSectionComponent({
   packages,
+  originIata,
+  destinationIata,
 }: RecommendedPackagesSectionProps) {
+  const [showAll, setShowAll] = useState(false);
+
   if (!shouldShowRecommendedPackages(packages)) {
     return null;
   }
+
+  const visible = showAll ? packages : packages.slice(0, PACKAGES_INITIAL_VISIBLE);
+  const hiddenCount = packages.length - PACKAGES_INITIAL_VISIBLE;
+  const hasMore = !showAll && hiddenCount > 0;
 
   return (
     <section
@@ -43,12 +66,31 @@ function RecommendedPackagesSectionComponent({
         className="flex flex-col gap-4"
         aria-label="Recommended travel packages"
       >
-        {packages.map((travelPackage) => (
+        {visible.map((travelPackage) => (
           <li key={travelPackage.id}>
-            <TravelPackageCard package={travelPackage} />
+            <TravelPackageCard
+              package={travelPackage}
+              originIata={originIata}
+              destinationIata={destinationIata}
+            />
           </li>
         ))}
       </ul>
+
+      {hasMore && (
+        <div className="flex justify-center pt-1">
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm motion-safe:transition-all motion-safe:duration-200 motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-slate-300 motion-safe:hover:shadow-md",
+              focusRing,
+            )}
+          >
+            Show {hiddenCount} more package{hiddenCount === 1 ? "" : "s"}
+          </button>
+        </div>
+      )}
     </section>
   );
 }

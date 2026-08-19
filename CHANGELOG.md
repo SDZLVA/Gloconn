@@ -4,15 +4,23 @@ All notable product releases for Glooconn are listed here. Detailed notes live u
 
 ---
 
-## [Unreleased] — MVP Focus (Milestone 14)
+## [Unreleased] — MVP Conversion (Milestones 14 + 15)
 
-**Milestone 14 — MVP Focus** (Sprints 14.1–14.4 complete; release tagging not started).
+**Milestone 14 — MVP Focus** (Sprints 14.1–14.4 complete).
 
 - Focused first-search UI: Flights + Stays + Recommended Packages
 - Hidden: Travel Style, Rooms, transport toggles/results/filters (architecture retained)
 - Removed from UI: Destinations/About nav, fake booking CTAs
 - UX polish: origin ↔ destination swap, dynamic budget label, trip-type wording, Browse Flights/Hotels hierarchy, mobile auth menu
-- **381** automated tests
+
+**Milestone 15 — MVP Conversion** (Sprints 15.1–15.4 complete).
+
+- **Price trust (Sprint 15.2):** Flight price explicitly labeled "per person"; hotel price labeled "N nights · 1 room"; package price labeled "Flight (per person) + hotel (N nights, 1 room) · est. total"; qualitative badges ("Top Pick" / "Good Match") replace opaque numeric score; zero-star hotels show "Unrated"
+- **Recommended Package UX (Sprint 15.3):** Packages capped at 5 initially with "Show N more packages" toggle; "What's included" one-liner per card; result counts ("X flights · Y hotels") in sort bar; flight route context (LHR → CDG) on cards; one-way hotel warning; quality-aware "6+2" candidate pool
+- **Flexible budget (Sprint 15.4):** Budget is now **optional** — empty input accepted; placeholder "Any budget"; no required asterisk; currency + input on same row on desktop
+- **Budget compatibility warning (Sprint 15.4):** Banner above Recommended Packages when a budget is set but all same-currency packages exceed it; correctly suppressed when no currency matches (no FX conversion)
+- **Flight price wording (M15 closeout):** Individual flight browse cards now read "per person" instead of bare "total"
+- **551** automated tests; 0 vulnerabilities; typecheck clean; build clean
 
 ---
 

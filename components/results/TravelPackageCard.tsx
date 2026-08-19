@@ -5,28 +5,45 @@ import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderIm
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
 import {
+  formatFlightRoute,
+  formatHotelStarsLabel,
+  formatPackageIncludesSummary,
   formatPackageNightsLabel,
-  formatPackageScoreLabel,
+  formatPackagePriceBreakdownLabel,
+  formatPackageQualityBadge,
   formatPackageStopsLabel,
 } from "@/lib/results/packagesUi";
 import type { TravelPackage } from "@/types/models/travel-package";
 
 type TravelPackageCardProps = {
   package: TravelPackage;
+  /** Task 4 (Sprint 15.3): shown as "LHR → CDG" in the flight box when available. */
+  originIata?: string | null;
+  destinationIata?: string | null;
 };
 
 /**
  * Informational card for a recommended flight + hotel package.
- * No booking or edit actions (Sprint 13.4).
+ * No booking or edit actions.
+ *
+ * P0.1: Price breakdown label makes per-person flight + 1-room hotel explicit.
+ * P0.2: Qualitative badge ("Top Pick" / "Good Match") replaces opaque score number.
+ * P1.4: Hotel stars use formatHotelStarsLabel — renders "Unrated" for 0 stars.
  */
 function TravelPackageCardComponent({
   package: travelPackage,
+  originIata,
+  destinationIata,
 }: TravelPackageCardProps) {
   const { flight, hotel, totalPrice, currency, nights, score, id } =
     travelPackage;
   const stopsLabel = formatPackageStopsLabel(flight.stops);
-  const scoreLabel = formatPackageScoreLabel(score);
+  const qualityBadge = formatPackageQualityBadge(score);
   const nightsLabel = formatPackageNightsLabel(nights);
+  const priceBreakdownLabel = formatPackagePriceBreakdownLabel(nights);
+  const includesSummary = formatPackageIncludesSummary(nights, hotel.name);
+  const starsLabel = formatHotelStarsLabel(hotel.stars);
+  const routeLabel = formatFlightRoute(originIata, destinationIata);
   const headingId = `${id}-title`;
 
   return (
@@ -48,12 +65,11 @@ function TravelPackageCardComponent({
                 <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-brand-800">
                   Package
                 </span>
-                <span
-                  className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-slate-700"
-                  aria-label={`Package match score ${score}`}
-                >
-                  {scoreLabel}
-                </span>
+                {qualityBadge && (
+                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-emerald-800">
+                    {qualityBadge}
+                  </span>
+                )}
               </div>
               <h3
                 id={headingId}
@@ -61,7 +77,10 @@ function TravelPackageCardComponent({
               >
                 {flight.airline} + {hotel.name}
               </h3>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm font-medium text-brand-700">
+                {includesSummary}
+              </p>
+              <p className="text-sm text-slate-500">
                 {hotel.location}
                 <span className="text-slate-400"> · </span>
                 {nightsLabel}
@@ -73,11 +92,16 @@ function TravelPackageCardComponent({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl bg-slate-50 px-3 py-2.5">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Flight
+                Flight · per person
               </p>
               <p className="mt-1 text-sm font-semibold text-slate-900">
                 {flight.airline}
               </p>
+              {routeLabel && (
+                <p className="mt-0.5 text-xs font-semibold tracking-wide text-brand-700">
+                  {routeLabel}
+                </p>
+              )}
               <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
                 <div className="text-center">
                   <p className="font-bold text-slate-900">
@@ -106,14 +130,20 @@ function TravelPackageCardComponent({
 
             <div className="rounded-2xl bg-slate-50 px-3 py-2.5">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Hotel
+                Hotel · 1 room
               </p>
               <p className="mt-1 truncate text-sm font-semibold text-slate-900">
                 {hotel.name}
               </p>
               <p className="mt-1 text-xs font-medium text-amber-600">
-                <span aria-hidden="true">{"★".repeat(hotel.stars)}</span>
-                <span className="sr-only">{hotel.stars} stars</span>
+                {starsLabel === "Unrated" ? (
+                  <span className="text-slate-500">{starsLabel}</span>
+                ) : (
+                  <>
+                    <span aria-hidden="true">{starsLabel}</span>
+                    <span className="sr-only">{hotel.stars} stars</span>
+                  </>
+                )}
                 <span className="ml-2 text-slate-600">
                   {hotel.rating.toFixed(1)} rating
                 </span>
@@ -123,13 +153,11 @@ function TravelPackageCardComponent({
           </div>
 
           <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
-            <p className="text-sm text-slate-500">
-              {nightsLabel} · flight + hotel total
-            </p>
+            <p className="text-sm text-slate-500">{priceBreakdownLabel}</p>
             <ResultPrice
               price={totalPrice}
               currency={currency}
-              suffix="total"
+              suffix="est. total"
             />
           </div>
         </div>

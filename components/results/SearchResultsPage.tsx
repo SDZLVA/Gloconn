@@ -7,6 +7,13 @@ import {
   filterResults,
 } from "@/lib/results/filter";
 import { filterMvpVisibleResults } from "@/lib/results/mvpUi";
+import {
+  BUDGET_COMPATIBILITY_WARNING_MESSAGE,
+  getHotelRoomWarning,
+  isOneWayHotelWarning,
+  ONE_WAY_HOTEL_WARNING_MESSAGE,
+  shouldShowBudgetCompatibilityWarning,
+} from "@/lib/results/packagesUi";
 import { sortResults } from "@/lib/results/sort";
 import { getApiErrorMessage, postSearchTrips } from "@/lib/api";
 import { clearCachedSearchResult } from "@/lib/api/searchResultCache";
@@ -88,6 +95,9 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const packages = resultsState.data?.packages ?? EMPTY_PACKAGES;
 
   const warnings = resultsState.data?.warnings ?? EMPTY_WARNINGS;
+  const showBudgetCompatibilityWarning =
+    resultsState.status === "success" &&
+    shouldShowBudgetCompatibilityWarning(search.budget, packages);
 
   // Facets / filter / sort only recompute when their inputs change (already memoized).
   const facets = useMemo(
@@ -183,6 +193,25 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
         <ResultsWarningsBanner warnings={warnings} />
       )}
 
+      {showBudgetCompatibilityWarning && (
+        <div
+          className="rounded-2xl border border-amber-200/90 bg-amber-50/90 px-4 py-3 text-sm text-amber-950 shadow-sm shadow-amber-100/60 sm:px-5"
+          role="status"
+        >
+          <p className="font-medium">{BUDGET_COMPATIBILITY_WARNING_MESSAGE}</p>
+        </div>
+      )}
+
+      {resultsState.status === "success" &&
+        isOneWayHotelWarning(search.tripType, warnings) && (
+          <div
+            className="rounded-2xl border border-sky-200/90 bg-sky-50/90 px-4 py-3 text-sm text-sky-950 shadow-sm sm:px-5"
+            role="note"
+          >
+            <p className="font-medium">{ONE_WAY_HOTEL_WARNING_MESSAGE}</p>
+          </div>
+        )}
+
       {showResultsChrome && (
         <>
           <MobileFilterToggle
@@ -226,6 +255,8 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                   sortBy={sortBy}
                   onSortChange={setSortBy}
                   resultCount={sorted.length}
+                  flightCount={sorted.filter((r) => r.type === "flight").length}
+                  hotelCount={sorted.filter((r) => r.type === "hotel").length}
                   isLoading={isLoading && hasData}
                 />
               )}
@@ -242,13 +273,32 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
 
               {hasData && !hasNoResults && (
                 <>
-                  <RecommendedPackagesSection packages={packages} />
+                  {(() => {
+                    const roomWarning = getHotelRoomWarning(
+                      search.travelers?.adults ?? null,
+                    );
+                    return roomWarning ? (
+                      <div
+                        className="rounded-2xl border border-amber-200/90 bg-amber-50/90 px-4 py-3 text-sm text-amber-950 shadow-sm shadow-amber-100/60 sm:px-5"
+                        role="note"
+                      >
+                        <p className="font-medium">{roomWarning}</p>
+                      </div>
+                    ) : null;
+                  })()}
+                  <RecommendedPackagesSection
+                    packages={packages}
+                    originIata={search.originIata}
+                    destinationIata={search.destinationIata}
+                  />
                   <ResultsList
                     results={sorted}
                     destination={destination}
                     editSearchHref={editSearchHref}
                     onClearFilters={clearFilters}
                     tripType={search.tripType}
+                    originIata={search.originIata}
+                    destinationIata={search.destinationIata}
                   />
                 </>
               )}

@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | **v0.19.0** released; **Milestone 14** MVP Focus validated (release commit pending) |
+| Stage | **v0.19.0** released; **Milestone 15** MVP Conversion complete (release commit pending — v0.20.0) |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers by default; optional live **SerpAPI** / Amadeus |
 
 ---
@@ -69,7 +69,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `TravelersSelector` | `components/search/` | Search-form wrapper around `PassengersSelector` |
 | `PassengersSelector` | `components/ui/` | Reusable Adults / Children / Infants / Rooms picker |
 | `TravelStyleSelector` | `components/search/` | Budget / Standard / Luxury picker |
-| `BudgetSelector` | `components/search/` | Required max budget numeric input with currency selector |
+| `BudgetSelector` | `components/search/` | Optional max budget numeric input with currency selector; currency + input side-by-side on desktop |
 | `Button`, `Card`, `InputField` | `components/ui/` | Generic UI primitives |
 | `BudgetSlider` | `components/ui/` | Reusable range slider (kept; search form uses numeric input) |
 | `CurrencySelector` | `components/ui/` | Currency dropdown backed by mock provider data |
@@ -117,6 +117,7 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `filterResults`, `collectFilterFacets`, `countActiveFilters` | `lib/results/filter.ts` | Client-side filters + facets (Sprint 10.3) |
 | `sortResults` | `lib/results/sort.ts` | Client-side sort (recommended / price / duration / rating / value) |
 | `rankResults`, `scoreResult`, `RANK_WEIGHTS` | `lib/results/rank.ts` | Pure deterministic ranking (no AI/ML) |
+| `shouldShowRecommendedPackages`, `selectPackagesForDisplay`, `formatPackageQualityBadge`, `shouldShowBudgetCompatibilityWarning`, … | `lib/results/packagesUi.ts` | Pure UI helpers for Recommended Packages: quality badge, budget warning, price labels, route, stars |
 | `searchTrips` | `lib/services/searchService.ts` | **Server only** — validated search via orchestrator + providers |
 | `serviceResultFromApiResponse` | `lib/api/responses.ts` | Converts Route Handler JSON → `ServiceResult` |
 | `iataResolution` | `lib/services/iataResolution.ts` | Enrich SearchRequest with optional origin/destination IATA |
@@ -312,7 +313,7 @@ Route Handler + HTTP client
 11. Results page calls `postSearchTrips()` via `useServiceQuery` → `POST /api/search` (server runs providers)
 12. Providers run **server-side only** — default is mock; optional live SerpAPI (flights + hotels) or Amadeus flights via env
 
-Required fields: From, Destination, Departure, Return (round-trip only), Budget, Travelers (≥1 adult, ≥1 room), Travel style, at least one result type.  
+Required fields: From, Destination, Departure, Return (round-trip only), Travelers (≥1 adult, ≥1 room), Travel style, at least one result type.  
 Return date must be ≥ departure date.  
 Infants cannot exceed adults.
 
@@ -372,17 +373,17 @@ docs/                 → project documentation
 
 ---
 
-## Common tasks after Milestone 14
+## Common tasks after Milestone 15
 
-**Milestone 13 — Travel Packages** ✅ **v0.19.0**. **Milestone 14 — MVP Focus** ✅ (14.1–14.4).
+**Milestone 13 — Travel Packages** ✅ **v0.19.0**. **Milestone 14 — MVP Focus** ✅. **Milestone 15 — MVP Conversion** ✅ (15.1–15.4 + closeout).
 
 Recommended next priorities (see [TODO.md](./TODO.md)):
 
-1. **Commit Milestone 14** work; optional **v0.20.0** release (CTO)
-2. Package UX polish (UI top-N cap, diversify hotel candidates) — optional
-3. SerpAPI round-trip `departure_token` enrichment polish (carry-forward)
-4. **Destinations / About pages** — then restore nav links
-5. **Amadeus Enterprise** — enablement when credentials are ready
+1. **Commit Milestone 15** work; **v0.20.0** release (CTO)
+2. **Destinations / About pages** — then restore nav links
+3. One-way proactive note in `TravelDatesSelector` (identified in Sprint 15.4 discovery; deferred)
+4. **Amadeus Enterprise** — enablement when credentials are ready
+5. SerpAPI round-trip `departure_token` enrichment polish (carry-forward)
 6. Fix `SectionHeading` hydration warning (dev overlay)
 
 ---
@@ -409,7 +410,7 @@ Flight[] + Hotel[] + SearchRequest → PackageComposer → TravelPackage[]
 | Hotels | `serpapi` | **Live hotels — production-capable (v0.18.0)** |
 | Packages | *(none)* | Composed in orchestrator via `lib/packages` |
 
-**Completed:** Sprints 1–8 · Sprint 9 · Milestone 10 · **Milestone 11 → v0.17.0** · **Milestone 12 → v0.18.0** · **Milestone 13 → v0.19.0**
+**Completed:** Sprints 1–8 · Sprint 9 · Milestone 10 · **Milestone 11 → v0.17.0** · **Milestone 12 → v0.18.0** · **Milestone 13 → v0.19.0** · **Milestone 14** · **Milestone 15** (v0.20.0 pending)
 
 **Known limitations:** RT `departure_token` return fetches may HTTP 400 → outbound fallback; hotels require `returnDate`; `children_ages` defaults to `8`; package candidates skew budget; currencyService DI debt; no live vendor calls in CI.
 

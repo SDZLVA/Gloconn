@@ -44,6 +44,11 @@ describe("buildSearchRequest", () => {
     assert.equal(request.totalGuests, 2);
     assert.deepEqual(request.productTypes, ["hotels", "flights", "transport"]);
   });
+
+  it("sets budget to null when budget input is empty", () => {
+    const request = buildSearchRequest({ ...validForm, budget: "" });
+    assert.equal(request.budget, null);
+  });
 });
 
 describe("validateAndBuildSearchRequest", () => {
@@ -58,6 +63,14 @@ describe("validateAndBuildSearchRequest", () => {
   it("returns errors when origin is missing", () => {
     const result = validateAndBuildSearchRequest({ ...validForm, origin: "" });
     assert.equal(result.ok, false);
+  });
+
+  it("accepts an empty optional budget", () => {
+    const result = validateAndBuildSearchRequest({ ...validForm, budget: "" });
+    assert.equal(result.ok, true);
+    if (result.ok) {
+      assert.equal(result.request.budget, null);
+    }
   });
 });
 

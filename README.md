@@ -3,8 +3,8 @@
 Travel planning web application — discover destinations, plan trips, and manage travel in one place.
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
-**Version:** **v0.19.0** — Travel Packages  
-**Milestones:** **13** ✅ Packages · **14** ✅ MVP Focus (release commit pending)
+**Version:** **v0.19.0** — Travel Packages (v0.20.0 pending)  
+**Milestones:** **13** ✅ Packages · **14** ✅ MVP Focus · **15** ✅ MVP Conversion (release pending)
 
 ## Tech stack
 
@@ -80,7 +80,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 | `npm run start` | Run production build locally |
 | `npm run lint` | Run ESLint |
 | `npm run typecheck` | TypeScript (`tsc --noEmit`) |
-| `npm test` | Automated test suite (381 tests) |
+| `npm test` | Automated test suite (551 tests) |
 
 ## Architecture overview
 
@@ -148,13 +148,16 @@ Gloconn/
 ## Current status
 
 - **Released:** **v0.19.0** — Milestone **13** (Travel Packages)
-- **In progress:** Milestone **14** MVP Focus complete — release commit pending (optional v0.20.0)
+- **Complete:** Milestone **14** MVP Focus + **Milestone 15** MVP Conversion — release pending (**v0.20.0**)
 - **MVP surface:** Search flights + stays → Recommended Packages → Browse Flights / Hotels
+- **Budget:** optional — leave empty to search without a budget constraint
+- **Budget warning:** shown when all same-currency packages exceed the user's budget
+- **Packages:** capped at 5 initially with "Show more"; quality badges ("Top Pick" / "Good Match")
 - **Live Flight / Hotel Search:** SerpAPI when configured — **production-capable**
 - **Default mode:** mock providers until live env is configured
-- **Tests:** **381** automated tests
+- **Tests:** **551** automated tests
 - **Live routes:** `/`, `/search/results`, `/login`, `/signup`, `/profile`, `/my-trips`
 - **Auth:** Google OAuth and email/password via Supabase
-- **Next:** Commit Milestone 14 work; CTO may authorize **v0.20.0**
+- **Next:** CTO may authorize **v0.20.0** release tag
 
 See [docs/CURRENT_STATE.md](./docs/CURRENT_STATE.md) and [docs/TODO.md](./docs/TODO.md).
