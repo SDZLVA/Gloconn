@@ -254,12 +254,11 @@ console.log("\n▶ DELETE\n");
 
 await test("User B CANNOT DELETE User A's trip", async () => {
   assert.ok(userATripId, "Skipped: User A's INSERT did not produce a trip ID");
-  const delRes = await restRequest("DELETE", `/saved_trips?id=eq.${userATripId}`, null, userB.access_token);
-  console.log(`    [debug] User B DELETE status: ${delRes.status}`);
-  // RLS silently filters: PostgREST returns 204 with 0 rows affected rather
-  // than 403. Confirm the row still exists using the service role (bypasses RLS).
-  const verify = await serviceRequest("GET", `/saved_trips?id=eq.${userATripId}`);
-  console.log(`    [debug] service-role verify status: ${verify.status} body: ${verify.text}`);
+  // User B attempts to delete User A's row. RLS silently filters: PostgREST
+  // returns 204 with 0 rows affected. Verify User A can still see their row
+  // via their own authenticated SELECT (avoids needing a service-role bypass).
+  await restRequest("DELETE", `/saved_trips?id=eq.${userATripId}`, null, userB.access_token);
+  const verify = await restRequest("GET", `/saved_trips?id=eq.${userATripId}`, null, userA.access_token);
   assert.ok(
     Array.isArray(verify.body) && verify.body.length === 1,
     `User A's trip must still exist after User B's DELETE attempt — verify: ${verify.text}`,
@@ -270,11 +269,11 @@ await test("User A CAN DELETE their own trip", async () => {
   assert.ok(userATripId, "Skipped: User A's INSERT did not produce a trip ID");
   const res = await restRequest("DELETE", `/saved_trips?id=eq.${userATripId}`, null, userA.access_token);
   assert.equal(res.status, 204, `Expected 204, got ${res.status}`);
-  // Verify the row is gone using the service role (bypasses RLS).
-  const verify = await serviceRequest("GET", `/saved_trips?id=eq.${userATripId}`);
+  // Verify the row is gone: User A's own SELECT should now return 0 rows.
+  const verify = await restRequest("GET", `/saved_trips?id=eq.${userATripId}`, null, userA.access_token);
   assert.ok(
     Array.isArray(verify.body) && verify.body.length === 0,
-    "User A's trip must be deleted",
+    `User A's trip must be deleted — verify: ${verify.text}`,
   );
 });
 
@@ -293,8 +292,8 @@ await test("UPDATE is denied for User B's own trip (no UPDATE policy)", async ()
     userB.access_token,
   );
   // Without an UPDATE policy, RLS silently rejects (204, 0 rows affected).
-  // Verify the title is unchanged using the service role (bypasses RLS).
-  const verify = await serviceRequest("GET", `/saved_trips?id=eq.${userBTripId}`);
+  // Verify the title is unchanged using User B's own authenticated GET.
+  const verify = await restRequest("GET", `/saved_trips?id=eq.${userBTripId}`, null, userB.access_token);
   const unchanged = verify.body?.[0]?.title === "User B's Trip";
   assert.ok(unchanged, `UPDATE must be denied — title must remain "User B's Trip", got: ${verify.body?.[0]?.title}`);
 });
