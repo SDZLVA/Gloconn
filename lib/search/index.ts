@@ -9,7 +9,7 @@ export {
   TRIP_TYPE_OPTIONS,
 } from "@/lib/search/constants";
 export { formatTravelDatesSummary, getPastTravelDateErrors, sanitizeTravelDates } from "@/lib/search/dates";
-export { buildSearchData, logSearchData } from "@/lib/search/payload";
+export { buildSearchData } from "@/lib/search/payload";
 export {
   buildHomeSearchUrl,
   buildHomeSearchUrlFromRequest,

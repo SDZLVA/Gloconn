@@ -6,6 +6,7 @@
 import { afterEach, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { createProviderError, isApiError } from "@/lib/api/errors";
+import { formatDateISO } from "@/lib/calendar/dates";
 import {
   PROVIDER_UNAVAILABLE_WARNING_MESSAGE,
   buildSearchResponse,
@@ -31,6 +32,13 @@ import type { Flight, Hotel } from "@/types/models";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { ServiceProviders } from "@/lib/services/types";
 
+/** Returns an ISO date string N days from today (always in the future). */
+function futureDateISO(daysAhead: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + daysAhead);
+  return formatDateISO(d);
+}
+
 function baseRequest(
   overrides: Partial<SearchRequest> = {},
 ): SearchRequest {
@@ -40,8 +48,8 @@ function baseRequest(
     destination: "Paris, France",
     destinationId: "paris",
     tripType: "round-trip",
-    departureDate: "2026-08-10",
-    returnDate: "2026-08-17",
+    departureDate: futureDateISO(30),
+    returnDate: futureDateISO(37),
     budget: { amount: 2500, currency: "EUR" },
     travelers: { adults: 2, children: 0, infants: 0, rooms: 1 },
     totalGuests: 2,

@@ -133,11 +133,31 @@ export function validateAppConfig(
     });
   }
 
-  if (config.app.siteUrl === "http://localhost:3000" && config.app.nodeEnv === "production") {
-    warnings.push({
-      env: "NEXT_PUBLIC_SITE_URL",
-      message: "Production is using the default localhost site URL.",
-    });
+  // F-11: localhost site URL in production is a hard error, not a warning.
+  // OAuth redirects, email confirmation links, and Supabase callbacks all use
+  // this URL. If it is localhost in production, auth flows silently break and
+  // email confirmation links point to an unreachable host.
+  //
+  // In non-production environments localhost is the correct default — warn only.
+  if (
+    config.app.siteUrl === "http://localhost:3000" ||
+    config.app.siteUrl.startsWith("http://localhost") ||
+    config.app.siteUrl.startsWith("https://localhost")
+  ) {
+    if (config.app.nodeEnv === "production") {
+      errors.push({
+        env: "NEXT_PUBLIC_SITE_URL",
+        message:
+          "NEXT_PUBLIC_SITE_URL is set to localhost in production. " +
+          "Set it to your real domain (e.g. https://app.glooconn.com) or " +
+          "auth flows, OAuth callbacks, and email confirmation links will be broken.",
+      });
+    } else {
+      warnings.push({
+        env: "NEXT_PUBLIC_SITE_URL",
+        message: "Site URL is localhost — this is expected in development/test.",
+      });
+    }
   }
 
   if (config.providers.useMockProvidersInvalid) {

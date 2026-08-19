@@ -1,0 +1,67 @@
+name: RLS Integration Tests (F-04)
+
+# Verifies that Supabase Row Level Security policies actually enforce
+# ownership at the database level:
+#   - User A cannot read, modify, or delete User B's data
+#   - User A cannot forge a row claiming User B's user_id
+#   - UPDATE is denied for all users (no UPDATE policy)
+#
+# Runs on every push/PR touching security-relevant files, and on demand.
+
+on:
+  push:
+    paths:
+      - "supabase/**"
+      - ".github/workflows/rls-ci.yml"
+  pull_request:
+    paths:
+      - "supabase/**"
+      - ".github/workflows/rls-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  rls-integration:
+    name: Supabase RLS Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase stack
+        run: supabase start
+        # supabase start uses Docker (available on ubuntu-latest).
+        # It reads supabase/config.toml and applies supabase/migrations/ automatically.
+
+      - name: Get Supabase connection details
+        id: supabase-status
+        run: |
+          # Extract local API URL, anon key, and service role key from supabase status.
+          SUPABASE_URL=$(supabase status --output json | jq -r '.API_URL')
+          ANON_KEY=$(supabase status --output json | jq -r '.ANON_KEY')
+          SERVICE_KEY=$(supabase status --output json | jq -r '.SERVICE_ROLE_KEY')
+          echo "SUPABASE_URL=${SUPABASE_URL}" >> $GITHUB_ENV
+          echo "SUPABASE_ANON_KEY=${ANON_KEY}" >> $GITHUB_ENV
+          echo "SUPABASE_SERVICE_KEY=${SERVICE_KEY}" >> $GITHUB_ENV
+
+      - name: Run RLS integration tests
+        run: node supabase/rls-integration.test.mjs
+        env:
+          SUPABASE_URL: ${{ env.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ env.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ env.SUPABASE_SERVICE_KEY }}
+
+      - name: Stop Supabase (cleanup)
+        if: always()
+        run: supabase stop

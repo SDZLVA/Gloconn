@@ -7,5 +7,6 @@ export {
 export { createSupabaseBrowserClient } from "@/lib/auth/client";
 export { getSupabaseEnv } from "@/lib/auth/env";
 export { updateSession } from "@/lib/auth/middleware";
+export { safeRedirectPath } from "@/lib/auth/redirect";
 export { createSupabaseServerClient } from "@/lib/auth/server";
 export { getCurrentUser, requireUser } from "@/lib/auth/session";

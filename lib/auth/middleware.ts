@@ -7,19 +7,12 @@ import {
   REDIRECT_PARAM,
 } from "@/lib/auth/constants";
 import { getSupabaseEnv } from "@/lib/auth/env";
+import { safeRedirectPath } from "@/lib/auth/redirect";
 
 function matchesRoute(pathname: string, routes: readonly string[]) {
   return routes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
-}
-
-function safeRedirectPath(path: string | null, fallback: string) {
-  if (!path || !path.startsWith("/") || path.startsWith("//")) {
-    return fallback;
-  }
-
-  return path;
 }
 
 /**
