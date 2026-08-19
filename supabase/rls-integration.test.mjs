@@ -75,7 +75,7 @@ async function createTestUser(email, password) {
   return { id, email, access_token };
 }
 
-/** Makes a request to the PostgREST API as the given user (or service role). */
+/** Makes a request to the PostgREST API as the given user (JWT token). */
 async function restRequest(method, path, body, token) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
     method,
@@ -83,6 +83,28 @@ async function restRequest(method, path, body, token) {
       "Content-Type": "application/json",
       "apikey": ANON_KEY,
       "Authorization": `Bearer ${token}`,
+      "Prefer": method === "POST" ? "return=representation" : "return=minimal",
+    },
+    ...(body != null ? { body: JSON.stringify(body) } : {}),
+  });
+  const text = await res.text();
+  let json = null;
+  try { json = JSON.parse(text); } catch { /* empty response */ }
+  return { status: res.status, body: json, text };
+}
+
+/**
+ * Makes a service-role request to PostgREST (bypasses RLS).
+ * Both apikey and Authorization must carry the service-role key so PostgREST
+ * selects the service_role role and skips RLS.
+ */
+async function serviceRequest(method, path, body) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": SERVICE_KEY,
+      "Authorization": `Bearer ${SERVICE_KEY}`,
       "Prefer": method === "POST" ? "return=representation" : "return=minimal",
     },
     ...(body != null ? { body: JSON.stringify(body) } : {}),
@@ -232,10 +254,10 @@ console.log("\n▶ DELETE\n");
 
 await test("User B CANNOT DELETE User A's trip", async () => {
   assert.ok(userATripId, "Skipped: User A's INSERT did not produce a trip ID");
-  const res = await restRequest("DELETE", `/saved_trips?id=eq.${userATripId}`, null, userB.access_token);
-  // RLS returns 204 with 0 rows affected (PostgREST does not return 403 for DELETE).
-  // Verify the row still exists via service role.
-  const verify = await restRequest("GET", `/saved_trips?id=eq.${userATripId}`, null, SERVICE_KEY);
+  await restRequest("DELETE", `/saved_trips?id=eq.${userATripId}`, null, userB.access_token);
+  // RLS silently filters: PostgREST returns 204 with 0 rows affected rather
+  // than 403. Confirm the row still exists using the service role (bypasses RLS).
+  const verify = await serviceRequest("GET", `/saved_trips?id=eq.${userATripId}`);
   assert.ok(
     Array.isArray(verify.body) && verify.body.length === 1,
     "User A's trip must still exist after User B's DELETE attempt",
@@ -246,8 +268,8 @@ await test("User A CAN DELETE their own trip", async () => {
   assert.ok(userATripId, "Skipped: User A's INSERT did not produce a trip ID");
   const res = await restRequest("DELETE", `/saved_trips?id=eq.${userATripId}`, null, userA.access_token);
   assert.equal(res.status, 204, `Expected 204, got ${res.status}`);
-  // Verify the row is gone.
-  const verify = await restRequest("GET", `/saved_trips?id=eq.${userATripId}`, null, SERVICE_KEY);
+  // Verify the row is gone using the service role (bypasses RLS).
+  const verify = await serviceRequest("GET", `/saved_trips?id=eq.${userATripId}`);
   assert.ok(
     Array.isArray(verify.body) && verify.body.length === 0,
     "User A's trip must be deleted",
@@ -262,14 +284,15 @@ console.log("\n▶ UPDATE (no policy — must be denied)\n");
 
 await test("UPDATE is denied for User B's own trip (no UPDATE policy)", async () => {
   assert.ok(userBTripId, "Skipped: User B's INSERT did not produce a trip ID");
-  const res = await restRequest(
+  await restRequest(
     "PATCH",
     `/saved_trips?id=eq.${userBTripId}`,
     { title: "Modified" },
     userB.access_token,
   );
-  // Without an UPDATE policy, RLS returns 204 with 0 rows affected.
-  const verify = await restRequest("GET", `/saved_trips?id=eq.${userBTripId}`, null, SERVICE_KEY);
+  // Without an UPDATE policy, RLS silently rejects (204, 0 rows affected).
+  // Verify the title is unchanged using the service role (bypasses RLS).
+  const verify = await serviceRequest("GET", `/saved_trips?id=eq.${userBTripId}`);
   const unchanged = verify.body?.[0]?.title === "User B's Trip";
   assert.ok(unchanged, `UPDATE must be denied — title must remain "User B's Trip", got: ${verify.body?.[0]?.title}`);
 });
