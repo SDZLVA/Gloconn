@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
@@ -18,11 +19,17 @@ export const metadata: Metadata = {
   description: "Glooconn application",
 };
 
-export default function RootLayout({
+/**
+ * Root layout must be dynamically rendered so Next.js can stamp the
+ * per-request CSP nonce onto framework scripts (Next.js 16.3 CSP guide).
+ */
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  await connection();
+
   return (
     <html
       lang="en"

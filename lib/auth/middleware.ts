@@ -15,14 +15,28 @@ function matchesRoute(pathname: string, routes: readonly string[]) {
   );
 }
 
+export type UpdateSessionOptions = {
+  /**
+   * Factory for `NextResponse.next` that forwards CSP/nonce request headers
+   * so Next.js can stamp matching nonces onto SSR scripts.
+   */
+  createNextResponse: () => NextResponse;
+};
+
 /**
  * Refreshes the Supabase session and enforces protected-route redirects.
  * Called from the root `proxy.ts`.
  */
-export async function updateSession(request: NextRequest) {
+export async function updateSession(
+  request: NextRequest,
+  options?: UpdateSessionOptions,
+) {
+  const createNext =
+    options?.createNextResponse ?? (() => NextResponse.next({ request }));
+
   const { url, anonKey, isConfigured } = getSupabaseEnv();
 
-  let supabaseResponse = NextResponse.next({ request });
+  let supabaseResponse = createNext();
 
   if (!isConfigured) {
     return supabaseResponse;
@@ -38,10 +52,10 @@ export async function updateSession(request: NextRequest) {
           request.cookies.set(name, value);
         });
 
-        supabaseResponse = NextResponse.next({ request });
+        supabaseResponse = createNext();
 
-        cookiesToSet.forEach(({ name, value, options }) => {
-          supabaseResponse.cookies.set(name, value, options);
+        cookiesToSet.forEach(({ name, value, options: cookieOptions }) => {
+          supabaseResponse.cookies.set(name, value, cookieOptions);
         });
       },
     },
