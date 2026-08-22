@@ -14,6 +14,7 @@ const ENV_KEYS = [
   "HOTELS_PROVIDER",
   "SERPAPI_API_KEY",
   "SERPAPI_DEEP_SEARCH",
+  "PROPERTY_REF_SEAL_SECRET",
   "AMADEUS_API_KEY",
   "AMADEUS_API_SECRET",
   "AMADEUS_ENV",
@@ -121,24 +122,51 @@ describe("SerpAPI configuration — missing API key", () => {
     );
   });
 
-  it("fails when live SerpAPI hotels is intended but SERPAPI_API_KEY is missing", () => {
+  it("warns (does not fail) when live SerpAPI hotels lack PROPERTY_REF_SEAL_SECRET", () => {
     setEnv({
       USE_MOCK_PROVIDERS: "false",
       HOTELS_PROVIDER: "serpapi",
       FLIGHTS_PROVIDER: "mock",
+      SERPAPI_API_KEY: "serp-test-key",
     });
 
     const config = loadAppConfig();
 
-    assert.equal(config.serpapi.isConfigured, false);
-    assert.equal(config.validation.isValid, false);
-    assert.ok(
+    assert.equal(config.propertyRefSeal.isConfigured, false);
+    assert.equal(config.validation.isValid, true);
+    assert.equal(
       config.validation.errors.some(
-        (issue) =>
-          issue.env === "SERPAPI_API_KEY" &&
-          issue.message.includes("Live SerpAPI") &&
-          issue.message.includes("SERPAPI_API_KEY"),
+        (issue) => issue.env === "PROPERTY_REF_SEAL_SECRET",
       ),
+      false,
+    );
+    assert.ok(
+      config.validation.warnings.some(
+        (issue) =>
+          issue.env === "PROPERTY_REF_SEAL_SECRET" &&
+          issue.message.includes("Hotel search still works"),
+      ),
+    );
+  });
+
+  it("passes when live SerpAPI hotels include PROPERTY_REF_SEAL_SECRET", () => {
+    setEnv({
+      USE_MOCK_PROVIDERS: "false",
+      HOTELS_PROVIDER: "serpapi",
+      FLIGHTS_PROVIDER: "mock",
+      SERPAPI_API_KEY: "serp-test-key",
+      PROPERTY_REF_SEAL_SECRET: "test-property-ref-seal-secret-32chars!!",
+    });
+
+    const config = loadAppConfig();
+
+    assert.equal(config.propertyRefSeal.isConfigured, true);
+    assert.equal(config.validation.isValid, true);
+    assert.equal(
+      config.validation.warnings.some(
+        (issue) => issue.env === "PROPERTY_REF_SEAL_SECRET",
+      ),
+      false,
     );
   });
 });

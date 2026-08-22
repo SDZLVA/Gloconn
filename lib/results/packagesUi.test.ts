@@ -65,6 +65,7 @@ function hotel(overrides: Partial<Hotel> = {}): Hotel {
     amenities: ["Wi-Fi"],
     nights: 7,
     location: "Marais",
+    providerPropertyRef: "gpref1.mock-test-sealed-ref-for-ui-only",
     ...overrides,
   };
 }
@@ -323,7 +324,8 @@ describe("RecommendedPackagesSection rendering", () => {
     );
 
     // Highest score package gets Recommended; lowest price gets a secondary role.
-    assert.match(html, /Swiss \+ Grand Hotel[\s\S]*?Recommended|Recommended[\s\S]*?Swiss \+ Grand Hotel/);
+    assert.match(html, /Swiss[\s\S]*?Recommended|Recommended[\s\S]*?Swiss/);
+    assert.match(html, /Grand Hotel/);
     assert.match(html, /Lowest price|Best hotel|Fastest|Direct flight|Fits your budget|Best value/);
     assert.doesNotMatch(html, /Match \d/);
   });
@@ -370,20 +372,17 @@ describe("TravelPackageCard rendering", () => {
     assert.doesNotMatch(html, /Match 91/);
     assert.doesNotMatch(html, /Match \d/);
     assert.doesNotMatch(html, /Top Pick/);
-    assert.match(html, /5 nights/);
-    assert.match(html, /Departure/);
-    assert.match(html, /Arrive/);
-    assert.match(html, /Direct/);
-    assert.match(html, /08:00/);
-    assert.match(html, /10:00/);
+    // Compact card (Sprint 17.2) — no full flight timetable on the search surface.
+    assert.doesNotMatch(html, /Departure|Arrive|08:00|10:00/);
     // P0.1: price breakdown label
     assert.match(html, /per person/);
     assert.match(html, /1 room/);
     assert.doesNotMatch(html, /flight \+ hotel total/i);
     // P0.1: "est. total" suffix
     assert.match(html, /est\. total/);
-    // Informational only — no booking CTA.
-    assert.doesNotMatch(html, /Select|Book|Build Package/i);
+    // Sprint 17.2: View hotel opens Glooconn details — not booking language.
+    assert.match(html, /View hotel/);
+    assert.doesNotMatch(html, /Select|Book|Build Package|View deal/i);
   });
 
   it("renders secondary role badge when provided", () => {
@@ -438,14 +437,16 @@ describe("TravelPackageCard rendering", () => {
     assert.match(html, /★★★/);
   });
 
-  it("renders 'Flight · per person' section header", () => {
+  it("renders compact price semantics without dashboard section headers", () => {
     const html = renderToStaticMarkup(
       createElement(TravelPackageCard, {
         package: travelPackage(),
       }),
     );
-    assert.match(html, /Flight · per person/);
-    assert.match(html, /Hotel · 1 room/);
+    assert.match(html, /Flight \(per person\) \+ hotel/);
+    assert.match(html, /1 room/);
+    assert.doesNotMatch(html, /Flight · per person/);
+    assert.doesNotMatch(html, /Hotel · 1 room/);
   });
 });
 
@@ -503,8 +504,8 @@ describe("HotelResultCard rendering (P0.3 + P1.4)", () => {
         result: hotelResult({ amenities: [] }),
       }),
     );
-    // No <ul> wrapping empty amenities
-    assert.doesNotMatch(html, /<ul[^>]*>\s*<\/ul>/);
+    assert.doesNotMatch(html, /Free Wi-Fi|Breakfast|Spa/);
+    assert.doesNotMatch(html, /<ul[\s>]/);
   });
 });
 
@@ -631,13 +632,15 @@ describe("formatPackageIncludesSummary (Task 2)", () => {
 });
 
 describe("TravelPackageCard includes summary render (Task 2)", () => {
-  it("renders the includes summary line", () => {
+  it("keeps nights + hotel identity visible on the compact card", () => {
     const html = renderToStaticMarkup(
       createElement(TravelPackageCard, {
         package: travelPackage({ nights: 5 }),
       }),
     );
-    assert.match(html, /Flight \+ 5 nights at Hotel Paris/);
+    assert.match(html, /Hotel Paris/);
+    assert.match(html, /5 nights/);
+    assert.match(html, /Flight \(per person\) \+ hotel \(5 nights, 1 room\)/);
   });
 });
 

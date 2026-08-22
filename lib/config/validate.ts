@@ -230,6 +230,20 @@ export function validateAppConfig(
       errors.push(...providerKeyErrors);
     }
 
+    if (
+      !config.providers.useMockProviders &&
+      config.providers.hotels === "serpapi" &&
+      config.serpapi.isConfigured &&
+      !config.propertyRefSeal.isConfigured
+    ) {
+      // Warning only — hotel search must not require the seal secret (Sprint 17.5.2).
+      warnings.push({
+        env: "PROPERTY_REF_SEAL_SECRET",
+        message:
+          "PROPERTY_REF_SEAL_SECRET is unset. Hotel search still works; sealed View hotel details will be unavailable until a ≥32-character secret (or 64 hex chars) is configured.",
+      });
+    }
+
     const usesExternalProvider = [
       config.providers.destinations,
       config.providers.hotels,

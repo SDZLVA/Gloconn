@@ -17,6 +17,7 @@ export type {
   ConfigIssue,
   ConfigValidation,
   NodeEnv,
+  PropertyRefSealConfig,
   ProviderName,
   ProvidersConfig,
   SerpApiConfig,

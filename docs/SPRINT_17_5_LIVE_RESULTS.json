@@ -1,0 +1,110 @@
+{
+  "sprint": "17.5",
+  "generatedAt": "2026-08-22T18:06:54.441Z",
+  "environment": "local same-process (tsx) + simulated cross-isolate via registry/cache clear",
+  "deploymentObserved": {
+    "vercelProjectDir": false,
+    "githubDeployments": 0,
+    "localDevServer": "single Next.js process (npm run dev)"
+  },
+  "results": [
+    {
+      "city": "paris",
+      "ok": true,
+      "hotelId": "serpapi-hotel-ee9ed3d101962b48",
+      "hotelName": "Novotel Paris Est",
+      "fromPackage": true,
+      "packageAirline": "Air France",
+      "searchLocation": "Cimetière du Père-Lachaise",
+      "hasGps": true,
+      "registryAfterSearch": 20,
+      "detailsSuccess": true,
+      "detailsError": null,
+      "addressAvailable": true,
+      "address": "1 Av. de la République, 93170 Bagnolet, France",
+      "mapsFromDetails": true,
+      "mapsFromGpsFallback": false,
+      "mapsAvailable": true,
+      "websiteAvailable": true,
+      "offerCount": 2,
+      "hasDisclosure": true,
+      "firstFetchCached": false,
+      "secondFetchCached": true,
+      "searchMs": 738,
+      "detailsMs": 1793,
+      "cachedMs": 0,
+      "simulatedCrossIsolate": {
+        "failed": true,
+        "error": "Hotel details are unavailable for this result. Try searching again.",
+        "ms": 0
+      }
+    },
+    {
+      "city": "tokyo",
+      "ok": true,
+      "hotelId": "serpapi-hotel-2eb0925cc7ce5968",
+      "hotelName": "Grand Hostel LDK Nishikasai",
+      "fromPackage": true,
+      "packageAirline": "LOT",
+      "searchLocation": "清新町健康サポートセンター前",
+      "hasGps": true,
+      "registryAfterSearch": 20,
+      "detailsSuccess": true,
+      "detailsError": null,
+      "addressAvailable": true,
+      "address": "6 Chome-9-5 Nishikasai, Edogawa City, Tokyo 134-0088, Japan",
+      "mapsFromDetails": true,
+      "mapsFromGpsFallback": false,
+      "mapsAvailable": true,
+      "websiteAvailable": true,
+      "offerCount": 2,
+      "hasDisclosure": true,
+      "firstFetchCached": false,
+      "secondFetchCached": true,
+      "searchMs": 167,
+      "detailsMs": 36,
+      "cachedMs": 0,
+      "simulatedCrossIsolate": {
+        "failed": true,
+        "error": "Hotel details are unavailable for this result. Try searching again.",
+        "ms": 1
+      }
+    },
+    {
+      "city": "new-york",
+      "ok": true,
+      "hotelId": "serpapi-hotel-0601fcbea9e58b06",
+      "hotelName": "The Brooklyn Riviera Hostel",
+      "fromPackage": true,
+      "packageAirline": "American",
+      "searchLocation": "Brooklyn Museum",
+      "hasGps": true,
+      "registryAfterSearch": 20,
+      "detailsSuccess": true,
+      "detailsError": null,
+      "addressAvailable": true,
+      "address": "781 Prospect Pl, Brooklyn, NY 11216",
+      "mapsFromDetails": true,
+      "mapsFromGpsFallback": false,
+      "mapsAvailable": true,
+      "websiteAvailable": true,
+      "offerCount": 1,
+      "hasDisclosure": true,
+      "firstFetchCached": false,
+      "secondFetchCached": true,
+      "searchMs": 2606,
+      "detailsMs": 40,
+      "cachedMs": 0,
+      "simulatedCrossIsolate": {
+        "failed": true,
+        "error": "Hotel details are unavailable for this result. Try searching again.",
+        "ms": 0
+      }
+    }
+  ],
+  "summary": {
+    "detailsOk": 3,
+    "detailsFail": 0,
+    "crossIsolateFails": 3
+  }
+}

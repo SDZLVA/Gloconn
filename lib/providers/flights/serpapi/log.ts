@@ -7,7 +7,10 @@
 
 import "server-only";
 
-export type SerpApiLogOperation = "googleFlights" | "googleHotels";
+export type SerpApiLogOperation =
+  | "googleFlights"
+  | "googleHotels"
+  | "googleHotelsPropertyDetails";
 
 export type SerpApiLogErrorCode =
   | "TIMEOUT"

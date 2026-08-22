@@ -130,6 +130,17 @@ export type ConfigValidation = {
   warnings: ConfigIssue[];
 };
 
+/**
+ * AES-256-GCM seal secret for hotel property references (Sprint 17.5.1).
+ * Server-only — never NEXT_PUBLIC_.
+ */
+export type PropertyRefSealConfig = {
+  /** Raw `PROPERTY_REF_SEAL_SECRET` (empty when unset). */
+  secret: string;
+  /** True when secret is long enough to derive a seal key. */
+  isConfigured: boolean;
+};
+
 export type AppConfig = {
   app: AppSection;
   supabase: SupabaseConfig;
@@ -137,6 +148,7 @@ export type AppConfig = {
   apiKeys: ApiKeysConfig;
   amadeus: AmadeusConfig;
   serpapi: SerpApiConfig;
+  propertyRefSeal: PropertyRefSealConfig;
   validation: ConfigValidation;
 };
 

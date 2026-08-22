@@ -1,0 +1,122 @@
+{
+  "sprint": "17.5",
+  "generatedAt": "2026-08-22T18:08:30.000Z",
+  "environment": "local same-process (tsx + next dev) + simulated cross-isolate via registry/cache clear",
+  "deploymentObserved": {
+    "vercelProjectDir": false,
+    "githubDeployments": 0,
+    "localDevServer": "single Next.js process (npm run dev)",
+    "productionUrlTested": false
+  },
+  "realUserTesting": {
+    "participants": 0,
+    "status": "not_available",
+    "note": "No external testers were available in this sprint. Results were not invented."
+  },
+  "sameProcessServiceResults": [
+    {
+      "city": "paris",
+      "ok": true,
+      "hotelName": "Novotel Paris Est",
+      "fromPackage": true,
+      "detailsSuccess": true,
+      "addressAvailable": true,
+      "mapsAvailable": true,
+      "websiteAvailable": true,
+      "offerCount": 2,
+      "hasDisclosure": true,
+      "detailsMs": 1793,
+      "cachedMs": 0,
+      "secondFetchCached": true,
+      "simulatedCrossIsolateFailed": true
+    },
+    {
+      "city": "tokyo",
+      "ok": true,
+      "hotelName": "Grand Hostel LDK Nishikasai",
+      "fromPackage": true,
+      "detailsSuccess": true,
+      "addressAvailable": true,
+      "mapsAvailable": true,
+      "websiteAvailable": true,
+      "offerCount": 2,
+      "hasDisclosure": true,
+      "detailsMs": 36,
+      "cachedMs": 0,
+      "secondFetchCached": true,
+      "simulatedCrossIsolateFailed": true
+    },
+    {
+      "city": "new-york",
+      "ok": true,
+      "hotelName": "The Brooklyn Riviera Hostel",
+      "fromPackage": true,
+      "detailsSuccess": true,
+      "addressAvailable": true,
+      "mapsAvailable": true,
+      "websiteAvailable": true,
+      "offerCount": 1,
+      "hasDisclosure": true,
+      "detailsMs": 40,
+      "cachedMs": 0,
+      "secondFetchCached": true,
+      "simulatedCrossIsolateFailed": true
+    }
+  ],
+  "uiJourneyResults": [
+    {
+      "city": "paris",
+      "path": "Recommended package → View hotel → details → Escape/close",
+      "title": "Novotel Paris Est",
+      "drawerLatencyMs": 159,
+      "secondOpenLatencyMs": 53,
+      "address": true,
+      "maps": true,
+      "website": true,
+      "offers": ["View offer at Expedia.com", "View offer at Novotel Paris Est"],
+      "disclosure": true,
+      "unavailable": false,
+      "bannedCopy": false
+    },
+    {
+      "city": "tokyo",
+      "path": "Recommended package → View hotel → details → Escape",
+      "title": "Grand Hostel LDK Nishikasai",
+      "drawerLatencyMs": 170,
+      "secondOpenLatencyMs": 52,
+      "address": true,
+      "maps": true,
+      "website": true,
+      "offers": ["View offer at Expedia.ca", "View offer at Booking.com"],
+      "disclosure": true,
+      "unavailable": false,
+      "bannedCopy": false,
+      "returnedToResults": true
+    },
+    {
+      "city": "new-york",
+      "path": "Recommended package → View hotel → details → Escape",
+      "title": "The Brooklyn Riviera Hostel",
+      "drawerLatencyMs": 159,
+      "secondOpenLatencyMs": 52,
+      "address": true,
+      "maps": true,
+      "website": true,
+      "offers": ["View offer at Booking.com"],
+      "disclosure": true,
+      "unavailable": false,
+      "bannedCopy": false,
+      "returnedToResults": true
+    }
+  ],
+  "summary": {
+    "detailsOkSameProcess": 3,
+    "detailsFailSameProcess": 0,
+    "crossIsolateFailsSimulated": 3,
+    "uiJourneysOk": 3,
+    "detailsNotFoundRateSameProcess": "0%",
+    "detailsNotFoundRateSimulatedCrossIsolate": "100%"
+  },
+  "registryClassification": "REQUIRES SHARED STORE BEFORE USERS on multi-isolate/serverless (e.g. Vercel). SAFE ENOUGH FOR MVP only on single-process / local or equivalent sticky isolate demos.",
+  "experienceClassification": "C"
+}

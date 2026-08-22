@@ -50,6 +50,10 @@ function makeConfig(
       deepSearchInvalid: false,
       isConfigured: false,
     },
+    propertyRefSeal: {
+      secret: "",
+      isConfigured: false,
+    },
   };
 }
 

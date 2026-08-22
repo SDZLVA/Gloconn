@@ -12,7 +12,10 @@ import {
   resolveFlightCurrency,
   type CurrencyValidationResult,
 } from "@/lib/providers/flights/serpapi/mappingHelpers";
-import type { SerpApiHotelProperty } from "@/lib/providers/hotels/serpapi/types";
+import type {
+  SerpApiHotelGpsCoordinates,
+  SerpApiHotelProperty,
+} from "@/lib/providers/hotels/serpapi/types";
 import type { CurrencyCode } from "@/types/models/currency";
 
 /**
@@ -214,4 +217,47 @@ export function buildDeterministicHotelId(property: SerpApiHotelProperty): strin
 
   const digest = createHash("sha256").update(seed).digest("hex").slice(0, 16);
   return `serpapi-hotel-${digest}`;
+}
+
+/**
+ * Validates GPS from the vendor payload.
+ * Returns both coordinates only when both are finite and in range.
+ */
+export function mapGpsCoordinates(
+  gps: SerpApiHotelGpsCoordinates | undefined,
+): { latitude: number; longitude: number } | null {
+  const latitude = gps?.latitude;
+  const longitude = gps?.longitude;
+
+  if (typeof latitude !== "number" || typeof longitude !== "number") {
+    return null;
+  }
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return null;
+  }
+  if (Math.abs(latitude) > 90 || Math.abs(longitude) > 180) {
+    return null;
+  }
+
+  return { latitude, longitude };
+}
+
+/**
+ * Legacy irreversible hash ref (`gpref-{hex}`).
+ * Prefer `sealHotelPropertyRef` (`gpref1.…`) for production details (Sprint 17.5.1).
+ * Kept for unit coverage of the old opaque-hash helper.
+ */
+export function buildOpaqueProviderPropertyRef(
+  propertyToken: string | undefined,
+): string | undefined {
+  const token = propertyToken?.trim();
+  if (!token) {
+    return undefined;
+  }
+
+  const digest = createHash("sha256")
+    .update(`gpref:${token}`)
+    .digest("hex")
+    .slice(0, 32);
+  return `gpref-${digest}`;
 }

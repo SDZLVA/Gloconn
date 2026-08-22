@@ -1,0 +1,566 @@
+{
+  "sprint": "16.4",
+  "generatedAt": "2026-08-22T16:31:40.917Z",
+  "stay": {
+    "departureDate": "2026-09-15",
+    "returnDate": "2026-09-22"
+  },
+  "expectedNights": 7,
+  "summary": {
+    "passed": 5,
+    "errored": 0,
+    "allHaveExactlyOneRecommended": true
+  },
+  "results": [
+    {
+      "status": "pass",
+      "id": "P1",
+      "label": "Milan → Tokyo",
+      "budget": {
+        "amount": 3500,
+        "currency": "EUR"
+      },
+      "top5Count": 5,
+      "recommendedCount": 1,
+      "uniqueRoles": 3,
+      "rolesAssigned": 3,
+      "cards": [
+        {
+          "rank": 1,
+          "id": "pkg-serpapi-056d5f0b475a15f0-serpapi-hotel-e250884ed1bbdecd",
+          "score": 74.1,
+          "totalPrice": 2427,
+          "airline": "LOT",
+          "hotelName": "FOCUS KURAMAE",
+          "hotelStars": 2,
+          "hotelRating": 4.5,
+          "flightStops": 1,
+          "durationMinutes": 945,
+          "role": "recommended",
+          "label": "Recommended",
+          "reason": "1-stop flight · 2★ hotel · highly rated",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 2,
+          "id": "pkg-serpapi-7cb4dde1e29d718b-serpapi-hotel-56555ea223cd2317",
+          "score": 72.3,
+          "totalPrice": 2458,
+          "airline": "Finnair",
+          "hotelName": "Agora Place Tokyo Asakusa",
+          "hotelStars": 3,
+          "hotelRating": 4,
+          "flightStops": 1,
+          "durationMinutes": 1185,
+          "role": "best_hotel",
+          "label": "Best hotel",
+          "reason": "3★ hotel",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 3,
+          "id": "pkg-serpapi-e9602e46118e52d3-serpapi-hotel-b181f553654e11f6",
+          "score": 71.1,
+          "totalPrice": 2387,
+          "airline": "THAI",
+          "hotelName": "Tokyo House2 Best location in JUJO 2minutes walk to JR Jujo station",
+          "hotelStars": 0,
+          "hotelRating": 4.9,
+          "flightStops": 1,
+          "durationMinutes": 1130,
+          "role": "lowest_price",
+          "label": "Lowest price",
+          "reason": "Lowest estimated package price",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 4,
+          "id": "pkg-serpapi-9b69b4a66f27a1c1-serpapi-hotel-0c8da5cdadc78641",
+          "score": 70.2,
+          "totalPrice": 2582,
+          "airline": "China Eastern",
+          "hotelName": "Sweet House 板橋",
+          "hotelStars": 0,
+          "hotelRating": 4.85,
+          "flightStops": 1,
+          "durationMinutes": 955,
+          "role": null,
+          "label": null,
+          "reason": null,
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 5,
+          "id": "pkg-serpapi-abb9e6e7aefda57b-serpapi-hotel-486b0cad3ee4c6b3",
+          "score": 69,
+          "totalPrice": 2661,
+          "airline": "Cathay Pacific",
+          "hotelName": "和縁WAEN SKYTREE",
+          "hotelStars": 0,
+          "hotelRating": 5,
+          "flightStops": 1,
+          "durationMinutes": 1075,
+          "role": null,
+          "label": null,
+          "reason": null,
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        }
+      ]
+    },
+    {
+      "status": "pass",
+      "id": "P2",
+      "label": "Milan → New York",
+      "budget": {
+        "amount": 3000,
+        "currency": "USD"
+      },
+      "top5Count": 5,
+      "recommendedCount": 1,
+      "uniqueRoles": 4,
+      "rolesAssigned": 4,
+      "cards": [
+        {
+          "rank": 1,
+          "id": "pkg-serpapi-33962d8e4fc2f928-serpapi-hotel-e4dce0a84d4159b4",
+          "score": 78.3,
+          "totalPrice": 1904,
+          "airline": "Delta",
+          "hotelName": "Harbor House Bed & Breakfast",
+          "hotelStars": 2,
+          "hotelRating": 4.2,
+          "flightStops": 0,
+          "durationMinutes": 551,
+          "role": "recommended",
+          "label": "Recommended",
+          "reason": "Direct flight · 2★ hotel",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 2,
+          "id": "pkg-serpapi-09dca0b1b5fb93ee-serpapi-hotel-386e5f3b433b34f8",
+          "score": 77.4,
+          "totalPrice": 1681,
+          "airline": "Delta",
+          "hotelName": "Hotel Mint JFK Airport",
+          "hotelStars": 3,
+          "hotelRating": 2.6,
+          "flightStops": 0,
+          "durationMinutes": 570,
+          "role": "lowest_price",
+          "label": "Lowest price",
+          "reason": "Lowest estimated package price",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 3,
+          "id": "pkg-serpapi-8956cfe2e51ddbfe-serpapi-hotel-504ba27d6ce535e4",
+          "score": 73.5,
+          "totalPrice": 2435,
+          "airline": "Emirates",
+          "hotelName": "Country Inn & Suites by Radisson, Staten Island",
+          "hotelStars": 3,
+          "hotelRating": 3,
+          "flightStops": 0,
+          "durationMinutes": 525,
+          "role": "fastest",
+          "label": "Fastest",
+          "reason": "Shortest flight",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 4,
+          "id": "pkg-serpapi-ff51bde0249f20a8-serpapi-hotel-60d0c090df4ec11b",
+          "score": 67.7,
+          "totalPrice": 3156,
+          "airline": "American",
+          "hotelName": "Fairfield by Marriott Inn & Suites New York Staten Island",
+          "hotelStars": 3,
+          "hotelRating": 3.8,
+          "flightStops": 0,
+          "durationMinutes": 540,
+          "role": null,
+          "label": null,
+          "reason": null,
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": false
+          }
+        },
+        {
+          "rank": 5,
+          "id": "pkg-serpapi-e568a3080830f349-serpapi-hotel-05da638a50066897",
+          "score": 65.3,
+          "totalPrice": 2241,
+          "airline": "Air France",
+          "hotelName": "Hilton Garden Inn New York/Staten Island",
+          "hotelStars": 3,
+          "hotelRating": 4.2,
+          "flightStops": 1,
+          "durationMinutes": 660,
+          "role": "best_hotel",
+          "label": "Best hotel",
+          "reason": "3★ hotel",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        }
+      ]
+    },
+    {
+      "status": "pass",
+      "id": "P3",
+      "label": "Paris → Bangkok",
+      "budget": {
+        "amount": 2800,
+        "currency": "EUR"
+      },
+      "top5Count": 5,
+      "recommendedCount": 1,
+      "uniqueRoles": 4,
+      "rolesAssigned": 4,
+      "cards": [
+        {
+          "rank": 1,
+          "id": "pkg-serpapi-b888b40149b55c42-serpapi-hotel-ac5a84df0865f0ad",
+          "score": 80.4,
+          "totalPrice": 1936,
+          "airline": "Air France",
+          "hotelName": "The Twin Towers Hotel",
+          "hotelStars": 5,
+          "hotelRating": 4.2,
+          "flightStops": 0,
+          "durationMinutes": 700,
+          "role": "recommended",
+          "label": "Recommended",
+          "reason": "Direct flight · 5★ hotel",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 2,
+          "id": "pkg-serpapi-535939f55d6ba672-serpapi-hotel-613a408ae59882e3",
+          "score": 80.3,
+          "totalPrice": 1849,
+          "airline": "THAI",
+          "hotelName": "Sunday Platinum Suites",
+          "hotelStars": 5,
+          "hotelRating": 3.8,
+          "flightStops": 0,
+          "durationMinutes": 675,
+          "role": "fastest",
+          "label": "Fastest",
+          "reason": "Shortest flight",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 3,
+          "id": "pkg-serpapi-dccbceb03229eba4-serpapi-hotel-288e2a75bc159792",
+          "score": 71.9,
+          "totalPrice": 1434,
+          "airline": "Austrian",
+          "hotelName": "Centara Life Hotel Bangkok Phra Nakhon",
+          "hotelStars": 4,
+          "hotelRating": 4.6,
+          "flightStops": 1,
+          "durationMinutes": 815,
+          "role": null,
+          "label": null,
+          "reason": null,
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 4,
+          "id": "pkg-serpapi-8b472ce201b40a85-serpapi-hotel-25f10797123f9eff",
+          "score": 70.8,
+          "totalPrice": 1376,
+          "airline": "Lufthansa",
+          "hotelName": "Hotel Royal Bangkok",
+          "hotelStars": 4,
+          "hotelRating": 4.3,
+          "flightStops": 1,
+          "durationMinutes": 885,
+          "role": "lowest_price",
+          "label": "Lowest price",
+          "reason": "Lowest estimated package price",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 5,
+          "id": "pkg-serpapi-d76f77e12917b3bc-serpapi-hotel-edca7e08bda0c91c",
+          "score": 68.1,
+          "totalPrice": 2050,
+          "airline": "Etihad",
+          "hotelName": "Tower Club at lebua",
+          "hotelStars": 5,
+          "hotelRating": 4.7,
+          "flightStops": 1,
+          "durationMinutes": 945,
+          "role": "best_hotel",
+          "label": "Best hotel",
+          "reason": "5★ hotel · highly rated",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        }
+      ]
+    },
+    {
+      "status": "pass",
+      "id": "P4",
+      "label": "Rome → Dubai",
+      "budget": {
+        "amount": 2500,
+        "currency": "EUR"
+      },
+      "top5Count": 5,
+      "recommendedCount": 1,
+      "uniqueRoles": 2,
+      "rolesAssigned": 2,
+      "cards": [
+        {
+          "rank": 1,
+          "id": "pkg-serpapi-a226b42e47525ead-serpapi-hotel-ec41a90326d56329",
+          "score": 78.1,
+          "totalPrice": 2035,
+          "airline": "Emirates",
+          "hotelName": "Pullman Dubai Jumeirah Lakes Towers - Hotel & Residence",
+          "hotelStars": 5,
+          "hotelRating": 4.7,
+          "flightStops": 0,
+          "durationMinutes": 380,
+          "role": "recommended",
+          "label": "Recommended",
+          "reason": "Direct flight · 5★ hotel · highly rated",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 2,
+          "id": "pkg-serpapi-ec825445c762a54f-serpapi-hotel-6b0bbdc4e8bc5c12",
+          "score": 76.5,
+          "totalPrice": 1824,
+          "airline": "Emirates",
+          "hotelName": "Rove At The Park",
+          "hotelStars": 3,
+          "hotelRating": 4.8,
+          "flightStops": 0,
+          "durationMinutes": 385,
+          "role": null,
+          "label": null,
+          "reason": null,
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 3,
+          "id": "pkg-serpapi-15552e467b947f7a-serpapi-hotel-e3334130bc60114c",
+          "score": 70.6,
+          "totalPrice": 783,
+          "airline": "Royal Jordanian",
+          "hotelName": "Grand Excelsior Hotel Deira (formerly Sheraton Deira)",
+          "hotelStars": 4,
+          "hotelRating": 3.7,
+          "flightStops": 1,
+          "durationMinutes": 480,
+          "role": "lowest_price",
+          "label": "Lowest price",
+          "reason": "Lowest estimated package price",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 4,
+          "id": "pkg-serpapi-d1cee02071a0cdb4-serpapi-hotel-aad3ed9e73534e37",
+          "score": 66.9,
+          "totalPrice": 1455,
+          "airline": "EgyptAir",
+          "hotelName": "Seven Seas Hotel Dubai Airport",
+          "hotelStars": 4,
+          "hotelRating": 3.9,
+          "flightStops": 1,
+          "durationMinutes": 455,
+          "role": null,
+          "label": null,
+          "reason": null,
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 5,
+          "id": "pkg-serpapi-8ac47038d6369dc6-serpapi-hotel-bbd149e25fa9dfcf",
+          "score": 65.1,
+          "totalPrice": 1261,
+          "airline": "Turkish Airlines",
+          "hotelName": "Concorde Deira Hotel",
+          "hotelStars": 4,
+          "hotelRating": 3.5,
+          "flightStops": 1,
+          "durationMinutes": 555,
+          "role": null,
+          "label": null,
+          "reason": null,
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        }
+      ]
+    },
+    {
+      "status": "pass",
+      "id": "P5",
+      "label": "London → Barcelona",
+      "budget": {
+        "amount": 1200,
+        "currency": "EUR"
+      },
+      "top5Count": 5,
+      "recommendedCount": 1,
+      "uniqueRoles": 2,
+      "rolesAssigned": 2,
+      "cards": [
+        {
+          "rank": 1,
+          "id": "pkg-serpapi-9737946feaa614c9-serpapi-hotel-9cde877b5297b341",
+          "score": 79,
+          "totalPrice": 581,
+          "airline": "Vueling",
+          "hotelName": "Safestay Barcelona Passeig de Gràcia",
+          "hotelStars": 2,
+          "hotelRating": 3.6,
+          "flightStops": 0,
+          "durationMinutes": 140,
+          "role": "recommended",
+          "label": "Recommended",
+          "reason": "Direct flight · 2★ hotel",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 2,
+          "id": "pkg-serpapi-ffc375a714f76bfd-serpapi-hotel-2e2b205b60aa3893",
+          "score": 75.6,
+          "totalPrice": 849,
+          "airline": "British Airways",
+          "hotelName": "Hola Hostal",
+          "hotelStars": 2,
+          "hotelRating": 3.8,
+          "flightStops": 0,
+          "durationMinutes": 125,
+          "role": "best_hotel",
+          "label": "Best hotel",
+          "reason": "2★ hotel",
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 3,
+          "id": "pkg-serpapi-8d9193b8088d9c15-serpapi-hotel-525dad025dd5ab27",
+          "score": 74.3,
+          "totalPrice": 813,
+          "airline": "British Airways",
+          "hotelName": "Albergue Pere Tarrés Barcelona - Youth Hostel en Barcelona",
+          "hotelStars": 1,
+          "hotelRating": 3.7,
+          "flightStops": 0,
+          "durationMinutes": 130,
+          "role": null,
+          "label": null,
+          "reason": null,
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 4,
+          "id": "pkg-serpapi-ab51eeefd8b35540-serpapi-hotel-8d90187f4bd5822d",
+          "score": 70.5,
+          "totalPrice": 1051,
+          "airline": "British Airways",
+          "hotelName": "Bcnsporthostels",
+          "hotelStars": 2,
+          "hotelRating": 3,
+          "flightStops": 0,
+          "durationMinutes": 135,
+          "role": null,
+          "label": null,
+          "reason": null,
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        },
+        {
+          "rank": 5,
+          "id": "pkg-serpapi-23693f8c4f17a20a-serpapi-hotel-69908122244ab7d8",
+          "score": 70.3,
+          "totalPrice": 1021,
+          "airline": "British Airways",
+          "hotelName": "Hostelfly Fira Barcelona",
+          "hotelStars": 0,
+          "hotelRating": 4.4,
+          "flightStops": 0,
+          "durationMinutes": 140,
+          "role": null,
+          "label": null,
+          "reason": null,
+          "evidenceCheck": {
+            "hasRawScoreInReason": false,
+            "fitsBudget": true
+          }
+        }
+      ]
+    }
+  ]
+}

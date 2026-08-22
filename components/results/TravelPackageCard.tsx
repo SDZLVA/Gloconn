@@ -1,13 +1,10 @@
 import { memo } from "react";
 import { Card } from "@/components/ui/Card";
-import { ResultDuration } from "@/components/results/ResultDuration";
-import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
+import { ViewHotelAction } from "@/components/results/ViewHotelAction";
 import { ResultPrice } from "@/components/results/ResultPrice";
-import { ResultRating } from "@/components/results/ResultRating";
 import {
   formatFlightRoute,
   formatHotelStarsLabel,
-  formatPackageIncludesSummary,
   formatPackageNightsLabel,
   formatPackagePriceBreakdownLabel,
   formatPackageStopsLabel,
@@ -17,7 +14,7 @@ import type { TravelPackage } from "@/types/models/travel-package";
 
 type TravelPackageCardProps = {
   package: TravelPackage;
-  /** Task 4 (Sprint 15.3): shown as "LHR → CDG" in the flight box when available. */
+  /** Task 4 (Sprint 15.3): shown as "LHR → CDG" when available. */
   originIata?: string | null;
   destinationIata?: string | null;
   /** Sprint 16.4: deterministic role + reason (no raw score). */
@@ -25,12 +22,11 @@ type TravelPackageCardProps = {
 };
 
 /**
- * Informational card for a recommended flight + hotel package.
- * No booking or edit actions.
+ * Compact recommended package card (Sprint 17.2 / 17.4).
  *
- * P0.1: Price breakdown label makes per-person flight + 1-room hotel explicit.
- * P1.4: Hotel stars use formatHotelStarsLabel — renders "Unrated" for 0 stars.
- * Sprint 16.4: evidence-based role badge + short reason replace score thresholds.
+ * Hierarchy: role → airline+route → hotel+stars/rating → location →
+ * reason → est. price → View hotel.
+ * Investigation stays in the shared hotel details drawer.
  */
 function TravelPackageCardComponent({
   package: travelPackage,
@@ -42,7 +38,6 @@ function TravelPackageCardComponent({
   const stopsLabel = formatPackageStopsLabel(flight.stops);
   const nightsLabel = formatPackageNightsLabel(nights);
   const priceBreakdownLabel = formatPackagePriceBreakdownLabel(nights);
-  const includesSummary = formatPackageIncludesSummary(nights, hotel.name);
   const starsLabel = formatHotelStarsLabel(hotel.stars);
   const routeLabel = formatFlightRoute(originIata, destinationIata);
   const headingId = `${id}-title`;
@@ -51,118 +46,58 @@ function TravelPackageCardComponent({
       ? "bg-brand-50 text-brand-800"
       : "bg-emerald-50 text-emerald-800";
 
+  const hotelMeta =
+    starsLabel === "Unrated"
+      ? `${hotel.name} · Unrated · ${hotel.rating.toFixed(1)}`
+      : `${hotel.name} · ${starsLabel} · ${hotel.rating.toFixed(1)}`;
+
+  // One short supporting line: prefer explainability reason; else flight stops + nights.
+  const supportingLine = explanation?.reason?.trim()
+    ? explanation.reason.trim()
+    : `${stopsLabel} · ${nightsLabel}`;
+
   return (
     <Card hoverable className="overflow-hidden">
       <article
-        className="flex flex-col gap-4 p-4 sm:flex-row sm:items-stretch sm:gap-5 sm:p-5"
+        className="flex flex-col gap-3 p-4 sm:gap-4 sm:p-5"
         aria-labelledby={headingId}
       >
-        <ResultPlaceholderImage
-          type="hotel"
-          label={hotel.location}
-          className="h-36 w-full sm:h-auto sm:w-36"
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          {explanation ? (
+            <span
+              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide ${roleBadgeClass}`}
+            >
+              {explanation.label}
+            </span>
+          ) : (
+            <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-slate-700">
+              Package
+            </span>
+          )}
+        </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-3">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <div className="min-w-0 space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-slate-700">
-                  Package
-                </span>
-                {explanation && (
-                  <span
-                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide ${roleBadgeClass}`}
-                  >
-                    {explanation.label}
-                  </span>
-                )}
-              </div>
-              <h3
-                id={headingId}
-                className="truncate text-lg font-bold text-slate-900"
-              >
-                {flight.airline} + {hotel.name}
-              </h3>
-              {explanation && (
-                <p className="text-sm text-slate-600">{explanation.reason}</p>
-              )}
-              <p className="text-sm font-medium text-brand-700">
-                {includesSummary}
-              </p>
-              <p className="text-sm text-slate-500">
-                {hotel.location}
-                <span className="text-slate-400"> · </span>
-                {nightsLabel}
-              </p>
-            </div>
-            <ResultRating rating={hotel.rating} />
-          </div>
+        <div className="min-w-0 space-y-1">
+          <h3
+            id={headingId}
+            className="truncate text-lg font-bold text-slate-900"
+          >
+            {flight.airline}
+            {routeLabel ? (
+              <span className="font-semibold text-brand-700">
+                {" "}
+                · {routeLabel}
+              </span>
+            ) : null}
+          </h3>
+          <p className="truncate text-sm font-semibold text-slate-800">
+            {hotelMeta}
+          </p>
+          <p className="truncate text-sm text-slate-500">{hotel.location}</p>
+          <p className="text-sm text-slate-600">{supportingLine}</p>
+        </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl bg-slate-50 px-3 py-2.5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Flight · per person
-              </p>
-              <p className="mt-1 text-sm font-semibold text-slate-900">
-                {flight.airline}
-              </p>
-              {routeLabel && (
-                <p className="mt-0.5 text-xs font-semibold tracking-wide text-brand-700">
-                  {routeLabel}
-                </p>
-              )}
-              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
-                <div className="text-center">
-                  <p className="font-bold text-slate-900">
-                    {flight.departureTime}
-                  </p>
-                  <p className="text-xs text-slate-500">Departure</p>
-                </div>
-                <div className="flex min-w-[4rem] flex-1 flex-col items-center gap-1 px-1">
-                  <ResultDuration
-                    minutes={flight.durationMinutes}
-                    className="text-xs font-medium text-slate-500"
-                  />
-                  <div className="h-px w-full max-w-[80px] bg-slate-200" />
-                  <span className="text-xs font-medium text-brand-700">
-                    {stopsLabel}
-                  </span>
-                </div>
-                <div className="text-center">
-                  <p className="font-bold text-slate-900">
-                    {flight.arrivalTime}
-                  </p>
-                  <p className="text-xs text-slate-500">Arrive</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-2xl bg-slate-50 px-3 py-2.5">
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Hotel · 1 room
-              </p>
-              <p className="mt-1 truncate text-sm font-semibold text-slate-900">
-                {hotel.name}
-              </p>
-              <p className="mt-1 text-xs font-medium text-amber-600">
-                {starsLabel === "Unrated" ? (
-                  <span className="text-slate-500">{starsLabel}</span>
-                ) : (
-                  <>
-                    <span aria-hidden="true">{starsLabel}</span>
-                    <span className="sr-only">{hotel.stars} stars</span>
-                  </>
-                )}
-                <span className="ml-2 text-slate-600">
-                  {hotel.rating.toFixed(1)} rating
-                </span>
-              </p>
-              <p className="mt-1 text-xs text-slate-500">{hotel.location}</p>
-            </div>
-          </div>
-
-          <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
+        <div className="flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
+          <div className="min-w-0 space-y-1">
             <p className="text-sm text-slate-500">{priceBreakdownLabel}</p>
             <ResultPrice
               price={totalPrice}
@@ -170,6 +105,7 @@ function TravelPackageCardComponent({
               suffix="est. total"
             />
           </div>
+          <ViewHotelAction hotel={hotel} />
         </div>
       </article>
     </Card>

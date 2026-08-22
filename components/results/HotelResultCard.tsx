@@ -1,8 +1,12 @@
 import { Card } from "@/components/ui/Card";
+import { ViewHotelAction } from "@/components/results/ViewHotelAction";
 import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
 import { ResultTypeBadge } from "@/components/results/ResultTypeBadge";
+import {
+  formatHotelAmenitiesSummary,
+} from "@/lib/hotels/amenitiesUi";
 import {
   formatHotelPriceLabel,
   formatHotelStarsLabel,
@@ -14,16 +18,13 @@ type HotelResultCardProps = {
 };
 
 /**
- * Card displaying a hotel search result.
- * Informational only — no fake booking CTA.
- *
- * P0.3: Price label now reads "X nights · 1 room" to be explicit that
- *       the displayed price is for a single room.
- * P1.4: Stars rendered via formatHotelStarsLabel — shows "Unrated" for 0 stars.
+ * Browse hotel card (Sprint 17.2 / 17.4).
+ * Decision-layer only — same View hotel drawer as package cards.
  */
 export function HotelResultCard({ result }: HotelResultCardProps) {
   const starsLabel = formatHotelStarsLabel(result.stars);
   const priceLabel = formatHotelPriceLabel(result.nights);
+  const amenitiesSummary = formatHotelAmenitiesSummary(result.amenities);
 
   return (
     <Card hoverable className="overflow-hidden">
@@ -58,26 +59,20 @@ export function HotelResultCard({ result }: HotelResultCardProps) {
             <ResultRating rating={result.rating} />
           </div>
 
-          {result.amenities.length > 0 && (
-            <ul className="flex flex-wrap gap-2">
-              {result.amenities.map((amenity) => (
-                <li
-                  key={amenity}
-                  className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600"
-                >
-                  {amenity}
-                </li>
-              ))}
-            </ul>
+          {amenitiesSummary && (
+            <p className="text-xs text-slate-500">{amenitiesSummary}</p>
           )}
 
           <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
-            <p className="text-sm text-slate-500">{priceLabel}</p>
-            <ResultPrice
-              price={result.price}
-              currency={result.currency}
-              suffix="total"
-            />
+            <div className="min-w-0 space-y-1">
+              <p className="text-sm text-slate-500">{priceLabel}</p>
+              <ResultPrice
+                price={result.price}
+                currency={result.currency}
+                suffix="total"
+              />
+            </div>
+            <ViewHotelAction hotel={result} />
           </div>
         </div>
       </div>

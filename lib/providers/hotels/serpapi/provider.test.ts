@@ -116,6 +116,7 @@ describe("SerpApiHotelsProvider.search", () => {
       locationFallback: "Bali Resorts",
       checkInDate: "2026-04-08",
       checkOutDate: "2026-04-10",
+      adults: 2,
     });
   });
 

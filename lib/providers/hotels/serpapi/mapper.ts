@@ -1,15 +1,19 @@
 /**
  * Maps SerpAPI Google Hotels JSON to Glooconn `Hotel[]`.
  *
- * Pure orchestration over `mappingHelpers` — no HTTP or provider side effects.
  * Maps `properties[]` only (ignores sponsored `ads[]`).
+ * Sprint 17.5.1: seals property tokens into `providerPropertyRef` — no
+ * in-process registry on the production path.
  */
 
 import { createProviderError } from "@/lib/api/errors";
+import { getAppConfig } from "@/lib/config";
+import { sealHotelPropertyRef } from "@/lib/hotels/sealedPropertyRef";
 import {
   buildDeterministicHotelId,
   computeNights,
   mapAmenities,
+  mapGpsCoordinates,
   mapHotelPrice,
   mapLocation,
   mapRating,
@@ -36,7 +40,7 @@ export type MapSerpApiHotelsContext = {
 
   /**
    * Fallback for Hotel.location when the property has no nearby place name.
-   * Typically `SearchRequest.destination`.
+   * Typically `SearchRequest.destination` — also used as SerpAPI `q` for details.
    */
   locationFallback: string;
 
@@ -46,6 +50,26 @@ export type MapSerpApiHotelsContext = {
    */
   checkInDate: string;
   checkOutDate: string;
+
+  /** Adults count for property-details priced offers (optional). */
+  adults?: number;
+
+  /**
+   * Optional seal secret override (tests).
+   * Production uses `getAppConfig().propertyRefSeal.secret`.
+   */
+  propertyRefSealSecret?: string;
+};
+
+export type MapSerpApiPropertyOptions = {
+  destinationId: string;
+  currency: CurrencyCode;
+  locationFallback: string;
+  nights: number;
+  checkInDate?: string;
+  checkOutDate?: string;
+  adults?: number;
+  propertyRefSealSecret?: string;
 };
 
 /**
@@ -54,12 +78,7 @@ export type MapSerpApiHotelsContext = {
  */
 export function mapSerpApiPropertyToHotel(
   property: SerpApiHotelProperty,
-  options: {
-    destinationId: string;
-    currency: CurrencyCode;
-    locationFallback: string;
-    nights: number;
-  },
+  options: MapSerpApiPropertyOptions,
 ): Hotel | null {
   const destinationId = options.destinationId?.trim();
   if (!destinationId) {
@@ -80,8 +99,38 @@ export function mapSerpApiPropertyToHotel(
     return null;
   }
 
+  const gps = mapGpsCoordinates(property.gps_coordinates);
+  const hotelId = buildDeterministicHotelId(property);
+
+  const token = property.property_token?.trim();
+  const query = options.locationFallback.trim();
+  let providerPropertyRef: string | undefined;
+  if (token && query) {
+    // Sealing is optional for search (Sprint 17.5.2). Missing secret → omit ref,
+    // still return the Hotel. Details require a sealed ref later.
+    // Explicit `propertyRefSealSecret: ""` skips sealing (tests / forced omit).
+    const secret =
+      options.propertyRefSealSecret !== undefined
+        ? options.propertyRefSealSecret.trim()
+        : getAppConfig().propertyRefSeal.secret.trim();
+    if (secret) {
+      providerPropertyRef = sealHotelPropertyRef(
+        {
+          hotelId,
+          propertyToken: token,
+          query,
+          checkInDate: options.checkInDate,
+          checkOutDate: options.checkOutDate,
+          currency: options.currency,
+          adults: options.adults,
+        },
+        secret,
+      );
+    }
+  }
+
   return {
-    id: buildDeterministicHotelId(property),
+    id: hotelId,
     destinationId,
     price,
     currency: options.currency,
@@ -91,6 +140,10 @@ export function mapSerpApiPropertyToHotel(
     amenities: mapAmenities(property.amenities),
     nights: options.nights,
     location: mapLocation(property, options.locationFallback),
+    ...(gps
+      ? { latitude: gps.latitude, longitude: gps.longitude }
+      : {}),
+    ...(providerPropertyRef ? { providerPropertyRef } : {}),
   };
 }
 
@@ -154,6 +207,10 @@ export function mapSerpApiHotelsResponse(
       currency: currencyResult.currency,
       locationFallback: context.locationFallback,
       nights,
+      checkInDate: checkIn,
+      checkOutDate: checkOut,
+      adults: context.adults,
+      propertyRefSealSecret: context.propertyRefSealSecret,
     });
     if (hotel !== null) {
       hotels.push(hotel);

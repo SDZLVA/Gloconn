@@ -1,0 +1,67 @@
+{
+  "sprint": "17.3",
+  "generatedAt": "2026-08-22T17:57:26.204Z",
+  "results": [
+    {
+      "city": "paris",
+      "ok": true,
+      "hotelId": "serpapi-hotel-35125ab74382c056",
+      "hotelName": "Home Sweet Home Paris Montmartre",
+      "searchLocation": "Paris Charles de Gaulle Airport",
+      "hasGps": true,
+      "address": null,
+      "mapsUrl": null,
+      "websiteUrl": null,
+      "offerCount": 0,
+      "hasDisclosure": false,
+      "firstFetchCached": false,
+      "secondFetchCached": true,
+      "searchMs": 295,
+      "detailsMs": 122,
+      "cachedMs": 0,
+      "leak": false
+    },
+    {
+      "city": "tokyo",
+      "ok": true,
+      "hotelId": "serpapi-hotel-a009f4bd8e3caf36",
+      "hotelName": "Sakura Cross Hotel Ueno-Iriya Annex",
+      "searchLocation": "Tokyo National Museum",
+      "hasGps": true,
+      "address": "1 Chome-21-7 Iriya, Taito City, Tokyo 110-0013, Japan",
+      "mapsUrl": "https://maps.google.com/maps?hl=en&gl=ZZ&um=1&ie=UTF-8&fb=1&sa=X&geocode=KfWO3PxUjxhgMcjR-MH9PDMz&daddr=Sakura+Cross+Hotel+Ueno-Iriya+Annex,+1+Chome-21-7+Iriya,+Taito+City,+Tokyo+110-0013,+Japan",
+      "websiteUrl": "https://sakura-cross.com/",
+      "offerCount": 2,
+      "hasDisclosure": true,
+      "firstFetchCached": false,
+      "secondFetchCached": true,
+      "searchMs": 97,
+      "detailsMs": 36,
+      "cachedMs": 0,
+      "leak": false
+    },
+    {
+      "city": "new-york",
+      "ok": true,
+      "hotelId": "serpapi-hotel-0601fcbea9e58b06",
+      "hotelName": "The Brooklyn Riviera Hostel",
+      "searchLocation": "Brooklyn Museum",
+      "hasGps": true,
+      "address": "781 Prospect Pl, Brooklyn, NY 11216",
+      "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=KUsR01ecW8KJMTRWp0qL-4y_&daddr=The+Brooklyn+Riviera+Hostel,+781+Prospect+Pl,+Brooklyn,+NY+11216",
+      "websiteUrl": "https://trip.tpx.lv/znELmmOm",
+      "offerCount": 1,
+      "hasDisclosure": true,
+      "firstFetchCached": false,
+      "secondFetchCached": true,
+      "searchMs": 85,
+      "detailsMs": 22,
+      "cachedMs": 0,
+      "leak": false
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0
+  }
+}

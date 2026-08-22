@@ -41,6 +41,7 @@ const hotelResult: HotelResult = {
   amenities: ["Wi-Fi"],
   nights: 3,
   location: "Marais",
+  providerPropertyRef: "gpref1.mock-test-sealed-ref-for-ui-only",
 };
 
 const flightResult: FlightResult = {
@@ -166,7 +167,7 @@ describe("MVP results visibility", () => {
   });
 });
 
-describe("MVP result cards — no fake CTAs", () => {
+describe("MVP result cards — no fake booking CTAs", () => {
   it("hotel and flight cards show price without booking buttons", () => {
     const hotelHtml = renderToStaticMarkup(
       createElement(HotelResultCard, { result: hotelResult }),
@@ -177,6 +178,7 @@ describe("MVP result cards — no fake CTAs", () => {
 
     assert.match(hotelHtml, /Hotel Paris/);
     assert.match(flightHtml, /Air France/);
+    assert.match(hotelHtml, /View hotel/);
     assert.doesNotMatch(hotelHtml, /View deal|Select flight|Book /i);
     assert.doesNotMatch(flightHtml, /View deal|Select flight|Book /i);
   });

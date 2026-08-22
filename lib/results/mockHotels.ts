@@ -12,7 +12,10 @@ export const MOCK_HOTELS: HotelResult[] = [
     currency: "EUR",
     nights: 3,
     location: "Le Marais, Paris",
-    amenities: ["Free Wi-Fi", "Breakfast", "City view"],
+    amenities: ["Free Wi-Fi", "Breakfast", "City view", "Bar", "Gym"],
+    latitude: 48.8575,
+    longitude: 2.3614,
+    providerPropertyRef: "gpref-mock-paris-1",
   },
   {
     id: "hotel-paris-2",
@@ -26,6 +29,9 @@ export const MOCK_HOTELS: HotelResult[] = [
     nights: 3,
     location: "7th Arrondissement, Paris",
     amenities: ["Spa", "River view", "Concierge"],
+    latitude: 48.8606,
+    longitude: 2.3376,
+    providerPropertyRef: "gpref-mock-paris-2",
   },
   {
     id: "hotel-paris-3",
@@ -39,6 +45,7 @@ export const MOCK_HOTELS: HotelResult[] = [
     nights: 3,
     location: "Montmartre, Paris",
     amenities: ["Free Wi-Fi", "Metro nearby"],
+    // Intentionally no coordinates — Maps CTA must stay hidden.
   },
   {
     id: "hotel-rome-1",

@@ -187,6 +187,18 @@ function loadSerpApiConfig(): SerpApiConfig {
   };
 }
 
+function loadPropertyRefSealConfig(): import("@/lib/config/types").PropertyRefSealConfig {
+  const secret = readEnv("PROPERTY_REF_SEAL_SECRET") ?? "";
+  const trimmed = secret.trim();
+  const isConfigured =
+    trimmed.length >= 32 || /^[0-9a-fA-F]{64}$/.test(trimmed);
+
+  return {
+    secret: trimmed,
+    isConfigured,
+  };
+}
+
 /** Reads raw configuration without caching or validation attachment. */
 export function loadAppConfigRaw(): Omit<AppConfig, "validation"> {
   const supabaseUrl = readEnv("NEXT_PUBLIC_SUPABASE_URL") ?? "";
@@ -238,6 +250,7 @@ export function loadAppConfigRaw(): Omit<AppConfig, "validation"> {
     },
     amadeus,
     serpapi,
+    propertyRefSeal: loadPropertyRefSealConfig(),
   };
 }
 

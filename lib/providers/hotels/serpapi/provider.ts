@@ -77,6 +77,7 @@ export class SerpApiHotelsProvider implements HotelsProvider {
       locationFallback: request.destination?.trim() || destinationId,
       checkInDate,
       checkOutDate,
+      adults: request.travelers?.adults,
     });
   }
 }

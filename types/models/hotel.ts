@@ -38,4 +38,22 @@ export type Hotel = {
 
   /** Neighborhood or address summary for display. */
   location: string;
+
+  /**
+   * Optional WGS84 latitude when known.
+   * Used for map links — never a substitute for a street address.
+   */
+  latitude?: number;
+
+  /**
+   * Optional WGS84 longitude when known.
+   * Used for map links — never a substitute for a street address.
+   */
+  longitude?: number;
+
+  /**
+   * Opaque sealed property reference for on-demand details (Sprint 17.5.1).
+   * Authenticated ciphertext — not a raw provider token. Do not render in the UI.
+   */
+  providerPropertyRef?: string;
 };

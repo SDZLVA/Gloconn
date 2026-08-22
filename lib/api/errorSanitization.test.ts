@@ -174,6 +174,10 @@ describe("F-08: config error logging — message-only, no stack traces", () => {
         deepSearchInvalid: false,
         isConfigured: false,
       },
+      propertyRefSeal: {
+        secret: "",
+        isConfigured: false,
+      },
     });
 
     // Every error and warning must have a string message, never an Error object.

@@ -15,6 +15,12 @@ export type { Destination } from "@/types/models/destination";
 
 export type { Hotel } from "@/types/models/hotel";
 
+export type {
+  HotelOfferLink,
+  HotelPropertyDetails,
+} from "@/types/models/hotel-property-details";
+export { HOTEL_THIRD_PARTY_DISCLOSURE } from "@/types/models/hotel-property-details";
+
 export type { Flight } from "@/types/models/flight";
 
 export type { TravelPackage } from "@/types/models/travel-package";
