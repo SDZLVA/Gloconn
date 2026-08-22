@@ -1060,7 +1060,52 @@ Tie-break: score → name → id. Empty query returns `[]` (idle UI uses recent 
 
 **Result:** 551 tests · typecheck clean · build clean · 0 vulnerabilities · security S1–S4 intact
 
-**Milestone 15 complete — awaiting commit / v0.20.0 release authorization.**
+**Milestone 15 complete — released as v0.20.0.**
+
+---
+
+## Milestone 16 — Recommendation Intelligence
+
+**Branch:** `milestone-12-hotel-search`  
+**Release:** **v0.21.0** — [../CHANGELOG.md](../CHANGELOG.md) · [releases/v0.21.0.md](./releases/v0.21.0.md)
+
+### Sprint 16.1 — Discovery
+
+- Read-only audit of Recommended Packages ranking quality
+- Confirmed SerpAPI `Flight.rating` always 0; cartesian clones dominate naive top 5
+- Architecture locked inside `PackageComposer`
+
+### Sprint 16.2 — Candidate quality
+
+- `lib/packages/candidates.ts` — flight quality via stops + duration; hotel via stars + rating + price
+- Budget-aware quality-slot nudge; currency-safe scoring budget
+
+### Sprint 16.3 — Diversity
+
+- `lib/packages/diversity.ts` — greedy post-score diversity; repetition caps; exact duplicate suppression
+- UI still shows 5 initially; composer max remains 20
+
+### Sprint 16.4 — Explainability
+
+- `lib/packages/explanations.ts` — deterministic roles + reasons at render time
+- Replaces Top Pick / Good Match badges on package cards
+
+### Sprint 16.5 — Product validation
+
+- Live human-quality review across five routes
+- Verdict B: small honesty fixes needed
+
+### Sprint 16.5.1 — Label honesty
+
+- Best hotel ≥3★; highly rated ≥3★ + ≥4.5; Fastest ≥45m; Lowest price ≥5%
+
+### Sprint 16.6 — Release v0.21.0
+
+- Version bump, changelog, release notes, documentation sync, annotated tag
+
+**Result:** 615 tests · typecheck clean · build clean · 0 vulnerabilities · security baseline intact
+
+**Milestone 16 complete — released as v0.21.0.**
 
 ---
 

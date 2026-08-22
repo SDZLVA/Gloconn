@@ -4,6 +4,25 @@ All notable product releases for Glooconn are listed here. Detailed notes live u
 
 ---
 
+## [v0.21.0] — Recommendation Intelligence (August 2026)
+
+**Milestone 16 — Recommendation Intelligence** (Sprints 16.1–16.6 complete).
+
+- **Discovery (16.1):** Audit of Recommended Packages ranking quality; architecture locked inside `PackageComposer`
+- **Candidate quality (16.2):** Production-aware flight selection using stops + duration (never dead `Flight.rating`); hotel selection using stars + guest rating + price; budget-aware quality-slot nudge; currency-safe budget scoring
+- **Diversity (16.3):** Deterministic greedy diversity pass after scoring; exact duplicate suppression; flight/hotel repetition caps (default ≤2 when pool allows); five-package diverse first screen (`MAX_PACKAGES=20`, UI initial visible=5)
+- **Explainability (16.4):** Deterministic recommendation roles derived at render time — Recommended, Lowest price, Best hotel, Best value, Fastest, Direct flight, Fits your budget — with evidence-based reason copy (no raw Match scores, no AI/LLM)
+- **Label honesty (16.5.1):** Gates — Best hotel requires ≥3★; “highly rated” requires ≥3★ and rating ≥4.5; Fastest requires ≥45 minutes advantage; Lowest price requires ≥5% relative advantage
+- Live validation across five representative routes (Milan→Tokyo, Milan→New York, Paris→Bangkok, Rome→Dubai, London→Barcelona)
+- **615** automated tests; 0 vulnerabilities; typecheck clean; build clean
+- Security baseline intact (RLS, auth, CSP, rate limits, server-only secrets)
+
+**Details:** [docs/releases/v0.21.0.md](./docs/releases/v0.21.0.md)
+
+**Known limitation:** Same-airline near-duplicate flight offers can still appear in the top five when provider inventory contains many similar offer IDs (identity-level diversity only).
+
+---
+
 ## [v0.20.0] — MVP Focus (August 2026)
 
 **Milestone 14 — MVP Focus** (Sprints 14.1–14.4 complete).

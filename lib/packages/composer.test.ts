@@ -200,8 +200,8 @@ describe("composePackages", () => {
     );
 
     // Cheapest candidates are in the pool (6 price slots + 2 quality slots).
-    // With uniform ratings, quality slots fall to cheapest remaining → f06, f07.
-    // f11 is the most expensive and has equal rating — still excluded.
+    // With uniform convenience, quality slots fall to cheapest remaining → f06, f07.
+    // f11 is the most expensive — still excluded unless it wins on convenience.
     const flightIds = new Set(packages.map((p) => p.flightId));
     const hotelIds = new Set(packages.map((p) => p.hotelId));
     assert.ok(flightIds.has("f00"));
@@ -211,39 +211,46 @@ describe("composePackages", () => {
   });
 
   // -------------------------------------------------------------------------
-  // P1.7 — Quality-aware candidate selection (Sprint 15.3)
+  // Sprint 16.2 — balanced candidate selection
   // -------------------------------------------------------------------------
 
-  it("P1.7: includes a high-quality expensive flight that pure price-sort would exclude", () => {
-    // 10 cheap flights (rating 2.0) + 1 expensive but top-quality flight (rating 5.0)
-    // Pure price-sort with cap=8 would exclude the quality flight entirely.
-    // Quality-aware "6+2" guarantees a quality slot for the top-rated candidate.
+  it("S16.2: includes a direct/fast expensive flight via convenience quality slot", () => {
     const cheapFlights = Array.from({ length: 10 }, (_, i) =>
-      flight({ id: `cheap${i}`, price: 100 + i, rating: 2.0 }),
+      flight({
+        id: `cheap${i}`,
+        price: 100 + i,
+        rating: 0,
+        stops: 2,
+        durationMinutes: 1200,
+      }),
     );
-    const qualityFlight = flight({ id: "quality", price: 400, rating: 5.0 });
+    const directFlight = flight({
+      id: "direct",
+      price: 400,
+      rating: 0,
+      stops: 0,
+      durationMinutes: 480,
+    });
 
     const packages = composePackages(
-      [...cheapFlights, qualityFlight],
+      [...cheapFlights, directFlight],
       [hotel({ id: "h1", price: 200 })],
       baseRequest(),
     );
 
     const flightIds = new Set(packages.map((p) => p.flightId));
-    // The high-quality flight must be in the candidate pool.
     assert.ok(
-      flightIds.has("quality"),
-      "quality flight should enter composition via quality slot",
+      flightIds.has("direct"),
+      "direct flight should enter composition via convenience slot",
     );
-    // And at least some cheap flights are still represented.
     assert.ok(flightIds.has("cheap0"));
   });
 
-  it("P1.7: includes a high-quality expensive hotel that pure price-sort would exclude", () => {
+  it("S16.2: includes a high-star expensive hotel that pure price-sort would exclude", () => {
     const cheapHotels = Array.from({ length: 10 }, (_, i) =>
       hotel({ id: `cheap${i}`, price: 200 + i, rating: 2.0, stars: 2 }),
     );
-    const qualityHotel = hotel({ id: "luxury", price: 900, rating: 5.0, stars: 5 });
+    const qualityHotel = hotel({ id: "luxury", price: 900, rating: 4.2, stars: 5 });
 
     const packages = composePackages(
       [flight({ id: "f1", price: 150 })],
@@ -254,9 +261,21 @@ describe("composePackages", () => {
     const hotelIds = new Set(packages.map((p) => p.hotelId));
     assert.ok(
       hotelIds.has("luxury"),
-      "luxury hotel should enter composition via quality slot",
+      "luxury hotel should enter composition via stars quality slot",
     );
     assert.ok(hotelIds.has("cheap0"));
+  });
+
+  it("S16.2: does not apply budget penalty when budget currency mismatches package currency", () => {
+    const packages = composePackages(
+      [flight({ id: "f1", price: 800, currency: "EUR" })],
+      [hotel({ id: "h1", price: 900, currency: "EUR" })],
+      baseRequest({ budget: { amount: 1000, currency: "USD" } }),
+    );
+
+    assert.equal(packages.length, 1);
+    // budgetFit should be 1.0 (no penalty) — score should reflect no budget constraint.
+    assert.ok(packages[0]!.score >= 50);
   });
 
   it("P1.7: quality-aware selection does not exceed the candidate cap", () => {
@@ -292,7 +311,7 @@ describe("composePackages", () => {
     assert.ok(flightIds.has("f2"));
   });
 
-  it("P1.7: score ordering is non-increasing (top-scored package first)", () => {
+  it("S16.3: top-scored package is first after diversity pass", () => {
     const flights = Array.from({ length: 10 }, (_, i) =>
       flight({ id: `f${i}`, price: 150 + i * 20, rating: (10 - i) / 2 }),
     );
@@ -301,14 +320,10 @@ describe("composePackages", () => {
     );
 
     const packages = composePackages(flights, hotels, baseRequest());
+    assert.ok(packages.length >= 2);
 
-    for (let i = 1; i < packages.length; i++) {
-      const prev = packages[i - 1]!;
-      const curr = packages[i]!;
-      if (prev.score !== curr.score) {
-        assert.ok(prev.score >= curr.score, `Score should be non-increasing at index ${i}`);
-      }
-    }
+    const allScores = packages.map((p) => p.score);
+    assert.equal(packages[0]!.score, Math.max(...allScores));
   });
 
   it("P1.7: currency mismatch behavior is unchanged", () => {
@@ -341,7 +356,7 @@ describe("composePackages", () => {
     assert.equal(packages.length, 3);
   });
 
-  it("orders by score descending, then price, then id", () => {
+  it("S16.3: diversity pass keeps global best package first", () => {
     const packages = composePackages(
       [
         flight({
@@ -379,18 +394,6 @@ describe("composePackages", () => {
     );
 
     assert.ok(packages.length >= 2);
-    for (let i = 1; i < packages.length; i++) {
-      const prev = packages[i - 1]!;
-      const curr = packages[i]!;
-      if (prev.score !== curr.score) {
-        assert.ok(prev.score > curr.score);
-      } else if (prev.totalPrice !== curr.totalPrice) {
-        assert.ok(prev.totalPrice < curr.totalPrice);
-      } else {
-        assert.ok(prev.id.localeCompare(curr.id) <= 0);
-      }
-    }
-
     assert.equal(packages[0]!.id, "pkg-f-good-h-good");
   });
 

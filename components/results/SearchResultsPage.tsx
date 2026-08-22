@@ -290,6 +290,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     packages={packages}
                     originIata={search.originIata}
                     destinationIata={search.destinationIata}
+                    budget={search.budget}
                   />
                   <ResultsList
                     results={sorted}

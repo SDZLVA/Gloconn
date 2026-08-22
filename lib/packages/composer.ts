@@ -6,6 +6,16 @@
  */
 
 import {
+  selectFlightCandidates,
+  selectHotelCandidates,
+  resolveScoringBudgetAmount,
+} from "@/lib/packages/candidates";
+import {
+  comparePackagesByScore,
+  selectDiversePackages,
+  selectNaiveTopPackages,
+} from "@/lib/packages/diversity";
+import {
   MAX_FLIGHT_CANDIDATES,
   MAX_HOTEL_CANDIDATES,
   MAX_PACKAGES,
@@ -28,6 +38,11 @@ export type ComposePackagesOptions = {
   maxHotelCandidates?: number;
   /** Override final package cap. */
   maxPackages?: number;
+  /**
+   * When false, return score-first top N without the diversity pass.
+   * Default true. Intended for validation comparisons only.
+   */
+  applyDiversity?: boolean;
 };
 
 /**
@@ -61,8 +76,18 @@ export function composePackages(
   const maxHotels = options.maxHotelCandidates ?? MAX_HOTEL_CANDIDATES;
   const maxPackages = options.maxPackages ?? MAX_PACKAGES;
 
-  const flightCandidates = selectFlightCandidates(flights, maxFlights);
-  const hotelCandidates = selectHotelCandidates(hotels, maxHotels);
+  const flightCandidates = selectFlightCandidates(
+    flights,
+    maxFlights,
+    request,
+    hotels,
+  );
+  const hotelCandidates = selectHotelCandidates(
+    hotels,
+    maxHotels,
+    request,
+    flights,
+  );
 
   const raw: PackageScoreInput[] = [];
 
@@ -84,11 +109,14 @@ export function composePackages(
     return [];
   }
 
-  const context = buildPackageScoreContext(raw, request.budget?.amount ?? null);
+  const context = buildPackageScoreContext(raw, null);
 
   const packages: TravelPackage[] = raw.map((entry) => {
     const nights = resolvePackageNights(entry.hotel.nights, request);
-    const score = scorePackage(entry, context);
+    const score = scorePackage(entry, {
+      ...context,
+      budgetAmount: resolveScoringBudgetAmount(request, entry),
+    });
 
     return {
       id: buildPackageId(entry.flight.id, entry.hotel.id),
@@ -103,102 +131,11 @@ export function composePackages(
     };
   });
 
-  packages.sort(comparePackages);
+  packages.sort(comparePackagesByScore);
 
-  return packages.slice(0, maxPackages);
-}
-
-/**
- * P1.7 (Sprint 15.3) — Quality-aware candidate selection.
- *
- * Previous behavior: pure price-ascending selection gave all 8 slots to the
- * cheapest options, preventing high-quality but moderately expensive candidates
- * from entering composition at all.
- *
- * New behavior: "6 + 2" split —
- *   - First (limit - QUALITY_SLOTS) slots: cheapest by price (preserves budget bias)
- *   - Remaining QUALITY_SLOTS slots: highest rating among candidates NOT already
- *     in the price window (gives quality options a guaranteed entry point)
- *
- * When limit ≤ QUALITY_SLOTS, all slots are filled by quality ranking (edge case).
- * Deduplication ensures no candidate appears twice. Order within the result set
- * is price-asc first, then quality additions — deterministic via id tiebreaker.
- */
-const QUALITY_SLOTS = 2;
-
-/** Pre-select flights using quality-aware "6 + 2" candidate selection. */
-function selectFlightCandidates(
-  flights: Flight[],
-  limit: number,
-): Flight[] {
-  return selectQualityAwareCandidates(flights, limit);
-}
-
-/** Pre-select hotels using quality-aware "6 + 2" candidate selection. */
-function selectHotelCandidates(hotels: Hotel[], limit: number): Hotel[] {
-  return selectQualityAwareCandidates(hotels, limit);
-}
-
-/**
- * Quality-aware "N-2 + 2" candidate selection.
- *
- * - (limit - QUALITY_SLOTS) slots → cheapest by price (budget bias preserved)
- * - QUALITY_SLOTS slots → highest-rated from the remaining pool (quality diversity)
- *
- * Guarantees no duplicates. Result count equals min(items.length, limit).
- */
-function selectQualityAwareCandidates<T extends { price: number; rating: number; id: string }>(
-  items: T[],
-  limit: number,
-): T[] {
-  if (items.length <= limit) {
-    return [...items].sort(byPriceAscRatingDesc);
+  if (options.applyDiversity === false) {
+    return selectNaiveTopPackages(packages, maxPackages);
   }
 
-  const priceSlots = Math.max(0, limit - QUALITY_SLOTS);
-  const byPrice = [...items].sort(byPriceAscRatingDesc);
-
-  // Price window: cheapest priceSlots items.
-  const priceWindow = byPrice.slice(0, priceSlots);
-
-  // Quality additions: highest-rated items NOT in the price window.
-  // Since byPrice is sorted, remaining items are those beyond the price window.
-  const remaining = byPrice.slice(priceSlots);
-  const qualityAdditions = [...remaining]
-    .sort(byRatingDescPriceAsc)
-    .slice(0, QUALITY_SLOTS);
-
-  // Sort quality additions by price for a stable, predictable final order.
-  const qualityAdditionsSorted = [...qualityAdditions].sort(byPriceAscRatingDesc);
-
-  return [...priceWindow, ...qualityAdditionsSorted];
-}
-
-function byPriceAscRatingDesc(
-  a: { price: number; rating: number; id: string },
-  b: { price: number; rating: number; id: string },
-): number {
-  if (a.price !== b.price) return a.price - b.price;
-  if (a.rating !== b.rating) return b.rating - a.rating;
-  return a.id.localeCompare(b.id);
-}
-
-function byRatingDescPriceAsc(
-  a: { price: number; rating: number; id: string },
-  b: { price: number; rating: number; id: string },
-): number {
-  if (a.rating !== b.rating) return b.rating - a.rating;
-  if (a.price !== b.price) return a.price - b.price;
-  return a.id.localeCompare(b.id);
-}
-
-/** Higher score first, then lower totalPrice, then id. */
-function comparePackages(a: TravelPackage, b: TravelPackage): number {
-  if (a.score !== b.score) {
-    return b.score - a.score;
-  }
-  if (a.totalPrice !== b.totalPrice) {
-    return a.totalPrice - b.totalPrice;
-  }
-  return a.id.localeCompare(b.id);
+  return selectDiversePackages(packages, maxPackages);
 }

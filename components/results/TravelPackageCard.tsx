@@ -10,9 +10,9 @@ import {
   formatPackageIncludesSummary,
   formatPackageNightsLabel,
   formatPackagePriceBreakdownLabel,
-  formatPackageQualityBadge,
   formatPackageStopsLabel,
 } from "@/lib/results/packagesUi";
+import type { PackageExplanation } from "@/lib/packages/explanations";
 import type { TravelPackage } from "@/types/models/travel-package";
 
 type TravelPackageCardProps = {
@@ -20,6 +20,8 @@ type TravelPackageCardProps = {
   /** Task 4 (Sprint 15.3): shown as "LHR → CDG" in the flight box when available. */
   originIata?: string | null;
   destinationIata?: string | null;
+  /** Sprint 16.4: deterministic role + reason (no raw score). */
+  explanation?: PackageExplanation | null;
 };
 
 /**
@@ -27,24 +29,27 @@ type TravelPackageCardProps = {
  * No booking or edit actions.
  *
  * P0.1: Price breakdown label makes per-person flight + 1-room hotel explicit.
- * P0.2: Qualitative badge ("Top Pick" / "Good Match") replaces opaque score number.
  * P1.4: Hotel stars use formatHotelStarsLabel — renders "Unrated" for 0 stars.
+ * Sprint 16.4: evidence-based role badge + short reason replace score thresholds.
  */
 function TravelPackageCardComponent({
   package: travelPackage,
   originIata,
   destinationIata,
+  explanation = null,
 }: TravelPackageCardProps) {
-  const { flight, hotel, totalPrice, currency, nights, score, id } =
-    travelPackage;
+  const { flight, hotel, totalPrice, currency, nights, id } = travelPackage;
   const stopsLabel = formatPackageStopsLabel(flight.stops);
-  const qualityBadge = formatPackageQualityBadge(score);
   const nightsLabel = formatPackageNightsLabel(nights);
   const priceBreakdownLabel = formatPackagePriceBreakdownLabel(nights);
   const includesSummary = formatPackageIncludesSummary(nights, hotel.name);
   const starsLabel = formatHotelStarsLabel(hotel.stars);
   const routeLabel = formatFlightRoute(originIata, destinationIata);
   const headingId = `${id}-title`;
+  const roleBadgeClass =
+    explanation?.role === "recommended"
+      ? "bg-brand-50 text-brand-800"
+      : "bg-emerald-50 text-emerald-800";
 
   return (
     <Card hoverable className="overflow-hidden">
@@ -62,12 +67,14 @@ function TravelPackageCardComponent({
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-brand-800">
+                <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-slate-700">
                   Package
                 </span>
-                {qualityBadge && (
-                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold tracking-wide text-emerald-800">
-                    {qualityBadge}
+                {explanation && (
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide ${roleBadgeClass}`}
+                  >
+                    {explanation.label}
                   </span>
                 )}
               </div>
@@ -77,6 +84,9 @@ function TravelPackageCardComponent({
               >
                 {flight.airline} + {hotel.name}
               </h3>
+              {explanation && (
+                <p className="text-sm text-slate-600">{explanation.reason}</p>
+              )}
               <p className="text-sm font-medium text-brand-700">
                 {includesSummary}
               </p>

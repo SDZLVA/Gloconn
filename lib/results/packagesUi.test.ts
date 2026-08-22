@@ -288,6 +288,44 @@ describe("RecommendedPackagesSection rendering", () => {
     assert.match(html, /Lufthansa/);
     assert.match(html, /Hotel Lyon/);
     assert.match(html, /aria-label="Recommended travel packages"/);
+    // Sprint 16.4: exactly one Recommended role among visible packages
+    assert.match(html, />Recommended</);
+    assert.doesNotMatch(html, /Top Pick|Good Match|Match \d/);
+  });
+
+  it("S16.4: assigns Recommended to highest-scoring package among visible", () => {
+    const packages = [
+      travelPackage({
+        id: "pkg-low",
+        score: 70,
+        totalPrice: 900,
+        flight: flight({ id: "f-low", airline: "Ryanair", durationMinutes: 200, stops: 1 }),
+        hotel: hotel({ id: "h-low", name: "Budget Inn", stars: 2, rating: 3.0 }),
+        flightId: "f-low",
+        hotelId: "h-low",
+      }),
+      travelPackage({
+        id: "pkg-high",
+        score: 92,
+        totalPrice: 1100,
+        flight: flight({ id: "f-high", airline: "Swiss", durationMinutes: 100, stops: 0 }),
+        hotel: hotel({ id: "h-high", name: "Grand Hotel", stars: 5, rating: 4.8 }),
+        flightId: "f-high",
+        hotelId: "h-high",
+      }),
+    ];
+
+    const html = renderToStaticMarkup(
+      createElement(RecommendedPackagesSection, {
+        packages,
+        budget: { amount: 1000, currency: "EUR" },
+      }),
+    );
+
+    // Highest score package gets Recommended; lowest price gets a secondary role.
+    assert.match(html, /Swiss \+ Grand Hotel[\s\S]*?Recommended|Recommended[\s\S]*?Swiss \+ Grand Hotel/);
+    assert.match(html, /Lowest price|Best hotel|Fastest|Direct flight|Fits your budget|Best value/);
+    assert.doesNotMatch(html, /Match \d/);
   });
 
   it("keeps package cards before any sibling browse sections in page order contract", () => {
@@ -308,7 +346,7 @@ describe("RecommendedPackagesSection rendering", () => {
 });
 
 describe("TravelPackageCard rendering", () => {
-  it("renders price, flight, hotel, nights, and quality badge", () => {
+  it("renders price, flight, hotel, nights, and explanation badge", () => {
     const html = renderToStaticMarkup(
       createElement(TravelPackageCard, {
         package: travelPackage({
@@ -316,15 +354,22 @@ describe("TravelPackageCard rendering", () => {
           nights: 5,
           totalPrice: 650,
         }),
+        explanation: {
+          packageId: "pkg-f1-h1",
+          role: "recommended",
+          label: "Recommended",
+          reason: "Direct flight · 4★ hotel",
+        },
       }),
     );
 
     assert.match(html, /Air France/);
     assert.match(html, /Hotel Paris/);
-    // P0.2: qualitative badge instead of opaque score number
-    assert.match(html, /Top Pick/);
+    assert.match(html, /Recommended/);
+    assert.match(html, /Direct flight · 4★ hotel/);
     assert.doesNotMatch(html, /Match 91/);
     assert.doesNotMatch(html, /Match \d/);
+    assert.doesNotMatch(html, /Top Pick/);
     assert.match(html, /5 nights/);
     assert.match(html, /Departure/);
     assert.match(html, /Arrive/);
@@ -341,24 +386,33 @@ describe("TravelPackageCard rendering", () => {
     assert.doesNotMatch(html, /Select|Book|Build Package/i);
   });
 
-  it("renders 'Good Match' badge for mid-range scores (60–79)", () => {
+  it("renders secondary role badge when provided", () => {
     const html = renderToStaticMarkup(
       createElement(TravelPackageCard, {
         package: travelPackage({ score: 70 }),
+        explanation: {
+          packageId: "pkg-f1-h1",
+          role: "lowest_price",
+          label: "Lowest price",
+          reason: "Lowest estimated package price",
+        },
       }),
     );
-    assert.match(html, /Good Match/);
-    assert.doesNotMatch(html, /Top Pick/);
+    assert.match(html, /Lowest price/);
+    assert.match(html, /Lowest estimated package price/);
+    assert.doesNotMatch(html, /Top Pick|Good Match/);
   });
 
-  it("renders no quality badge for low scores (< 60)", () => {
+  it("renders no role badge when explanation is omitted", () => {
     const html = renderToStaticMarkup(
       createElement(TravelPackageCard, {
-        package: travelPackage({ score: 45 }),
+        package: travelPackage({ score: 91 }),
       }),
     );
+    assert.doesNotMatch(html, /Recommended/);
     assert.doesNotMatch(html, /Top Pick/);
     assert.doesNotMatch(html, /Good Match/);
+    assert.doesNotMatch(html, /Match \d/);
   });
 
   it("renders 'Unrated' for 0-star hotels in package cards (P1.4)", () => {

@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | **v0.19.0** released; **Milestone 15** MVP Conversion complete (release commit pending — v0.20.0) |
+| Stage | **v0.21.0** released — Milestone **16** Recommendation Intelligence complete |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers by default; optional live **SerpAPI** / Amadeus |
 
 ---
@@ -117,7 +117,10 @@ Additional user preference: **push edits to GitHub** after each task on a `curso
 | `filterResults`, `collectFilterFacets`, `countActiveFilters` | `lib/results/filter.ts` | Client-side filters + facets (Sprint 10.3) |
 | `sortResults` | `lib/results/sort.ts` | Client-side sort (recommended / price / duration / rating / value) |
 | `rankResults`, `scoreResult`, `RANK_WEIGHTS` | `lib/results/rank.ts` | Pure deterministic ranking (no AI/ML) |
-| `shouldShowRecommendedPackages`, `selectPackagesForDisplay`, `formatPackageQualityBadge`, `shouldShowBudgetCompatibilityWarning`, … | `lib/results/packagesUi.ts` | Pure UI helpers for Recommended Packages: quality badge, budget warning, price labels, route, stars |
+| `shouldShowRecommendedPackages`, `selectPackagesForDisplay`, `shouldShowBudgetCompatibilityWarning`, … | `lib/results/packagesUi.ts` | Pure UI helpers for Recommended Packages: budget warning, price labels, route, stars (`formatPackageQualityBadge` retained but cards use Sprint 16 roles) |
+| `selectFlightCandidates`, `selectHotelCandidates`, `resolveScoringBudgetAmount` | `lib/packages/candidates.ts` | Sprint 16.2 production-aware candidate selection |
+| `selectDiversePackages`, `measureDiversityMetrics` | `lib/packages/diversity.ts` | Sprint 16.3 post-score diversity pass |
+| `assignPackageExplanations`, honesty-gate helpers | `lib/packages/explanations.ts` | Sprint 16.4–16.5.1 deterministic roles + reason copy |
 | `searchTrips` | `lib/services/searchService.ts` | **Server only** — validated search via orchestrator + providers |
 | `serviceResultFromApiResponse` | `lib/api/responses.ts` | Converts Route Handler JSON → `ServiceResult` |
 | `iataResolution` | `lib/services/iataResolution.ts` | Enrich SearchRequest with optional origin/destination IATA |
@@ -373,18 +376,19 @@ docs/                 → project documentation
 
 ---
 
-## Common tasks after Milestone 15
+## Common tasks after Milestone 16
 
-**Milestone 13 — Travel Packages** ✅ **v0.19.0**. **Milestone 14 — MVP Focus** ✅. **Milestone 15 — MVP Conversion** ✅ (15.1–15.4 + closeout).
+**Milestone 13–15** ✅ **v0.19.0 / v0.20.0**. **Milestone 16 — Recommendation Intelligence** ✅ **v0.21.0**.
 
 Recommended next priorities (see [TODO.md](./TODO.md)):
 
-1. **Commit Milestone 15** work; **v0.20.0** release (CTO)
+1. **Milestone 17** — only after CTO authorization
 2. **Destinations / About pages** — then restore nav links
-3. One-way proactive note in `TravelDatesSelector` (identified in Sprint 15.4 discovery; deferred)
-4. **Amadeus Enterprise** — enablement when credentials are ready
-5. SerpAPI round-trip `departure_token` enrichment polish (carry-forward)
-6. Fix `SectionHeading` hydration warning (dev overlay)
+3. Optional: airline-level near-duplicate suppression in package top 5
+4. One-way proactive note in `TravelDatesSelector` (deferred)
+5. **Amadeus Enterprise** — enablement when credentials are ready
+6. SerpAPI round-trip `departure_token` enrichment polish (carry-forward)
+7. Fix `SectionHeading` hydration warning (dev overlay)
 
 ---
 
@@ -397,7 +401,11 @@ SearchRequest → factory → FlightsProvider (mock | serpapi | amadeus)
 SearchRequest → factory → HotelsProvider (mock | serpapi | booking stub)
   → query builder → HTTP client → mapper → Hotel[]
 
-Flight[] + Hotel[] + SearchRequest → PackageComposer → TravelPackage[]
+Flight[] + Hotel[] + SearchRequest
+  → PackageComposer
+      candidates (16.2) → compose → score → diversity (16.3)
+  → TravelPackage[]
+  → UI top 5 + assignPackageExplanations (16.4 / 16.5.1)
   → SearchResponse.packages (product layer — never a provider)
 ```
 
@@ -408,9 +416,9 @@ Flight[] + Hotel[] + SearchRequest → PackageComposer → TravelPackage[]
 | Flights | `amadeus` | Long-term Enterprise / future production path |
 | Hotels | `mock` | Default local + CI |
 | Hotels | `serpapi` | **Live hotels — production-capable (v0.18.0)** |
-| Packages | *(none)* | Composed in orchestrator via `lib/packages` |
+| Packages | ✅ Product layer | Composed in orchestrator via `lib/packages` (candidates → score → diversity → UI explanations) |
 
-**Completed:** Sprints 1–8 · Sprint 9 · Milestone 10 · **Milestone 11 → v0.17.0** · **Milestone 12 → v0.18.0** · **Milestone 13 → v0.19.0** · **Milestone 14** · **Milestone 15** (v0.20.0 pending)
+**Completed:** Sprints 1–8 · Sprint 9 · Milestone 10 · **Milestone 11 → v0.17.0** · **Milestone 12 → v0.18.0** · **Milestone 13 → v0.19.0** · **Milestone 14–15 → v0.20.0** · **Milestone 16 → v0.21.0**
 
 **Known limitations:** RT `departure_token` return fetches may HTTP 400 → outbound fallback; hotels require `returnDate`; `children_ages` defaults to `8`; package candidates skew budget; currencyService DI debt; no live vendor calls in CI.
 

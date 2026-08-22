@@ -3,7 +3,7 @@
 Travel planning web application — discover destinations, plan trips, and manage travel in one place.
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
-**Version:** **v0.20.0** — MVP Focus  
+**Version:** **v0.21.0** — Recommendation Intelligence  
 **Milestones:** **13** ✅ Packages · **14** ✅ MVP Focus · **15** ✅ MVP Conversion
 
 ## Tech stack
@@ -142,23 +142,24 @@ Gloconn/
 | [docs/Provider_Guide.md](./docs/Provider_Guide.md) | How to add a flights vendor |
 | [docs/DECISIONS.md](./docs/DECISIONS.md) | Architecture decisions (ADRs) |
 | [docs/AI_HANDOFF.md](./docs/AI_HANDOFF.md) | Guide for AI assistants |
+| [docs/releases/v0.21.0.md](./docs/releases/v0.21.0.md) | v0.21.0 Recommendation Intelligence release notes |
 | [docs/releases/v0.20.0.md](./docs/releases/v0.20.0.md) | v0.20.0 MVP Focus release notes |
 | [docs/releases/v0.19.0.md](./docs/releases/v0.19.0.md) | v0.19.0 Travel Packages release notes |
 | [PROJECT_RULES.md](./PROJECT_RULES.md) | Development guidelines |
 
 ## Current status
 
-- **Released:** **v0.19.0** — Milestone **13** (Travel Packages)
-- **Released:** **v0.20.0** — Milestone **14** MVP Focus + **Milestone 15** MVP Conversion
+- **Released:** **v0.21.0** — Milestone **16** Recommendation Intelligence
+- **Prior:** **v0.20.0** — Milestone **14** MVP Focus + **Milestone 15** MVP Conversion
 - **MVP surface:** Search flights + stays → Recommended Packages → Browse Flights / Hotels
+- **Packages:** candidate quality + diversity pass; top 5 with deterministic roles (Recommended / Lowest price / Best hotel / …) and honesty gates
 - **Budget:** optional — leave empty to search without a budget constraint
 - **Budget warning:** shown when all same-currency packages exceed the user's budget
-- **Packages:** capped at 5 initially with "Show more"; quality badges ("Top Pick" / "Good Match")
 - **Live Flight / Hotel Search:** SerpAPI when configured — **production-capable**
 - **Default mode:** mock providers until live env is configured
-- **Tests:** **551** automated tests
+- **Tests:** **615** automated tests
 - **Live routes:** `/`, `/search/results`, `/login`, `/signup`, `/profile`, `/my-trips`
 - **Auth:** Google OAuth and email/password via Supabase
-- **Next:** Milestone 16 (CTO authorization)
+- **Next:** Milestone 17 (CTO authorization)
 
 See [docs/CURRENT_STATE.md](./docs/CURRENT_STATE.md) and [docs/TODO.md](./docs/TODO.md).

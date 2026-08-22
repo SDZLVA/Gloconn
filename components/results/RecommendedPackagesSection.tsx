@@ -1,10 +1,12 @@
 "use client";
 
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { TravelPackageCard } from "@/components/results/TravelPackageCard";
+import { assignPackageExplanations } from "@/lib/packages/explanations";
 import { shouldShowRecommendedPackages } from "@/lib/results/packagesUi";
 import { focusRing } from "@/lib/styles";
 import { cn } from "@/lib/utils";
+import type { Budget } from "@/types/models/budget";
 import type { TravelPackage } from "@/types/models/travel-package";
 
 /** Number of packages shown initially before "Show more" is needed. */
@@ -15,6 +17,8 @@ type RecommendedPackagesSectionProps = {
   /** Task 4 (Sprint 15.3): route context threaded to package cards. */
   originIata?: string | null;
   destinationIata?: string | null;
+  /** Sprint 16.4: optional budget for "Fits your budget" role. */
+  budget?: Budget | null;
 };
 
 /**
@@ -24,14 +28,27 @@ type RecommendedPackagesSectionProps = {
  * by default. A "Show more" button reveals the remainder without losing the
  * full API response or changing the composer output.
  *
+ * Sprint 16.4: roles/reasons are assigned only for the visible top five
+ * (after diversity), derived at render time from package data + budget.
+ *
  * Renders nothing when `packages` is empty (no empty state).
  */
 function RecommendedPackagesSectionComponent({
   packages,
   originIata,
   destinationIata,
+  budget = null,
 }: RecommendedPackagesSectionProps) {
   const [showAll, setShowAll] = useState(false);
+
+  const explanations = useMemo(
+    () =>
+      assignPackageExplanations(packages, {
+        budget,
+        limit: PACKAGES_INITIAL_VISIBLE,
+      }),
+    [packages, budget],
+  );
 
   if (!shouldShowRecommendedPackages(packages)) {
     return null;
@@ -72,6 +89,7 @@ function RecommendedPackagesSectionComponent({
               package={travelPackage}
               originIata={originIata}
               destinationIata={destinationIata}
+              explanation={explanations.get(travelPackage.id) ?? null}
             />
           </li>
         ))}
