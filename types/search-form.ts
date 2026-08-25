@@ -83,7 +83,7 @@ export type SearchFormController = {
 
 /** Default passenger counts when the search form first loads. */
 export const INITIAL_PASSENGERS: Traveler = {
-  adults: 2,
+  adults: 1,
   children: 0,
   infants: 0,
   rooms: 1,

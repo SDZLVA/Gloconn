@@ -1,5 +1,6 @@
 import type { Ref } from "react";
 import { Button } from "@/components/ui/Button";
+import { ExternalContinueLink } from "@/components/results/ExternalContinueLink";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
 import {
@@ -154,6 +155,15 @@ export function HotelDetailsPanel({
           </p>
         )}
 
+        {details?.snapshotNotice?.trim() && detailsStatus === "success" && (
+          <p
+            className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+            role="note"
+          >
+            {details.snapshotNotice.trim()}
+          </p>
+        )}
+
         {(mapsUrl || websiteUrl || offers.length > 0) && (
           <div className="space-y-3 border-t border-slate-100 pt-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -161,47 +171,19 @@ export function HotelDetailsPanel({
             </p>
             <div className="flex flex-col gap-2">
               {mapsUrl && (
-                <a
-                  href={mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    "inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-800 motion-safe:hover:border-brand-200 motion-safe:hover:bg-brand-50",
-                    focusRing,
-                  )}
-                >
+                <ExternalContinueLink href={mapsUrl} variant="brand">
                   View on Google Maps
-                  <span className="sr-only"> (opens in a new tab)</span>
-                </a>
+                </ExternalContinueLink>
               )}
               {websiteUrl && (
-                <a
-                  href={websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    "inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 motion-safe:hover:border-slate-300 motion-safe:hover:bg-slate-50",
-                    focusRing,
-                  )}
-                >
+                <ExternalContinueLink href={websiteUrl}>
                   Hotel website
-                  <span className="sr-only"> (opens in a new tab)</span>
-                </a>
+                </ExternalContinueLink>
               )}
               {offers.map((offer) => (
-                <a
-                  key={offer.url}
-                  href={offer.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    "inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 motion-safe:hover:border-slate-300 motion-safe:hover:bg-slate-50",
-                    focusRing,
-                  )}
-                >
+                <ExternalContinueLink key={offer.url} href={offer.url}>
                   {offer.label}
-                  <span className="sr-only"> (opens in a new tab)</span>
-                </a>
+                </ExternalContinueLink>
               ))}
             </div>
             {disclosure && (

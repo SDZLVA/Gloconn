@@ -1,0 +1,105 @@
+{
+  "serpapi-hotel-b6398cf26bdf8cd3": {
+    "hotelId": "serpapi-hotel-b6398cf26bdf8cd3",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "Hotel Alimara",
+    "address": "Carrer de Berruguete, 126, Horta-Guinardó, 08035 Barcelona, Spain",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=ZZ&um=1&ie=UTF-8&fb=1&sa=X&geocode=KcOXfFhYvaQSMe74aqllp444&daddr=Hotel+Alimara,+Carrer+de+Berruguete,+126,+Horta-Guinard%C3%B3,+08035+Barcelona,+Spain",
+    "offers": [
+      {
+        "label": "View offer at Expedia.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwiW1JDwlbyWAxVVtGgJHQn-KswYACICCAEQBBoCd2Y&co=1&ase=2&gclid=EAIaIQobChMIltSQ8JW8lgMVVbRoCR0J_irMEAoYASABEgKx5vD_BwE&category=acrcp_v1_48&sig=AOD64_1TI9vD6m6lZzLz61MlwR9wJ7alLA&adurl",
+        "source": "Expedia.com"
+      },
+      {
+        "label": "View offer at Booking.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwiW1JDwlbyWAxVVtGgJHQn-KswYACICCAEQLBoCd2Y&co=1&ase=2&gclid=EAIaIQobChMIltSQ8JW8lgMVVbRoCR0J_irMEAoYAiABEgI4Y_D_BwE&category=acrcp_v1_48&sig=AOD64_3ERH1sutviC9YKZDeS7GwHY_amiQ&adurl",
+        "source": "Booking.com"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-5a2ced8b09442520": {
+    "hotelId": "serpapi-hotel-5a2ced8b09442520",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "Casa Gràcia",
+    "address": "Pg. de Gràcia, 116Bis, Gràcia, 08008 Barcelona, Spain",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=KduExaKWoqQSMVKfT8suuGUu&daddr=Casa+Gr%C3%A0cia,+Pg.+de+Gr%C3%A0cia,+116Bis,+Gr%C3%A0cia,+08008+Barcelona,+Spain",
+    "websiteUrl": "https://room00hostel.com/barcelona/casa-gracia-hostel/",
+    "offers": [
+      {
+        "label": "View offer at Hostelworld",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwjqprLxlbyWAxUEW0cBHRkHBXAYACICCAEQbhoCcXU&co=1&gclid=EAIaIQobChMI6qay8ZW8lgMVBFtHAR0ZBwVwEAoYASABEgJH9vD_BwE&cid=CAAS0gHkaD0C6dNRXyHkOyNux5Pe3IgvrorBHfyqvsekXSKq7-zezykSy_2XwOZLgMqOJ5QsU2bTU30HfvQf-MsxzXWtxwDCec5aZpkB0G1VIS0gTwTWIzH4VzurL9wAzoHTreEzWO1agV8yUfcj23KgGR47W_y-ET46y0kw7WZnqiAYiGHlquX6GSUBPd2x9M_ECdEd5jlp5OiAtBfYeysyOPh-dvvpAqBqpXci6X7MzsY-HM-G24umcq2uLt_2J4gbTASDvtrmrMR2lCe8HmJU1NTPhiM&sig=AOD64_3sQav_75FCTU-l7pOYk2eDABWdQg&adurl",
+        "source": "Hostelworld"
+      },
+      {
+        "label": "View offer at Hotels.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwjqprLxlbyWAxUEW0cBHRkHBXAYACICCAEQShoCcXU&co=1&gclid=EAIaIQobChMI6qay8ZW8lgMVBFtHAR0ZBwVwEAoYAiABEgLyaPD_BwE&cid=CAAS0gHkaD0C6dNRXyHkOyNux5Pe3IgvrorBHfyqvsekXSKq7-zezykSy_2XwOZLgMqOJ5QsU2bTU30HfvQf-MsxzXWtxwDCec5aZpkB0G1VIS0gTwTWIzH4VzurL9wAzoHTreEzWO1agV8yUfcj23KgGR47W_y-ET46y0kw7WZnqiAYiGHlquX6GSUBPd2x9M_ECdEd5jlp5OiAtBfYeysyOPh-dvvpAqBqpXci6X7MzsY-HM-G24umcq2uLt_2J4gbTASDvtrmrMR2lCe8HmJU1NTPhiM&sig=AOD64_3dyn4FoSGtOZj8RLn91vC0-1erMw&adurl",
+        "source": "Hotels.com"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-18928b1c630203b1": {
+    "hotelId": "serpapi-hotel-18928b1c630203b1",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "Hotel SB | Plaça Europa",
+    "address": "Carrer de les Ciències, 11, 13, 08908 L'Hospitalet de Llobregat, Barcelona, Spain",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=KQ2IBKy9mKQSMYAFaY1xRpBl&daddr=Hotel+SB+%7C+Pla%C3%A7a+Europa,+Carrer+de+les+Ci%C3%A8ncies,+11,+13,+08908+L%27Hospitalet+de+Llobregat,+Barcelona,+Spain",
+    "websiteUrl": "https://www.sb-hotels.com/hoteles/barcelona/plaza-europa/?utm_source=google&utm_medium=organic&utm_campaign=local-gmb",
+    "offers": [
+      {
+        "label": "View offer at Travelocity.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwjjnZXzlbyWAxVVK9QBHfxPEA4YACICCAEQeRoCb2E&co=1&gclid=EAIaIQobChMI452V85W8lgMVVSvUAR38TxAOEAoYASABEgKvB_D_BwE&cid=CAASugHkaFJGwkap4-E7oI9KfmP-NFuMIZhzBgNmGfZeSX_13v3_HQtR3Oj3zjv6E3qCp3BFNmI6yR6vDjMnfJI8AyIWDqcDGT1xj-XV_3KFOzzD3A-QpkDy8zkW5FzoPIiK3NiTrSfWJ5y5mfIBR5SvuttsRG1LmO7PpTkbxVbCmQtWPsF7GXmsS_VUgWq1hspwJr5oe9Oqb8dW113IhbX0xyNFQdIrz522HRGXidmR2Pa0gqcvOp2m3msbuW0&sig=AOD64_23sfEdfqJtjKyg975e0CrUAdIzrA&adurl",
+        "source": "Travelocity.com"
+      },
+      {
+        "label": "View offer at Expedia.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwjjnZXzlbyWAxVVK9QBHfxPEA4YACICCAEQpgEaAm9h&co=1&gclid=EAIaIQobChMI452V85W8lgMVVSvUAR38TxAOEAoYAiABEgJW3vD_BwE&cid=CAASugHkaFJGwkap4-E7oI9KfmP-NFuMIZhzBgNmGfZeSX_13v3_HQtR3Oj3zjv6E3qCp3BFNmI6yR6vDjMnfJI8AyIWDqcDGT1xj-XV_3KFOzzD3A-QpkDy8zkW5FzoPIiK3NiTrSfWJ5y5mfIBR5SvuttsRG1LmO7PpTkbxVbCmQtWPsF7GXmsS_VUgWq1hspwJr5oe9Oqb8dW113IhbX0xyNFQdIrz522HRGXidmR2Pa0gqcvOp2m3msbuW0&sig=AOD64_29Sk8XRmNW9ZayBYN4a30KRkEOog&adurl",
+        "source": "Expedia.com"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-5cac389650f1f045": {
+    "hotelId": "serpapi-hotel-5cac389650f1f045",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "Casa Jam Barcelona",
+    "address": "Carrer de Montmany, 38, 42, Gràcia, 08012 Barcelona, Spain",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=ZZ&um=1&ie=UTF-8&fb=1&sa=X&geocode=KU0jESC8oqQSMWIrGMBodDFM&daddr=Casa+Jam+Barcelona,+Carrer+de+Montmany,+38,+42,+Gr%C3%A0cia,+08012+Barcelona,+Spain",
+    "offers": [
+      {
+        "label": "View offer at Booking.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwjZqsT0lbyWAxVtRUcBHcYwOIEYACICCAEQARoCcXU&co=1&gclid=EAIaIQobChMI2arE9JW8lgMVbUVHAR3GMDiBEAoYASABEgKwxPD_BwE&cid=CAASugHkaHu0CIwxnIsHN6kaMUNTvRHGCQZnx1ISZZgz-_hK4tFUNkYLExWkyxmne6otL2DPJt7ZuY7LUwmKeHHuxQLbKu5xdbyBhimw9S3VXsxDeFGGz93EVNFUbACfNDrGDbf_v96nQ6wBEdlB0ka3wqwgu8SOQ4A0C6JUDEbtGBADVtZk7BIixeOxMVL194vMNwMp0hG-RM2d3UTssri8VksrlVxj3GEmJeRkKc7hdYx8_CbX8lzWb7SgSgA&sig=AOD64_1zr1eUmPjUt8miwA1tSEaLGyoODQ&adurl",
+        "source": "Booking.com"
+      },
+      {
+        "label": "View offer at Hostelworld",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwjZqsT0lbyWAxVtRUcBHcYwOIEYACICCAEQBhoCcXU&co=1&gclid=EAIaIQobChMI2arE9JW8lgMVbUVHAR3GMDiBEAoYAiABEgKTV_D_BwE&cid=CAASugHkaHu0CIwxnIsHN6kaMUNTvRHGCQZnx1ISZZgz-_hK4tFUNkYLExWkyxmne6otL2DPJt7ZuY7LUwmKeHHuxQLbKu5xdbyBhimw9S3VXsxDeFGGz93EVNFUbACfNDrGDbf_v96nQ6wBEdlB0ka3wqwgu8SOQ4A0C6JUDEbtGBADVtZk7BIixeOxMVL194vMNwMp0hG-RM2d3UTssri8VksrlVxj3GEmJeRkKc7hdYx8_CbX8lzWb7SgSgA&sig=AOD64_3MpGZuJxL480gZB2-oOsJrr_hdrw&adurl",
+        "source": "Hostelworld"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-6327e3a8dddf5057": {
+    "hotelId": "serpapi-hotel-6327e3a8dddf5057",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "Bruc & Bruc",
+    "address": "Carrer de Mallorca, 290, Eixample, 08037 Barcelona, Spain",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=KbuQoV_ooqQSMePHeYdaUQtx&daddr=Bruc+%26+Bruc,+Carrer+de+Mallorca,+290,+Eixample,+08037+Barcelona,+Spain",
+    "websiteUrl": "https://www.brucandbruc.es/",
+    "offers": [
+      {
+        "label": "View offer at Hotels.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwiv7rz1lbyWAxW7k1oFHfAPL7IYACICCAEQCRoCdnU&co=1&gclid=EAIaIQobChMIr-689ZW8lgMVu5NaBR3wDy-yEAoYASABEgKmJ_D_BwE&cid=CAASugHkaNP8Z2Y5CftYnl3va__7wbjeXJC5b8JfWqjIjwjCbdrR6EmKeu0las8zqIhlaDw-IeVLjQqjpGAzIIFGtEjChoddMknUj2zkFc59JG8yMlOLl609u6JOkzJA72CU47dJFyOHD1O9qAP0UEU_vGppwd_zXfWzVmesLUSyGUDqAxotO989DorrZ_PfpjNtvZgx5Qt-Twge8uGadA8Aefeey1qi1qDXTM9Q4zfQqgM8SHIcnjOI11fQxqc&sig=AOD64_1vO4bUFIMMdXBpD457q7zvwhRplQ&adurl",
+        "source": "Hotels.com"
+      },
+      {
+        "label": "View offer at Expedia.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwiv7rz1lbyWAxW7k1oFHfAPL7IYACICCAEQBRoCdnU&co=1&gclid=EAIaIQobChMIr-689ZW8lgMVu5NaBR3wDy-yEAoYAiABEgIAg_D_BwE&cid=CAASugHkaNP8Z2Y5CftYnl3va__7wbjeXJC5b8JfWqjIjwjCbdrR6EmKeu0las8zqIhlaDw-IeVLjQqjpGAzIIFGtEjChoddMknUj2zkFc59JG8yMlOLl609u6JOkzJA72CU47dJFyOHD1O9qAP0UEU_vGppwd_zXfWzVmesLUSyGUDqAxotO989DorrZ_PfpjNtvZgx5Qt-Twge8uGadA8Aefeey1qi1qDXTM9Q4zfQqgM8SHIcnjOI11fQxqc&sig=AOD64_35IJibXaH6oyZONRf4J6j9vmee9A&adurl",
+        "source": "Expedia.com"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  }
+}

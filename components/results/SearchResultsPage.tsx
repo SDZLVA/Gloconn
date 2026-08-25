@@ -14,6 +14,7 @@ import {
   ONE_WAY_HOTEL_WARNING_MESSAGE,
   shouldShowBudgetCompatibilityWarning,
 } from "@/lib/results/packagesUi";
+import { buildInitialResultsFilters } from "@/lib/results/budgetFilter";
 import { sortResults } from "@/lib/results/sort";
 import { getApiErrorMessage, postSearchTrips } from "@/lib/api";
 import { clearCachedSearchResult } from "@/lib/api/searchResultCache";
@@ -40,7 +41,6 @@ import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchResponseWarning } from "@/types/models/search-response";
 import type { TravelPackage } from "@/types/models/travel-package";
 import {
-  DEFAULT_RESULTS_FILTERS,
   type ResultsFilters,
   type SearchResult,
   type SortOption,
@@ -118,12 +118,9 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   }, [allResults]);
 
   const defaultFilters = useMemo(
-    (): ResultsFilters => ({
-      ...DEFAULT_RESULTS_FILTERS,
-      minPrice: priceRange.min,
-      maxPrice: priceRange.max,
-    }),
-    [priceRange],
+    (): ResultsFilters =>
+      buildInitialResultsFilters(priceRange, search.budget),
+    [priceRange, search.budget],
   );
 
   const nextBaselineKey = filtersBaselineKey(searchKey, defaultFilters);
@@ -291,6 +288,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     originIata={search.originIata}
                     destinationIata={search.destinationIata}
                     budget={search.budget}
+                    tripType={search.tripType}
                   />
                   <ResultsList
                     results={sorted}

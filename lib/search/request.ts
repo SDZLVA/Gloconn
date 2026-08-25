@@ -171,7 +171,7 @@ export function parseSearchRequestFromParams(
   const returnDate = params.get("returnDate");
   const budgetRaw = params.get("budget");
   const budgetCurrency = params.get("budgetCurrency") as Budget["currency"] | null;
-  const adults = Number(params.get("adults") ?? "2");
+  const adults = Number(params.get("adults") ?? "1");
   const children = Number(params.get("children") ?? "0");
   const infants = Number(params.get("infants") ?? "0");
   const rooms = Number(params.get("rooms") ?? "1");

@@ -35,7 +35,17 @@ export type HotelPropertyDetails = {
    * Shown when offers are present — booking happens off-site.
    */
   thirdPartyDisclosure?: string;
+
+  /**
+   * Optional stale-snapshot notice (Sprint 17.6 replay mode).
+   * When set, the drawer shows that prices/availability may have changed.
+   */
+  snapshotNotice?: string;
 };
 
 export const HOTEL_THIRD_PARTY_DISCLOSURE =
   "Prices and booking are handled on third-party sites. Glooconn does not process payments.";
+
+/** Shown on replay/captured hotel details (Sprint 17.6). */
+export const HOTEL_REPLAY_SNAPSHOT_NOTICE =
+  "Prices and availability are from a captured search and may have changed.";

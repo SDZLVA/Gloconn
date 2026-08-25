@@ -142,7 +142,7 @@ describe("publicHotel", () => {
 });
 
 describe("View hotel CTA", () => {
-  it("renders View hotel on hotel and package cards when sealed ref exists", () => {
+  it("renders View hotel on hotel cards; packages use View package details", () => {
     const hotelHtml = renderToStaticMarkup(
       createElement(HotelResultCard, { result: hotelResult() }),
     );
@@ -154,7 +154,8 @@ describe("View hotel CTA", () => {
     );
 
     assert.match(hotelHtml, /View hotel/);
-    assert.match(packageHtml, /View hotel/);
+    assert.match(packageHtml, /View package details/);
+    assert.doesNotMatch(packageHtml, /View hotel/);
     assert.match(actionHtml, /View hotel/);
     assert.match(actionHtml, /min-h-11/);
     assert.doesNotMatch(hotelHtml, /View deal|Book |Check prices|View map/i);
@@ -222,7 +223,7 @@ describe("View hotel CTA", () => {
     assert.match(html, /Air France/);
     assert.match(html, /Hotel Paris/);
     assert.match(html, /Marais/);
-    assert.match(html, /View hotel/);
+    assert.match(html, /View package details/);
     assert.match(html, /est\. total/);
     assert.doesNotMatch(html, /Departure|Arrive|Amenities|Free Wi-Fi/i);
     assert.doesNotMatch(html, /iframe|google\.com\/maps/i);

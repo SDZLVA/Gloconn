@@ -82,7 +82,7 @@ export function buildHomeSearchUrl(data: Partial<SearchData>): string {
         ? data.travelers.adults +
           data.travelers.children +
           data.travelers.infants
-        : 2),
+        : INITIAL_PASSENGERS.adults),
     travelStyle: data.travelStyle ?? "standard",
     productTypes: normalizeProductTypes(data.productTypes),
   };

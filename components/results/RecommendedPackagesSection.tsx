@@ -19,6 +19,7 @@ type RecommendedPackagesSectionProps = {
   destinationIata?: string | null;
   /** Sprint 16.4: optional budget for "Fits your budget" role. */
   budget?: Budget | null;
+  tripType?: "round-trip" | "one-way" | null;
 };
 
 /**
@@ -38,6 +39,7 @@ function RecommendedPackagesSectionComponent({
   originIata,
   destinationIata,
   budget = null,
+  tripType = "round-trip",
 }: RecommendedPackagesSectionProps) {
   const [showAll, setShowAll] = useState(false);
 
@@ -90,6 +92,7 @@ function RecommendedPackagesSectionComponent({
               originIata={originIata}
               destinationIata={destinationIata}
               explanation={explanations.get(travelPackage.id) ?? null}
+              tripType={tripType}
             />
           </li>
         ))}

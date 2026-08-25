@@ -1,0 +1,1344 @@
+{
+  "meta": {
+    "id": "milan-tokyo",
+    "label": "Milan → Tokyo",
+    "capturedAt": "2026-08-25T16:11:46.778Z",
+    "match": {
+      "originId": "milan",
+      "destinationId": "tokyo"
+    }
+  },
+  "response": {
+    "hotels": [
+      {
+        "id": "serpapi-hotel-e08969abb17705c0",
+        "destinationId": "tokyo",
+        "price": 159,
+        "currency": "EUR",
+        "rating": 5,
+        "name": "Ustay Kitakoiwa",
+        "stars": 0,
+        "amenities": [
+          "Air conditioning",
+          "Kitchen",
+          "Smoke-free",
+          "Cable TV",
+          "Washer",
+          "Free Wi-Fi"
+        ],
+        "nights": 3,
+        "location": "Tokyo, Japan",
+        "latitude": 35.740760803222656,
+        "longitude": 139.88673400878906
+      },
+      {
+        "id": "serpapi-hotel-091d66a8f4208ff7",
+        "destinationId": "tokyo",
+        "price": 126,
+        "currency": "EUR",
+        "rating": 5,
+        "name": "Skytree車站徒步5分 洗衣機 電梯大樓 機場直達免換車 頂樓晴空塔夜景 自助入住4",
+        "stars": 0,
+        "amenities": [
+          "Balcony",
+          "Elevator",
+          "Hot tub",
+          "Kitchen",
+          "Microwave",
+          "Free Wi-Fi"
+        ],
+        "nights": 3,
+        "location": "Yokokawa-Sanchōme (Yokokawa 3)",
+        "latitude": 35.704132080078125,
+        "longitude": 139.81466674804688
+      },
+      {
+        "id": "serpapi-hotel-20602b10a7e6facf",
+        "destinationId": "tokyo",
+        "price": 178,
+        "currency": "EUR",
+        "rating": 0,
+        "name": "Ustay nippori",
+        "stars": 0,
+        "amenities": [
+          "Air conditioning",
+          "Kitchen",
+          "Microwave",
+          "Oven stove",
+          "Smoke-free",
+          "Washer",
+          "Free Wi-Fi"
+        ],
+        "nights": 3,
+        "location": "Tokyo, Japan",
+        "latitude": 35.73013687133789,
+        "longitude": 139.77439880371094
+      },
+      {
+        "id": "serpapi-hotel-25b07b1fe76258f3",
+        "destinationId": "tokyo",
+        "price": 181,
+        "currency": "EUR",
+        "rating": 4,
+        "name": "Randor Residence Tokyo Suites",
+        "stars": 0,
+        "amenities": [
+          "Air conditioning",
+          "Heating",
+          "Microwave",
+          "Oven stove",
+          "Smoke-free",
+          "Cable TV",
+          "Washer",
+          "Wheelchair accessible",
+          "Free Wi-Fi"
+        ],
+        "nights": 3,
+        "location": "Tokyo, Japan",
+        "latitude": 35.73892593383789,
+        "longitude": 139.77806091308594
+      },
+      {
+        "id": "serpapi-hotel-991964fbbd9f2b5d",
+        "destinationId": "tokyo",
+        "price": 180,
+        "currency": "EUR",
+        "rating": 0,
+        "name": "New construction Very close to Asakusa Skytree Akihabara",
+        "stars": 0,
+        "amenities": [
+          "Air conditioning",
+          "Kid-friendly",
+          "Elevator",
+          "Heating",
+          "Kitchen",
+          "Microwave",
+          "Oven stove",
+          "Pet-friendly",
+          "Smoke-free",
+          "Washer",
+          "Free parking"
+        ],
+        "nights": 3,
+        "location": "Tokyo, Japan",
+        "latitude": 35.731021881103516,
+        "longitude": 139.82435607910156
+      },
+      {
+        "id": "serpapi-hotel-4bfcf73e3ff7b0cf",
+        "destinationId": "tokyo",
+        "price": 134,
+        "currency": "EUR",
+        "rating": 3.3,
+        "name": "BOOK AND BED TOKYO Shinjuku",
+        "stars": 2,
+        "amenities": [
+          "Free Wi-Fi",
+          "Restaurant"
+        ],
+        "nights": 3,
+        "location": "Kabukicho",
+        "latitude": 35.6953417,
+        "longitude": 139.700672
+      },
+      {
+        "id": "serpapi-hotel-f3b2bbb65992420d",
+        "destinationId": "tokyo",
+        "price": 238,
+        "currency": "EUR",
+        "rating": 4.9,
+        "name": "Sakura Cross Hotel Ueno-Iriya Annex",
+        "stars": 3,
+        "amenities": [
+          "Free Wi-Fi"
+        ],
+        "nights": 3,
+        "location": "Tokyo National Museum",
+        "latitude": 35.7210754,
+        "longitude": 139.7863195
+      },
+      {
+        "id": "serpapi-hotel-1afdaf113f625a83",
+        "destinationId": "tokyo",
+        "price": 133,
+        "currency": "EUR",
+        "rating": 3.9,
+        "name": "Manga Art Hotel",
+        "stars": 2,
+        "amenities": [
+          "Free Wi-Fi"
+        ],
+        "nights": 3,
+        "location": "Haneda Airport",
+        "latitude": 35.6937795,
+        "longitude": 139.76454909999998
+      },
+      {
+        "id": "serpapi-hotel-c794b2f2ed9a1126",
+        "destinationId": "tokyo",
+        "price": 320,
+        "currency": "EUR",
+        "rating": 4.4,
+        "name": "Dormy inn PREMIUM Tokyo-Kodenma",
+        "stars": 3,
+        "amenities": [
+          "Public bath",
+          "Open air bath",
+          "Sauna",
+          "Free Wi-Fi",
+          "Kid-friendly"
+        ],
+        "nights": 3,
+        "location": "Akihabara Electric Town",
+        "latitude": 35.6903542,
+        "longitude": 139.7781281
+      },
+      {
+        "id": "serpapi-hotel-e72892a200ff74b6",
+        "destinationId": "tokyo",
+        "price": 465,
+        "currency": "EUR",
+        "rating": 4.9,
+        "name": "Sakura Cross Hotel Tokyo Kayabacho",
+        "stars": 3,
+        "amenities": [
+          "Free Wi-Fi"
+        ],
+        "nights": 3,
+        "location": "Haneda Airport",
+        "latitude": 35.676614,
+        "longitude": 139.7827689
+      },
+      {
+        "id": "serpapi-hotel-8bc9e15cc2c7d312",
+        "destinationId": "tokyo",
+        "price": 398,
+        "currency": "EUR",
+        "rating": 4.3,
+        "name": "Mitsui Garden Hotel Gotanda",
+        "stars": 4,
+        "amenities": [
+          "Public bath",
+          "Open air bath",
+          "Free Wi-Fi",
+          "Restaurant",
+          "Accessible"
+        ],
+        "nights": 3,
+        "location": "東五反田一丁目",
+        "latitude": 35.6252932,
+        "longitude": 139.72543539999998
+      },
+      {
+        "id": "serpapi-hotel-974ee5d6be197dd2",
+        "destinationId": "tokyo",
+        "price": 271,
+        "currency": "EUR",
+        "rating": 4.3,
+        "name": "KOKO HOTEL Asakusa Komagata",
+        "stars": 3,
+        "amenities": [
+          "Free Wi-Fi",
+          "Kid-friendly"
+        ],
+        "nights": 3,
+        "location": "Sensō-ji",
+        "latitude": 35.708218099999996,
+        "longitude": 139.7960527
+      },
+      {
+        "id": "serpapi-hotel-d13d19cb9aa15bab",
+        "destinationId": "tokyo",
+        "price": 127,
+        "currency": "EUR",
+        "rating": 3.7,
+        "name": "HOTEL BANJAR",
+        "stars": 3,
+        "amenities": [
+          "Open air bath",
+          "Private bath",
+          "Sauna",
+          "Free Wi-Fi",
+          "Free parking"
+        ],
+        "nights": 3,
+        "location": "Konpira",
+        "latitude": 35.8076538,
+        "longitude": 139.54007679999998
+      },
+      {
+        "id": "serpapi-hotel-746aef65ff1b0606",
+        "destinationId": "tokyo",
+        "price": 128,
+        "currency": "EUR",
+        "rating": 4.4,
+        "name": "TOKYO-W-inn Asakusa",
+        "stars": 2,
+        "amenities": [
+          "Free Wi-Fi",
+          "Kitchen in some rooms"
+        ],
+        "nights": 3,
+        "location": "Sensō-ji",
+        "latitude": 35.7083161,
+        "longitude": 139.7923088
+      },
+      {
+        "id": "serpapi-hotel-b456a1dd6170aece",
+        "destinationId": "tokyo",
+        "price": 316,
+        "currency": "EUR",
+        "rating": 4.8,
+        "name": "Sakura Cross Hotel Shinjuku East",
+        "stars": 2,
+        "amenities": [
+          "Free Wi-Fi",
+          "Kid-friendly"
+        ],
+        "nights": 3,
+        "location": "Shinjuku Gyoen National Garden",
+        "latitude": 35.6979664,
+        "longitude": 139.7122477
+      },
+      {
+        "id": "serpapi-hotel-d97bcd686b1e6122",
+        "destinationId": "tokyo",
+        "price": 212,
+        "currency": "EUR",
+        "rating": 3.9,
+        "name": "Dai-ichi Hotel Ryogoku",
+        "stars": 4,
+        "amenities": [
+          "Transfer",
+          "Free Wi-Fi",
+          "Parking ($)",
+          "Restaurant",
+          "Accessible",
+          "Kid-friendly"
+        ],
+        "nights": 3,
+        "location": "Sensō-ji",
+        "latitude": 35.697967399999996,
+        "longitude": 139.7970523
+      },
+      {
+        "id": "serpapi-hotel-5339768784a2cb28",
+        "destinationId": "tokyo",
+        "price": 172,
+        "currency": "EUR",
+        "rating": 4,
+        "name": "HOTEL GRAPHY SHIBUYA",
+        "stars": 3,
+        "amenities": [
+          "Free Wi-Fi",
+          "Restaurant"
+        ],
+        "nights": 3,
+        "location": "Meiji Jingu",
+        "latitude": 35.65325000000001,
+        "longitude": 139.7071111
+      },
+      {
+        "id": "serpapi-hotel-cfcdb794de7879fa",
+        "destinationId": "tokyo",
+        "price": 100,
+        "currency": "EUR",
+        "rating": 3.9,
+        "name": "Lagoon Yokohama",
+        "stars": 3,
+        "amenities": [
+          "Free Wi-Fi",
+          "Free parking"
+        ],
+        "nights": 3,
+        "location": "Snoopy Museum Tokyo",
+        "latitude": 35.5019659,
+        "longitude": 139.4890261
+      },
+      {
+        "id": "serpapi-hotel-abf506ca081c38f1",
+        "destinationId": "tokyo",
+        "price": 75,
+        "currency": "EUR",
+        "rating": 3.6,
+        "name": "Hotel LiveMax Saitama Asaka Ekimae",
+        "stars": 2,
+        "amenities": [
+          "Public bath",
+          "Free Wi-Fi"
+        ],
+        "nights": 3,
+        "location": "Asaka shiyakusho",
+        "latitude": 35.797521599999996,
+        "longitude": 139.5967583
+      },
+      {
+        "id": "serpapi-hotel-0907cec15cc2444a",
+        "destinationId": "tokyo",
+        "price": 228,
+        "currency": "EUR",
+        "rating": 4.3,
+        "name": "ICI HOTEL Tokyo Hatchobori",
+        "stars": 3,
+        "amenities": [
+          "Free Wi-Fi",
+          "Restaurant",
+          "Accessible",
+          "Kid-friendly"
+        ],
+        "nights": 3,
+        "location": "Fish Market Tsukiji Outer Market",
+        "latitude": 35.6750162,
+        "longitude": 139.7786663
+      }
+    ],
+    "flights": [
+      {
+        "id": "serpapi-1ab6b66a8058ff31",
+        "destinationId": "tokyo",
+        "price": 1787,
+        "currency": "EUR",
+        "rating": 0,
+        "airline": "China Eastern",
+        "departureTime": "2026-10-12 13:55",
+        "arrivalTime": "2026-10-13 15:55",
+        "durationMinutes": 1140,
+        "stops": 1,
+        "cabin": "Economy"
+      },
+      {
+        "id": "serpapi-54c6175c5308e9df",
+        "destinationId": "tokyo",
+        "price": 1956,
+        "currency": "EUR",
+        "rating": 0,
+        "airline": "China Eastern",
+        "departureTime": "2026-10-12 13:55",
+        "arrivalTime": "2026-10-13 12:50",
+        "durationMinutes": 955,
+        "stops": 1,
+        "cabin": "Economy"
+      },
+      {
+        "id": "serpapi-57ac164d494e7de9",
+        "destinationId": "tokyo",
+        "price": 2138,
+        "currency": "EUR",
+        "rating": 0,
+        "airline": "LOT",
+        "departureTime": "2026-10-12 19:40",
+        "arrivalTime": "2026-10-13 18:25",
+        "durationMinutes": 945,
+        "stops": 1,
+        "cabin": "Economy"
+      },
+      {
+        "id": "serpapi-8aa1f01f0f9ceecd",
+        "destinationId": "tokyo",
+        "price": 2268,
+        "currency": "EUR",
+        "rating": 0,
+        "airline": "Etihad",
+        "departureTime": "2026-10-12 11:40",
+        "arrivalTime": "2026-10-13 12:45",
+        "durationMinutes": 1085,
+        "stops": 1,
+        "cabin": "Economy"
+      },
+      {
+        "id": "serpapi-859acdd7452974d8",
+        "destinationId": "tokyo",
+        "price": 2442,
+        "currency": "EUR",
+        "rating": 0,
+        "airline": "Turkish Airlines",
+        "departureTime": "2026-10-12 19:45",
+        "arrivalTime": "2026-10-14 08:55",
+        "durationMinutes": 1810,
+        "stops": 1,
+        "cabin": "Economy"
+      },
+      {
+        "id": "serpapi-3c3b7d55a6a48bb9",
+        "destinationId": "tokyo",
+        "price": 2804,
+        "currency": "EUR",
+        "rating": 0,
+        "airline": "THAI",
+        "departureTime": "2026-10-12 14:05",
+        "arrivalTime": "2026-10-13 15:55",
+        "durationMinutes": 1130,
+        "stops": 1,
+        "cabin": "Economy"
+      },
+      {
+        "id": "serpapi-ae6d8dad8968dcb9",
+        "destinationId": "tokyo",
+        "price": 2857,
+        "currency": "EUR",
+        "rating": 0,
+        "airline": "Korean Air",
+        "departureTime": "2026-10-12 22:00",
+        "arrivalTime": "2026-10-13 21:05",
+        "durationMinutes": 965,
+        "stops": 1,
+        "cabin": "Economy"
+      },
+      {
+        "id": "serpapi-5b248064f16a8a18",
+        "destinationId": "tokyo",
+        "price": 3527,
+        "currency": "EUR",
+        "rating": 0,
+        "airline": "SWISS",
+        "departureTime": "2026-10-12 10:40",
+        "arrivalTime": "2026-10-13 09:10",
+        "durationMinutes": 930,
+        "stops": 1,
+        "cabin": "Economy"
+      },
+      {
+        "id": "serpapi-6bd8829e5c2c4c1d",
+        "destinationId": "tokyo",
+        "price": 3540,
+        "currency": "EUR",
+        "rating": 0,
+        "airline": "Turkish Airlines",
+        "departureTime": "2026-10-12 10:45",
+        "arrivalTime": "2026-10-13 08:55",
+        "durationMinutes": 910,
+        "stops": 1,
+        "cabin": "Economy"
+      }
+    ],
+    "buses": [],
+    "trains": [],
+    "restaurants": [],
+    "attractions": [],
+    "packages": [
+      {
+        "id": "pkg-serpapi-54c6175c5308e9df-serpapi-hotel-d97bcd686b1e6122",
+        "flight": {
+          "id": "serpapi-54c6175c5308e9df",
+          "destinationId": "tokyo",
+          "price": 1956,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "China Eastern",
+          "departureTime": "2026-10-12 13:55",
+          "arrivalTime": "2026-10-13 12:50",
+          "durationMinutes": 955,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-d97bcd686b1e6122",
+          "destinationId": "tokyo",
+          "price": 212,
+          "currency": "EUR",
+          "rating": 3.9,
+          "name": "Dai-ichi Hotel Ryogoku",
+          "stars": 4,
+          "amenities": [
+            "Transfer",
+            "Free Wi-Fi",
+            "Parking ($)",
+            "Restaurant",
+            "Accessible",
+            "Kid-friendly"
+          ],
+          "nights": 3,
+          "location": "Sensō-ji",
+          "latitude": 35.697967399999996,
+          "longitude": 139.7970523
+        },
+        "flightId": "serpapi-54c6175c5308e9df",
+        "hotelId": "serpapi-hotel-d97bcd686b1e6122",
+        "totalPrice": 2168,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 70.5
+      },
+      {
+        "id": "pkg-serpapi-1ab6b66a8058ff31-serpapi-hotel-8bc9e15cc2c7d312",
+        "flight": {
+          "id": "serpapi-1ab6b66a8058ff31",
+          "destinationId": "tokyo",
+          "price": 1787,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "China Eastern",
+          "departureTime": "2026-10-12 13:55",
+          "arrivalTime": "2026-10-13 15:55",
+          "durationMinutes": 1140,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-8bc9e15cc2c7d312",
+          "destinationId": "tokyo",
+          "price": 398,
+          "currency": "EUR",
+          "rating": 4.3,
+          "name": "Mitsui Garden Hotel Gotanda",
+          "stars": 4,
+          "amenities": [
+            "Public bath",
+            "Open air bath",
+            "Free Wi-Fi",
+            "Restaurant",
+            "Accessible"
+          ],
+          "nights": 3,
+          "location": "東五反田一丁目",
+          "latitude": 35.6252932,
+          "longitude": 139.72543539999998
+        },
+        "flightId": "serpapi-1ab6b66a8058ff31",
+        "hotelId": "serpapi-hotel-8bc9e15cc2c7d312",
+        "totalPrice": 2185,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 69.9
+      },
+      {
+        "id": "pkg-serpapi-57ac164d494e7de9-serpapi-hotel-cfcdb794de7879fa",
+        "flight": {
+          "id": "serpapi-57ac164d494e7de9",
+          "destinationId": "tokyo",
+          "price": 2138,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "LOT",
+          "departureTime": "2026-10-12 19:40",
+          "arrivalTime": "2026-10-13 18:25",
+          "durationMinutes": 945,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-cfcdb794de7879fa",
+          "destinationId": "tokyo",
+          "price": 100,
+          "currency": "EUR",
+          "rating": 3.9,
+          "name": "Lagoon Yokohama",
+          "stars": 3,
+          "amenities": [
+            "Free Wi-Fi",
+            "Free parking"
+          ],
+          "nights": 3,
+          "location": "Snoopy Museum Tokyo",
+          "latitude": 35.5019659,
+          "longitude": 139.4890261
+        },
+        "flightId": "serpapi-57ac164d494e7de9",
+        "hotelId": "serpapi-hotel-cfcdb794de7879fa",
+        "totalPrice": 2238,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 68.1
+      },
+      {
+        "id": "pkg-serpapi-8aa1f01f0f9ceecd-serpapi-hotel-d13d19cb9aa15bab",
+        "flight": {
+          "id": "serpapi-8aa1f01f0f9ceecd",
+          "destinationId": "tokyo",
+          "price": 2268,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "Etihad",
+          "departureTime": "2026-10-12 11:40",
+          "arrivalTime": "2026-10-13 12:45",
+          "durationMinutes": 1085,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-d13d19cb9aa15bab",
+          "destinationId": "tokyo",
+          "price": 127,
+          "currency": "EUR",
+          "rating": 3.7,
+          "name": "HOTEL BANJAR",
+          "stars": 3,
+          "amenities": [
+            "Open air bath",
+            "Private bath",
+            "Sauna",
+            "Free Wi-Fi",
+            "Free parking"
+          ],
+          "nights": 3,
+          "location": "Konpira",
+          "latitude": 35.8076538,
+          "longitude": 139.54007679999998
+        },
+        "flightId": "serpapi-8aa1f01f0f9ceecd",
+        "hotelId": "serpapi-hotel-d13d19cb9aa15bab",
+        "totalPrice": 2395,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 65.7
+      },
+      {
+        "id": "pkg-serpapi-ae6d8dad8968dcb9-serpapi-hotel-746aef65ff1b0606",
+        "flight": {
+          "id": "serpapi-ae6d8dad8968dcb9",
+          "destinationId": "tokyo",
+          "price": 2857,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "Korean Air",
+          "departureTime": "2026-10-12 22:00",
+          "arrivalTime": "2026-10-13 21:05",
+          "durationMinutes": 965,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-746aef65ff1b0606",
+          "destinationId": "tokyo",
+          "price": 128,
+          "currency": "EUR",
+          "rating": 4.4,
+          "name": "TOKYO-W-inn Asakusa",
+          "stars": 2,
+          "amenities": [
+            "Free Wi-Fi",
+            "Kitchen in some rooms"
+          ],
+          "nights": 3,
+          "location": "Sensō-ji",
+          "latitude": 35.7083161,
+          "longitude": 139.7923088
+        },
+        "flightId": "serpapi-ae6d8dad8968dcb9",
+        "hotelId": "serpapi-hotel-746aef65ff1b0606",
+        "totalPrice": 2985,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 62.2
+      },
+      {
+        "id": "pkg-serpapi-3c3b7d55a6a48bb9-serpapi-hotel-1afdaf113f625a83",
+        "flight": {
+          "id": "serpapi-3c3b7d55a6a48bb9",
+          "destinationId": "tokyo",
+          "price": 2804,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "THAI",
+          "departureTime": "2026-10-12 14:05",
+          "arrivalTime": "2026-10-13 15:55",
+          "durationMinutes": 1130,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-1afdaf113f625a83",
+          "destinationId": "tokyo",
+          "price": 133,
+          "currency": "EUR",
+          "rating": 3.9,
+          "name": "Manga Art Hotel",
+          "stars": 2,
+          "amenities": [
+            "Free Wi-Fi"
+          ],
+          "nights": 3,
+          "location": "Haneda Airport",
+          "latitude": 35.6937795,
+          "longitude": 139.76454909999998
+        },
+        "flightId": "serpapi-3c3b7d55a6a48bb9",
+        "hotelId": "serpapi-hotel-1afdaf113f625a83",
+        "totalPrice": 2937,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 60
+      },
+      {
+        "id": "pkg-serpapi-859acdd7452974d8-serpapi-hotel-091d66a8f4208ff7",
+        "flight": {
+          "id": "serpapi-859acdd7452974d8",
+          "destinationId": "tokyo",
+          "price": 2442,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "Turkish Airlines",
+          "departureTime": "2026-10-12 19:45",
+          "arrivalTime": "2026-10-14 08:55",
+          "durationMinutes": 1810,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-091d66a8f4208ff7",
+          "destinationId": "tokyo",
+          "price": 126,
+          "currency": "EUR",
+          "rating": 5,
+          "name": "Skytree車站徒步5分 洗衣機 電梯大樓 機場直達免換車 頂樓晴空塔夜景 自助入住4",
+          "stars": 0,
+          "amenities": [
+            "Balcony",
+            "Elevator",
+            "Hot tub",
+            "Kitchen",
+            "Microwave",
+            "Free Wi-Fi"
+          ],
+          "nights": 3,
+          "location": "Yokokawa-Sanchōme (Yokokawa 3)",
+          "latitude": 35.704132080078125,
+          "longitude": 139.81466674804688
+        },
+        "flightId": "serpapi-859acdd7452974d8",
+        "hotelId": "serpapi-hotel-091d66a8f4208ff7",
+        "totalPrice": 2568,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 57.5
+      },
+      {
+        "id": "pkg-serpapi-6bd8829e5c2c4c1d-serpapi-hotel-abf506ca081c38f1",
+        "flight": {
+          "id": "serpapi-6bd8829e5c2c4c1d",
+          "destinationId": "tokyo",
+          "price": 3540,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "Turkish Airlines",
+          "departureTime": "2026-10-12 10:45",
+          "arrivalTime": "2026-10-13 08:55",
+          "durationMinutes": 910,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-abf506ca081c38f1",
+          "destinationId": "tokyo",
+          "price": 75,
+          "currency": "EUR",
+          "rating": 3.6,
+          "name": "Hotel LiveMax Saitama Asaka Ekimae",
+          "stars": 2,
+          "amenities": [
+            "Public bath",
+            "Free Wi-Fi"
+          ],
+          "nights": 3,
+          "location": "Asaka shiyakusho",
+          "latitude": 35.797521599999996,
+          "longitude": 139.5967583
+        },
+        "flightId": "serpapi-6bd8829e5c2c4c1d",
+        "hotelId": "serpapi-hotel-abf506ca081c38f1",
+        "totalPrice": 3615,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 48.9
+      },
+      {
+        "id": "pkg-serpapi-1ab6b66a8058ff31-serpapi-hotel-d97bcd686b1e6122",
+        "flight": {
+          "id": "serpapi-1ab6b66a8058ff31",
+          "destinationId": "tokyo",
+          "price": 1787,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "China Eastern",
+          "departureTime": "2026-10-12 13:55",
+          "arrivalTime": "2026-10-13 15:55",
+          "durationMinutes": 1140,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-d97bcd686b1e6122",
+          "destinationId": "tokyo",
+          "price": 212,
+          "currency": "EUR",
+          "rating": 3.9,
+          "name": "Dai-ichi Hotel Ryogoku",
+          "stars": 4,
+          "amenities": [
+            "Transfer",
+            "Free Wi-Fi",
+            "Parking ($)",
+            "Restaurant",
+            "Accessible",
+            "Kid-friendly"
+          ],
+          "nights": 3,
+          "location": "Sensō-ji",
+          "latitude": 35.697967399999996,
+          "longitude": 139.7970523
+        },
+        "flightId": "serpapi-1ab6b66a8058ff31",
+        "hotelId": "serpapi-hotel-d97bcd686b1e6122",
+        "totalPrice": 1999,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 70.4
+      },
+      {
+        "id": "pkg-serpapi-54c6175c5308e9df-serpapi-hotel-8bc9e15cc2c7d312",
+        "flight": {
+          "id": "serpapi-54c6175c5308e9df",
+          "destinationId": "tokyo",
+          "price": 1956,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "China Eastern",
+          "departureTime": "2026-10-12 13:55",
+          "arrivalTime": "2026-10-13 12:50",
+          "durationMinutes": 955,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-8bc9e15cc2c7d312",
+          "destinationId": "tokyo",
+          "price": 398,
+          "currency": "EUR",
+          "rating": 4.3,
+          "name": "Mitsui Garden Hotel Gotanda",
+          "stars": 4,
+          "amenities": [
+            "Public bath",
+            "Open air bath",
+            "Free Wi-Fi",
+            "Restaurant",
+            "Accessible"
+          ],
+          "nights": 3,
+          "location": "東五反田一丁目",
+          "latitude": 35.6252932,
+          "longitude": 139.72543539999998
+        },
+        "flightId": "serpapi-54c6175c5308e9df",
+        "hotelId": "serpapi-hotel-8bc9e15cc2c7d312",
+        "totalPrice": 2354,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 70
+      },
+      {
+        "id": "pkg-serpapi-54c6175c5308e9df-serpapi-hotel-cfcdb794de7879fa",
+        "flight": {
+          "id": "serpapi-54c6175c5308e9df",
+          "destinationId": "tokyo",
+          "price": 1956,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "China Eastern",
+          "departureTime": "2026-10-12 13:55",
+          "arrivalTime": "2026-10-13 12:50",
+          "durationMinutes": 955,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-cfcdb794de7879fa",
+          "destinationId": "tokyo",
+          "price": 100,
+          "currency": "EUR",
+          "rating": 3.9,
+          "name": "Lagoon Yokohama",
+          "stars": 3,
+          "amenities": [
+            "Free Wi-Fi",
+            "Free parking"
+          ],
+          "nights": 3,
+          "location": "Snoopy Museum Tokyo",
+          "latitude": 35.5019659,
+          "longitude": 139.4890261
+        },
+        "flightId": "serpapi-54c6175c5308e9df",
+        "hotelId": "serpapi-hotel-cfcdb794de7879fa",
+        "totalPrice": 2056,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 69.4
+      },
+      {
+        "id": "pkg-serpapi-57ac164d494e7de9-serpapi-hotel-d97bcd686b1e6122",
+        "flight": {
+          "id": "serpapi-57ac164d494e7de9",
+          "destinationId": "tokyo",
+          "price": 2138,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "LOT",
+          "departureTime": "2026-10-12 19:40",
+          "arrivalTime": "2026-10-13 18:25",
+          "durationMinutes": 945,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-d97bcd686b1e6122",
+          "destinationId": "tokyo",
+          "price": 212,
+          "currency": "EUR",
+          "rating": 3.9,
+          "name": "Dai-ichi Hotel Ryogoku",
+          "stars": 4,
+          "amenities": [
+            "Transfer",
+            "Free Wi-Fi",
+            "Parking ($)",
+            "Restaurant",
+            "Accessible",
+            "Kid-friendly"
+          ],
+          "nights": 3,
+          "location": "Sensō-ji",
+          "latitude": 35.697967399999996,
+          "longitude": 139.7970523
+        },
+        "flightId": "serpapi-57ac164d494e7de9",
+        "hotelId": "serpapi-hotel-d97bcd686b1e6122",
+        "totalPrice": 2350,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 69.3
+      },
+      {
+        "id": "pkg-serpapi-1ab6b66a8058ff31-serpapi-hotel-cfcdb794de7879fa",
+        "flight": {
+          "id": "serpapi-1ab6b66a8058ff31",
+          "destinationId": "tokyo",
+          "price": 1787,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "China Eastern",
+          "departureTime": "2026-10-12 13:55",
+          "arrivalTime": "2026-10-13 15:55",
+          "durationMinutes": 1140,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-cfcdb794de7879fa",
+          "destinationId": "tokyo",
+          "price": 100,
+          "currency": "EUR",
+          "rating": 3.9,
+          "name": "Lagoon Yokohama",
+          "stars": 3,
+          "amenities": [
+            "Free Wi-Fi",
+            "Free parking"
+          ],
+          "nights": 3,
+          "location": "Snoopy Museum Tokyo",
+          "latitude": 35.5019659,
+          "longitude": 139.4890261
+        },
+        "flightId": "serpapi-1ab6b66a8058ff31",
+        "hotelId": "serpapi-hotel-cfcdb794de7879fa",
+        "totalPrice": 1887,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 69.2
+      },
+      {
+        "id": "pkg-serpapi-57ac164d494e7de9-serpapi-hotel-8bc9e15cc2c7d312",
+        "flight": {
+          "id": "serpapi-57ac164d494e7de9",
+          "destinationId": "tokyo",
+          "price": 2138,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "LOT",
+          "departureTime": "2026-10-12 19:40",
+          "arrivalTime": "2026-10-13 18:25",
+          "durationMinutes": 945,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-8bc9e15cc2c7d312",
+          "destinationId": "tokyo",
+          "price": 398,
+          "currency": "EUR",
+          "rating": 4.3,
+          "name": "Mitsui Garden Hotel Gotanda",
+          "stars": 4,
+          "amenities": [
+            "Public bath",
+            "Open air bath",
+            "Free Wi-Fi",
+            "Restaurant",
+            "Accessible"
+          ],
+          "nights": 3,
+          "location": "東五反田一丁目",
+          "latitude": 35.6252932,
+          "longitude": 139.72543539999998
+        },
+        "flightId": "serpapi-57ac164d494e7de9",
+        "hotelId": "serpapi-hotel-8bc9e15cc2c7d312",
+        "totalPrice": 2536,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 68.8
+      },
+      {
+        "id": "pkg-serpapi-8aa1f01f0f9ceecd-serpapi-hotel-746aef65ff1b0606",
+        "flight": {
+          "id": "serpapi-8aa1f01f0f9ceecd",
+          "destinationId": "tokyo",
+          "price": 2268,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "Etihad",
+          "departureTime": "2026-10-12 11:40",
+          "arrivalTime": "2026-10-13 12:45",
+          "durationMinutes": 1085,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-746aef65ff1b0606",
+          "destinationId": "tokyo",
+          "price": 128,
+          "currency": "EUR",
+          "rating": 4.4,
+          "name": "TOKYO-W-inn Asakusa",
+          "stars": 2,
+          "amenities": [
+            "Free Wi-Fi",
+            "Kitchen in some rooms"
+          ],
+          "nights": 3,
+          "location": "Sensō-ji",
+          "latitude": 35.7083161,
+          "longitude": 139.7923088
+        },
+        "flightId": "serpapi-8aa1f01f0f9ceecd",
+        "hotelId": "serpapi-hotel-746aef65ff1b0606",
+        "totalPrice": 2396,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 65.5
+      },
+      {
+        "id": "pkg-serpapi-8aa1f01f0f9ceecd-serpapi-hotel-091d66a8f4208ff7",
+        "flight": {
+          "id": "serpapi-8aa1f01f0f9ceecd",
+          "destinationId": "tokyo",
+          "price": 2268,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "Etihad",
+          "departureTime": "2026-10-12 11:40",
+          "arrivalTime": "2026-10-13 12:45",
+          "durationMinutes": 1085,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-091d66a8f4208ff7",
+          "destinationId": "tokyo",
+          "price": 126,
+          "currency": "EUR",
+          "rating": 5,
+          "name": "Skytree車站徒步5分 洗衣機 電梯大樓 機場直達免換車 頂樓晴空塔夜景 自助入住4",
+          "stars": 0,
+          "amenities": [
+            "Balcony",
+            "Elevator",
+            "Hot tub",
+            "Kitchen",
+            "Microwave",
+            "Free Wi-Fi"
+          ],
+          "nights": 3,
+          "location": "Yokokawa-Sanchōme (Yokokawa 3)",
+          "latitude": 35.704132080078125,
+          "longitude": 139.81466674804688
+        },
+        "flightId": "serpapi-8aa1f01f0f9ceecd",
+        "hotelId": "serpapi-hotel-091d66a8f4208ff7",
+        "totalPrice": 2394,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 64.2
+      },
+      {
+        "id": "pkg-serpapi-ae6d8dad8968dcb9-serpapi-hotel-d13d19cb9aa15bab",
+        "flight": {
+          "id": "serpapi-ae6d8dad8968dcb9",
+          "destinationId": "tokyo",
+          "price": 2857,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "Korean Air",
+          "departureTime": "2026-10-12 22:00",
+          "arrivalTime": "2026-10-13 21:05",
+          "durationMinutes": 965,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-d13d19cb9aa15bab",
+          "destinationId": "tokyo",
+          "price": 127,
+          "currency": "EUR",
+          "rating": 3.7,
+          "name": "HOTEL BANJAR",
+          "stars": 3,
+          "amenities": [
+            "Open air bath",
+            "Private bath",
+            "Sauna",
+            "Free Wi-Fi",
+            "Free parking"
+          ],
+          "nights": 3,
+          "location": "Konpira",
+          "latitude": 35.8076538,
+          "longitude": 139.54007679999998
+        },
+        "flightId": "serpapi-ae6d8dad8968dcb9",
+        "hotelId": "serpapi-hotel-d13d19cb9aa15bab",
+        "totalPrice": 2984,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 62.4
+      },
+      {
+        "id": "pkg-serpapi-3c3b7d55a6a48bb9-serpapi-hotel-d13d19cb9aa15bab",
+        "flight": {
+          "id": "serpapi-3c3b7d55a6a48bb9",
+          "destinationId": "tokyo",
+          "price": 2804,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "THAI",
+          "departureTime": "2026-10-12 14:05",
+          "arrivalTime": "2026-10-13 15:55",
+          "durationMinutes": 1130,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-d13d19cb9aa15bab",
+          "destinationId": "tokyo",
+          "price": 127,
+          "currency": "EUR",
+          "rating": 3.7,
+          "name": "HOTEL BANJAR",
+          "stars": 3,
+          "amenities": [
+            "Open air bath",
+            "Private bath",
+            "Sauna",
+            "Free Wi-Fi",
+            "Free parking"
+          ],
+          "nights": 3,
+          "location": "Konpira",
+          "latitude": 35.8076538,
+          "longitude": 139.54007679999998
+        },
+        "flightId": "serpapi-3c3b7d55a6a48bb9",
+        "hotelId": "serpapi-hotel-d13d19cb9aa15bab",
+        "totalPrice": 2931,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 61.5
+      },
+      {
+        "id": "pkg-serpapi-3c3b7d55a6a48bb9-serpapi-hotel-746aef65ff1b0606",
+        "flight": {
+          "id": "serpapi-3c3b7d55a6a48bb9",
+          "destinationId": "tokyo",
+          "price": 2804,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "THAI",
+          "departureTime": "2026-10-12 14:05",
+          "arrivalTime": "2026-10-13 15:55",
+          "durationMinutes": 1130,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-746aef65ff1b0606",
+          "destinationId": "tokyo",
+          "price": 128,
+          "currency": "EUR",
+          "rating": 4.4,
+          "name": "TOKYO-W-inn Asakusa",
+          "stars": 2,
+          "amenities": [
+            "Free Wi-Fi",
+            "Kitchen in some rooms"
+          ],
+          "nights": 3,
+          "location": "Sensō-ji",
+          "latitude": 35.7083161,
+          "longitude": 139.7923088
+        },
+        "flightId": "serpapi-3c3b7d55a6a48bb9",
+        "hotelId": "serpapi-hotel-746aef65ff1b0606",
+        "totalPrice": 2932,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 61.3
+      },
+      {
+        "id": "pkg-serpapi-ae6d8dad8968dcb9-serpapi-hotel-091d66a8f4208ff7",
+        "flight": {
+          "id": "serpapi-ae6d8dad8968dcb9",
+          "destinationId": "tokyo",
+          "price": 2857,
+          "currency": "EUR",
+          "rating": 0,
+          "airline": "Korean Air",
+          "departureTime": "2026-10-12 22:00",
+          "arrivalTime": "2026-10-13 21:05",
+          "durationMinutes": 965,
+          "stops": 1,
+          "cabin": "Economy"
+        },
+        "hotel": {
+          "id": "serpapi-hotel-091d66a8f4208ff7",
+          "destinationId": "tokyo",
+          "price": 126,
+          "currency": "EUR",
+          "rating": 5,
+          "name": "Skytree車站徒步5分 洗衣機 電梯大樓 機場直達免換車 頂樓晴空塔夜景 自助入住4",
+          "stars": 0,
+          "amenities": [
+            "Balcony",
+            "Elevator",
+            "Hot tub",
+            "Kitchen",
+            "Microwave",
+            "Free Wi-Fi"
+          ],
+          "nights": 3,
+          "location": "Yokokawa-Sanchōme (Yokokawa 3)",
+          "latitude": 35.704132080078125,
+          "longitude": 139.81466674804688
+        },
+        "flightId": "serpapi-ae6d8dad8968dcb9",
+        "hotelId": "serpapi-hotel-091d66a8f4208ff7",
+        "totalPrice": 2983,
+        "currency": "EUR",
+        "nights": 3,
+        "score": 60.8
+      }
+    ],
+    "totalCount": 29,
+    "searchedAt": "2026-08-25T16:11:39.758Z"
+  }
+}

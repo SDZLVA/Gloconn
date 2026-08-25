@@ -199,6 +199,29 @@ function loadPropertyRefSealConfig(): import("@/lib/config/types").PropertyRefSe
   };
 }
 
+function loadReplayConfig(
+  nodeEnv: import("@/lib/config/types").NodeEnv,
+): import("@/lib/config/types").ReplayConfig {
+  const input = readEnv("GLOOCONN_REPLAY_MODE");
+  const requested =
+    input === "true" || input === "1" || input === "yes";
+
+  // Production must never run replay — even if the env var is set.
+  if (nodeEnv === "production") {
+    return {
+      enabled: false,
+      input,
+      blockedInProduction: requested,
+    };
+  }
+
+  return {
+    enabled: requested,
+    input,
+    blockedInProduction: false,
+  };
+}
+
 /** Reads raw configuration without caching or validation attachment. */
 export function loadAppConfigRaw(): Omit<AppConfig, "validation"> {
   const supabaseUrl = readEnv("NEXT_PUBLIC_SUPABASE_URL") ?? "";
@@ -208,9 +231,11 @@ export function loadAppConfigRaw(): Omit<AppConfig, "validation"> {
   const amadeus = loadAmadeusConfig();
   const serpapi = loadSerpApiConfig();
 
+  const nodeEnv = readNodeEnv();
+
   return {
     app: {
-      nodeEnv: readNodeEnv(),
+      nodeEnv,
       siteUrl: readEnvOrDefault("NEXT_PUBLIC_SITE_URL", "http://localhost:3000"),
     },
     supabase: {
@@ -251,6 +276,7 @@ export function loadAppConfigRaw(): Omit<AppConfig, "validation"> {
     amadeus,
     serpapi,
     propertyRefSeal: loadPropertyRefSealConfig(),
+    replay: loadReplayConfig(nodeEnv),
   };
 }
 

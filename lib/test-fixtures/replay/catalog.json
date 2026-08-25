@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "scenarios": [
+    {
+      "id": "milan-paris",
+      "label": "Milan → Paris",
+      "dir": "milan-paris",
+      "match": {
+        "originId": "milan",
+        "destinationId": "paris"
+      }
+    },
+    {
+      "id": "milan-tokyo",
+      "label": "Milan → Tokyo",
+      "dir": "milan-tokyo",
+      "match": {
+        "originId": "milan",
+        "destinationId": "tokyo"
+      }
+    },
+    {
+      "id": "milan-new-york",
+      "label": "Milan → New York",
+      "dir": "milan-new-york",
+      "match": {
+        "originId": "milan",
+        "destinationId": "new-york"
+      }
+    },
+    {
+      "id": "rome-dubai",
+      "label": "Rome → Dubai",
+      "dir": "rome-dubai",
+      "match": {
+        "originId": "rome",
+        "destinationId": "dubai"
+      }
+    },
+    {
+      "id": "london-barcelona",
+      "label": "London → Barcelona",
+      "dir": "london-barcelona",
+      "match": {
+        "originId": "london",
+        "destinationId": "barcelona"
+      }
+    }
+  ]
+}

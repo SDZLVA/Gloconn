@@ -151,7 +151,7 @@ export const ONE_WAY_HOTEL_WARNING_MESSAGE =
 
 /** Copy shown when user budget does not cover any composed package. */
 export const BUDGET_COMPATIBILITY_WARNING_MESSAGE =
-  "Your budget may be too low for this trip. Try increasing your budget to see more suitable options.";
+  "No package is within your budget. Try increasing your budget to see more options.";
 
 /**
  * Returns true when a user-set budget exists but no composed package is within it.
@@ -183,6 +183,30 @@ export function shouldShowBudgetCompatibilityWarning(
       Number.isFinite(pkg.totalPrice) && pkg.totalPrice <= budget.amount,
   );
   return !hasCompatiblePackage;
+}
+
+/** Human duration for package / flight details (e.g. "2h 15m"). */
+export function formatFlightDurationLabel(durationMinutes: number): string {
+  if (!Number.isFinite(durationMinutes) || durationMinutes < 0) {
+    return "—";
+  }
+  const total = Math.floor(durationMinutes);
+  const hours = Math.floor(total / 60);
+  const minutes = total % 60;
+  if (hours <= 0) {
+    return `${minutes}m`;
+  }
+  if (minutes === 0) {
+    return `${hours}h`;
+  }
+  return `${hours}h ${minutes}m`;
+}
+
+/**
+ * Hotel stay footnote in package details: "{N} nights · 1 room".
+ */
+export function formatPackageHotelStayLabel(nights: number): string {
+  return `${formatPackageNightsLabel(nights)} · 1 room`;
 }
 
 /**

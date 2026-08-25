@@ -54,6 +54,10 @@ function makeConfig(
       secret: "",
       isConfigured: false,
     },
+    replay: {
+      enabled: false,
+      blockedInProduction: false,
+    },
   };
 }
 

@@ -19,7 +19,7 @@ type HotelResultCardProps = {
 
 /**
  * Browse hotel card (Sprint 17.2 / 17.4).
- * Decision-layer only — same View hotel drawer as package cards.
+ * Hotel-only investigation via View hotel → HotelDetailsDrawer.
  */
 export function HotelResultCard({ result }: HotelResultCardProps) {
   const starsLabel = formatHotelStarsLabel(result.stars);

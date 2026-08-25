@@ -380,9 +380,10 @@ describe("TravelPackageCard rendering", () => {
     assert.doesNotMatch(html, /flight \+ hotel total/i);
     // P0.1: "est. total" suffix
     assert.match(html, /est\. total/);
-    // Sprint 17.2: View hotel opens Glooconn details — not booking language.
-    assert.match(html, /View hotel/);
-    assert.doesNotMatch(html, /Select|Book|Build Package|View deal/i);
+    // Sprint 17.7: View package details — not booking language.
+    assert.match(html, /View package details/);
+    assert.doesNotMatch(html, /View hotel/);
+    assert.doesNotMatch(html, /Select|Book|Build Package|View deal|Book with Glooconn/i);
   });
 
   it("renders secondary role badge when provided", () => {
@@ -885,7 +886,14 @@ describe("shouldShowBudgetCompatibilityWarning", () => {
 });
 
 describe("BUDGET_COMPATIBILITY_WARNING_MESSAGE", () => {
-  it("explains budget may be too low", () => {
-    assert.match(BUDGET_COMPATIBILITY_WARNING_MESSAGE, /budget may be too low/i);
+  it("explains no package is within budget", () => {
+    assert.match(
+      BUDGET_COMPATIBILITY_WARNING_MESSAGE,
+      /No package is within your budget/i,
+    );
+    assert.match(
+      BUDGET_COMPATIBILITY_WARNING_MESSAGE,
+      /increasing your budget/i,
+    );
   });
 });

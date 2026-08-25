@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Card } from "@/components/ui/Card";
-import { ViewHotelAction } from "@/components/results/ViewHotelAction";
+import { ViewPackageDetailsAction } from "@/components/results/ViewPackageDetailsAction";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import {
   formatFlightRoute,
@@ -19,20 +19,21 @@ type TravelPackageCardProps = {
   destinationIata?: string | null;
   /** Sprint 16.4: deterministic role + reason (no raw score). */
   explanation?: PackageExplanation | null;
+  tripType?: "round-trip" | "one-way" | null;
 };
 
 /**
- * Compact recommended package card (Sprint 17.2 / 17.4).
+ * Compact recommended package card (Sprint 17.2 / 17.4 / 17.7).
  *
  * Hierarchy: role → airline+route → hotel+stars/rating → location →
- * reason → est. price → View hotel.
- * Investigation stays in the shared hotel details drawer.
+ * reason → est. price → View package details.
  */
 function TravelPackageCardComponent({
   package: travelPackage,
   originIata,
   destinationIata,
   explanation = null,
+  tripType = "round-trip",
 }: TravelPackageCardProps) {
   const { flight, hotel, totalPrice, currency, nights, id } = travelPackage;
   const stopsLabel = formatPackageStopsLabel(flight.stops);
@@ -51,7 +52,6 @@ function TravelPackageCardComponent({
       ? `${hotel.name} · Unrated · ${hotel.rating.toFixed(1)}`
       : `${hotel.name} · ${starsLabel} · ${hotel.rating.toFixed(1)}`;
 
-  // One short supporting line: prefer explainability reason; else flight stops + nights.
   const supportingLine = explanation?.reason?.trim()
     ? explanation.reason.trim()
     : `${stopsLabel} · ${nightsLabel}`;
@@ -105,7 +105,12 @@ function TravelPackageCardComponent({
               suffix="est. total"
             />
           </div>
-          <ViewHotelAction hotel={hotel} />
+          <ViewPackageDetailsAction
+            package={travelPackage}
+            originIata={originIata}
+            destinationIata={destinationIata}
+            tripType={tripType}
+          />
         </div>
       </article>
     </Card>

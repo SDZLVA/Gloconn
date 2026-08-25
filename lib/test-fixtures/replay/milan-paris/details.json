@@ -1,0 +1,106 @@
+{
+  "serpapi-hotel-7c4a71e8602ea8c9": {
+    "hotelId": "serpapi-hotel-7c4a71e8602ea8c9",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "The Originals Boutique, Hôtel Maison Montmartre, Paris",
+    "address": "32 Av. de la Prte de Montmartre, 75018 Paris, France",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=Kf06cN35buZHMX5yVsavL16b&daddr=The+Originals+Boutique,+H%C3%B4tel+Maison+Montmartre,+Paris,+32+Av.+de+la+Prte+de+Montmartre,+75018+Paris,+France",
+    "websiteUrl": "https://www.hotelmaisonmontmartre.com/?utm_campaign=uberall&utm_medium=organic&utm_source=googlelisting",
+    "offers": [
+      {
+        "label": "View offer at Expedia.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwiyoffMlbyWAxUgD0QIHQ7DExUYACICCAEQGBoCZHo&co=1&ase=2&gclid=EAIaIQobChMIsqH3zJW8lgMVIA9ECB0OwxMVEAoYASABEgJyefD_BwE&cid=CAASugHkaBiqYUtLViAJQivU4e2JY1EBppkr6zIIVFN15JcFT7aiQOcFfC5ymVZNIJaRjWjMV70R0R5-Egt4cQq-j0X3DlXYzjLZX59TAID6ZrbXE5Ivhi93UprrvNefQto5OF7czLe-20wk79HvaPMyzudY2bZBR5vNc7EQhqhBQ9G-EXR9KTkIJWKpaNysUv1HUJzxLSYWggSbG_4UrA5NTGXKV9NeYpLFzr75PdhlE1Pg6APG0eXGzuOtUxc&category=acrcp_v1_48&sig=AOD64_1KLaYPsX1ozLUoRfljlYOPx6WyHw&adurl",
+        "source": "Expedia.com"
+      },
+      {
+        "label": "View offer at The Originals Boutique, Hôtel Maison Montmartre, Paris",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwiyoffMlbyWAxUgD0QIHQ7DExUYACICCAEQDhoCZHo&co=1&ase=2&gclid=EAIaIQobChMIsqH3zJW8lgMVIA9ECB0OwxMVEAoYAiABEgLEcvD_BwE&cid=CAASugHkaBiqYUtLViAJQivU4e2JY1EBppkr6zIIVFN15JcFT7aiQOcFfC5ymVZNIJaRjWjMV70R0R5-Egt4cQq-j0X3DlXYzjLZX59TAID6ZrbXE5Ivhi93UprrvNefQto5OF7czLe-20wk79HvaPMyzudY2bZBR5vNc7EQhqhBQ9G-EXR9KTkIJWKpaNysUv1HUJzxLSYWggSbG_4UrA5NTGXKV9NeYpLFzr75PdhlE1Pg6APG0eXGzuOtUxc&category=acrcp_v1_48&sig=AOD64_26iyMkbixKfJfnNra35pX5bA8TCw&adurl",
+        "source": "The Originals Boutique, Hôtel Maison Montmartre, Paris"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-141b7af3dc94dbfc": {
+    "hotelId": "serpapi-hotel-141b7af3dc94dbfc",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "Résidhome Quai d'Ivry",
+    "address": "8 Rue des Joutes, 94200 Ivry-sur-Seine",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=ZZ&um=1&ie=UTF-8&fb=1&sa=X&geocode=KSnTcrLMc-ZHMYA20OdiJLwX&daddr=R%C3%A9sidhome+Quai+d%27Ivry,+8+Rue+des+Joutes,+94200+Ivry-sur-Seine",
+    "websiteUrl": "https://www.myresidhome.com/ivry-sur-seine/residhome-quai-d-ivry/apparthotel-residence-hoteliere.html",
+    "offers": [
+      {
+        "label": "View offer at Expedia.fr",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwj63OLNlbyWAxVEKqIDHdQ0BowYACICCAEQEBoCbGU&co=1&gclid=EAIaIQobChMI-tzizZW8lgMVRCqiAx3UNAaMEAoYASABEgIgQ_D_BwE&sig=AOD64_3hrSeAQoFDc5eDYA6HbbMjbkKSPQ&adurl",
+        "source": "Expedia.fr"
+      },
+      {
+        "label": "View offer at Booking.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwj63OLNlbyWAxVEKqIDHdQ0BowYACICCAEQHRoCbGU&co=1&gclid=EAIaIQobChMI-tzizZW8lgMVRCqiAx3UNAaMEAoYAiABEgLWwvD_BwE&sig=AOD64_0WgB-wP-ZvvMCwnGnu2hO1fv0lmQ&adurl",
+        "source": "Booking.com"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-4866fda0fa8f4078": {
+    "hotelId": "serpapi-hotel-4866fda0fa8f4078",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "MOB HOTEL Paris les Puces",
+    "address": "6 Rue Gambetta, 93400 Saint-Ouen-sur-Seine, France",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=KWMOqL_6buZHMUfdUaT7NJqR&daddr=MOB+HOTEL+Paris+les+Puces,+6+Rue+Gambetta,+93400+Saint-Ouen-sur-Seine,+France",
+    "websiteUrl": "https://www.mobhotel.com/paris",
+    "offers": [
+      {
+        "label": "View offer at Hotels.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwi6tMPOlbyWAxWvQv8BHSbQJAUYACICCAEQHxoCbWQ&co=1&gclid=EAIaIQobChMIurTDzpW8lgMVr0L_AR0m0CQFEAoYASABEgLroPD_BwE&cid=CAASugHkaJTXwozrHPRofQ7pqsWka5myce5-fp4cdbE9Jvg4L-A5kEc6ClSZIypE6mow3LqsLnarsd3QBQhB9MDi2haLCcavrXHo0fImLQ0O5hL6AyiPZH7t5xrtuCakR2qlBP5DAgUpycE9NRO92EmHlTdLdSPvclvm0qCgg1Nv_hbcibH1VQGV_Xt8WvvVMdj7NQ9kfUW1uPIaPVbvo24oxDQxwUNWp8tPKxtHxTQiM5juKofOU9LFnmvR0GA&sig=AOD64_3GPAVKrDyWHtuUnyArUBwIDIOlfg&adurl",
+        "source": "Hotels.com"
+      },
+      {
+        "label": "View offer at MOB HOTEL Paris les Puces",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwi6tMPOlbyWAxWvQv8BHSbQJAUYACICCAEQBRoCbWQ&co=1&gclid=EAIaIQobChMIurTDzpW8lgMVr0L_AR0m0CQFEAoYAiABEgJ_UvD_BwE&cid=CAASugHkaJTXwozrHPRofQ7pqsWka5myce5-fp4cdbE9Jvg4L-A5kEc6ClSZIypE6mow3LqsLnarsd3QBQhB9MDi2haLCcavrXHo0fImLQ0O5hL6AyiPZH7t5xrtuCakR2qlBP5DAgUpycE9NRO92EmHlTdLdSPvclvm0qCgg1Nv_hbcibH1VQGV_Xt8WvvVMdj7NQ9kfUW1uPIaPVbvo24oxDQxwUNWp8tPKxtHxTQiM5juKofOU9LFnmvR0GA&sig=AOD64_1gThsfAKjQyKOZMAa9wT9nQ7FTCA&adurl",
+        "source": "MOB HOTEL Paris les Puces"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-c0a8969741d70316": {
+    "hotelId": "serpapi-hotel-c0a8969741d70316",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "Hôtel du Jardin des Plantes",
+    "address": "5 Rue Linné, 75005 Paris, France",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=KRvHIijwceZHMaFsupPy9WKs&daddr=H%C3%B4tel+du+Jardin+des+Plantes,+5+Rue+Linn%C3%A9,+75005+Paris,+France",
+    "websiteUrl": "https://www.hoteljardindesplantes.com/",
+    "offers": [
+      {
+        "label": "View offer at Priceline",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwj33tnPlbyWAxXKRv8BHY-UOWsYACICCAEQBBoCbWQ&co=1&gclid=EAIaIQobChMI997Zz5W8lgMVykb_AR2PlDlrEAoYASABEgKXUfD_BwE&cid=CAASugHkaEUM6U1NtcuBawCZr1n1D4wUIgvGUMSAuAGI8OCAnwEb1OPkgxgS90ZYUbbxlcN1J6lGMyiIUhKYwHKPuoUb7e9oXCpUCW7xUTCh_CBQZJ_QfrL80MsrZumQjE1dW0w4fkU-o1NBjKDVLnBc95Bym44X99HEB3mI47NGS9g8ZXCISN4EVAon1FZX8x-2PYGI00KJvU1YCMTmdtdNvA6YZV6g8eiHMcyEo0dWl_MMR8YerRGWwaSdr1I&sig=AOD64_0k8YHRL4kiiXHAHouXJ7dfZnSXgw&adurl",
+        "source": "Priceline"
+      },
+      {
+        "label": "View offer at Booking.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwj33tnPlbyWAxXKRv8BHY-UOWsYACICCAEQARoCbWQ&co=1&gclid=EAIaIQobChMI997Zz5W8lgMVykb_AR2PlDlrEAoYAiABEgKKQfD_BwE&cid=CAASugHkaEUM6U1NtcuBawCZr1n1D4wUIgvGUMSAuAGI8OCAnwEb1OPkgxgS90ZYUbbxlcN1J6lGMyiIUhKYwHKPuoUb7e9oXCpUCW7xUTCh_CBQZJ_QfrL80MsrZumQjE1dW0w4fkU-o1NBjKDVLnBc95Bym44X99HEB3mI47NGS9g8ZXCISN4EVAon1FZX8x-2PYGI00KJvU1YCMTmdtdNvA6YZV6g8eiHMcyEo0dWl_MMR8YerRGWwaSdr1I&sig=AOD64_1MUjk4WPDi2sagBof4CRQ1wl-wQQ&adurl",
+        "source": "Booking.com"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-231255331e0c2a14": {
+    "hotelId": "serpapi-hotel-231255331e0c2a14",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "Hotel Nation Montmartre Paris",
+    "address": "4 Rue Boissieu, 75018 Paris, France",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=ZZ&um=1&ie=UTF-8&fb=1&sa=X&geocode=KVGcLlFobuZHMffc7BSfKWJy&daddr=Hotel+Nation+Montmartre+Paris,+4+Rue+Boissieu,+75018+Paris,+France",
+    "offers": [
+      {
+        "label": "View offer at Hotel Nation Montmartre Paris",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwjVudHQlbyWAxUvkVAGHX6GOxUYACICCAEQDRoCZGc&co=1&gclid=EAIaIQobChMI1bnR0JW8lgMVL5FQBh1-hjsVEAoYASABEgL5E_D_BwE&cid=CAASugHkaGzTAZA2cXbRFCB6hpVA5dza4DMk3QQzZFbV_rptywVpT4znS7LdpwfzEEoOmA43wI2ZcPbZW_8zAvaNH8n665jXjZtutK00_9e19h77F-eqrndk-nb3BbkVbwaH7-v-fgNCHq38suE6nENpi81FYJQb9Og5eNdLpBA78Gr2QzmsNkp2Pmkmg344XWo1tC8I0mrt707eRRKn4bWlvStoIARZHo8nTod1wOMNicZ8R555QpZEwYh16-U&sig=AOD64_1GgVtjKrIrqTwGhqNCDtxz-2LA5w&adurl",
+        "source": "Hotel Nation Montmartre Paris"
+      },
+      {
+        "label": "View offer at Booking.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwjVudHQlbyWAxUvkVAGHX6GOxUYACICCAEQBhoCZGc&co=1&gclid=EAIaIQobChMI1bnR0JW8lgMVL5FQBh1-hjsVEAoYAiABEgKv-_D_BwE&cid=CAASugHkaGzTAZA2cXbRFCB6hpVA5dza4DMk3QQzZFbV_rptywVpT4znS7LdpwfzEEoOmA43wI2ZcPbZW_8zAvaNH8n665jXjZtutK00_9e19h77F-eqrndk-nb3BbkVbwaH7-v-fgNCHq38suE6nENpi81FYJQb9Og5eNdLpBA78Gr2QzmsNkp2Pmkmg344XWo1tC8I0mrt707eRRKn4bWlvStoIARZHo8nTod1wOMNicZ8R555QpZEwYh16-U&sig=AOD64_2DQhQA_kU5zT9wOs6kDUwMAG47GA&adurl",
+        "source": "Booking.com"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  }
+}

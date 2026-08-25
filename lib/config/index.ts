@@ -20,6 +20,7 @@ export type {
   PropertyRefSealConfig,
   ProviderName,
   ProvidersConfig,
+  ReplayConfig,
   SerpApiConfig,
   SupabaseConfig,
 } from "@/lib/config/types";

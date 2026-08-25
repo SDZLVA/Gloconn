@@ -21,7 +21,8 @@ export function canOpenHotelDetails(hotel: Hotel): boolean {
 }
 
 /**
- * Single primary hotel CTA — shared by package + browse hotel cards.
+ * Single primary hotel CTA — hotel browse cards only (Sprint 17.7).
+ * Packages use ViewPackageDetailsAction instead.
  * Opens Glooconn's hotel details drawer (not booking).
  * Hidden when no sealed providerPropertyRef is available.
  * Touch target ≥ 44×44px (Sprint 17.4).

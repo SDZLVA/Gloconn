@@ -141,6 +141,25 @@ export type PropertyRefSealConfig = {
   isConfigured: boolean;
 };
 
+/**
+ * Internal real-data replay mode (Sprint 17.6).
+ * Test infrastructure only — never enable in production.
+ */
+export type ReplayConfig = {
+  /**
+   * True when `GLOOCONN_REPLAY_MODE` is enabled AND nodeEnv is not production.
+   * Production always forces this false.
+   */
+  enabled: boolean;
+  /** Raw `GLOOCONN_REPLAY_MODE` when present. */
+  input?: string;
+  /**
+   * True when production attempted to enable replay mode
+   * (blocked — config error).
+   */
+  blockedInProduction: boolean;
+};
+
 export type AppConfig = {
   app: AppSection;
   supabase: SupabaseConfig;
@@ -149,6 +168,7 @@ export type AppConfig = {
   amadeus: AmadeusConfig;
   serpapi: SerpApiConfig;
   propertyRefSeal: PropertyRefSealConfig;
+  replay: ReplayConfig;
   validation: ConfigValidation;
 };
 

@@ -24,6 +24,11 @@ import {
   unsealHotelPropertyRef,
 } from "@/lib/hotels/sealedPropertyRef";
 import {
+  getReplaySealSecret,
+  isReplayPropertyToken,
+  requireReplayHotelPropertyDetails,
+} from "@/lib/replay";
+import {
   fetchGoogleHotelPropertyDetails,
   type FetchPropertyDetailsOptions,
 } from "@/lib/providers/hotels/serpapi/propertyDetailsClient";
@@ -145,7 +150,11 @@ export async function getHotelPropertyDetails(
   const getCached = deps.getCached ?? getCachedHotelPropertyDetails;
   const setCached = deps.setCached ?? setCachedHotelPropertyDetails;
   const getSealSecret =
-    deps.getSealSecret ?? (() => getAppConfig().propertyRefSeal.secret);
+    deps.getSealSecret ??
+    (() =>
+      getAppConfig().replay.enabled
+        ? getReplaySealSecret()
+        : getAppConfig().propertyRefSeal.secret);
   const unsealRef = deps.unsealRef ?? unsealHotelPropertyRef;
   const fetchDetails = deps.fetchDetails ?? fetchGoogleHotelPropertyDetails;
   const getSerpApiConfig =
@@ -170,6 +179,20 @@ export async function getHotelPropertyDetails(
     if (cached) {
       return { details: cached, cached: true };
     }
+  }
+
+  // Sprint 17.6 — replay mode: fixture details only, never SerpAPI.
+  if (getAppConfig().replay.enabled) {
+    const details = requireReplayHotelPropertyDetails(hotelId);
+    setCached(hotelId, details);
+    return { details, cached: false };
+  }
+
+  // Defence-in-depth: replay tokens must never hit SerpAPI even if flag is off.
+  if (isReplayPropertyToken(lookup.propertyToken)) {
+    throw createNotFoundError(
+      "Hotel details are unavailable for this result. Try searching again.",
+    );
   }
 
   const config = getSerpApiConfig();

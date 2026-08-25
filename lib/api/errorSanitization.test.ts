@@ -178,6 +178,10 @@ describe("F-08: config error logging — message-only, no stack traces", () => {
         secret: "",
         isConfigured: false,
       },
+      replay: {
+        enabled: false,
+        blockedInProduction: false,
+      },
     });
 
     // Every error and warning must have a string message, never an Error object.

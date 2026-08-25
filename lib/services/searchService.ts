@@ -7,6 +7,8 @@ import "server-only";
 
 import { runService, type ServiceResult } from "@/lib/api/types";
 import { validateSearchRequest } from "@/lib/api/validation";
+import { getAppConfig } from "@/lib/config";
+import { getReplaySearchResponse } from "@/lib/replay/searchReplay";
 import {
   getAllTripSearchResults,
   orchestrateTripSearch,
@@ -14,6 +16,7 @@ import {
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchResponse } from "@/types/models/search-response";
 import type { SearchData, TravelStyle } from "@/types/search";
+import { INITIAL_PASSENGERS } from "@/types/search-form";
 
 /** Runs a full validated search and returns a SearchResponse (with optional warnings). */
 export async function searchTrips(
@@ -22,6 +25,14 @@ export async function searchTrips(
   const validation = validateSearchRequest(search);
   if (!validation.success) {
     return { success: false, error: validation.error };
+  }
+
+  // Sprint 17.6 — real-data replay: never call live providers.
+  if (getAppConfig().replay.enabled) {
+    return runService(
+      async () => getReplaySearchResponse(validation.data),
+      "Could not load search results.",
+    );
   }
 
   return runService(
@@ -46,8 +57,8 @@ export async function searchByDestination(
     returnDate: null,
     budget: null,
     budgetCurrency: null,
-    travelers: { adults: 2, children: 0, infants: 0, rooms: 1 },
-    totalGuests: 2,
+    travelers: { ...INITIAL_PASSENGERS },
+    totalGuests: INITIAL_PASSENGERS.adults,
   });
 }
 

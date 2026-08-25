@@ -1,0 +1,100 @@
+{
+  "serpapi-hotel-d97bcd686b1e6122": {
+    "hotelId": "serpapi-hotel-d97bcd686b1e6122",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "Dai-ichi Hotel Ryogoku",
+    "address": "Japan, 〒130-0015 Tokyo, Sumida City, Yokoami, 1 Chome−6−1 第一ホテル両国",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=KcE3VMs0iRhgMRaI767uvjUj&daddr=Dai-ichi+Hotel+Ryogoku,+%E7%AC%AC%E4%B8%80%E3%83%9B%E3%83%86%E3%83%AB%E4%B8%A1%E5%9B%BD+1+Chome-6-1+Yokoami,+Sumida+City,+Tokyo+130-0015,+Japan",
+    "offers": [
+      {
+        "label": "View offer at Hotels.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwix1MfYlbyWAxUiicIIHfj5EVQYACICCAEQFRoCamY&co=1&ase=2&gclid=EAIaIQobChMIsdTH2JW8lgMVIonCCB34-RFUEAoYASABEgKjc_D_BwE&cid=CAASugHkaFcsy5Nuuu-EWSwGUirlLD0aDsSccaDvKx5vWbWWL0QA3Y_nMxTfXJ3EX5i_uj8yVmGhrcHsg5MMl3pRCkL8xsGOVG4wFG9-VcFx2Psm_yCK8iKCM5xbP_T-pmoZxN605oqTfHoG9TB0XmcR2yIUGo1SLSOY-GN_dom9kQTdqE6qb3xExQpx_iXOw7DFskCdla0t_wGFBLANC1b8nU2MBQDIycnGjkEtsbgeh5Bwu_fG1DoH2qgMzkE&category=acrcp_v1_48&sig=AOD64_0BmLbndHnGFosZNmD7z6tNDSXq0Q&adurl",
+        "source": "Hotels.com"
+      },
+      {
+        "label": "View offer at Expedia.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwix1MfYlbyWAxUiicIIHfj5EVQYACICCAEQARoCamY&co=1&ase=2&gclid=EAIaIQobChMIsdTH2JW8lgMVIonCCB34-RFUEAoYAiABEgKGU_D_BwE&cid=CAASugHkaFcsy5Nuuu-EWSwGUirlLD0aDsSccaDvKx5vWbWWL0QA3Y_nMxTfXJ3EX5i_uj8yVmGhrcHsg5MMl3pRCkL8xsGOVG4wFG9-VcFx2Psm_yCK8iKCM5xbP_T-pmoZxN605oqTfHoG9TB0XmcR2yIUGo1SLSOY-GN_dom9kQTdqE6qb3xExQpx_iXOw7DFskCdla0t_wGFBLANC1b8nU2MBQDIycnGjkEtsbgeh5Bwu_fG1DoH2qgMzkE&category=acrcp_v1_48&sig=AOD64_07NoxNztRv-aLdaOp3C9-w54D4kg&adurl",
+        "source": "Expedia.com"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-8bc9e15cc2c7d312": {
+    "hotelId": "serpapi-hotel-8bc9e15cc2c7d312",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "Mitsui Garden Hotel Gotanda",
+    "address": "2 Chome-2-6 Higashigotanda, Shinagawa City, Tokyo 141-0022, Japan",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=Kceudkb6ihhgMc0dbu_JWJuD&daddr=Mitsui+Garden+Hotel+Gotanda,+2+Chome-2-6+Higashigotanda,+Shinagawa+City,+Tokyo+141-0022,+Japan",
+    "websiteUrl": "https://www.gardenhotels.co.jp/gotanda/?utm_source=googlebusinessprofile&utm_medium=google&utm_campaign=maps",
+    "offers": [
+      {
+        "label": "View offer at Expedia.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwijuKvZlbyWAxUPYUcBHZMzJq8YACICCAEQERoCcXU&co=1&gclid=EAIaIQobChMIo7ir2ZW8lgMVD2FHAR2TMyavEAoYASABEgLV7_D_BwE&cid=CAASugHkaHfu61iVT67QP21-an5MgawdJMIk3En5YYmd3Y7xeCQBvVMdJPvQT5t9ibFmPrCcBGZvR6Hp3h21uyX1s-tVqhvTe5q9A1s14YDNd9_N_yLYQSCrSy_GP22rktKFTZzbX9zFTSAzeDMGEvSTjinNEleoP8w9FVBVyQmz0nRgIwgrMVVWJMzk0wZJN9r8I7jAr6BLoJOUMr_UGeUY0gqv-O-UwRpKXBrwRlB5Fhdb8sSwasQH7WF29nw&sig=AOD64_31YabgcOEUCbZsMMOIwLysDuuRuw&adurl",
+        "source": "Expedia.com"
+      },
+      {
+        "label": "View offer at Mitsui Garden Hotel Gotanda",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwijuKvZlbyWAxUPYUcBHZMzJq8YACICCAEQARoCcXU&co=1&gclid=EAIaIQobChMIo7ir2ZW8lgMVD2FHAR2TMyavEAoYAiABEgKrFfD_BwE&cid=CAASugHkaHfu61iVT67QP21-an5MgawdJMIk3En5YYmd3Y7xeCQBvVMdJPvQT5t9ibFmPrCcBGZvR6Hp3h21uyX1s-tVqhvTe5q9A1s14YDNd9_N_yLYQSCrSy_GP22rktKFTZzbX9zFTSAzeDMGEvSTjinNEleoP8w9FVBVyQmz0nRgIwgrMVVWJMzk0wZJN9r8I7jAr6BLoJOUMr_UGeUY0gqv-O-UwRpKXBrwRlB5Fhdb8sSwasQH7WF29nw&sig=AOD64_1DUHZsqLvGAdfmkjEdGq4PyIvJjg&adurl",
+        "source": "Mitsui Garden Hotel Gotanda"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-cfcdb794de7879fa": {
+    "hotelId": "serpapi-hotel-cfcdb794de7879fa",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "Lagoon Yokohama",
+    "address": "2453-1 Kamikawaicho, Asahi Ward, Yokohama, Kanagawa 241-0802, Japan",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=KaOR2JZ_-BhgMUl_acsdtnTG&daddr=Lagoon+Yokohama,+2453-1+Kamikawaicho,+Asahi+Ward,+Yokohama,+Kanagawa+241-0802,+Japan",
+    "websiteUrl": "https://hotel-en.com/",
+    "offers": [
+      {
+        "label": "View offer at Hotels.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwj9sPvZlbyWAxUXU38AHXPQLIEYACICCAEQDhoCb2E&co=1&ase=2&gclid=EAIaIQobChMI_bD72ZW8lgMVF1N_AB1z0CyBEAoYASABEgJ1UfD_BwE&cid=CAASugHkaHaVGN1p8rr0ty872BoF94rvJ5r5f_SbhecxEVJhcHedHu8ixKpdSLro1SAlqFQD9C1mZZTvQrTOmG6A1up-dN3KTI8FQc00gGw24yySg4bnVKjPyrgwtyg_FmyJdoBAS7AVODVjJuJW6jg-ewJgkSLfM0hrj3Epfv9utUytfrxPtLmvezUrUXFQAd3gT37J1x2Nl8JTPsDI2OThLO4bqPOswEbWUpsGn7y1zzoDJsA6QS6uir1pYuI&category=acrcp_v1_48&sig=AOD64_2iPW4SyH9ePLBDH3GU59udDxLWfQ&adurl",
+        "source": "Hotels.com"
+      },
+      {
+        "label": "View offer at Expedia.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwj9sPvZlbyWAxUXU38AHXPQLIEYACICCAEQFhoCb2E&co=1&ase=2&gclid=EAIaIQobChMI_bD72ZW8lgMVF1N_AB1z0CyBEAoYAiABEgK3_fD_BwE&cid=CAASugHkaHaVGN1p8rr0ty872BoF94rvJ5r5f_SbhecxEVJhcHedHu8ixKpdSLro1SAlqFQD9C1mZZTvQrTOmG6A1up-dN3KTI8FQc00gGw24yySg4bnVKjPyrgwtyg_FmyJdoBAS7AVODVjJuJW6jg-ewJgkSLfM0hrj3Epfv9utUytfrxPtLmvezUrUXFQAd3gT37J1x2Nl8JTPsDI2OThLO4bqPOswEbWUpsGn7y1zzoDJsA6QS6uir1pYuI&category=acrcp_v1_48&sig=AOD64_0bjAJ1XTIkP9UcZ3kO3Ig3nARNQw&adurl",
+        "source": "Expedia.com"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-d13d19cb9aa15bab": {
+    "hotelId": "serpapi-hotel-d13d19cb9aa15bab",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "HOTEL BANJAR",
+    "address": "212 Sakanoshita, Tokorozawa, Saitama 359-0012, Japan",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=KT8X1eQa6BhgMZbTvMq3nIOi&daddr=Japan,+%E3%80%92359-0012+Saitama,+Tokorozawa,+Sakanoshita,+212+HOTEL+BANJAR",
+    "offers": [
+      {
+        "label": "View offer at Booking.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwjFjtDalbyWAxV0KtQBHR0iO58YACICCAEQARoCb2E&co=1&ase=2&gclid=EAIaIQobChMIxY7Q2pW8lgMVdCrUAR0dIjufEAoYASABEgIP5_D_BwE&cid=CAASugHkaNMgTp6VCiikwI7L-PfXwas3w13abbC0E8BpywyfWKwNy4-bkW4BLRuKYSpZzuVCVoBhDr8C4oyNKvDSJoODWG-m3TH3UjwG46F2W3PCphOcrVlrWuYsCQ9ujSYRWtpGUwNhIHrD-7EVoe8hgre3iy_BMIVMF3Zw9dTmQixgyq9q6B6G-rEspjZdkB0FBYmKbc1Z8Bi92hoG8a3s86eIonZf5LsqKRjD_yppFF2wkZzwR5bB97xzQX4&category=acrcp_v1_48&sig=AOD64_2SozrZ4gVVzumH0YP9J0huh4ZsxA&adurl",
+        "source": "Booking.com"
+      },
+      {
+        "label": "View offer at Priceline",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwjFjtDalbyWAxV0KtQBHR0iO58YACICCAEQDBoCb2E&co=1&ase=2&gclid=EAIaIQobChMIxY7Q2pW8lgMVdCrUAR0dIjufEAoYAiABEgLvpPD_BwE&cid=CAASugHkaNMgTp6VCiikwI7L-PfXwas3w13abbC0E8BpywyfWKwNy4-bkW4BLRuKYSpZzuVCVoBhDr8C4oyNKvDSJoODWG-m3TH3UjwG46F2W3PCphOcrVlrWuYsCQ9ujSYRWtpGUwNhIHrD-7EVoe8hgre3iy_BMIVMF3Zw9dTmQixgyq9q6B6G-rEspjZdkB0FBYmKbc1Z8Bi92hoG8a3s86eIonZf5LsqKRjD_yppFF2wkZzwR5bB97xzQX4&category=acrcp_v1_48&sig=AOD64_148szHsKDXdQqwWfiuk7gfJY35WQ&adurl",
+        "source": "Priceline"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  },
+  "serpapi-hotel-746aef65ff1b0606": {
+    "hotelId": "serpapi-hotel-746aef65ff1b0606",
+    "snapshotNotice": "Prices and availability are from a captured search and may have changed.",
+    "name": "TOKYO-W-inn Asakusa",
+    "address": "Japan, 〒111-0042 Tokyo, Taito City, Kotobuki, 4 Chome−6−1 １Ｆ",
+    "mapsUrl": "https://maps.google.com/maps?hl=en&gl=US&um=1&ie=UTF-8&fb=1&sa=X&geocode=KbUfFIy4jhhgMVd3RPC2_jvC&daddr=TOKYO-W-inn+Asakusa,+%EF%BC%91%EF%BC%A6+4+Chome-6-1+Kotobuki,+Taito+City,+Tokyo+111-0042,+Japan",
+    "websiteUrl": "https://reservationtakeone.wixsite.com/mysite",
+    "offers": [
+      {
+        "label": "View offer at Booking.com",
+        "url": "https://www.google.com/aclk?sa=l&ai=DChsSEwje04zblbyWAxWmTkcBHWPeHO8YACICCAEQARoCcXU&co=1&ase=2&gclid=EAIaIQobChMI3tOM25W8lgMVpk5HAR1j3hzvEAoYASABEgLUI_D_BwE&cid=CAASugHkaG8yYEJjn8Nvhj66ipok20LjXu1cHcyMf7lPwOx10YlhNOxufTdAFM1b-7E7MUCFEI0O_wHHfvcWGXrzmN7W6n-uhE4ktqhwjHoSnRwA7AANWxsSECQk0eTflscoq33Z21rS3GLH-A6xBlc53d0Y29uh0THixdZYpUwXyxb8U2QZ_j_m4ayp0C7jXFdYSG1gW-bDSYRO6WPkmsSFqXcyN1Q3jRFTuxvHoKCc6T4bLw81jurq6AIyBX0&category=acrcp_v1_48&sig=AOD64_3Xs-FHC6n5arkjgnZkF42A-uGRwA&adurl",
+        "source": "Booking.com"
+      }
+    ],
+    "thirdPartyDisclosure": "Prices and booking are handled on third-party sites. Glooconn does not process payments."
+  }
+}

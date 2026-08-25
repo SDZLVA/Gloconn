@@ -160,6 +160,23 @@ export function validateAppConfig(
     }
   }
 
+  // Sprint 17.6: replay mode is test infrastructure only.
+  if (config.replay.blockedInProduction) {
+    errors.push({
+      env: "GLOOCONN_REPLAY_MODE",
+      message:
+        "GLOOCONN_REPLAY_MODE cannot be enabled in production. " +
+        "Replay is internal test infrastructure and was blocked.",
+    });
+  } else if (config.replay.enabled) {
+    warnings.push({
+      env: "GLOOCONN_REPLAY_MODE",
+      message:
+        "Real-data replay mode is enabled. Live SerpAPI search/details calls are disabled; " +
+        "captured snapshot fixtures are served instead.",
+    });
+  }
+
   if (config.providers.useMockProvidersInvalid) {
     errors.push({
       env: "USE_MOCK_PROVIDERS",

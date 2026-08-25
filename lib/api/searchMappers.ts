@@ -12,6 +12,7 @@ import type {
 import type { SearchResult } from "@/types/results";
 import type { SearchData } from "@/types/search";
 import { buildSearchRequestFromData } from "@/lib/search/request";
+import { INITIAL_PASSENGERS } from "@/types/search-form";
 
 /**
  * Special destination value that tells mock providers to return their full catalog.
@@ -37,8 +38,8 @@ export function createCatalogSearchRequest(): SearchRequest {
     departureDate: new Date().toISOString().slice(0, 10),
     returnDate: null,
     budget: null,
-    travelers: { adults: 2, children: 0, infants: 0, rooms: 1 },
-    totalGuests: 2,
+    travelers: { ...INITIAL_PASSENGERS },
+    totalGuests: INITIAL_PASSENGERS.adults,
     travelStyle: "standard",
   };
 }
