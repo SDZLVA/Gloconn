@@ -20,9 +20,11 @@ Follow these rules for every task:
 * Never remove existing features unless I ask.
 * If you find a bug, explain the cause before fixing it.
 * Write clean and well-commented code.
+* Commit and push every file you create or edit to my GitHub repository after each task.
 * At the end of every task, tell me:
 
   * What was completed
   * Which files were added or modified
   * How I can test it
   * What the next logical task should be
+  * What was committed and pushed to GitHub
