@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | **v0.21.0** released — Milestone **16** Recommendation Intelligence complete |
+| Stage | **v0.22.0** released — Milestone **17** Hotel Actionability + 17.9 Cleanup complete |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers by default; optional live **SerpAPI** / Amadeus |
 
 ---
@@ -28,10 +28,14 @@ Read and obey `PROJECT_RULES.md` in the project root:
 3. **Beginner-friendly** code with helpful comments
 4. **Do not remove features** unless explicitly asked
 5. **No unnecessary packages** — explain if one is needed
-6. **Commit and push** after each completed task
-7. End every task with: what was done, files changed, how to test, next step
+6. **Never commit or push** unless the user says **"commit"**
+7. End every task with: what was done, files changed, how to test, next step, and what is ready to commit (or what was committed)
 
-Additional user preference: **push edits to GitHub** after each task on a `cursor/feature-name` branch.
+Git / branch rules (also in `PROJECT_RULES.md`):
+
+* **`main`** is the stable branch and is what the live site runs ([https://glooconn.vercel.app](https://glooconn.vercel.app)).
+* Each new milestone gets its own branch created from `main` (example: `milestone-18-budget-engine`).
+* When a milestone is finished, merge it into `main` with a pull request, and CI must be green first.
 
 ---
 
@@ -236,7 +240,7 @@ AmadeusFlightsProvider.search(request)
 
 **Flight API tests (Sprints 7–11):**
 ```
-npm test  → 317 automated tests (node:test via tsx)
+npm test  → 717 automated tests (node:test via tsx)
   Amadeus: helpers / mappers / query / cache / provider / hardening
   SerpAPI flights: config / types / query / client / mappers / provider / factory / integration
   SerpAPI hotels: query / client / mapper / provider / factory / integration
@@ -376,13 +380,13 @@ docs/                 → project documentation
 
 ---
 
-## Common tasks after Milestone 16
+## Common tasks after Milestone 17
 
-**Milestone 13–15** ✅ **v0.19.0 / v0.20.0**. **Milestone 16 — Recommendation Intelligence** ✅ **v0.21.0**.
+**Milestone 13–16** ✅ **v0.19.0–v0.21.0**. **Milestone 17 — Hotel Actionability** + **17.9 Cleanup** ✅ **v0.22.0**.
 
 Recommended next priorities (see [TODO.md](./TODO.md)):
 
-1. **Milestone 17** — only after CTO authorization
+1. **Milestone 18 — Budget-First Engine** — plan scope, then branch from `main`
 2. **Destinations / About pages** — then restore nav links
 3. Optional: airline-level near-duplicate suppression in package top 5
 4. One-way proactive note in `TravelDatesSelector` (deferred)
@@ -418,7 +422,7 @@ Flight[] + Hotel[] + SearchRequest
 | Hotels | `serpapi` | **Live hotels — production-capable (v0.18.0)** |
 | Packages | ✅ Product layer | Composed in orchestrator via `lib/packages` (candidates → score → diversity → UI explanations) |
 
-**Completed:** Sprints 1–8 · Sprint 9 · Milestone 10 · **Milestone 11 → v0.17.0** · **Milestone 12 → v0.18.0** · **Milestone 13 → v0.19.0** · **Milestone 14–15 → v0.20.0** · **Milestone 16 → v0.21.0**
+**Completed:** Sprints 1–8 · Sprint 9 · Milestone 10 · **Milestone 11 → v0.17.0** · **Milestone 12 → v0.18.0** · **Milestone 13 → v0.19.0** · **Milestone 14–15 → v0.20.0** · **Milestone 16 → v0.21.0** · **Milestone 17 → v0.22.0**
 
 **Known limitations:** RT `departure_token` return fetches may HTTP 400 → outbound fallback; hotels require `returnDate`; `children_ages` defaults to `8`; package candidates skew budget; currencyService DI debt; no live vendor calls in CI.
 
@@ -427,14 +431,19 @@ Flight[] + Hotel[] + SearchRequest
 ## Git workflow
 
 ```bash
-git checkout -b cursor/task-name
+# Start a milestone from main
+git checkout main
+git pull
+git checkout -b milestone-18-budget-engine
 # ... make changes ...
+# Do NOT commit or push unless the user says "commit"
 git add <files>
 git commit -m "Concise message describing why."
-git push -u origin cursor/task-name
+git push -u origin milestone-18-budget-engine
+# When finished: open a PR into main; CI must be green before merge
 ```
 
-Current active branch may vary. Check with `git branch --show-current`.
+**`main`** is the stable / live branch. Check the current branch with `git branch --show-current`.
 
 On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 
@@ -496,6 +505,7 @@ On Windows PowerShell, if `npm` fails, use `npm.cmd run dev`.
 | [API_FOUNDATION.md](./API_FOUNDATION.md) | API layers, provider swap guide |
 | [Provider_Guide.md](./Provider_Guide.md) | How to add a flights vendor |
 | [CURRENT_STATE.md](./CURRENT_STATE.md) | Latest release snapshot |
+| [releases/v0.22.0.md](./releases/v0.22.0.md) | v0.22.0 Hotel Actionability + Cleanup |
 | [releases/v0.17.0.md](./releases/v0.17.0.md) | v0.17.0 Live Flights (Milestone 11) |
 | [releases/v0.16.0.md](./releases/v0.16.0.md) | v0.16.0 Milestone 10 Search Experience release |
 | [releases/v0.15.0.md](./releases/v0.15.0.md) | v0.15.0 SerpAPI multi-provider release |

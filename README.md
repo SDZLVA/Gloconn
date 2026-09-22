@@ -3,8 +3,9 @@
 Travel planning web application — discover destinations, plan trips, and manage travel in one place.
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
-**Version:** **v0.21.0** — Recommendation Intelligence  
-**Milestones:** **13** ✅ Packages · **14** ✅ MVP Focus · **15** ✅ MVP Conversion
+**Version:** **v0.22.0** — Hotel Actionability + Cleanup  
+**Milestones:** **16** ✅ Recommendation Intelligence · **17** ✅ Hotel Actionability · **18** NEXT Budget-First Engine  
+**Live site:** [https://glooconn.vercel.app](https://glooconn.vercel.app)
 
 ## Tech stack
 
@@ -80,7 +81,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 | `npm run start` | Run production build locally |
 | `npm run lint` | Run ESLint |
 | `npm run typecheck` | TypeScript (`tsc --noEmit`) |
-| `npm test` | Automated test suite (551 tests) |
+| `npm test` | Automated test suite (717 tests) |
 
 ## Architecture overview
 
@@ -142,6 +143,7 @@ Gloconn/
 | [docs/Provider_Guide.md](./docs/Provider_Guide.md) | How to add a flights vendor |
 | [docs/DECISIONS.md](./docs/DECISIONS.md) | Architecture decisions (ADRs) |
 | [docs/AI_HANDOFF.md](./docs/AI_HANDOFF.md) | Guide for AI assistants |
+| [docs/releases/v0.22.0.md](./docs/releases/v0.22.0.md) | v0.22.0 Hotel Actionability + Cleanup release notes |
 | [docs/releases/v0.21.0.md](./docs/releases/v0.21.0.md) | v0.21.0 Recommendation Intelligence release notes |
 | [docs/releases/v0.20.0.md](./docs/releases/v0.20.0.md) | v0.20.0 MVP Focus release notes |
 | [docs/releases/v0.19.0.md](./docs/releases/v0.19.0.md) | v0.19.0 Travel Packages release notes |
@@ -149,17 +151,21 @@ Gloconn/
 
 ## Current status
 
-- **Released:** **v0.21.0** — Milestone **16** Recommendation Intelligence
-- **Prior:** **v0.20.0** — Milestone **14** MVP Focus + **Milestone 15** MVP Conversion
-- **MVP surface:** Search flights + stays → Recommended Packages → Browse Flights / Hotels
-- **Packages:** candidate quality + diversity pass; top 5 with deterministic roles (Recommended / Lowest price / Best hotel / …) and honesty gates
+- **Released:** **v0.22.0** — Milestone **17** Hotel Actionability + **17.9 Cleanup**
+- **Prior:** **v0.21.0** — Milestone **16** Recommendation Intelligence
+- **Stable branch:** `main` (GitHub default · Vercel production → [glooconn.vercel.app](https://glooconn.vercel.app))
+- **MVP surface:** Search flights + stays → Recommended Packages → Browse Flights / Hotels → **View hotel** drawer
+- **Hotels:** property details API, Google Maps, safe external links, sealed `gpref1` property refs
+- **Packages:** candidate quality + diversity pass; top 5 with deterministic roles and honesty gates
 - **Budget:** optional — leave empty to search without a budget constraint
 - **Budget warning:** shown when all same-currency packages exceed the user's budget
 - **Live Flight / Hotel Search:** SerpAPI when configured — **production-capable**
 - **Default mode:** mock providers until live env is configured
-- **Tests:** **615** automated tests
+- **Security:** Next.js **16.3.3** · **0** npm audit vulnerabilities
+- **Tests:** **717** automated tests
+- **CI:** runs on every branch push and on PRs into `main`
 - **Live routes:** `/`, `/search/results`, `/login`, `/signup`, `/profile`, `/my-trips`
 - **Auth:** Google OAuth and email/password via Supabase
-- **Next:** Milestone 17 (CTO authorization)
+- **Next:** Milestone **18 — Budget-First Engine** (details to be planned)
 
 See [docs/CURRENT_STATE.md](./docs/CURRENT_STATE.md) and [docs/TODO.md](./docs/TODO.md).

@@ -20,11 +20,14 @@ Follow these rules for every task:
 * Never remove existing features unless I ask.
 * If you find a bug, explain the cause before fixing it.
 * Write clean and well-commented code.
-* Commit and push every file you create or edit to my GitHub repository after each task.
+* Never commit or push unless I say "commit".
+* "main" is the stable branch and is what the live site runs.
+* Each new milestone gets its own branch created from main (example: milestone-18-budget-engine).
+* When a milestone is finished, it is merged into main with a pull request, and CI must be green first.
 * At the end of every task, tell me:
 
   * What was completed
   * Which files were added or modified
   * How I can test it
   * What the next logical task should be
-  * What was committed and pushed to GitHub
+  * What is ready to commit (or what was committed, if I said commit)

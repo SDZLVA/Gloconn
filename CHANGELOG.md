@@ -4,6 +4,23 @@ All notable product releases for Glooconn are listed here. Detailed notes live u
 
 ---
 
+## [v0.22.0] — Hotel Actionability + Cleanup (September 2026)
+
+**Milestone 17 — Hotel Actionability** + **17.9 Cleanup**.
+
+- **Hotel actionability:** View hotel drawer with Google Maps embed; property details API; safe external booking/maps links; hotel card polish
+- **Sealed property refs:** `gpref1` sealed references with `PROPERTY_REF_SEAL_SECRET` (server-only)
+- **Hardening:** CSP nonce propagation fix for Vercel hydration; real-data replay mode for internal validation; package details UX
+- **17.9 Cleanup:** Next.js **16.3.1 → 16.3.3** + `npm audit fix` (**0 vulnerabilities**); new **`main`** branch (GitHub default + Vercel production); CI runs on every branch push
+- **717** automated tests; typecheck clean; build clean
+- Security baseline intact (RLS, auth, CSP, rate limits, server-only secrets)
+
+**Details:** [docs/releases/v0.22.0.md](./docs/releases/v0.22.0.md)
+
+**Known limitations:** Same-airline near-duplicates in package top 5; SerpAPI RT `departure_token` outbound fallback; Destinations / About pages still unbuilt.
+
+---
+
 ## [v0.21.0] — Recommendation Intelligence (August 2026)
 
 **Milestone 16 — Recommendation Intelligence** (Sprints 16.1–16.6 complete).

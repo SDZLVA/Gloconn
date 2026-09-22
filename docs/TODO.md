@@ -2,9 +2,36 @@
 
 Active and upcoming tasks. Check items off as they are completed and move done items to [PROGRESS.md](./PROGRESS.md).
 
-**Current release:** **v0.21.0** (Recommendation Intelligence)  
-**Completed milestone:** **Milestone 16** (Sprints 16.1–16.6 ✅)  
-**Next:** Milestone 17 (CTO authorization) · Destinations / About pages
+**Current release:** **v0.22.0** (Hotel Actionability + Cleanup)  
+**Completed milestones:** **Milestone 17** · **17.9 Cleanup**  
+**Next:** **Milestone 18 — Budget-First Engine** (details to be planned later)
+
+---
+
+## 🔴 NEXT — Milestone 18 — Budget-First Engine
+
+- [ ] Plan Milestone 18 scope (CTO / product) — details TBD
+- [ ] Create branch from `main` (example: `milestone-18-budget-engine`) when work starts
+
+---
+
+## ✅ Milestone 17 — Hotel Actionability (released as v0.22.0)
+
+- [x] View hotel drawer + Google Maps
+- [x] Property details API + safe external links
+- [x] Hotel card polish
+- [x] Sealed property refs (`gpref1` + `PROPERTY_REF_SEAL_SECRET`)
+- [x] CSP nonce fix for Vercel hydration
+- [x] Real-data replay mode + package details UX
+
+---
+
+## ✅ 17.9 Cleanup (included in v0.22.0)
+
+- [x] Next.js **16.3.1 → 16.3.3** + `npm audit fix` (**0 vulnerabilities**)
+- [x] Create **`main`** branch (GitHub default + Vercel production)
+- [x] CI runs on every branch push
+- [x] Release docs / version bump to **v0.22.0**
 
 ---
 
