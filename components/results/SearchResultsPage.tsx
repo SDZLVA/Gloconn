@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   collectFilterFacets,
   countActiveFilters,
@@ -9,6 +10,10 @@ import {
 import { filterMvpVisibleResults } from "@/lib/results/mvpUi";
 import {
   BUDGET_COMPATIBILITY_WARNING_MESSAGE,
+  CHEAPER_OPTIONS_COMING_SOON_MESSAGE,
+  CHEAPER_OPTIONS_FLEX_HINT_MESSAGE,
+  formatCheaperOptionsButtonHint,
+  getCheaperOptionsState,
   getHotelRoomWarning,
   isOneWayHotelWarning,
   ONE_WAY_HOTEL_WARNING_MESSAGE,
@@ -21,6 +26,7 @@ import { clearCachedSearchResult } from "@/lib/api/searchResultCache";
 import { searchResponseToResults } from "@/lib/api/searchMappers";
 import { buildHomeSearchUrlFromRequest } from "@/lib/search/params";
 import { buildSearchCacheKey } from "@/lib/search/cacheKey";
+import { normalizeFlexDays } from "@/lib/search/flexibleDates";
 import { useServiceQuery } from "@/hooks/useServiceQuery";
 import {
   MobileFilterToggle,
@@ -35,7 +41,9 @@ import { ResultsLoadingSkeleton } from "@/components/results/ResultsLoadingSkele
 import { ResultsSortBar } from "@/components/results/ResultsSortBar";
 import { ResultsSummaryBar } from "@/components/results/ResultsSummaryBar";
 import { ResultsWarningsBanner } from "@/components/results/ResultsWarningsBanner";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { focusRing } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchResponseWarning } from "@/types/models/search-response";
@@ -68,6 +76,9 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   /** Bumps the query deps so "Try again" re-runs the same search (bypass cache). */
   const [retryCount, setRetryCount] = useState(0);
+  /** Placeholder until Sprint 18.4 — no API call yet. */
+  const [cheaperOptionsComingSoon, setCheaperOptionsComingSoon] =
+    useState(false);
 
   // Stable key — productTypes order / object key order must not cause refetches.
   const searchKey = useMemo(() => buildSearchCacheKey(search), [search]);
@@ -98,6 +109,15 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const showBudgetCompatibilityWarning =
     resultsState.status === "success" &&
     shouldShowBudgetCompatibilityWarning(search.budget, packages);
+  const cheaperOptionsState =
+    resultsState.status === "success"
+      ? getCheaperOptionsState(search.budget, packages, search.flexDays)
+      : "none";
+  const flexDaysNormalized = normalizeFlexDays(search.flexDays);
+
+  const handleFindCheaperOptions = useCallback(() => {
+    setCheaperOptionsComingSoon(true);
+  }, []);
 
   // Facets / filter / sort only recompute when their inputs change (already memoized).
   const facets = useMemo(
@@ -160,7 +180,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
 
   const clearFilters = useCallback(() => {
     setFilters(defaultFilters);
-  }, [defaultFilters]);
+  }, [defaultFilters, setFilters]);
 
   const handleRetry = useCallback(() => {
     // Drop the cached entry so "Try again" always hits the network.
@@ -196,6 +216,49 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
           role="status"
         >
           <p className="font-medium">{BUDGET_COMPATIBILITY_WARNING_MESSAGE}</p>
+
+          {cheaperOptionsState === "hint" && (
+            <p className="mt-2 text-sm text-amber-900/90">
+              {CHEAPER_OPTIONS_FLEX_HINT_MESSAGE}{" "}
+              <Link
+                href={editSearchHref}
+                className={cn(
+                  "font-semibold text-brand-800 underline underline-offset-2 motion-safe:hover:text-brand-900",
+                  focusRing,
+                  "rounded-sm",
+                )}
+              >
+                Edit search
+              </Link>
+              {" "}to choose ±1–3 days.
+            </p>
+          )}
+
+          {cheaperOptionsState === "button" && (
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full border-amber-300 bg-white text-amber-950 sm:w-auto"
+                onClick={handleFindCheaperOptions}
+                aria-describedby="cheaper-options-hint"
+              >
+                Find cheaper options
+              </Button>
+              <p
+                id="cheaper-options-hint"
+                className="text-xs leading-relaxed text-amber-900/80 sm:text-sm"
+              >
+                {formatCheaperOptionsButtonHint(flexDaysNormalized)}
+              </p>
+            </div>
+          )}
+
+          {cheaperOptionsState === "button" && cheaperOptionsComingSoon && (
+            <p className="mt-2 text-xs font-medium text-amber-900/80 sm:text-sm" role="status">
+              {CHEAPER_OPTIONS_COMING_SOON_MESSAGE}
+            </p>
+          )}
         </div>
       )}
 

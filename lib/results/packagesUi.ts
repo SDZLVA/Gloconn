@@ -3,6 +3,7 @@
  * No React — kept testable without a component harness.
  */
 
+import { normalizeFlexDays } from "@/lib/search/flexibleDates";
 import type { TravelPackage } from "@/types/models/travel-package";
 import type { Budget } from "@/types/models/budget";
 
@@ -152,6 +153,53 @@ export const ONE_WAY_HOTEL_WARNING_MESSAGE =
 /** Copy shown when user budget does not cover any composed package. */
 export const BUDGET_COMPATIBILITY_WARNING_MESSAGE =
   "No package is within your budget. Try increasing your budget to see more options.";
+
+/** Hint when Exact dates are set and nothing fits the budget. */
+export const CHEAPER_OPTIONS_FLEX_HINT_MESSAGE =
+  "Make your dates flexible to find cheaper options";
+
+/** Placeholder note until Sprint 18.4 wires the explore API. */
+export const CHEAPER_OPTIONS_COMING_SOON_MESSAGE =
+  "Coming soon — this will search nearby dates.";
+
+/**
+ * What the results page should offer when packages are all over budget.
+ * - button: flexDays 1–3 → "Find cheaper options" (explore later)
+ * - hint: Exact (0) → nudge to make dates flexible via Edit search
+ * - none: no CTA (no budget, no packages, currency mismatch, or something fits)
+ */
+export type CheaperOptionsState = "button" | "hint" | "none";
+
+/**
+ * Decides whether to show the cheaper-options button, Exact hint, or nothing.
+ * Reuses `shouldShowBudgetCompatibilityWarning` so rules stay in one place.
+ */
+export function getCheaperOptionsState(
+  budget: Budget | null | undefined,
+  packages: readonly TravelPackage[] | null | undefined,
+  flexDays: number | null | undefined,
+): CheaperOptionsState {
+  if (!shouldShowBudgetCompatibilityWarning(budget, packages)) {
+    return "none";
+  }
+
+  const normalized = normalizeFlexDays(flexDays);
+  if (normalized >= 1 && normalized <= 3) {
+    return "button";
+  }
+
+  return "hint";
+}
+
+/**
+ * Supporting line under the Find cheaper options button.
+ * Example: "We'll check trips shifted by up to ±2 days (same number of nights)."
+ */
+export function formatCheaperOptionsButtonHint(flexDays: number): string {
+  const n = normalizeFlexDays(flexDays);
+  const window = n >= 1 ? n : 1;
+  return `We'll check trips shifted by up to ±${window} days (same number of nights).`;
+}
 
 /**
  * Returns true when a user-set budget exists but no composed package is within it.
