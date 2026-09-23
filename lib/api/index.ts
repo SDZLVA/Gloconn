@@ -53,3 +53,9 @@ export {
 } from "@/lib/api/types";
 export { validateSearchRequest } from "@/lib/api/validation";
 export { postSearchTrips } from "@/lib/api/searchClient";
+export {
+  clearDateOptionsClientCache,
+  postDateOptions,
+  type PostDateOptionsOptions,
+  type PostDateOptionsResult,
+} from "@/lib/api/dateOptionsClient";
