@@ -60,11 +60,30 @@ export interface HotelsProvider extends BaseProvider {
 }
 
 /**
+ * Optional flags for flight search.
+ * Scout mode skips expensive round-trip enrichment (Milestone 18).
+ */
+export type FlightSearchOptions = {
+  /**
+   * When true, providers may return a cheaper outbound-only price estimate
+   * (e.g. SerpAPI skips `departure_token` return lookups).
+   * Default false — full search behaviour unchanged.
+   */
+  scout?: boolean;
+};
+
+/**
  * Flight search for a trip.
  */
 export interface FlightsProvider extends BaseProvider {
-  /** Returns flights matching the trip criteria. */
-  search(request: SearchRequest): Promise<Flight[]>;
+  /**
+   * Returns flights matching the trip criteria.
+   * Second argument is optional so existing callers stay valid.
+   */
+  search(
+    request: SearchRequest,
+    options?: FlightSearchOptions,
+  ): Promise<Flight[]>;
 }
 
 /** Combined bus and train results from a single ground-transport search. */

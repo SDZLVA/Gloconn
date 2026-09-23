@@ -196,6 +196,63 @@ describe("SerpApiFlightsProvider.search", () => {
     assert.equal(flights[0]!.durationMinutes, 170);
   });
 
+  it("scout mode uses one outbound HTTP call and skips departure_token lookups", async () => {
+    const request = baseRequest({
+      tripType: "round-trip",
+      returnDate: "2026-08-10",
+    });
+    const config = baseConfig();
+    let httpCalls = 0;
+    let returnBuilderCalls = 0;
+    let mapCalls = 0;
+
+    const outboundOption = {
+      flights: [
+        {
+          departure_airport: { id: "MXP", time: "2026-08-01 07:00" },
+          arrival_airport: { id: "CDG", time: "2026-08-01 08:25" },
+          duration: 85,
+          airline: "Air France",
+          travel_class: "Economy",
+          flight_number: "AF 1",
+        },
+      ],
+      total_duration: 85,
+      price: 100,
+      type: "Round trip",
+      departure_token: "should-not-be-used",
+    };
+
+    const mapped = [sampleFlight()];
+
+    const provider = new SerpApiFlightsProvider({
+      getSerpApiConfig: () => config,
+      buildParams: () => new URLSearchParams({ engine: "google_flights" }),
+      buildReturnParams: () => {
+        returnBuilderCalls += 1;
+        return new URLSearchParams({ departure_token: "x" });
+      },
+      searchHttp: async () => {
+        httpCalls += 1;
+        return {
+          search_parameters: { currency: "EUR" },
+          best_flights: [outboundOption],
+        };
+      },
+      mapResponse: () => {
+        mapCalls += 1;
+        return mapped;
+      },
+    });
+
+    const flights = await provider.search(request, { scout: true });
+
+    assert.equal(httpCalls, 1);
+    assert.equal(returnBuilderCalls, 0);
+    assert.equal(mapCalls, 1);
+    assert.equal(flights, mapped);
+  });
+
   it("falls back to outbound-only mapping when return fetch fails", async () => {
     const request = baseRequest({
       tripType: "round-trip",

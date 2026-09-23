@@ -21,6 +21,18 @@ export {
 } from "@/lib/services/searchService";
 
 export {
+  DATE_OPTIONS_CONCURRENCY,
+  DATE_OPTIONS_TIME_BUDGET_MS,
+  findCheapestPackage,
+  packageTotalFitsBudget,
+  searchDateOptions,
+  type DateOptionResult,
+  type DateOptionStatus,
+  type SearchDateOptionsParams,
+  type SearchDateOptionsResult,
+} from "@/lib/services/dateOptionsService";
+
+export {
   getServiceProviders,
   resetServiceProviders,
   setServiceProviders,

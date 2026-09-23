@@ -4,12 +4,16 @@
  * Composes query builder → HTTP client → mapper.
  * Sprint 11.2: full date-time mapping, currency fallbacks, round-trip
  * return-leg fetch via `departure_token` (isolated to this package).
+ * Milestone 18: scout mode skips departure_token lookups (one outbound call).
  */
 
 import { createProviderError } from "@/lib/api/errors";
 import { getAppConfig } from "@/lib/config";
 import type { SerpApiConfig } from "@/lib/config/types";
-import type { FlightsProvider } from "@/lib/providers/core/types";
+import type {
+  FlightSearchOptions,
+  FlightsProvider,
+} from "@/lib/providers/core/types";
 import { searchGoogleFlights } from "@/lib/providers/flights/serpapi/client";
 import {
   buildSerpApiReturnSearchParams,
@@ -75,7 +79,10 @@ export class SerpApiFlightsProvider implements FlightsProvider {
     this.getSerpApiConfig = deps.getSerpApiConfig ?? defaultGetSerpApiConfig;
   }
 
-  async search(request: SearchRequest): Promise<Flight[]> {
+  async search(
+    request: SearchRequest,
+    options: FlightSearchOptions = {},
+  ): Promise<Flight[]> {
     const destinationId = request.destinationId?.trim();
     if (!destinationId) {
       throw createProviderError(
@@ -90,7 +97,8 @@ export class SerpApiFlightsProvider implements FlightsProvider {
       config,
     );
 
-    if (request.tripType !== "round-trip") {
+    // Scout / one-way: one outbound HTTP call only — no departure_token lookups.
+    if (options.scout === true || request.tripType !== "round-trip") {
       return this.mapResponse(raw, {
         destinationId,
         requestCurrency: requestCurrency(request),

@@ -6,14 +6,20 @@ import {
   mockDelay,
   searchMockFlights,
 } from "@/lib/providers/mock/shared";
-import type { FlightsProvider } from "@/lib/providers/core/types";
+import type {
+  FlightSearchOptions,
+  FlightsProvider,
+} from "@/lib/providers/core/types";
 import type { Flight } from "@/types/models";
 import type { SearchRequest } from "@/types/models/search-request";
 
 export class MockFlightsProvider implements FlightsProvider {
   readonly name = "mock";
 
-  async search(request: SearchRequest): Promise<Flight[]> {
+  async search(
+    request: SearchRequest,
+    _options?: FlightSearchOptions,
+  ): Promise<Flight[]> {
     return mockDelay(searchMockFlights(request));
   }
 }

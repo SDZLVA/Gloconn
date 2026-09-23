@@ -32,6 +32,15 @@ import type { TransportSearchResult } from "@/lib/providers/core/types";
 
 type DomainKey = "hotels" | "flights" | "transport";
 
+/** Options for trip search orchestration (Milestone 18 scout mode). */
+export type OrchestrateTripSearchOptions = {
+  /**
+   * When true, flights providers may skip expensive round-trip enrichment.
+   * Default false — normal search behaviour is unchanged.
+   */
+  scout?: boolean;
+};
+
 /**
  * Enriches a search request with catalog ids and optional IATA codes.
  * Does not validate or fail — missing airports are left empty for later checks.
@@ -99,6 +108,7 @@ function emptyTransport(): TransportSearchResult {
 async function searchAllDomains(
   request: SearchRequest,
   providers: ServiceProviders,
+  options: OrchestrateTripSearchOptions = {},
 ): Promise<SearchResponse> {
   const productTypes = normalizeProductTypes(request.productTypes);
   const requested: DomainKey[] = [];
@@ -113,11 +123,14 @@ async function searchAllDomains(
     requested.push("transport");
   }
 
+  const flightSearchOptions =
+    options.scout === true ? { scout: true as const } : undefined;
+
   const hotelsPromise: Promise<Hotel[]> = requested.includes("hotels")
     ? providers.hotels.search(request)
     : Promise.resolve([]);
   const flightsPromise: Promise<Flight[]> = requested.includes("flights")
-    ? providers.flights.search(request)
+    ? providers.flights.search(request, flightSearchOptions)
     : Promise.resolve([]);
   const transportPromise: Promise<TransportSearchResult> = requested.includes(
     "transport",
@@ -206,10 +219,11 @@ function composePackagesIfPossible(
 export async function orchestrateTripSearch(
   request: SearchRequest,
   providers: ServiceProviders = getServiceProviders(),
+  options: OrchestrateTripSearchOptions = {},
 ): Promise<SearchResponse> {
   const enriched = await enrichSearchRequest(request, providers);
   assertFlightAirportsResolved(enriched);
-  return searchAllDomains(enriched, providers);
+  return searchAllDomains(enriched, providers, options);
 }
 
 /** Returns the full result catalog via active providers (price-range defaults). */
