@@ -2,6 +2,7 @@
 
 import { BudgetSelector } from "@/components/search/BudgetSelector";
 import { DestinationAutocomplete } from "@/components/search/DestinationAutocomplete";
+import { FlexibleDatesSelector } from "@/components/search/FlexibleDatesSelector";
 import { OriginAutocomplete } from "@/components/search/OriginAutocomplete";
 import {
   SearchFormDivider,
@@ -12,6 +13,7 @@ import { TravelDatesSelector } from "@/components/search/TravelDatesSelector";
 import { TravelersSelector } from "@/components/search/TravelersSelector";
 import { Button } from "@/components/ui/Button";
 import { countSearchFormErrors } from "@/lib/search";
+import { normalizeFlexDays } from "@/lib/search/flexibleDates";
 import { cn } from "@/lib/utils";
 import { focusRing } from "@/lib/styles";
 import type { SearchFormController } from "@/types/search-form";
@@ -121,16 +123,22 @@ export function SearchForm({
       <SearchFormDivider />
 
       <SearchFormSection id="search-section-when" title="When">
-        <TravelDatesSelector
-          tripType={form.tripType}
-          departureDate={form.departureDate}
-          returnDate={form.returnDate}
-          onTripTypeChange={actions.updateTripType}
-          onDatesChange={actions.updateDates}
-          departureError={errors.departureDate}
-          returnError={errors.returnDate}
-          required
-        />
+        <div className="flex flex-col gap-4">
+          <TravelDatesSelector
+            tripType={form.tripType}
+            departureDate={form.departureDate}
+            returnDate={form.returnDate}
+            onTripTypeChange={actions.updateTripType}
+            onDatesChange={actions.updateDates}
+            departureError={errors.departureDate}
+            returnError={errors.returnDate}
+            required
+          />
+          <FlexibleDatesSelector
+            value={normalizeFlexDays(form.flexDays)}
+            onChange={(flexDays) => actions.updateField("flexDays", flexDays)}
+          />
+        </div>
       </SearchFormSection>
 
       <SearchFormDivider />

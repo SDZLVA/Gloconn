@@ -10,6 +10,7 @@ import {
   parseProductTypesParam,
   serializeProductTypesParam,
 } from "@/lib/search/productTypes";
+import { normalizeFlexDays } from "@/lib/search/flexibleDates";
 import { getTotalGuests } from "@/lib/search/travelers";
 import {
   hasSearchFormErrors,
@@ -63,6 +64,7 @@ export function buildSearchRequest(form: SearchFormState): SearchRequest {
     tripType: form.tripType,
     departureDate: form.departureDate,
     returnDate: form.tripType === "one-way" ? null : form.returnDate,
+    flexDays: normalizeFlexDays(form.flexDays),
     budget: budgetFromForm(form),
     travelers,
     totalGuests: getTotalGuests(travelers),
@@ -81,6 +83,7 @@ export function buildSearchRequestFromData(data: SearchData): SearchRequest {
     tripType: data.tripType,
     departureDate: data.departureDate,
     returnDate: data.returnDate,
+    flexDays: normalizeFlexDays(data.flexDays),
     budget: budgetFromSearchData(data),
     travelers: { ...data.travelers },
     totalGuests: data.totalGuests,
@@ -99,6 +102,7 @@ export function searchRequestToSearchData(request: SearchRequest): SearchData {
     tripType: request.tripType,
     departureDate: request.departureDate,
     returnDate: request.returnDate,
+    flexDays: normalizeFlexDays(request.flexDays),
     budget: request.budget?.amount ?? null,
     budgetCurrency: request.budget?.currency ?? null,
     travelers: { ...request.travelers },
@@ -138,6 +142,10 @@ export function searchRequestToParams(request: SearchRequest): URLSearchParams {
   if (request.returnDate) {
     params.set("returnDate", request.returnDate);
   }
+  const flexDays = normalizeFlexDays(request.flexDays);
+  if (flexDays > 0) {
+    params.set("flex", String(flexDays));
+  }
   if (request.budget) {
     params.set("budget", String(request.budget.amount));
     params.set("budgetCurrency", request.budget.currency);
@@ -169,6 +177,7 @@ export function parseSearchRequestFromParams(
   const tripType = params.get("tripType") as SearchRequest["tripType"] | null;
   const departureDate = params.get("departureDate") ?? undefined;
   const returnDate = params.get("returnDate");
+  const flexDays = normalizeFlexDays(params.get("flex"));
   const budgetRaw = params.get("budget");
   const budgetCurrency = params.get("budgetCurrency") as Budget["currency"] | null;
   const adults = Number(params.get("adults") ?? "1");
@@ -196,6 +205,7 @@ export function parseSearchRequestFromParams(
     tripType: tripType ?? undefined,
     departureDate,
     returnDate: returnDate ?? null,
+    flexDays,
     budget,
     travelers,
     totalGuests,
@@ -227,6 +237,10 @@ export function partialSearchRequestToSearchData(
     tripType: partial.tripType,
     departureDate: partial.departureDate,
     returnDate: partial.returnDate,
+    flexDays:
+      partial.flexDays === undefined
+        ? undefined
+        : normalizeFlexDays(partial.flexDays),
     budget:
       partial.budget === undefined
         ? undefined
@@ -269,6 +283,7 @@ export function serializeSearchRequest(
     ...request,
     travelers: { ...request.travelers },
     budget: request.budget ? { ...request.budget } : null,
+    flexDays: normalizeFlexDays(request.flexDays),
     productTypes: request.productTypes
       ? [...request.productTypes]
       : undefined,

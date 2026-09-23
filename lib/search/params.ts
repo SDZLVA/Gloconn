@@ -1,4 +1,5 @@
 import { buildSearchData } from "@/lib/search/payload";
+import { normalizeFlexDays } from "@/lib/search/flexibleDates";
 import { normalizeProductTypes } from "@/lib/search/productTypes";
 import {
   buildResultsUrlFromRequest,
@@ -47,6 +48,7 @@ export function parseSearchParamsToForm(
     tripType: data.tripType ?? INITIAL_SEARCH_FORM.tripType,
     departureDate: data.departureDate ?? "",
     returnDate: data.returnDate ?? "",
+    flexDays: normalizeFlexDays(data.flexDays),
     budget:
       data.budget !== null && data.budget !== undefined
         ? String(data.budget)
@@ -73,6 +75,7 @@ export function buildHomeSearchUrl(data: Partial<SearchData>): string {
     tripType: data.tripType ?? "round-trip",
     departureDate: data.departureDate ?? "",
     returnDate: data.returnDate ?? null,
+    flexDays: normalizeFlexDays(data.flexDays),
     budget: data.budget ?? null,
     budgetCurrency: data.budgetCurrency ?? null,
     travelers: data.travelers ?? { ...INITIAL_PASSENGERS },

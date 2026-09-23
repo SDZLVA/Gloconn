@@ -7,9 +7,31 @@ import assert from "node:assert/strict";
 import {
   buildFlexibleDatePairs,
   isFlexDays,
+  normalizeFlexDays,
 } from "@/lib/search/flexibleDates";
 
 const TODAY = "2026-03-01";
+
+describe("normalizeFlexDays", () => {
+  it("keeps valid integers 0–3", () => {
+    assert.equal(normalizeFlexDays(0), 0);
+    assert.equal(normalizeFlexDays(1), 1);
+    assert.equal(normalizeFlexDays(2), 2);
+    assert.equal(normalizeFlexDays(3), 3);
+  });
+
+  it("parses numeric strings and coerces everything else to 0", () => {
+    assert.equal(normalizeFlexDays("2"), 2);
+    assert.equal(normalizeFlexDays(" 3 "), 3);
+    assert.equal(normalizeFlexDays("4"), 0);
+    assert.equal(normalizeFlexDays("-1"), 0);
+    assert.equal(normalizeFlexDays("abc"), 0);
+    assert.equal(normalizeFlexDays(""), 0);
+    assert.equal(normalizeFlexDays(null), 0);
+    assert.equal(normalizeFlexDays(undefined), 0);
+    assert.equal(normalizeFlexDays(1.5), 0);
+  });
+});
 
 describe("isFlexDays", () => {
   it("accepts integers 0–3", () => {

@@ -15,6 +15,37 @@ import {
 /** Allowed flexible-day window sizes (0 = Exact / no alternatives). */
 export type FlexDays = 0 | 1 | 2 | 3;
 
+/** Labels for the search-form Flexible dates control. */
+export const FLEX_DAYS_OPTIONS: ReadonlyArray<{
+  value: FlexDays;
+  label: string;
+}> = [
+  { value: 0, label: "Exact dates" },
+  { value: 1, label: "± 1 day" },
+  { value: 2, label: "± 2 days" },
+  { value: 3, label: "± 3 days" },
+] as const;
+
+/**
+ * Coerces any unknown value to a safe FlexDays (0–3).
+ * Invalid, missing, or out-of-range values become 0 — never throws.
+ * Used for URL params and API body validation.
+ */
+export function normalizeFlexDays(value: unknown): FlexDays {
+  if (typeof value === "number" && isFlexDays(value)) {
+    return value;
+  }
+
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value.trim());
+    if (isFlexDays(parsed)) {
+      return parsed;
+    }
+  }
+
+  return 0;
+}
+
 /** One alternative departure/return pair (same trip length as the original). */
 export type FlexibleDatePair = {
   departureDate: string;

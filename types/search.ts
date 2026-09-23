@@ -5,6 +5,7 @@
  */
 
 import type { CurrencyCode } from "@/lib/budget";
+import type { FlexDays } from "@/lib/search/flexibleDates";
 import type {
   SearchProductType,
   SearchRequest,
@@ -49,6 +50,8 @@ export type SearchData = {
   tripType: TripType;
   departureDate: string;
   returnDate: string | null;
+  /** Flexible date window (0 = Exact). Optional for older URLs / saved trips. */
+  flexDays?: FlexDays;
   budget: number | null;
   budgetCurrency: CurrencyCode | null;
   travelers: import("@/types/models").Traveler;
