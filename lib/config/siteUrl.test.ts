@@ -58,6 +58,10 @@ function makeConfig(
       enabled: false,
       blockedInProduction: false,
     },
+    features: {
+      exploreDatesEnabled: true,
+      exploreDatesEnabledInvalid: false,
+    },
   };
 }
 

@@ -20,8 +20,9 @@ export class AmadeusFlightsProvider implements FlightsProvider {
 
   async search(
     request: SearchRequest,
-    _options?: FlightSearchOptions,
+    options?: FlightSearchOptions,
   ): Promise<Flight[]> {
+    void options; // Scout is SerpAPI-only; Amadeus ignores it.
     const destinationId = request.destinationId?.trim();
     if (!destinationId) {
       throw createProviderError(

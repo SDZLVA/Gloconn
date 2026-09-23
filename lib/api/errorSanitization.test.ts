@@ -182,6 +182,10 @@ describe("F-08: config error logging — message-only, no stack traces", () => {
         enabled: false,
         blockedInProduction: false,
       },
+      features: {
+        exploreDatesEnabled: true,
+        exploreDatesEnabledInvalid: false,
+      },
     });
 
     // Every error and warning must have a string message, never an Error object.

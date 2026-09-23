@@ -131,6 +131,10 @@ function makeConfigSkeleton(
     },
     propertyRefSeal: { secret: "", isConfigured: false },
     replay: { enabled: false, blockedInProduction: false },
+    features: {
+      exploreDatesEnabled: true,
+      exploreDatesEnabledInvalid: false,
+    },
     ...overrides,
   };
 }

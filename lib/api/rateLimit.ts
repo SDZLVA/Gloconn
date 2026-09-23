@@ -78,20 +78,26 @@ export function checkRateLimit(ip: string): RateLimitResult {
  * Checks and records one request with caller-supplied per-minute and per-hour
  * limits. Used for auth endpoints that require different thresholds (F-07).
  *
- * The cache key namespace includes the limits so that a single IP can have
- * independent counters for different endpoints (e.g. /api/search vs /auth/callback).
+ * The cache key namespace includes the limits (and optional `bucket`) so that a
+ * single IP can have independent counters for different endpoints
+ * (e.g. /api/search vs /api/search/date-options vs /auth/callback).
  *
  * @param ip           - Client IP address string. Must be non-empty.
  * @param limitPerMin  - Maximum requests allowed per 60-second window.
  * @param limitPerHour - Maximum requests allowed per 3600-second window.
+ * @param bucket       - Optional extra key segment (default "") for routes that
+ *                       share the same numeric limits but need separate counters.
  */
 export function checkRateLimitCustom(
   ip: string,
   limitPerMin: number,
   limitPerHour: number,
+  bucket = "",
 ): RateLimitResult {
-  // Include limits in the cache key so different endpoints get independent buckets.
-  const ns = `${limitPerMin}:${limitPerHour}`;
+  // Include limits (+ optional bucket) so different endpoints get independent buckets.
+  const ns = bucket
+    ? `${bucket}:${limitPerMin}:${limitPerHour}`
+    : `${limitPerMin}:${limitPerHour}`;
 
   const minuteKey = `${PREFIX_MINUTE}${ns}:${ip}`;
   const minuteCount = (getCached<number>(minuteKey) ?? 0) + 1;
@@ -111,6 +117,23 @@ export function checkRateLimitCustom(
   setCached(hourKey, hourCount, WINDOW_HOUR_MS);
 
   return { allowed: true };
+}
+
+/** Explore date-options: tighter than /api/search (one click fans out to many SerpAPI calls). */
+export const EXPLORE_DATES_RATE_LIMIT = {
+  perMinute: 3,
+  perHour: 20,
+  bucket: "explore-dates",
+} as const;
+
+/** Rate limit for POST /api/search/date-options (independent of /api/search). */
+export function checkExploreDatesRateLimit(ip: string): RateLimitResult {
+  return checkRateLimitCustom(
+    ip,
+    EXPLORE_DATES_RATE_LIMIT.perMinute,
+    EXPLORE_DATES_RATE_LIMIT.perHour,
+    EXPLORE_DATES_RATE_LIMIT.bucket,
+  );
 }
 
 /**

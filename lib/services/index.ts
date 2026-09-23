@@ -33,6 +33,13 @@ export {
 } from "@/lib/services/dateOptionsService";
 
 export {
+  DATE_OPTIONS_CACHE_TTL_MS,
+  buildDateOptionsCacheKey,
+  exploreDateOptions,
+  isExploreFlexDays,
+} from "@/lib/services/dateOptionsExploreService";
+
+export {
   getServiceProviders,
   resetServiceProviders,
   setServiceProviders,

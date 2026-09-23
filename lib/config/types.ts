@@ -160,6 +160,22 @@ export type ReplayConfig = {
   blockedInProduction: boolean;
 };
 
+/**
+ * Feature flags — server-only toggles for expensive / experimental APIs.
+ */
+export type FeaturesConfig = {
+  /**
+   * When false, POST /api/search/date-options returns 503 EXPLORE_DISABLED.
+   * Default true when `EXPLORE_DATES_ENABLED` is unset.
+   * Protects SerpAPI monthly quota (scout explore can use ~12 searches per ±3 click).
+   */
+  exploreDatesEnabled: boolean;
+  /** Raw `EXPLORE_DATES_ENABLED` when present. */
+  exploreDatesEnabledInput?: string;
+  /** True when the env value was set but not a recognized boolean. */
+  exploreDatesEnabledInvalid: boolean;
+};
+
 export type AppConfig = {
   app: AppSection;
   supabase: SupabaseConfig;
@@ -169,6 +185,7 @@ export type AppConfig = {
   serpapi: SerpApiConfig;
   propertyRefSeal: PropertyRefSealConfig;
   replay: ReplayConfig;
+  features: FeaturesConfig;
   validation: ConfigValidation;
 };
 

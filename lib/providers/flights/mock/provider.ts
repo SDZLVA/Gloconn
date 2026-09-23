@@ -18,8 +18,9 @@ export class MockFlightsProvider implements FlightsProvider {
 
   async search(
     request: SearchRequest,
-    _options?: FlightSearchOptions,
+    options?: FlightSearchOptions,
   ): Promise<Flight[]> {
+    void options; // Mock data is already cheap; scout does not change results.
     return mockDelay(searchMockFlights(request));
   }
 }
