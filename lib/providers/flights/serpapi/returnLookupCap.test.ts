@@ -1,10 +1,10 @@
 /**
- * Sprint 18.7 — SerpAPI round-trip return-lookup cap.
+ * Sprint 18.7 / 18.8 — SerpAPI round-trip return-lookup cap.
  *
  * Guards the SerpAPI quota (250 searches/month): however many outbound
  * offers carry a departure_token, only MAX_ROUND_TRIP_RETURN_LOOKUPS of
- * them may trigger a paid return-leg HTTP call. Remaining offers fall
- * back to the outbound option's own price.
+ * them may trigger a paid return-leg HTTP call. Remaining offers are
+ * dropped — outbound-only prices are not honest round-trip totals.
  */
 
 import { describe, it } from "node:test";
@@ -32,6 +32,14 @@ function roundTripRequest(): SearchRequest {
     totalGuests: 1,
     travelStyle: "standard",
     productTypes: ["flights"],
+  };
+}
+
+function oneWayRequest(): SearchRequest {
+  return {
+    ...roundTripRequest(),
+    tripType: "one-way",
+    returnDate: null,
   };
 }
 
@@ -81,12 +89,12 @@ function returnOption() {
   };
 }
 
-describe("SerpApiFlightsProvider return-lookup cap (18.7)", () => {
-  it("is 1 so a round-trip search stays cheap", () => {
-    assert.equal(MAX_ROUND_TRIP_RETURN_LOOKUPS, 1);
+describe("SerpApiFlightsProvider return-lookup cap (18.7 / 18.8)", () => {
+  it("is 3 so a full round-trip search stays within quota", () => {
+    assert.equal(MAX_ROUND_TRIP_RETURN_LOOKUPS, 3);
   });
 
-  it("makes at most MAX_ROUND_TRIP_RETURN_LOOKUPS return calls, whatever the offer count", async () => {
+  it("makes at most MAX_ROUND_TRIP_RETURN_LOOKUPS return calls and drops the rest", async () => {
     const tokensSeen: string[] = [];
     let outboundCalls = 0;
 
@@ -120,14 +128,67 @@ describe("SerpApiFlightsProvider return-lookup cap (18.7)", () => {
 
     const flights = await provider.search(roundTripRequest());
 
-    // One outbound call plus at most the capped number of return calls.
     assert.equal(outboundCalls, 1);
     assert.equal(tokensSeen.length, MAX_ROUND_TRIP_RETURN_LOOKUPS);
-    assert.deepEqual(tokensSeen, ["outbound-token-1"]);
+    assert.deepEqual(tokensSeen, [
+      "outbound-token-1",
+      "outbound-token-2",
+      "outbound-token-3",
+    ]);
 
-    // Offers past the cap are still returned, priced from the outbound option.
-    assert.equal(flights.length, 6);
-    assert.equal(flights[0]!.price, 410);
-    assert.ok(flights.slice(1).every((flight) => flight.price < 410));
+    // Only enriched offers — beyond-cap outbounds are dropped (no understated prices).
+    assert.equal(flights.length, 3);
+    assert.ok(flights.every((flight) => flight.price === 410));
+    assert.ok(flights.every((flight) => flight.id.startsWith("serpapi-rt-")));
+  });
+
+  it("does not run return lookups for one-way searches (scout or full)", async () => {
+    let httpCalls = 0;
+    let returnBuilderCalls = 0;
+    let mapCalls = 0;
+    const mapped = [
+      {
+        id: "serpapi-ow-1",
+        destinationId: "paris",
+        price: 120,
+        currency: "EUR" as const,
+        rating: 4,
+        airline: "AF",
+        departureTime: "2026-08-01 07:00",
+        arrivalTime: "2026-08-01 08:30",
+        durationMinutes: 90,
+        stops: 0,
+        cabin: "Economy" as const,
+      },
+    ];
+
+    const provider = new SerpApiFlightsProvider({
+      getSerpApiConfig: config,
+      buildParams: () => new URLSearchParams({ engine: "google_flights" }),
+      buildReturnParams: () => {
+        returnBuilderCalls += 1;
+        return new URLSearchParams({ departure_token: "x" });
+      },
+      searchHttp: async () => {
+        httpCalls += 1;
+        return {
+          search_parameters: { currency: "EUR" },
+          best_flights: [outboundOption(1)],
+        };
+      },
+      mapResponse: () => {
+        mapCalls += 1;
+        return mapped;
+      },
+    });
+
+    const full = await provider.search(oneWayRequest());
+    const scout = await provider.search(oneWayRequest(), { scout: true });
+
+    assert.equal(httpCalls, 2);
+    assert.equal(returnBuilderCalls, 0);
+    assert.equal(mapCalls, 2);
+    assert.equal(full, mapped);
+    assert.equal(scout, mapped);
   });
 });

@@ -87,13 +87,22 @@ describe("buildInitialResultsFilters", () => {
     assert.equal(filters.maxPrice, 750);
   });
 
-  it("keeps min ≤ max when all results exceed budget", () => {
+  it("keeps budget max when at least one result fits", () => {
+    const filters = buildInitialResultsFilters(
+      { min: 200, max: 2500 },
+      { amount: 500, currency: "EUR" },
+    );
+    assert.equal(filters.maxPrice, 500);
+    assert.equal(filters.minPrice, 200);
+  });
+
+  it("uses observed range when every result is over budget", () => {
     const filters = buildInitialResultsFilters(
       { min: 800, max: 2500 },
       { amount: 500, currency: "EUR" },
     );
-    assert.equal(filters.maxPrice, 500);
-    assert.equal(filters.minPrice, 500);
+    assert.equal(filters.minPrice, 800);
+    assert.equal(filters.maxPrice, 2500);
   });
 
   it("allows manual increase beyond budget (priceRange max unchanged)", () => {

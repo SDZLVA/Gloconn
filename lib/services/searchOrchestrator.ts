@@ -35,8 +35,8 @@ type DomainKey = "hotels" | "flights" | "transport";
 /** Options for trip search orchestration (Milestone 18 scout mode). */
 export type OrchestrateTripSearchOptions = {
   /**
-   * When true, flights providers may skip expensive round-trip enrichment.
-   * Default false — normal search behaviour is unchanged.
+   * When true, flights providers may use a cheaper round-trip enrichment
+   * (SerpAPI: 1 return lookup instead of up to 3). Default false.
    */
   scout?: boolean;
 };

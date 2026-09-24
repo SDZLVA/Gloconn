@@ -61,13 +61,14 @@ export interface HotelsProvider extends BaseProvider {
 
 /**
  * Optional flags for flight search.
- * Scout mode skips expensive round-trip enrichment (Milestone 18).
+ * Scout mode uses a cheaper round-trip enrichment (Milestone 18).
  */
 export type FlightSearchOptions = {
   /**
-   * When true, providers may return a cheaper outbound-only price estimate
-   * (e.g. SerpAPI skips `departure_token` return lookups).
-   * Default false — full search behaviour unchanged.
+   * When true, SerpAPI round-trip still does a `departure_token` return lookup
+   * (needed for an honest RT total) but only for 1 outbound offer.
+   * One-way searches are unchanged (single outbound call).
+   * Default false — full search enriches up to the provider's return-lookup cap.
    */
   scout?: boolean;
 };

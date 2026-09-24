@@ -600,17 +600,6 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
             </aside>
 
             <div className="min-w-0 space-y-4">
-              {!showSkeleton && (
-                <ResultsSortBar
-                  sortBy={sortBy}
-                  onSortChange={setSortBy}
-                  resultCount={sorted.length}
-                  flightCount={sorted.filter((r) => r.type === "flight").length}
-                  hotelCount={sorted.filter((r) => r.type === "hotel").length}
-                  isLoading={isLoading && hasData && !isChipSearchLoading}
-                />
-              )}
-
               {showSkeleton && <ResultsLoadingSkeleton />}
 
               {hasNoResults && (
@@ -642,6 +631,14 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     destinationIata={activeSearch.destinationIata}
                     budget={activeSearch.budget}
                     tripType={activeSearch.tripType}
+                  />
+                  <ResultsSortBar
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
+                    resultCount={sorted.length}
+                    flightCount={sorted.filter((r) => r.type === "flight").length}
+                    hotelCount={sorted.filter((r) => r.type === "hotel").length}
+                    isLoading={isLoading && hasData && !isChipSearchLoading}
                   />
                   <ResultsList
                     results={sorted}

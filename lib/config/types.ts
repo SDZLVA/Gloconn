@@ -167,7 +167,7 @@ export type FeaturesConfig = {
   /**
    * When false, POST /api/search/date-options returns 503 EXPLORE_DISABLED.
    * Default true when `EXPLORE_DATES_ENABLED` is unset.
-   * Protects SerpAPI monthly quota (scout explore can use ~12 searches per ±3 click).
+   * Protects SerpAPI monthly quota (scout explore ±3 ≈ 18 SerpAPI calls).
    */
   exploreDatesEnabled: boolean;
   /** Raw `EXPLORE_DATES_ENABLED` when present. */

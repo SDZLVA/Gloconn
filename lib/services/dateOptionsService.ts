@@ -1,8 +1,10 @@
 /**
  * Milestone 18 — scout date-options search (server-side, no HTTP route yet).
  *
- * For each flexible date pair, runs a cheap scout search (flights scout + hotels)
- * and returns the cheapest package total. Used later by POST /api/search/date-options.
+ * For each flexible date pair, runs a scout search (flights scout + hotels)
+ * and returns the cheapest package total. Scout flights still do one
+ * departure_token return lookup so chip prices are honest RT totals.
+ * Used later by POST /api/search/date-options.
  */
 
 import { todayISO } from "@/lib/calendar";
