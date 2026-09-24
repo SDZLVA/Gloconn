@@ -198,6 +198,9 @@ describe("buildDatePriceStripChips", () => {
     assert.equal(chips[2]?.highlighted, false);
     assert.equal(chips[3]?.statusLabel, "Couldn't check");
     assert.equal(chips[3]?.priceLabel, null);
+    assert.equal(chips[0]?.selectable, true);
+    assert.equal(chips[1]?.selectable, true);
+    assert.equal(chips[3]?.selectable, false);
   });
 });
 

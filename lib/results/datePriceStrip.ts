@@ -30,6 +30,16 @@ export type DatePriceStripChip = {
   /** Cheapest explore option that fits the budget. */
   highlighted: boolean;
   isCurrent: boolean;
+  /**
+   * Can the user select this chip for a full search?
+   * false for no_results / error / timeout explore options.
+   */
+  selectable: boolean;
+  /**
+   * Numeric scout/current estimate for honesty checks after a full search.
+   * Null when there is no price on the chip.
+   */
+  scoutTotal: number | null;
 };
 
 const MONTH_SHORT = new Intl.DateTimeFormat("en-GB", { month: "short" });
@@ -205,6 +215,8 @@ export function buildDatePriceStripChips(
     fitsBudget: false,
     highlighted: false,
     isCurrent: true,
+    selectable: true,
+    scoutTotal: currentCheapest?.total ?? null,
   };
 
   const optionChips: DatePriceStripChip[] = sorted.map((option) => {
@@ -215,6 +227,7 @@ export function buildDatePriceStripChips(
       option.cheapestTotal !== null &&
       option.currency !== null &&
       Number.isFinite(option.cheapestTotal);
+    const selectable = option.status === "ok";
 
     return {
       id,
@@ -232,6 +245,8 @@ export function buildDatePriceStripChips(
       fitsBudget: hasPrice ? option.fitsBudget : false,
       highlighted: id === highlightId,
       isCurrent: false,
+      selectable,
+      scoutTotal: hasPrice ? option.cheapestTotal : null,
     };
   });
 
