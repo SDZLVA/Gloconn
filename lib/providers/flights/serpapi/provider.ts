@@ -34,9 +34,16 @@ import type { SearchRequest } from "@/types/models/search-request";
 
 /**
  * Cap outbound offers that trigger a return-leg HTTP call.
- * Protects SerpAPI quota while still covering best + some other options.
+ *
+ * Sprint 18.7: lowered from 5 to 1 to protect the SerpAPI quota
+ * (250 searches/month). A round-trip search now costs about
+ * 1 outbound + 1 return + 1 hotel = 3 calls instead of up to 7.
+ *
+ * Outbound offers beyond this cap still appear: they fall back to the
+ * outbound option's own price, which Google Flights already reports as
+ * the round-trip total for a round-trip search.
  */
-export const MAX_ROUND_TRIP_RETURN_LOOKUPS = 5;
+export const MAX_ROUND_TRIP_RETURN_LOOKUPS = 1;
 
 /**
  * Cap return options mapped per outbound token.
