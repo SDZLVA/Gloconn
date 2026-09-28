@@ -34,6 +34,9 @@ function sortedProductTypes(
 /**
  * Builds a deterministic string key for client caching / query deps.
  * Omits undefined optional fields so equivalent searches share a key.
+ *
+ * Intentionally omits `flexDays`: changing Exact → ±N must not bust the
+ * paid-search cache (Milestone 18 explore is a separate action later).
  */
 export function buildSearchCacheKey(search: Partial<SearchRequest>): string {
   const travelers = search.travelers;

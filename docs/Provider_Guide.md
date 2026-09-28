@@ -309,14 +309,62 @@ SERPAPI_API_KEY=
 
 ---
 
+## Scout mode + flexible-dates explore (Milestone 18)
+
+Budget-First Engine adds a **scout** path for nearby date pairs and a dedicated explore HTTP route.
+
+### Scout mode (`FlightSearchOptions.scout`)
+
+Passed from `orchestrateTripSearch({ scout: true })` into `FlightsProvider.search`.
+
+| Trip type | Scout behavior (SerpAPI) |
+|-----------|---------------------------|
+| **Round-trip** | **1 outbound + 1 return** (`departure_token`) so the price is an honest RT total |
+| **One-way** | Unchanged — single outbound call |
+
+Full (non-scout) round-trip searches enrich up to **3** outbound tokens with return lookups. Offers without enrichment are **dropped** — outbound-only prices are not RT totals (**ADR-038**).
+
+Mock flights ignore scout (same mock data).
+
+### Explore API
+
+| Item | Detail |
+|------|--------|
+| Route | `POST /api/search/date-options` |
+| Service | `exploreDateOptions` → `searchDateOptions` (scout pairs) |
+| Rate limit | Separate bucket from `/api/search` (tighter) |
+| Cache | ~15 minutes in-memory per server instance |
+| Kill switch | `EXPLORE_DATES_ENABLED` |
+
+```env
+# Default when unset: enabled (true)
+EXPLORE_DATES_ENABLED=true
+# Emergency quota protection:
+# EXPLORE_DATES_ENABLED=false
+```
+
+When disabled, the route returns **503** with code `EXPLORE_DISABLED`. The results UI hides the explore button.
+
+### Approximate SerpAPI cost (250/month plans)
+
+| Action | Approx. calls |
+|--------|----------------|
+| Full round-trip search | ≈ 5 |
+| Explore ±1 / ±2 / ±3 | ≈ 6 / 12 / 18 |
+| Chip click (full search) | ≈ 5 |
+
+Prefer `USE_MOCK_PROVIDERS=true` during development. See [releases/v0.23.0.md](./releases/v0.23.0.md).
+
+---
+
 ## Current vendors
 
 | Folder | Role | Status |
 |--------|------|--------|
 | `mock/` | Default local + CI | Active |
 | `amadeus/` | **Long-term production** | Complete through Sprint 8; maintenance / Enterprise path |
-| `serpapi/` (flights) | **Live — production-capable** | v0.17.0 |
-| `serpapi/` (hotels) | **Live — production-capable** | Milestone 12 — release prep v0.18.0 |
+| `serpapi/` (flights) | **Live — production-capable** | v0.17.0+; RT honesty ADR-038 (v0.23.0) |
+| `serpapi/` (hotels) | **Live — production-capable** | Milestone 12 — v0.18.0+ |
 
 ---
 
@@ -325,7 +373,8 @@ SERPAPI_API_KEY=
 | File | Purpose |
 |------|---------|
 | [API_FOUNDATION.md](./API_FOUNDATION.md) | End-to-end API layers |
-| [DECISIONS.md](./DECISIONS.md) | ADR-021+ provider architecture; ADR-036 SerpAPI |
+| [DECISIONS.md](./DECISIONS.md) | ADR-021+ provider architecture; ADR-036 SerpAPI; **ADR-038** RT price honesty |
 | [AI_HANDOFF.md](./AI_HANDOFF.md) | Do-nots for assistants |
 | [CURRENT_STATE.md](./CURRENT_STATE.md) | Active release snapshot |
+| [releases/v0.23.0.md](./releases/v0.23.0.md) | Budget-First Engine release notes |
 | [releases/v0.15.0.md](./releases/v0.15.0.md) | SerpAPI multi-provider release notes |

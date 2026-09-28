@@ -9,6 +9,15 @@ export {
   TRIP_TYPE_OPTIONS,
 } from "@/lib/search/constants";
 export { formatTravelDatesSummary, getPastTravelDateErrors, sanitizeTravelDates } from "@/lib/search/dates";
+export {
+  buildFlexibleDatePairs,
+  FLEX_DAYS_OPTIONS,
+  isFlexDays,
+  normalizeFlexDays,
+  type BuildFlexibleDatePairsInput,
+  type FlexDays,
+  type FlexibleDatePair,
+} from "@/lib/search/flexibleDates";
 export { buildSearchData } from "@/lib/search/payload";
 export {
   buildHomeSearchUrl,

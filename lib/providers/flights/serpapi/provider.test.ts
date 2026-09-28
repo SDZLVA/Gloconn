@@ -196,7 +196,89 @@ describe("SerpApiFlightsProvider.search", () => {
     assert.equal(flights[0]!.durationMinutes, 170);
   });
 
-  it("falls back to outbound-only mapping when return fetch fails", async () => {
+  it("scout mode does 1 outbound + 1 return lookup for honest RT totals", async () => {
+    const request = baseRequest({
+      tripType: "round-trip",
+      returnDate: "2026-08-10",
+    });
+    const config = baseConfig();
+    const tokensSeen: string[] = [];
+    let httpCalls = 0;
+
+    const outboundOption = {
+      flights: [
+        {
+          departure_airport: { id: "MXP", time: "2026-08-01 07:00" },
+          arrival_airport: { id: "CDG", time: "2026-08-01 08:25" },
+          duration: 85,
+          airline: "Air France",
+          travel_class: "Economy",
+          flight_number: "AF 1",
+        },
+      ],
+      total_duration: 85,
+      price: 100,
+      type: "Round trip",
+      departure_token: "scout-token-1",
+    };
+
+    const returnOption = {
+      flights: [
+        {
+          departure_airport: { id: "CDG", time: "2026-08-10 18:00" },
+          arrival_airport: { id: "MXP", time: "2026-08-10 19:25" },
+          duration: 85,
+          airline: "Air France",
+          travel_class: "Economy",
+          flight_number: "AF 2",
+        },
+      ],
+      total_duration: 85,
+      price: 399,
+      type: "Round trip",
+    };
+
+    const provider = new SerpApiFlightsProvider({
+      getSerpApiConfig: () => config,
+      buildParams: () => new URLSearchParams({ engine: "google_flights" }),
+      buildReturnParams: (token) => {
+        tokensSeen.push(token);
+        return new URLSearchParams({
+          engine: "google_flights",
+          departure_token: token,
+        });
+      },
+      searchHttp: async (params) => {
+        httpCalls += 1;
+        if (params.get("departure_token")) {
+          return {
+            search_parameters: { currency: "EUR" },
+            best_flights: [returnOption],
+          };
+        }
+        return {
+          search_parameters: { currency: "EUR" },
+          best_flights: [
+            outboundOption,
+            { ...outboundOption, departure_token: "scout-token-2", price: 90 },
+          ],
+        };
+      },
+      mapResponse: () => {
+        throw new Error("one-way mapper should not run for scout round-trip");
+      },
+    });
+
+    const flights = await provider.search(request, { scout: true });
+
+    assert.equal(httpCalls, 2);
+    assert.deepEqual(tokensSeen, ["scout-token-1"]);
+    assert.equal(flights.length, 1);
+    assert.equal(flights[0]!.price, 399);
+    assert.match(flights[0]!.id, /^serpapi-rt-/);
+  });
+
+  it("drops outbound offers when return fetch fails (no understated RT price)", async () => {
     const request = baseRequest({
       tripType: "round-trip",
       returnDate: "2026-08-10",
@@ -235,11 +317,7 @@ describe("SerpApiFlightsProvider.search", () => {
     });
 
     const flights = await provider.search(request);
-    assert.equal(flights.length, 1);
-    assert.equal(flights[0]?.airline, "easyJet");
-    assert.equal(flights[0]?.price, 99);
-    assert.match(flights[0]!.id, /^serpapi-/);
-    assert.equal(flights[0]!.id.startsWith("serpapi-rt-"), false);
+    assert.equal(flights.length, 0);
   });
 
   it("propagates ProviderError from the HTTP client", async () => {

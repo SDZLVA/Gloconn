@@ -68,6 +68,14 @@ describe("buildSearchCacheKey", () => {
     });
     assert.notEqual(a, b);
   });
+
+  it("ignores flexDays so Exact → ±N does not bust the search cache", () => {
+    const exact = buildSearchCacheKey({ ...baseSearch, flexDays: 0 });
+    const plusTwo = buildSearchCacheKey({ ...baseSearch, flexDays: 2 });
+    const omitted = buildSearchCacheKey(baseSearch);
+    assert.equal(exact, plusTwo);
+    assert.equal(exact, omitted);
+  });
 });
 
 describe("createClientTtlCache", () => {

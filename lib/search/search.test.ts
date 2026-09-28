@@ -7,6 +7,7 @@ import {
   searchRequestToParams,
   validateAndBuildSearchRequest,
 } from "@/lib/search/request";
+import { parseSearchParamsToForm } from "@/lib/search/params";
 import { validateSearchForm } from "@/lib/search/validation";
 import { validateSearchRequest } from "@/lib/api/validation";
 import type { SearchProductType } from "@/types/models/search-request";
@@ -42,12 +43,18 @@ describe("buildSearchRequest", () => {
     assert.equal(request.budget?.amount, 2500);
     assert.equal(request.budget?.currency, "EUR");
     assert.equal(request.totalGuests, 2);
+    assert.equal(request.flexDays, 0);
     assert.deepEqual(request.productTypes, ["hotels", "flights", "transport"]);
   });
 
   it("sets budget to null when budget input is empty", () => {
     const request = buildSearchRequest({ ...validForm, budget: "" });
     assert.equal(request.budget, null);
+  });
+
+  it("includes flexDays from the form", () => {
+    const request = buildSearchRequest({ ...validForm, flexDays: 2 });
+    assert.equal(request.flexDays, 2);
   });
 });
 
@@ -92,6 +99,42 @@ describe("searchRequest URL round-trip", () => {
     assert.equal(data.budgetCurrency, "EUR");
     assert.equal(data.travelers?.adults, 2);
   });
+
+  it("omits flex from the URL when flexDays is 0", () => {
+    const request = buildSearchRequest({ ...validForm, flexDays: 0 });
+    const params = searchRequestToParams(request);
+    assert.equal(params.has("flex"), false);
+  });
+
+  it("round-trips flex=1..3 through URL and edit-search form", () => {
+    for (const flexDays of [1, 2, 3] as const) {
+      const request = buildSearchRequest({ ...validForm, flexDays });
+      const params = searchRequestToParams(request);
+      assert.equal(params.get("flex"), String(flexDays));
+
+      const parsed = parseSearchRequestFromParams(params);
+      assert.equal(parsed.flexDays, flexDays);
+
+      const form = parseSearchParamsToForm(params);
+      assert.equal(form.flexDays, flexDays);
+    }
+  });
+
+  it("treats missing or invalid flex URL values as Exact (0)", () => {
+    const base = searchRequestToParams(buildSearchRequest(validForm));
+
+    const missing = parseSearchRequestFromParams(new URLSearchParams(base));
+    assert.equal(missing.flexDays, 0);
+
+    const bad = new URLSearchParams(base);
+    bad.set("flex", "99");
+    assert.equal(parseSearchRequestFromParams(bad).flexDays, 0);
+    assert.equal(parseSearchParamsToForm(bad).flexDays, 0);
+
+    const junk = new URLSearchParams(base);
+    junk.set("flex", "nope");
+    assert.equal(parseSearchRequestFromParams(junk).flexDays, 0);
+  });
 });
 
 describe("validateSearchRequest", () => {
@@ -121,6 +164,32 @@ describe("validateSearchRequest", () => {
       productTypes: [],
     });
     assert.equal(result.success, false);
+  });
+
+  it("accepts flexDays 0–3 and coerces invalid values to 0", () => {
+    const built = validateAndBuildSearchRequest({
+      ...validForm,
+      flexDays: 3,
+    });
+    assert.equal(built.ok, true);
+    if (!built.ok) {
+      return;
+    }
+
+    const ok = validateSearchRequest(built.request);
+    assert.equal(ok.success, true);
+    if (ok.success) {
+      assert.equal(ok.data.flexDays, 3);
+    }
+
+    const coerced = validateSearchRequest({
+      ...built.request,
+      flexDays: 9 as never,
+    });
+    assert.equal(coerced.success, true);
+    if (coerced.success) {
+      assert.equal(coerced.data.flexDays, 0);
+    }
   });
 });
 

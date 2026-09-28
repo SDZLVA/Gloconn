@@ -16,6 +16,7 @@ export type {
   AppSection,
   ConfigIssue,
   ConfigValidation,
+  FeaturesConfig,
   NodeEnv,
   PropertyRefSealConfig,
   ProviderName,

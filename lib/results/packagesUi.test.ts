@@ -14,6 +14,9 @@ import { HotelResultCard } from "@/components/results/HotelResultCard";
 import { formatResultCountBreakdown } from "@/components/results/ResultsSortBar";
 import {
   BUDGET_COMPATIBILITY_WARNING_MESSAGE,
+  CHEAPER_OPTIONS_COMING_SOON_MESSAGE,
+  CHEAPER_OPTIONS_FLEX_HINT_MESSAGE,
+  formatCheaperOptionsButtonHint,
   formatPackageNightsLabel,
   formatPackageQualityBadge,
   formatPackagePriceBreakdownLabel,
@@ -23,6 +26,7 @@ import {
   formatHotelPriceLabel,
   formatHotelStarsLabel,
   formatFlightRoute,
+  getCheaperOptionsState,
   getHotelRoomWarning,
   isOneWayHotelWarning,
   ONE_WAY_HOTEL_WARNING_MESSAGE,
@@ -895,5 +899,97 @@ describe("BUDGET_COMPATIBILITY_WARNING_MESSAGE", () => {
       BUDGET_COMPATIBILITY_WARNING_MESSAGE,
       /increasing your budget/i,
     );
+  });
+});
+
+describe("getCheaperOptionsState", () => {
+  const overBudgetPackages = [
+    travelPackage({ id: "pkg-a", totalPrice: 650, currency: "EUR" }),
+    travelPackage({ id: "pkg-b", totalPrice: 900, currency: "EUR" }),
+  ];
+  const budget = { amount: 500, currency: "EUR" as const };
+
+  it('returns "button" when over budget and flexDays is 1–3', () => {
+    assert.equal(
+      getCheaperOptionsState(budget, overBudgetPackages, 1),
+      "button",
+    );
+    assert.equal(
+      getCheaperOptionsState(budget, overBudgetPackages, 2),
+      "button",
+    );
+    assert.equal(
+      getCheaperOptionsState(budget, overBudgetPackages, 3),
+      "button",
+    );
+  });
+
+  it('returns "hint" when over budget and flexDays is Exact (0)', () => {
+    assert.equal(
+      getCheaperOptionsState(budget, overBudgetPackages, 0),
+      "hint",
+    );
+    assert.equal(
+      getCheaperOptionsState(budget, overBudgetPackages, undefined),
+      "hint",
+    );
+  });
+
+  it('returns "none" when there is no budget', () => {
+    assert.equal(
+      getCheaperOptionsState(null, overBudgetPackages, 2),
+      "none",
+    );
+  });
+
+  it('returns "none" when there are no packages', () => {
+    assert.equal(getCheaperOptionsState(budget, [], 2), "none");
+  });
+
+  it('returns "none" when package currency mismatches budget currency', () => {
+    assert.equal(
+      getCheaperOptionsState(
+        budget,
+        [travelPackage({ totalPrice: 100, currency: "USD" })],
+        2,
+      ),
+      "none",
+    );
+  });
+
+  it('returns "none" when at least one package fits the budget', () => {
+    assert.equal(
+      getCheaperOptionsState(
+        { amount: 700, currency: "EUR" },
+        [
+          travelPackage({ id: "pkg-a", totalPrice: 650, currency: "EUR" }),
+          travelPackage({ id: "pkg-b", totalPrice: 900, currency: "EUR" }),
+        ],
+        2,
+      ),
+      "none",
+    );
+  });
+
+  it('returns "none" for invalid flexDays (coerced) when not over-budget path', () => {
+    // Invalid flex still over-budget → treated as Exact → hint, not none.
+    assert.equal(
+      getCheaperOptionsState(budget, overBudgetPackages, 99),
+      "hint",
+    );
+  });
+});
+
+describe("formatCheaperOptionsButtonHint", () => {
+  it("mentions the ±N window and same nights", () => {
+    assert.match(formatCheaperOptionsButtonHint(2), /±2 days/);
+    assert.match(formatCheaperOptionsButtonHint(2), /same number of nights/i);
+  });
+});
+
+describe("CHEAPER_OPTIONS copy", () => {
+  it("has clear hint and coming-soon messages", () => {
+    assert.match(CHEAPER_OPTIONS_FLEX_HINT_MESSAGE, /flexible/i);
+    assert.match(CHEAPER_OPTIONS_COMING_SOON_MESSAGE, /Coming soon/i);
   });
 });

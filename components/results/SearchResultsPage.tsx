@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   collectFilterFacets,
   countActiveFilters,
@@ -8,7 +9,25 @@ import {
 } from "@/lib/results/filter";
 import { filterMvpVisibleResults } from "@/lib/results/mvpUi";
 import {
+  allExploreOptionsOverBudget,
+  buildDatePriceStripChips,
+  cheapestCurrentPackageTotal,
+  formatNoCheaperDatesMessage,
+  type DatePriceStripChip,
+} from "@/lib/results/datePriceStrip";
+import {
+  applyDatePairToSearch,
+  buildResultsUrlWithDatePair,
+  findSelectedChipId,
+  PRICES_UPDATED_AFTER_FULL_SEARCH_MESSAGE,
+  shouldShowPricesUpdatedNote,
+  shouldSkipDateChipSearch,
+} from "@/lib/results/dateChipSelection";
+import {
   BUDGET_COMPATIBILITY_WARNING_MESSAGE,
+  CHEAPER_OPTIONS_FLEX_HINT_MESSAGE,
+  formatCheaperOptionsButtonHint,
+  getCheaperOptionsState,
   getHotelRoomWarning,
   isOneWayHotelWarning,
   ONE_WAY_HOTEL_WARNING_MESSAGE,
@@ -17,15 +36,21 @@ import {
 import { buildInitialResultsFilters } from "@/lib/results/budgetFilter";
 import { sortResults } from "@/lib/results/sort";
 import { getApiErrorMessage, postSearchTrips } from "@/lib/api";
+import {
+  postDateOptions,
+  type PostDateOptionsResult,
+} from "@/lib/api/dateOptionsClient";
 import { clearCachedSearchResult } from "@/lib/api/searchResultCache";
 import { searchResponseToResults } from "@/lib/api/searchMappers";
 import { buildHomeSearchUrlFromRequest } from "@/lib/search/params";
 import { buildSearchCacheKey } from "@/lib/search/cacheKey";
+import { normalizeFlexDays } from "@/lib/search/flexibleDates";
 import { useServiceQuery } from "@/hooks/useServiceQuery";
 import {
   MobileFilterToggle,
   ResultsFilterSidebar,
 } from "@/components/results/ResultsFilterSidebar";
+import { DatePriceStrip } from "@/components/results/DatePriceStrip";
 import { RecommendedPackagesSection } from "@/components/results/RecommendedPackagesSection";
 import { ResultsEmptyState } from "@/components/results/ResultsEmptyState";
 import { ResultsErrorState } from "@/components/results/ResultsErrorState";
@@ -35,11 +60,17 @@ import { ResultsLoadingSkeleton } from "@/components/results/ResultsLoadingSkele
 import { ResultsSortBar } from "@/components/results/ResultsSortBar";
 import { ResultsSummaryBar } from "@/components/results/ResultsSummaryBar";
 import { ResultsWarningsBanner } from "@/components/results/ResultsWarningsBanner";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { focusRing } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 import type { SearchRequest } from "@/types/models/search-request";
-import type { SearchResponseWarning } from "@/types/models/search-response";
+import type {
+  SearchResponse,
+  SearchResponseWarning,
+} from "@/types/models/search-response";
 import type { TravelPackage } from "@/types/models/travel-package";
+import type { SearchDateOptionsResult } from "@/lib/services/dateOptionsService";
 import {
   type ResultsFilters,
   type SearchResult,
@@ -55,11 +86,55 @@ const EMPTY_RESULTS: SearchResult[] = [];
 const EMPTY_WARNINGS: SearchResponseWarning[] = [];
 const EMPTY_PACKAGES: TravelPackage[] = [];
 
+type ExploreUiState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | {
+      status: "success";
+      data: SearchDateOptionsResult;
+      /** Dates when explore ran — "Your dates" chip stays anchored here. */
+      anchorDepartureDate: string;
+      anchorReturnDate: string | null;
+      /** Packages from the anchor search (for the Your dates price). */
+      anchorPackages: TravelPackage[];
+    }
+  | { status: "rate_limited"; message: string }
+  | { status: "explore_disabled" }
+  | { status: "error"; message: string };
+
+type ChipSearchUiState =
+  | { status: "idle" }
+  | { status: "loading"; scoutEstimate: number | null }
+  | { status: "error"; message: string };
+
 function filtersBaselineKey(
   searchKey: string,
   defaults: ResultsFilters,
 ): string {
   return `${searchKey}|${defaults.minPrice}|${defaults.maxPrice}`;
+}
+
+function exploreStateFromResult(
+  result: PostDateOptionsResult,
+  search: Partial<SearchRequest>,
+  packages: TravelPackage[],
+): ExploreUiState {
+  if (result.kind === "ok") {
+    return {
+      status: "success",
+      data: result.data,
+      anchorDepartureDate: search.departureDate ?? "",
+      anchorReturnDate: search.returnDate ?? null,
+      anchorPackages: packages,
+    };
+  }
+  if (result.kind === "rate_limited") {
+    return { status: "rate_limited", message: result.message };
+  }
+  if (result.kind === "explore_disabled") {
+    return { status: "explore_disabled" };
+  }
+  return { status: "error", message: result.message };
 }
 
 /** Client orchestrator for the search results page (presentation + existing query). */
@@ -68,36 +143,202 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   /** Bumps the query deps so "Try again" re-runs the same search (bypass cache). */
   const [retryCount, setRetryCount] = useState(0);
+  /** Flexible-dates explore UI (Sprint 18.5+). */
+  const [explore, setExplore] = useState<ExploreUiState>({ status: "idle" });
+  /**
+   * Active search driving package results — dates change when a chip is selected.
+   * Initialized from the route; URL is updated via history.replaceState (no remount).
+   */
+  const [activeSearch, setActiveSearch] =
+    useState<Partial<SearchRequest>>(search);
+  const [chipSearch, setChipSearch] = useState<ChipSearchUiState>({
+    status: "idle",
+  });
+  const [showPricesUpdatedNote, setShowPricesUpdatedNote] = useState(false);
+  /** Last successful response — kept when a chip search errors. */
+  const [lastGoodData, setLastGoodData] = useState<SearchResponse | null>(null);
 
-  // Stable key — productTypes order / object key order must not cause refetches.
-  const searchKey = useMemo(() => buildSearchCacheKey(search), [search]);
-  const editSearchHref = useMemo(
-    () => buildHomeSearchUrlFromRequest(search),
-    [search],
+  const searchKey = useMemo(
+    () => buildSearchCacheKey(activeSearch),
+    [activeSearch],
   );
-  const budgetAmount = search.budget?.amount ?? null;
+  const editSearchHref = useMemo(
+    () => buildHomeSearchUrlFromRequest(activeSearch),
+    [activeSearch],
+  );
+  const budgetAmount = activeSearch.budget?.amount ?? null;
 
   const resultsState = useServiceQuery(
-    () => postSearchTrips(search),
+    () => postSearchTrips(activeSearch),
     [searchKey, retryCount],
   );
 
+  // Track last good data + finish chip-loading transitions.
+  useEffect(() => {
+    if (resultsState.status === "success" && resultsState.data) {
+      setLastGoodData(resultsState.data);
+      if (chipSearch.status === "loading") {
+        const actual = cheapestCurrentPackageTotal(
+          resultsState.data.packages ?? [],
+        );
+        setShowPricesUpdatedNote(
+          shouldShowPricesUpdatedNote(
+            chipSearch.scoutEstimate,
+            actual?.total ?? null,
+          ),
+        );
+        setChipSearch({ status: "idle" });
+      }
+      return;
+    }
+
+    if (
+      resultsState.status === "error" &&
+      chipSearch.status === "loading" &&
+      resultsState.error
+    ) {
+      setChipSearch({
+        status: "error",
+        message: getApiErrorMessage(resultsState.error),
+      });
+      setShowPricesUpdatedNote(false);
+    }
+  }, [resultsState, chipSearch]);
+
+  const displayData =
+    resultsState.status === "error" &&
+    chipSearch.status === "error" &&
+    lastGoodData
+      ? lastGoodData
+      : resultsState.data;
+
   const allResults = useMemo(() => {
-    if (!resultsState.data) {
+    if (!displayData) {
       return EMPTY_RESULTS;
     }
-    // Sprint 14.2 MVP: hide bus/train from the results surface (providers unchanged).
-    return filterMvpVisibleResults(
-      searchResponseToResults(resultsState.data),
-    );
-  }, [resultsState.data]);
+    return filterMvpVisibleResults(searchResponseToResults(displayData));
+  }, [displayData]);
 
-  const packages = resultsState.data?.packages ?? EMPTY_PACKAGES;
+  const packages = displayData?.packages ?? EMPTY_PACKAGES;
+  const warnings = displayData?.warnings ?? EMPTY_WARNINGS;
 
-  const warnings = resultsState.data?.warnings ?? EMPTY_WARNINGS;
   const showBudgetCompatibilityWarning =
-    resultsState.status === "success" &&
-    shouldShowBudgetCompatibilityWarning(search.budget, packages);
+    (resultsState.status === "success" ||
+      (chipSearch.status === "error" && displayData != null)) &&
+    shouldShowBudgetCompatibilityWarning(activeSearch.budget, packages);
+  const cheaperOptionsState =
+    resultsState.status === "success" ||
+    (chipSearch.status === "error" && displayData != null)
+      ? getCheaperOptionsState(
+          activeSearch.budget,
+          packages,
+          activeSearch.flexDays,
+        )
+      : "none";
+  const flexDaysNormalized = normalizeFlexDays(activeSearch.flexDays);
+
+  const dateStripChips = useMemo(() => {
+    if (explore.status !== "success") {
+      return [];
+    }
+    return buildDatePriceStripChips({
+      currentDepartureDate: explore.anchorDepartureDate,
+      currentReturnDate: explore.anchorReturnDate,
+      packages: explore.anchorPackages,
+      options: explore.data.options,
+    });
+  }, [explore]);
+
+  const selectedChipId = useMemo(
+    () =>
+      findSelectedChipId(dateStripChips, {
+        departureDate: activeSearch.departureDate ?? "",
+        returnDate: activeSearch.returnDate ?? null,
+      }),
+    [dateStripChips, activeSearch.departureDate, activeSearch.returnDate],
+  );
+
+  const dateStripFooter =
+    explore.status === "success" &&
+    allExploreOptionsOverBudget(explore.data.options)
+      ? formatNoCheaperDatesMessage(flexDaysNormalized)
+      : null;
+
+  const showExploreButton =
+    cheaperOptionsState === "button" &&
+    explore.status !== "success" &&
+    explore.status !== "explore_disabled";
+
+  const isChipSearchLoading = chipSearch.status === "loading";
+
+  const handleFindCheaperOptions = useCallback(async () => {
+    if (explore.status === "loading") {
+      return;
+    }
+    setExplore({ status: "loading" });
+    const result = await postDateOptions(activeSearch);
+    setExplore(
+      exploreStateFromResult(result, activeSearch, packages),
+    );
+  }, [explore.status, activeSearch, packages]);
+
+  const handleExploreRetry = useCallback(async () => {
+    setExplore({ status: "loading" });
+    const result = await postDateOptions(activeSearch, { bypassCache: true });
+    setExplore(
+      exploreStateFromResult(result, activeSearch, packages),
+    );
+  }, [activeSearch, packages]);
+
+  const handleSelectChip = useCallback(
+    (chip: DatePriceStripChip) => {
+      if (
+        shouldSkipDateChipSearch({
+          chip,
+          activeDates: {
+            departureDate: activeSearch.departureDate ?? "",
+            returnDate: activeSearch.returnDate ?? null,
+          },
+          isChipSearchLoading,
+        })
+      ) {
+        return;
+      }
+
+      const nextSearch = applyDatePairToSearch(
+        activeSearch,
+        chip.departureDate,
+        chip.returnDate,
+      );
+      setShowPricesUpdatedNote(false);
+      setChipSearch({
+        status: "loading",
+        scoutEstimate: chip.scoutTotal,
+      });
+      setActiveSearch(nextSearch);
+      // replaceState keeps the strip mounted (router.replace would remount the RSC page).
+      window.history.replaceState(
+        null,
+        "",
+        buildResultsUrlWithDatePair(
+          activeSearch,
+          chip.departureDate,
+          chip.returnDate,
+        ),
+      );
+    },
+    [activeSearch, isChipSearchLoading],
+  );
+
+  const handleChipSearchRetry = useCallback(() => {
+    setShowPricesUpdatedNote(false);
+    setChipSearch({
+      status: "loading",
+      scoutEstimate: null,
+    });
+    clearCachedSearchResult(activeSearch);
+    setRetryCount((count) => count + 1);
+  }, [activeSearch]);
 
   // Facets / filter / sort only recompute when their inputs change (already memoized).
   const facets = useMemo(
@@ -119,8 +360,8 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
 
   const defaultFilters = useMemo(
     (): ResultsFilters =>
-      buildInitialResultsFilters(priceRange, search.budget),
-    [priceRange, search.budget],
+      buildInitialResultsFilters(priceRange, activeSearch.budget),
+    [priceRange, activeSearch.budget],
   );
 
   const nextBaselineKey = filtersBaselineKey(searchKey, defaultFilters);
@@ -144,29 +385,37 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   );
 
   const activeFilterCount = countActiveFilters(filters, defaultFilters);
-  const destination = search.destination || "your destination";
+  const destination = activeSearch.destination || "your destination";
 
-  // Perceived performance: only show the full skeleton when we have no data yet.
-  // Cache hits / keepPreviousData keep prior results visible during brief loading.
-  const hasData = resultsState.data != null;
+  const hasData = displayData != null;
   const isLoading =
     resultsState.status === "loading" || resultsState.status === "idle";
-  const showSkeleton = isLoading && !hasData;
-  const hasError = resultsState.status === "error" && resultsState.error;
-  const hasSuccess = resultsState.status === "success" || (isLoading && hasData);
+  // Chip search: always show the skeleton (keep strip); initial load: skeleton until first data.
+  const showSkeleton =
+    isChipSearchLoading || (isLoading && !hasData && chipSearch.status !== "error");
+  const hasError =
+    resultsState.status === "error" &&
+    resultsState.error &&
+    chipSearch.status !== "error" &&
+    !lastGoodData;
+  const hasSuccess =
+    resultsState.status === "success" ||
+    (isLoading && hasData) ||
+    (chipSearch.status === "error" && hasData);
   const hasNoResults =
-    resultsState.status === "success" && allResults.length === 0;
+    (resultsState.status === "success" || chipSearch.status === "error") &&
+    !isChipSearchLoading &&
+    allResults.length === 0;
   const showResultsChrome = showSkeleton || hasSuccess || hasData;
 
   const clearFilters = useCallback(() => {
     setFilters(defaultFilters);
-  }, [defaultFilters]);
+  }, [defaultFilters, setFilters]);
 
   const handleRetry = useCallback(() => {
-    // Drop the cached entry so "Try again" always hits the network.
-    clearCachedSearchResult(search);
+    clearCachedSearchResult(activeSearch);
     setRetryCount((count) => count + 1);
-  }, [search]);
+  }, [activeSearch]);
 
   const handleToggleFilters = useCallback(() => {
     setFiltersOpen((open) => !open);
@@ -174,9 +423,12 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <ResultsHeader destination={search.destination} origin={search.origin} />
+      <ResultsHeader
+        destination={activeSearch.destination}
+        origin={activeSearch.origin}
+      />
 
-      <ResultsSummaryBar search={search} />
+      <ResultsSummaryBar search={activeSearch} />
 
       {hasError && (
         <ResultsErrorState
@@ -186,9 +438,11 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
         />
       )}
 
-      {resultsState.status === "success" && warnings.length > 0 && (
-        <ResultsWarningsBanner warnings={warnings} />
-      )}
+      {(resultsState.status === "success" ||
+        (chipSearch.status === "error" && warnings.length > 0)) &&
+        warnings.length > 0 && (
+          <ResultsWarningsBanner warnings={warnings} />
+        )}
 
       {showBudgetCompatibilityWarning && (
         <div
@@ -196,11 +450,110 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
           role="status"
         >
           <p className="font-medium">{BUDGET_COMPATIBILITY_WARNING_MESSAGE}</p>
+
+          {cheaperOptionsState === "hint" && (
+            <p className="mt-2 text-sm text-amber-900/90">
+              {CHEAPER_OPTIONS_FLEX_HINT_MESSAGE}{" "}
+              <Link
+                href={editSearchHref}
+                className={cn(
+                  "font-semibold text-brand-800 underline underline-offset-2 motion-safe:hover:text-brand-900",
+                  focusRing,
+                  "rounded-sm",
+                )}
+              >
+                Edit search
+              </Link>
+              {" "}to choose ±1–3 days.
+            </p>
+          )}
+
+          {showExploreButton && (
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full border-amber-300 bg-white text-amber-950 sm:w-auto"
+                onClick={() => {
+                  void handleFindCheaperOptions();
+                }}
+                disabled={explore.status === "loading"}
+                aria-busy={explore.status === "loading"}
+                aria-describedby="cheaper-options-hint"
+              >
+                {explore.status === "loading"
+                  ? "Checking nearby dates…"
+                  : "Find cheaper options"}
+              </Button>
+              <p
+                id="cheaper-options-hint"
+                className="text-xs leading-relaxed text-amber-900/80 sm:text-sm"
+              >
+                {formatCheaperOptionsButtonHint(flexDaysNormalized)}
+              </p>
+            </div>
+          )}
+
+          {explore.status === "rate_limited" && (
+            <p className="mt-2 text-sm text-amber-900/90" role="alert">
+              {explore.message}
+            </p>
+          )}
+
+          {explore.status === "error" && (
+            <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+              <p className="text-sm text-amber-900/90" role="alert">
+                {explore.message}
+              </p>
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full border-amber-300 bg-white text-amber-950 sm:w-auto"
+                onClick={() => {
+                  void handleExploreRetry();
+                }}
+              >
+                Try again
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {explore.status === "success" && dateStripChips.length > 0 && (
+        <div className="rounded-2xl border border-slate-200/90 bg-white/90 px-4 py-3 shadow-sm sm:px-5">
+          <DatePriceStrip
+            chips={dateStripChips}
+            selectedChipId={selectedChipId}
+            disabled={isChipSearchLoading}
+            onSelectChip={handleSelectChip}
+            footerMessage={dateStripFooter}
+          />
+          {showPricesUpdatedNote && (
+            <p className="mt-2 text-sm text-slate-600" role="status">
+              {PRICES_UPDATED_AFTER_FULL_SEARCH_MESSAGE}
+            </p>
+          )}
+          {chipSearch.status === "error" && (
+            <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+              <p className="text-sm text-amber-900/90" role="alert">
+                {chipSearch.message}
+              </p>
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full border-amber-300 bg-white text-amber-950 sm:w-auto"
+                onClick={handleChipSearchRetry}
+              >
+                Try again
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
       {resultsState.status === "success" &&
-        isOneWayHotelWarning(search.tripType, warnings) && (
+        isOneWayHotelWarning(activeSearch.tripType, warnings) && (
           <div
             className="rounded-2xl border border-sky-200/90 bg-sky-50/90 px-4 py-3 text-sm text-sky-950 shadow-sm sm:px-5"
             role="note"
@@ -226,7 +579,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                 filtersOpen ? "block" : "hidden lg:block",
               )}
             >
-              {hasData ? (
+              {hasData && !showSkeleton ? (
                 <ResultsFilterSidebar
                   filters={filters}
                   onFiltersChange={setFilters}
@@ -247,17 +600,6 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
             </aside>
 
             <div className="min-w-0 space-y-4">
-              {!showSkeleton && (
-                <ResultsSortBar
-                  sortBy={sortBy}
-                  onSortChange={setSortBy}
-                  resultCount={sorted.length}
-                  flightCount={sorted.filter((r) => r.type === "flight").length}
-                  hotelCount={sorted.filter((r) => r.type === "hotel").length}
-                  isLoading={isLoading && hasData}
-                />
-              )}
-
               {showSkeleton && <ResultsLoadingSkeleton />}
 
               {hasNoResults && (
@@ -268,11 +610,11 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                 />
               )}
 
-              {hasData && !hasNoResults && (
+              {hasData && !hasNoResults && !showSkeleton && (
                 <>
                   {(() => {
                     const roomWarning = getHotelRoomWarning(
-                      search.travelers?.adults ?? null,
+                      activeSearch.travelers?.adults ?? null,
                     );
                     return roomWarning ? (
                       <div
@@ -285,19 +627,27 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                   })()}
                   <RecommendedPackagesSection
                     packages={packages}
-                    originIata={search.originIata}
-                    destinationIata={search.destinationIata}
-                    budget={search.budget}
-                    tripType={search.tripType}
+                    originIata={activeSearch.originIata}
+                    destinationIata={activeSearch.destinationIata}
+                    budget={activeSearch.budget}
+                    tripType={activeSearch.tripType}
+                  />
+                  <ResultsSortBar
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
+                    resultCount={sorted.length}
+                    flightCount={sorted.filter((r) => r.type === "flight").length}
+                    hotelCount={sorted.filter((r) => r.type === "hotel").length}
+                    isLoading={isLoading && hasData && !isChipSearchLoading}
                   />
                   <ResultsList
                     results={sorted}
                     destination={destination}
                     editSearchHref={editSearchHref}
                     onClearFilters={clearFilters}
-                    tripType={search.tripType}
-                    originIata={search.originIata}
-                    destinationIata={search.destinationIata}
+                    tripType={activeSearch.tripType}
+                    originIata={activeSearch.originIata}
+                    destinationIata={activeSearch.destinationIata}
                   />
                 </>
               )}

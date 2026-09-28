@@ -18,6 +18,7 @@ import {
 import type {
   AmadeusConfig,
   AppConfig,
+  FeaturesConfig,
   ProviderName,
   SerpApiConfig,
 } from "@/lib/config/types";
@@ -222,6 +223,33 @@ function loadReplayConfig(
   };
 }
 
+function loadExploreDatesEnabled(): FeaturesConfig {
+  const exploreDatesEnabledInput = readEnv("EXPLORE_DATES_ENABLED");
+  if (exploreDatesEnabledInput === undefined) {
+    return { exploreDatesEnabled: true, exploreDatesEnabledInvalid: false };
+  }
+
+  if (
+    exploreDatesEnabledInput === "true" ||
+    exploreDatesEnabledInput === "1" ||
+    exploreDatesEnabledInput === "false" ||
+    exploreDatesEnabledInput === "0"
+  ) {
+    return {
+      exploreDatesEnabled: readBooleanEnv("EXPLORE_DATES_ENABLED", true),
+      exploreDatesEnabledInput,
+      exploreDatesEnabledInvalid: false,
+    };
+  }
+
+  // Unrecognized value → keep explore on (safe default) but flag invalid.
+  return {
+    exploreDatesEnabled: true,
+    exploreDatesEnabledInput,
+    exploreDatesEnabledInvalid: true,
+  };
+}
+
 /** Reads raw configuration without caching or validation attachment. */
 export function loadAppConfigRaw(): Omit<AppConfig, "validation"> {
   const supabaseUrl = readEnv("NEXT_PUBLIC_SUPABASE_URL") ?? "";
@@ -277,6 +305,7 @@ export function loadAppConfigRaw(): Omit<AppConfig, "validation"> {
     serpapi,
     propertyRefSeal: loadPropertyRefSealConfig(),
     replay: loadReplayConfig(nodeEnv),
+    features: loadExploreDatesEnabled(),
   };
 }
 

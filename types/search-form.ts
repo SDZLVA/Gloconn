@@ -6,6 +6,7 @@
  */
 
 import type { CurrencyCode } from "@/lib/budget";
+import type { FlexDays } from "@/lib/search/flexibleDates";
 import type {
   SearchProductType,
   Traveler,
@@ -30,6 +31,11 @@ export type SearchFormState = {
   tripType: TripType;
   departureDate: string;
   returnDate: string;
+  /**
+   * How many days either side of Exact dates to explore later (Milestone 18).
+   * 0 = Exact dates (default). Does not change the normal search yet.
+   */
+  flexDays: FlexDays;
   budget: string;
   budgetCurrency: CurrencyCode;
   travelers: Traveler;
@@ -98,6 +104,7 @@ export const INITIAL_SEARCH_FORM: SearchFormState = {
   tripType: "round-trip",
   departureDate: "",
   returnDate: "",
+  flexDays: 0,
   budget: "",
   budgetCurrency: "EUR",
   travelers: INITIAL_PASSENGERS,

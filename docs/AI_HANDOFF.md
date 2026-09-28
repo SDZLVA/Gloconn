@@ -14,7 +14,7 @@ This document gives AI coding assistants (Cursor, Claude, etc.) the context need
 | Owner | Shehan De Silva (@SDZLVA) — **beginner developer** |
 | Repo | https://github.com/SDZLVA/Gloconn |
 | Stack | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| Stage | **v0.22.0** released — Milestone **17** Hotel Actionability + 17.9 Cleanup complete |
+| Stage | **v0.23.0** released — Milestone **18** Budget-First Engine complete |
 | APIs | Supabase Auth + PostgreSQL; travel data via mock providers by default; optional live **SerpAPI** / Amadeus |
 
 ---
@@ -240,7 +240,7 @@ AmadeusFlightsProvider.search(request)
 
 **Flight API tests (Sprints 7–11):**
 ```
-npm test  → 717 automated tests (node:test via tsx)
+npm test  → automated suite (node:test via tsx)
   Amadeus: helpers / mappers / query / cache / provider / hardening
   SerpAPI flights: config / types / query / client / mappers / provider / factory / integration
   SerpAPI hotels: query / client / mapper / provider / factory / integration
@@ -380,19 +380,23 @@ docs/                 → project documentation
 
 ---
 
-## Common tasks after Milestone 17
+## Common tasks after Milestone 18
 
-**Milestone 13–16** ✅ **v0.19.0–v0.21.0**. **Milestone 17 — Hotel Actionability** + **17.9 Cleanup** ✅ **v0.22.0**.
+**Milestone 13–17** ✅ **v0.19.0–v0.22.0**. **Milestone 18 — Budget-First Engine** ✅ **v0.23.0**.
 
 Recommended next priorities (see [TODO.md](./TODO.md)):
 
-1. **Milestone 18 — Budget-First Engine** — plan scope, then branch from `main`
+1. **Milestone 19 (proposed)** — nearby airports/cities, trains & buses, affiliate links, real user testing (**not started**)
 2. **Destinations / About pages** — then restore nav links
 3. Optional: airline-level near-duplicate suppression in package top 5
 4. One-way proactive note in `TravelDatesSelector` (deferred)
 5. **Amadeus Enterprise** — enablement when credentials are ready
-6. SerpAPI round-trip `departure_token` enrichment polish (carry-forward)
-7. Fix `SectionHeading` hydration warning (dev overlay)
+6. Fix `SectionHeading` hydration warning (dev overlay)
+7. SerpAPI quota ops — watch monthly usage; `EXPLORE_DATES_ENABLED=false` if needed
+
+**SerpAPI honesty (ADR-038):** round-trip outbound option price is **not** the RT total — only `departure_token` return lookup is. Do not reintroduce outbound-only fallback pricing for RT.
+
+**Explore route:** `POST /api/search/date-options` — separate rate limit + ~15m cache + kill switch. Scout ≈ 1 outbound + 1 return + 1 hotel per pair.
 
 ---
 

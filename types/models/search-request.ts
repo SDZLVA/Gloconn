@@ -2,6 +2,7 @@
  * SearchRequest model — validated input for a trip search.
  */
 
+import type { FlexDays } from "@/lib/search/flexibleDates";
 import type { Budget } from "@/types/models/budget";
 import type { Traveler } from "@/types/models/traveler";
 
@@ -49,6 +50,12 @@ export type SearchRequest = {
    * Null when `tripType` is "one-way".
    */
   returnDate: string | null;
+
+  /**
+   * Flexible date window (0 = Exact). Optional for older clients/URLs.
+   * Stored for Milestone 18 explore UI — providers/orchestrator ignore it today.
+   */
+  flexDays?: FlexDays;
 
   /** Spending limit; null only for internal catalog searches. */
   budget: Budget | null;

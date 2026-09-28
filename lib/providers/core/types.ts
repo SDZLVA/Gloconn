@@ -60,11 +60,31 @@ export interface HotelsProvider extends BaseProvider {
 }
 
 /**
+ * Optional flags for flight search.
+ * Scout mode uses a cheaper round-trip enrichment (Milestone 18).
+ */
+export type FlightSearchOptions = {
+  /**
+   * When true, SerpAPI round-trip still does a `departure_token` return lookup
+   * (needed for an honest RT total) but only for 1 outbound offer.
+   * One-way searches are unchanged (single outbound call).
+   * Default false — full search enriches up to the provider's return-lookup cap.
+   */
+  scout?: boolean;
+};
+
+/**
  * Flight search for a trip.
  */
 export interface FlightsProvider extends BaseProvider {
-  /** Returns flights matching the trip criteria. */
-  search(request: SearchRequest): Promise<Flight[]>;
+  /**
+   * Returns flights matching the trip criteria.
+   * Second argument is optional so existing callers stay valid.
+   */
+  search(
+    request: SearchRequest,
+    options?: FlightSearchOptions,
+  ): Promise<Flight[]>;
 }
 
 /** Combined bus and train results from a single ground-transport search. */

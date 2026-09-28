@@ -34,7 +34,7 @@ export function formatResultCountBreakdown(
   return parts.length > 0 ? parts.join(" · ") : null;
 }
 
-/** Sort dropdown and result count above the results list. */
+/** Sort dropdown and browse-list count (flights / hotels), not packages. */
 export function ResultsSortBar({
   sortBy,
   onSortChange,
@@ -74,7 +74,7 @@ export function ResultsSortBar({
 
       <div className="flex items-center gap-2">
         <label htmlFor="sort-results" className="text-sm font-medium text-slate-600">
-          Sort by
+          Sort browse results
         </label>
         <select
           id="sort-results"

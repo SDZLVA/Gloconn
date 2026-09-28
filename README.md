@@ -3,8 +3,8 @@
 Travel planning web application — discover destinations, plan trips, and manage travel in one place.
 
 **Repository:** [github.com/SDZLVA/Gloconn](https://github.com/SDZLVA/Gloconn)  
-**Version:** **v0.22.0** — Hotel Actionability + Cleanup  
-**Milestones:** **16** ✅ Recommendation Intelligence · **17** ✅ Hotel Actionability · **18** NEXT Budget-First Engine  
+**Version:** **v0.23.0** — Budget-First Engine  
+**Milestones:** **17** ✅ Hotel Actionability · **18** ✅ Budget-First Engine · **19** NEXT (proposed)  
 **Live site:** [https://glooconn.vercel.app](https://glooconn.vercel.app)
 
 ## Tech stack
@@ -64,6 +64,17 @@ SERPAPI_API_KEY=<your-key>
 
 Uses the same `SERPAPI_API_KEY` as flights. Hotels require a checkout date (`returnDate` on round-trip searches). See [docs/Provider_Guide.md](./docs/Provider_Guide.md).
 
+### Flexible dates explore
+
+When a budget is set and packages are over budget, **Find cheaper options** calls `POST /api/search/date-options` (scout). Kill switch:
+
+```env
+EXPLORE_DATES_ENABLED=true
+# EXPLORE_DATES_ENABLED=false
+```
+
+SerpAPI plans are typically **250 searches/month** — prefer mock providers while developing. See [docs/releases/v0.23.0.md](./docs/releases/v0.23.0.md) for approximate call costs.
+
 ### Windows note
 
 If PowerShell blocks `npm`, use `npm.cmd run dev` or:
@@ -81,7 +92,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 | `npm run start` | Run production build locally |
 | `npm run lint` | Run ESLint |
 | `npm run typecheck` | TypeScript (`tsc --noEmit`) |
-| `npm test` | Automated test suite (717 tests) |
+| `npm test` | Automated test suite |
 
 ## Architecture overview
 
@@ -143,6 +154,7 @@ Gloconn/
 | [docs/Provider_Guide.md](./docs/Provider_Guide.md) | How to add a flights vendor |
 | [docs/DECISIONS.md](./docs/DECISIONS.md) | Architecture decisions (ADRs) |
 | [docs/AI_HANDOFF.md](./docs/AI_HANDOFF.md) | Guide for AI assistants |
+| [docs/releases/v0.23.0.md](./docs/releases/v0.23.0.md) | v0.23.0 Budget-First Engine release notes |
 | [docs/releases/v0.22.0.md](./docs/releases/v0.22.0.md) | v0.22.0 Hotel Actionability + Cleanup release notes |
 | [docs/releases/v0.21.0.md](./docs/releases/v0.21.0.md) | v0.21.0 Recommendation Intelligence release notes |
 | [docs/releases/v0.20.0.md](./docs/releases/v0.20.0.md) | v0.20.0 MVP Focus release notes |
@@ -151,21 +163,21 @@ Gloconn/
 
 ## Current status
 
-- **Released:** **v0.22.0** — Milestone **17** Hotel Actionability + **17.9 Cleanup**
-- **Prior:** **v0.21.0** — Milestone **16** Recommendation Intelligence
+- **Released:** **v0.23.0** — Milestone **18** Budget-First Engine
+- **Prior:** **v0.22.0** — Milestone **17** Hotel Actionability + **17.9 Cleanup**
 - **Stable branch:** `main` (GitHub default · Vercel production → [glooconn.vercel.app](https://glooconn.vercel.app))
-- **MVP surface:** Search flights + stays → Recommended Packages → Browse Flights / Hotels → **View hotel** drawer
+- **MVP surface:** Search flights + stays → Recommended Packages → Sort browse results → Browse Flights / Hotels → **View hotel** drawer
+- **Flexible dates:** Exact / ±1–3; explore strip + chip → full search when over budget
 - **Hotels:** property details API, Google Maps, safe external links, sealed `gpref1` property refs
 - **Packages:** candidate quality + diversity pass; top 5 with deterministic roles and honesty gates
 - **Budget:** optional — leave empty to search without a budget constraint
 - **Budget warning:** shown when all same-currency packages exceed the user's budget
-- **Live Flight / Hotel Search:** SerpAPI when configured — **production-capable**
+- **Live Flight / Hotel Search:** SerpAPI when configured — **production-capable** (honest RT via return lookup)
 - **Default mode:** mock providers until live env is configured
-- **Security:** Next.js **16.3.3** · **0** npm audit vulnerabilities
-- **Tests:** **717** automated tests
+- **Security:** Next.js **16.3.3** · explore kill switch `EXPLORE_DATES_ENABLED`
 - **CI:** runs on every branch push and on PRs into `main`
 - **Live routes:** `/`, `/search/results`, `/login`, `/signup`, `/profile`, `/my-trips`
 - **Auth:** Google OAuth and email/password via Supabase
-- **Next:** Milestone **18 — Budget-First Engine** (details to be planned)
+- **Next:** Milestone **19 (proposed)** — nearby airports/cities, trains & buses, affiliate links, real user testing
 
 See [docs/CURRENT_STATE.md](./docs/CURRENT_STATE.md) and [docs/TODO.md](./docs/TODO.md).

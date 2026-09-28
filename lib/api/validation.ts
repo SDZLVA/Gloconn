@@ -7,6 +7,7 @@ import { createValidationError } from "@/lib/api/errors";
 import { serviceFailure, serviceSuccess, type ServiceResult } from "@/lib/api/types";
 import { getPastTravelDateErrors } from "@/lib/search/dates";
 import { validateBudget } from "@/lib/search/budget";
+import { normalizeFlexDays } from "@/lib/search/flexibleDates";
 import { validatePassengers } from "@/lib/search/passengers";
 import { buildSearchRequestFromData, normalizeSearchInput } from "@/lib/search/request";
 import { normalizeProductTypes, resolveProductTypes } from "@/lib/search/productTypes";
@@ -113,6 +114,8 @@ export function validateSearchRequest(
       tripType,
       departureDate: normalized.departureDate,
       returnDate: tripType === "one-way" ? null : (normalized.returnDate ?? null),
+      // Invalid / missing flexDays become Exact (0) — never reject the search.
+      flexDays: normalizeFlexDays(normalized.flexDays),
       budget: normalized.budget ?? null,
       budgetCurrency: normalized.budgetCurrency ?? null,
       travelers: { ...normalized.travelers },

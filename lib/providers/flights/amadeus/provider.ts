@@ -6,7 +6,10 @@
  */
 
 import { createProviderError } from "@/lib/api/errors";
-import type { FlightsProvider } from "@/lib/providers/core/types";
+import type {
+  FlightSearchOptions,
+  FlightsProvider,
+} from "@/lib/providers/core/types";
 import { searchFlightOffers } from "@/lib/providers/flights/amadeus/flightOffers";
 import { mapAmadeusFlightOffersResponse } from "@/lib/providers/flights/amadeus/mappers";
 import type { Flight } from "@/types/models";
@@ -15,7 +18,11 @@ import type { SearchRequest } from "@/types/models/search-request";
 export class AmadeusFlightsProvider implements FlightsProvider {
   readonly name = "amadeus";
 
-  async search(request: SearchRequest): Promise<Flight[]> {
+  async search(
+    request: SearchRequest,
+    options?: FlightSearchOptions,
+  ): Promise<Flight[]> {
+    void options; // Scout is SerpAPI-only; Amadeus ignores it.
     const destinationId = request.destinationId?.trim();
     if (!destinationId) {
       throw createProviderError(
