@@ -2,16 +2,33 @@
 
 Active and upcoming tasks. Check items off as they are completed and move done items to [PROGRESS.md](./PROGRESS.md).
 
-**Current release:** **v0.22.0** (Hotel Actionability + Cleanup)  
-**Completed milestones:** **Milestone 17** · **17.9 Cleanup**  
-**Next:** **Milestone 18 — Budget-First Engine** (details to be planned later)
+**Current release:** **v0.23.0** (Budget-First Engine)  
+**Completed milestones:** **Milestone 18** · **Milestone 17** · **17.9 Cleanup**  
+**Next:** **Milestone 19 (proposed)** — nearby airports/cities, trains & buses, affiliate links, real user testing
 
 ---
 
-## 🔴 NEXT — Milestone 18 — Budget-First Engine
+## 🔴 NEXT — Milestone 19 (proposed) — not started
 
-- [ ] Plan Milestone 18 scope (CTO / product) — details TBD
-- [ ] Create branch from `main` (example: `milestone-18-budget-engine`) when work starts
+- [ ] Nearby airports / cities discovery
+- [ ] Trains & buses in the product surface (providers already exist; UI currently hidden)
+- [ ] Affiliate / monetization links (careful UX + compliance)
+- [ ] Real user testing / feedback loop
+
+---
+
+## ✅ Milestone 18 — Budget-First Engine (released as v0.23.0)
+
+- [x] 18.1 — Flexible date-shift helper + tests
+- [x] 18.2 — Flexible dates control on search form + URL
+- [x] 18.3 — Cheaper-options CTA and Exact flex hint
+- [x] 18.4a — Scout mode + date options service
+- [x] 18.4b — `POST /api/search/date-options` (rate limit, cache, kill switch)
+- [x] 18.5 — Date price strip UI (“from €X”)
+- [x] 18.6 — Chip selection loads full packages
+- [x] 18.7a — Return-lookup quota guard (later adjusted in 18.8)
+- [x] 18.8 — Honest RT prices, browse visibility, clearer sort scope
+- [x] 18.9 — Release **v0.23.0**
 
 ---
 
@@ -37,13 +54,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 ## ✅ Milestone 16 — Recommendation Intelligence (released as v0.21.0)
 
-- [x] Sprint 16.1 — Discovery audit
-- [x] Sprint 16.2 — Candidate quality (stops/duration flights; stars/rating hotels; currency-safe budget)
-- [x] Sprint 16.3 — Diversity pass + clone suppression
-- [x] Sprint 16.4 — Deterministic explainability roles
-- [x] Sprint 16.5 — Live product validation
-- [x] Sprint 16.5.1 — Label honesty gates
-- [x] Sprint 16.6 — Release v0.21.0 (version, changelog, notes, tag)
+- [x] Sprints 16.1–16.6 → **v0.21.0**
 
 ### M16 carry-forward (deferred)
 - [ ] Airline-level / near-duplicate flight suppression in top 5 (same airline, similar duration/price)
@@ -83,12 +94,11 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 - [ ] Execute manual Amadeus sandbox checklist (`docs/SPRINT_8_SUMMARY.md`)
 - [ ] Restore currencyService → registry DI without client importing Amadeus `server-only` (ADR-035)
 - [ ] Enable live Amadeus in local/prod when Enterprise credentials are ready
-- [ ] SerpAPI round-trip `departure_token` return enrichment (carry-forward from M11)
 
 ---
 
 ## 🟢 Lower priority / later horizons
 
 - [ ] Activities / attractions live providers
-- [ ] Ground transport live providers (UI currently hidden in MVP)
+- [ ] Ground transport live providers (UI currently hidden in MVP) — see Milestone 19 proposal
 - [ ] Saved package contents (not just search criteria)

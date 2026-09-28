@@ -4,6 +4,27 @@ All notable product releases for Glooconn are listed here. Detailed notes live u
 
 ---
 
+## [v0.23.0] — Budget-First Engine (September 2026)
+
+**Milestone 18 — Budget-First Engine** (Sprints 18.1–18.9 complete).
+
+- **Flexible dates:** Exact / ±1 / ±2 / ±3 on the search form and URL (`flex`)
+- **Cheaper options:** “Find cheaper options” when a budget is set and all packages are over budget; Exact mode shows a hint to enable ±1–3
+- **Explore API:** `POST /api/search/date-options` with its own rate limit, 15-minute server cache, and `EXPLORE_DATES_ENABLED` kill switch
+- **Scout searches:** cheap per-pair flight+hotel scouts for chip estimates
+- **Date price strip:** horizontal “from €X” chips (earliest-first); chip click loads full packages for that date pair
+- **Price honesty (18.8):** SerpAPI round-trip totals only from `departure_token` return lookups; unenriched outbound offers dropped; scout does 1 outbound + 1 return
+- **Browse visibility:** when nothing fits the budget, the price filter opens to the observed range (lists no longer empty while packages warn)
+- **Sort scope:** “Sort browse results” sits under Recommended Packages
+- **804** automated tests; typecheck + build clean
+- Security baseline intact (RLS, auth, CSP, rate limits, server-only secrets)
+
+**Details:** [docs/releases/v0.23.0.md](./docs/releases/v0.23.0.md)
+
+**Known limitations:** SerpAPI monthly quota (250 searches on typical plans) — explore ±3 can use ≈18 calls; Destinations / About pages still unbuilt; same-airline near-duplicates in package top 5.
+
+---
+
 ## [v0.22.0] — Hotel Actionability + Cleanup (September 2026)
 
 **Milestone 17 — Hotel Actionability** + **17.9 Cleanup**.

@@ -1111,3 +1111,48 @@ AmadeusFlightsProvider.search(request)
 - Dual-vendor fan-out
 - Retrying failed domains inside the orchestrator
 - currencyService DI cleanup
+
+---
+
+## ADR-038: SerpAPI round-trip price honesty (Sprint 18.8)
+
+**Status:** Accepted and implemented  
+**Date:** September 2026  
+**Milestone:** 18 — Budget-First Engine
+
+**Decision:** In a SerpAPI Google Flights **round-trip** search, never treat the outbound option’s `price` as the round-trip total. Publish flight offers only when a `departure_token` return lookup provides a real total. Drop offers that are beyond the return-lookup cap or whose return lookup fails / returns no legs.
+
+### Key lesson (from live validation)
+
+- Scout / outbound-only pricing showed **from €215** while the enriched full search for the same dates was **€399** (Milan→Paris).
+- The outbound `price` on a round-trip Google Flights response is **not** a reliable whole-trip total.
+- The trustworthy total arrives on the **return** response after `departure_token` lookup.
+
+### Policy
+
+| Case | Behavior |
+|------|----------|
+| Full round-trip search | Up to `MAX_ROUND_TRIP_RETURN_LOOKUPS` (**3**) return HTTP calls; pair outbound×return |
+| Outbound beyond the cap | **Dropped** (not shown at understated outbound price) |
+| Return lookup attempted but fails / empty | **Dropped** (no clean honest partial price) |
+| Scout mode | **1** outbound + **1** return lookup (chip “from €X” ≈ real RT) + hotel |
+| One-way | Unchanged — single outbound call, no return lookup |
+
+### Approximate SerpAPI cost
+
+- Round-trip search ≈ **5** calls (1 outbound + ≤3 return + 1 hotel)
+- Explore ±1 / ±2 / ±3 ≈ **6 / 12 / 18** (pairs × scout triple)
+- Typical plan: **250 searches/month** — protect with rate limits + `EXPLORE_DATES_ENABLED`
+
+### Consequences
+
+- Fewer flight cards when inventory is large, but prices are not understated
+- Scout explore is slightly more expensive than “outbound-only scout” (intentional)
+- ADR-036’s older note that v1 may map outbound-focused RT options is superseded for production honesty
+
+### Non-goals
+
+- Changing hotel pricing rules
+- Amadeus round-trip behavior
+- Raising SerpAPI plan limits
+- Showing partial prices with a disclaimer instead of dropping (rejected — too easy to misread as a total)
