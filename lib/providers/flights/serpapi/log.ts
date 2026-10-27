@@ -28,6 +28,29 @@ export type SerpApiLogEvent = {
   httpStatus?: number;
   durationMs: number;
   errorCode?: SerpApiLogErrorCode;
+  /**
+   * Sprint 19.0 — counts only (never prices, routes or user data) so the server
+   * log explains WHY a round-trip search produced no publishable flights.
+   */
+  roundTrip?: SerpApiRoundTripCounts;
+};
+
+/** Counts describing one round-trip search; numbers only, safe to log. */
+export type SerpApiRoundTripCounts = {
+  /** Outbound offers returned by the first call. */
+  outboundOffers: number;
+  /** Outbound offers that carried a departure_token. */
+  withTokens: number;
+  /** Return lookups attempted (capped). */
+  lookupsAttempted: number;
+  /** Return lookups that returned a usable response. */
+  lookupsOk: number;
+  /** Return lookups that threw. */
+  lookupsFailed: number;
+  /** Lookups that succeeded but carried no return options. */
+  lookupsEmpty: number;
+  /** Flights finally published to the app. */
+  published: number;
 };
 
 /** Starts a millisecond timer for SerpAPI log `durationMs`. */
@@ -55,6 +78,10 @@ export function logSerpApiEvent(
 
   if (event.errorCode !== undefined) {
     payload.errorCode = event.errorCode;
+  }
+
+  if (event.roundTrip !== undefined) {
+    payload.roundTrip = event.roundTrip;
   }
 
   if (event.errorCode) {

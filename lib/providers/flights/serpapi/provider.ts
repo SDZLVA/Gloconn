@@ -24,6 +24,10 @@ import {
   mapSerpApiFlightsResponse,
   mapSerpApiRoundTripPairToFlight,
 } from "@/lib/providers/flights/serpapi/mappers";
+import {
+  logSerpApiEvent,
+  type SerpApiLogErrorCode,
+} from "@/lib/providers/flights/serpapi/log";
 import { resolveFlightCurrency } from "@/lib/providers/flights/serpapi/mappingHelpers";
 import type {
   SerpApiGoogleFlightsResponse,
@@ -150,8 +154,42 @@ export class SerpApiFlightsProvider implements FlightsProvider {
     config: SerpApiConfig,
     maxLookups: number,
   ): Promise<Flight[]> {
+    const startedAt = Date.now();
     const outboundOptions = collectSerpApiOptions(outboundRaw);
+
+    /** One structured log line per round-trip search (counts only). */
+    const logCounts = (
+      counts: {
+        withTokens: number;
+        lookupsAttempted: number;
+        lookupsOk: number;
+        lookupsFailed: number;
+        lookupsEmpty: number;
+        published: number;
+      },
+      errorCode?: SerpApiLogErrorCode,
+    ): void => {
+      logSerpApiEvent({
+        operation: "googleFlights",
+        durationMs: Math.max(0, Date.now() - startedAt),
+        ...(errorCode ? { errorCode } : {}),
+        roundTrip: {
+          outboundOffers: outboundOptions.length,
+          ...counts,
+        },
+      });
+    };
+
     if (outboundOptions.length === 0) {
+      // Genuinely no flights for this route/date — an empty list is honest here.
+      logCounts({
+        withTokens: 0,
+        lookupsAttempted: 0,
+        lookupsOk: 0,
+        lookupsFailed: 0,
+        lookupsEmpty: 0,
+        published: 0,
+      });
       return [];
     }
 
@@ -174,12 +212,31 @@ export class SerpApiFlightsProvider implements FlightsProvider {
     );
 
     if (withTokens.length === 0) {
-      // No tokens → cannot obtain honest RT totals; do not invent understated prices.
-      return [];
+      // Offers exist but none can be priced honestly as a round trip.
+      // Sprint 19.0: fail loudly so the orchestrator raises a flights warning
+      // instead of the page silently showing hotels only.
+      logCounts(
+        {
+          withTokens: 0,
+          lookupsAttempted: 0,
+          lookupsOk: 0,
+          lookupsFailed: 0,
+          lookupsEmpty: 0,
+          published: 0,
+        },
+        "PROVIDER_ERROR",
+      );
+      throw createProviderError(
+        "Round-trip flight prices could not be verified for this search.",
+        { cause: { reason: "no_departure_tokens" } },
+      );
     }
 
     const lookupTargets = withTokens.slice(0, maxLookups);
     const packages: Flight[] = [];
+    let lookupsOk = 0;
+    let lookupsFailed = 0;
+    let lookupsEmpty = 0;
 
     const returnResults = await Promise.all(
       lookupTargets.map(async (outbound) => {
@@ -197,8 +254,11 @@ export class SerpApiFlightsProvider implements FlightsProvider {
     for (const result of returnResults) {
       if (!result.ok || !result.returnRaw) {
         // Lookup attempted but failed — drop rather than show outbound-only price.
+        lookupsFailed += 1;
         continue;
       }
+
+      lookupsOk += 1;
 
       const returnOptions = collectSerpApiOptions(result.returnRaw).slice(
         0,
@@ -207,6 +267,7 @@ export class SerpApiFlightsProvider implements FlightsProvider {
 
       if (returnOptions.length === 0) {
         // Successful HTTP but no return legs — still no honest RT total.
+        lookupsEmpty += 1;
         continue;
       }
 
@@ -223,6 +284,27 @@ export class SerpApiFlightsProvider implements FlightsProvider {
           packages.push(flight);
         }
       }
+    }
+
+    logCounts(
+      {
+        withTokens: withTokens.length,
+        lookupsAttempted: lookupTargets.length,
+        lookupsOk,
+        lookupsFailed,
+        lookupsEmpty,
+        published: packages.length,
+      },
+      packages.length === 0 ? "PROVIDER_ERROR" : undefined,
+    );
+
+    if (packages.length === 0) {
+      // Every candidate was dropped for lack of a verified round-trip total.
+      // Sprint 19.0: raise instead of returning silence, so the user is told.
+      throw createProviderError(
+        "Round-trip flight prices could not be verified for this search.",
+        { cause: { reason: "no_verified_round_trip_totals" } },
+      );
     }
 
     // Outbounds beyond the lookup cap are intentionally omitted (no partial prices).
