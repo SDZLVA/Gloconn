@@ -39,8 +39,19 @@ export type PartnerRule = {
  * almost impossible to notice. Until an entry exists, every link is sent
  * untagged, which is the correct and honest default.
  *
- * Expected shape once filled, for example:
- *   "www.example-partner.com": { program: "travelpayouts", param: "marker" }
+ * FINDING 2026-10-28, from Travelpayouts' own documentation: Travelpayouts
+ * does NOT work by appending a marker to a brand's URL. Their documented
+ * methods are links generated in the dashboard, their link-creation API
+ * (POST https://api.travelpayouts.com/links/v1/create, taking trs + marker +
+ * up to 10 full-length brand links and returning a partner_url), widgets,
+ * and White Label. The `tp.media/click?...&u=<destination>` shape seen in
+ * third-party blogs and repos is not in their documentation; building on it
+ * would be exactly the guess this table exists to prevent.
+ *
+ * So for Travelpayouts this table stays empty and the API path is used
+ * instead. It remains here for any future programme that genuinely does
+ * document parameter-based attribution, for example:
+ *   "www.example-partner.com": { program: "some-program", param: "marker" }
  */
 export const PARTNER_RULES: Readonly<Record<string, PartnerRule>> = {};
 

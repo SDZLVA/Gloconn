@@ -1,6 +1,7 @@
 import { ResultCard } from "@/components/results/ResultCard";
 import { ResultsEmptyState } from "@/components/results/ResultsEmptyState";
 import { groupBrowseResults } from "@/lib/results/browseResults";
+import type { FlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
 import type { TripType } from "@/types/models/search-request";
 import type { SearchResult } from "@/types/results";
 
@@ -15,6 +16,8 @@ type ResultsListProps = {
   /** Task 4 (Sprint 15.3): route context for flight cards. */
   originIata?: string | null;
   destinationIata?: string | null;
+  /** Milestone 19: partner link for flight cards. */
+  flightPartnerLink?: FlightPartnerLink | null;
 };
 
 type BrowseSectionProps = {
@@ -25,6 +28,7 @@ type BrowseSectionProps = {
   listAriaLabel: string;
   originIata?: string | null;
   destinationIata?: string | null;
+  flightPartnerLink?: FlightPartnerLink | null;
 };
 
 function BrowseSection({
@@ -35,6 +39,7 @@ function BrowseSection({
   listAriaLabel,
   originIata,
   destinationIata,
+  flightPartnerLink,
 }: BrowseSectionProps) {
   if (results.length === 0) {
     return null;
@@ -56,6 +61,7 @@ function BrowseSection({
               tripType={tripType}
               originIata={originIata}
               destinationIata={destinationIata}
+              flightPartnerLink={flightPartnerLink}
             />
           </li>
         ))}
@@ -76,6 +82,7 @@ export function ResultsList({
   tripType,
   originIata,
   destinationIata,
+  flightPartnerLink,
 }: ResultsListProps) {
   if (results.length === 0) {
     return (
@@ -100,6 +107,7 @@ export function ResultsList({
         listAriaLabel="Flight results"
         originIata={originIata}
         destinationIata={destinationIata}
+        flightPartnerLink={flightPartnerLink}
       />
       <BrowseSection
         title="Browse Hotels"

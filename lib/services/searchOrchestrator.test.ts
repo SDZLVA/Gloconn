@@ -590,3 +590,17 @@ describe("searchTrips — validation remains blocking", () => {
     }
   });
 });
+
+describe("orchestrateTripSearch — resolved route (Milestone 19)", () => {
+  it("returns the server-resolved airport codes so the browser can use them", async () => {
+    setServiceProviders(providersWith({}));
+
+    const response = await orchestrateTripSearch(baseRequest());
+
+    // The browser's URL carries only place labels; these codes are what the
+    // flight route label and partner links depend on.
+    assert.ok(response.route, "response.route should be present");
+    assert.match(response.route.originIata ?? "", /^[A-Z]{3}$/);
+    assert.match(response.route.destinationIata ?? "", /^[A-Z]{3}$/);
+  });
+});

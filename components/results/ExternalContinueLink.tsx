@@ -7,6 +7,11 @@ export type ExternalContinueLinkProps = {
   children: ReactNode;
   /** Visual emphasis — Maps uses brand styling. */
   variant?: "brand" | "neutral";
+  /**
+   * Marks a paid partner link. Adds rel="sponsored", which search engines
+   * require for affiliate links.
+   */
+  sponsored?: boolean;
 };
 
 /**
@@ -17,6 +22,7 @@ export function ExternalContinueLink({
   href,
   children,
   variant = "neutral",
+  sponsored = false,
 }: ExternalContinueLinkProps) {
   const tone =
     variant === "brand"
@@ -27,7 +33,7 @@ export function ExternalContinueLink({
     <a
       href={href}
       target="_blank"
-      rel="noopener noreferrer"
+      rel={sponsored ? "sponsored noopener noreferrer" : "noopener noreferrer"}
       className={cn(
         "inline-flex min-h-11 items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-semibold",
         tone,

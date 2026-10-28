@@ -40,6 +40,19 @@ export type SearchResponseWarning = {
  * Normalized response from `searchService` after orchestrating all providers.
  * UI components consume this shape — never raw provider payloads.
  */
+/**
+ * Airport codes the server resolved for a search.
+ *
+ * The browser only knows place labels from the URL ("Milan, Italy"); codes
+ * are resolved server-side in lib/services/iataResolution.ts. Flight cards
+ * need them for the route label (Sprint 15.3) and partner links
+ * (Milestone 19), so the server sends them back.
+ */
+export type SearchResponseRoute = {
+  originIata: string | null;
+  destinationIata: string | null;
+};
+
 export type SearchResponse = {
   /** Hotel and accommodation results. */
   hotels: Hotel[];
@@ -80,4 +93,10 @@ export type SearchResponse = {
    * Empty or omitted when every domain succeeded.
    */
   warnings?: SearchResponseWarning[];
+
+  /**
+   * Resolved airport codes for this search. Omitted when no flight search
+   * ran or nothing resolved. Older cached responses will not have it.
+   */
+  route?: SearchResponseRoute;
 };

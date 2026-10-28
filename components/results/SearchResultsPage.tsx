@@ -34,6 +34,8 @@ import {
   shouldShowBudgetCompatibilityWarning,
 } from "@/lib/results/packagesUi";
 import { buildInitialResultsFilters } from "@/lib/results/budgetFilter";
+import { loadAffiliateConfig } from "@/lib/affiliate/config";
+import { buildFlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
 import { sortResults } from "@/lib/results/sort";
 import { getApiErrorMessage, postSearchTrips } from "@/lib/api";
 import {
@@ -384,6 +386,38 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     [filtered, sortBy, budgetAmount],
   );
 
+  // Airport codes are resolved on the server; the URL only carries place
+  // labels, so activeSearch.originIata is normally empty. Prefer the codes
+  // the server sent back. This also makes the Sprint 15.3 "MXP → CDG" route
+  // label appear, which had silently never rendered.
+  const originIata =
+    displayData?.route?.originIata ?? activeSearch.originIata ?? null;
+  const destinationIata =
+    displayData?.route?.destinationIata ?? activeSearch.destinationIata ?? null;
+
+  // Milestone 19: one partner link per search. Computed after sorting and
+  // never fed back into it — commission must not affect result order.
+  const flightPartnerLink = useMemo(
+    () =>
+      buildFlightPartnerLink(
+        {
+          originIata,
+          destinationIata,
+          departureDate: activeSearch.departureDate,
+          returnDate: activeSearch.returnDate,
+          tripType: activeSearch.tripType,
+        },
+        loadAffiliateConfig(),
+      ),
+    [
+      originIata,
+      destinationIata,
+      activeSearch.departureDate,
+      activeSearch.returnDate,
+      activeSearch.tripType,
+    ],
+  );
+
   const activeFilterCount = countActiveFilters(filters, defaultFilters);
   const destination = activeSearch.destination || "your destination";
 
@@ -627,8 +661,8 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                   })()}
                   <RecommendedPackagesSection
                     packages={packages}
-                    originIata={activeSearch.originIata}
-                    destinationIata={activeSearch.destinationIata}
+                    originIata={originIata}
+                    destinationIata={destinationIata}
                     budget={activeSearch.budget}
                     tripType={activeSearch.tripType}
                   />
@@ -646,8 +680,9 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     editSearchHref={editSearchHref}
                     onClearFilters={clearFilters}
                     tripType={activeSearch.tripType}
-                    originIata={activeSearch.originIata}
-                    destinationIata={activeSearch.destinationIata}
+                    originIata={originIata}
+                    destinationIata={destinationIata}
+                    flightPartnerLink={flightPartnerLink}
                   />
                 </>
               )}

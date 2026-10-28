@@ -80,6 +80,7 @@ type BuildSearchResponseInput = {
   packages?: TravelPackage[];
   warnings?: SearchResponseWarning[];
   searchedAt?: string;
+  route?: SearchResponse["route"];
 };
 
 /** Assembles the canonical SearchResponse from domain arrays + optional warnings. */
@@ -112,6 +113,7 @@ export function buildSearchResponse(
       attractions.length,
     searchedAt: input.searchedAt ?? new Date().toISOString(),
     warnings,
+    ...(input.route ? { route: input.route } : {}),
   };
 }
 
