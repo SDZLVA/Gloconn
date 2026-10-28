@@ -142,12 +142,14 @@ export function PackageDetailsPanel({
                 {flight.departureTime}
               </dd>
             </div>
-            <div className="flex justify-between gap-3">
-              <dt className="text-slate-500">Arrival</dt>
-              <dd className="font-medium text-slate-900">
-                {flight.arrivalTime}
-              </dd>
-            </div>
+            {flight.arrivalTime ? (
+              <div className="flex justify-between gap-3">
+                <dt className="text-slate-500">Arrival</dt>
+                <dd className="font-medium text-slate-900">
+                  {flight.arrivalTime}
+                </dd>
+              </div>
+            ) : null}
             <div className="flex justify-between gap-3">
               <dt className="text-slate-500">Stops</dt>
               <dd className="font-medium text-slate-900">{stopsLabel}</dd>

@@ -98,12 +98,16 @@ export function FlightResultCard({
                 {stopsLabel}
               </span>
             </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-slate-900">
-                {result.arrivalTime}
-              </p>
-              <p className="text-xs text-slate-500">Arrive</p>
-            </div>
+            {/* Some sources give departure + duration but no arrival time
+                (no destination time zone). Hide it rather than guess. */}
+            {result.arrivalTime ? (
+              <div className="text-center">
+                <p className="text-lg font-bold text-slate-900">
+                  {result.arrivalTime}
+                </p>
+                <p className="text-xs text-slate-500">Arrive</p>
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">

@@ -123,6 +123,11 @@ function makeConfigSkeleton(
       oauthTimeoutMs: 10000,
       fetchTimeoutMs: 15000,
     },
+    aviasales: {
+      apiToken: "",
+      market: null,
+      isConfigured: false,
+    },
     serpapi: {
       apiKey: "",
       deepSearch: false,

@@ -21,6 +21,7 @@ import type {
   FeaturesConfig,
   ProviderName,
   SerpApiConfig,
+  AviasalesConfig,
 } from "@/lib/config/types";
 import { validateAppConfig } from "@/lib/config/validate";
 
@@ -31,6 +32,7 @@ const PROVIDER_NAMES: ProviderName[] = [
   "booking",
   "omio",
   "serpapi",
+  "aviasales",
 ];
 
 function loadAmadeusEnv(): Pick<
@@ -175,6 +177,24 @@ function loadSerpApiDeepSearch(): Pick<
   };
 }
 
+/** Market codes are short lowercase identifiers; anything else is ignored. */
+const AVIASALES_MARKET_PATTERN = /^[a-z]{2,3}$/;
+
+function loadAviasalesConfig(): AviasalesConfig {
+  const apiToken = readEnv("TRAVELPAYOUTS_API_TOKEN") ?? "";
+  const marketInput = readEnv("AVIASALES_MARKET")?.toLowerCase();
+  const market =
+    marketInput && AVIASALES_MARKET_PATTERN.test(marketInput)
+      ? marketInput
+      : null;
+
+  return {
+    apiToken,
+    market,
+    isConfigured: Boolean(apiToken),
+  };
+}
+
 function loadSerpApiConfig(): SerpApiConfig {
   const apiKey = readEnv("SERPAPI_API_KEY") ?? "";
   const deepSearch = loadSerpApiDeepSearch();
@@ -303,6 +323,7 @@ export function loadAppConfigRaw(): Omit<AppConfig, "validation"> {
     },
     amadeus,
     serpapi,
+    aviasales: loadAviasalesConfig(),
     propertyRefSeal: loadPropertyRefSealConfig(),
     replay: loadReplayConfig(nodeEnv),
     features: loadExploreDatesEnabled(),
