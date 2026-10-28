@@ -24,7 +24,7 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 
 ## 🟡 Code health (audit 2026-10-27)
 
-- [ ] 8 test files contain hard-coded future dates; `travelerDefault.test.ts` already broke when one passed. Inject "today" like `flexibleDates` does
+- [x] ~~8 test files contain hard-coded future dates~~ — **audit error, corrected 2026-10-28.** Re-checked all 28 files holding date literals: only `lib/search/search.test.ts` puts dates through validation, and it already derives them from `new Date()`. `sanitizeTravelDates` and `getPastTravelDateErrors` take an injectable `minDate` (default `todayISO()`), so the remaining ~200 literals are inert fixture strings that never meet a clock. The suite does not rot. No work needed.
 - [ ] `BudgetSlider` and `TravelStyleSelector` are referenced nowhere — keep deliberately or delete
 - [ ] Rate limits and caches are in-process memory; weak across Vercel instances
 - [ ] Move 19 one-off validation scripts and 15 sprint JSON files into `archive/` so the repo reads cleanly for a new contributor
