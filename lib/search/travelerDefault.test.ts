@@ -36,8 +36,8 @@ describe("Sprint 17.7 — traveler default", () => {
       originId: "milan",
       destination: "Paris, France",
       destinationId: "paris",
-      departureDate: "2026-10-12",
-      returnDate: "2026-10-15",
+      departureDate: "2026-11-12",
+      returnDate: "2026-11-15",
       travelers: { adults: 3, children: 0, infants: 0, rooms: 1 },
     };
     const built = validateAndBuildSearchRequest(form);
@@ -54,8 +54,8 @@ describe("Sprint 17.7 — traveler default", () => {
       originId: "milan",
       destination: "Tokyo, Japan",
       destinationId: "tokyo",
-      departureDate: "2026-10-12",
-      returnDate: "2026-10-15",
+      departureDate: "2026-11-12",
+      returnDate: "2026-11-15",
       travelers: { adults: 2, children: 1, infants: 0, rooms: 1 },
     };
     const built = validateAndBuildSearchRequest(form);

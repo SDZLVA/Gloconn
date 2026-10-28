@@ -278,7 +278,7 @@ describe("SerpApiFlightsProvider.search", () => {
     assert.match(flights[0]!.id, /^serpapi-rt-/);
   });
 
-  it("drops outbound offers when return fetch fails (no understated RT price)", async () => {
+  it("throws when every return lookup fails (no silent empty flights list)", async () => {
     const request = baseRequest({
       tripType: "round-trip",
       returnDate: "2026-08-10",
@@ -316,8 +316,209 @@ describe("SerpApiFlightsProvider.search", () => {
       },
     });
 
+    await assert.rejects(
+      () => provider.search(request),
+      (error: unknown) => {
+        assert.ok(isApiError(error));
+        assert.equal(error.code, "PROVIDER_ERROR");
+        assert.match(error.message, /could not be verified/i);
+        return true;
+      },
+    );
+  });
+
+  it("throws when return lookups succeed but carry no return options", async () => {
+    const request = baseRequest({
+      tripType: "round-trip",
+      returnDate: "2026-08-10",
+    });
+
+    const outboundOption = {
+      flights: [
+        {
+          departure_airport: { id: "MXP", time: "2026-08-01 07:00" },
+          arrival_airport: { id: "CDG", time: "2026-08-01 08:25" },
+          duration: 85,
+          airline: "easyJet",
+          travel_class: "Economy",
+          flight_number: "U2 2",
+        },
+      ],
+      total_duration: 85,
+      price: 99,
+      departure_token: "token-empty-return",
+    };
+
+    const provider = new SerpApiFlightsProvider({
+      getSerpApiConfig: () => baseConfig(),
+      buildParams: () => new URLSearchParams(),
+      buildReturnParams: (token) =>
+        new URLSearchParams({ departure_token: token }),
+      searchHttp: async (params) => {
+        if (params.get("departure_token")) {
+          return {
+            search_parameters: { currency: "EUR" },
+            best_flights: [],
+            other_flights: [],
+          };
+        }
+        return {
+          search_parameters: { currency: "EUR" },
+          best_flights: [outboundOption],
+        };
+      },
+    });
+
+    await assert.rejects(
+      () => provider.search(request),
+      (error: unknown) => {
+        assert.ok(isApiError(error));
+        assert.equal(error.code, "PROVIDER_ERROR");
+        assert.match(error.message, /could not be verified/i);
+        return true;
+      },
+    );
+  });
+
+  it("throws when outbound offers exist but none carry a departure_token", async () => {
+    const request = baseRequest({
+      tripType: "round-trip",
+      returnDate: "2026-08-10",
+    });
+
+    const outboundWithoutToken = {
+      flights: [
+        {
+          departure_airport: { id: "MXP", time: "2026-08-01 07:00" },
+          arrival_airport: { id: "CDG", time: "2026-08-01 08:25" },
+          duration: 85,
+          airline: "Air France",
+          travel_class: "Economy",
+          flight_number: "AF 9",
+        },
+      ],
+      total_duration: 85,
+      price: 120,
+    };
+
+    const provider = new SerpApiFlightsProvider({
+      getSerpApiConfig: () => baseConfig(),
+      buildParams: () => new URLSearchParams(),
+      buildReturnParams: () => {
+        throw new Error("return lookup should not run without tokens");
+      },
+      searchHttp: async () => ({
+        search_parameters: { currency: "EUR" },
+        best_flights: [outboundWithoutToken],
+      }),
+      mapResponse: () => {
+        throw new Error("one-way mapper should not run for round-trip");
+      },
+    });
+
+    await assert.rejects(
+      () => provider.search(request),
+      (error: unknown) => {
+        assert.ok(isApiError(error));
+        assert.equal(error.code, "PROVIDER_ERROR");
+        assert.match(error.message, /could not be verified/i);
+        return true;
+      },
+    );
+  });
+
+  it("returns [] and does not throw when the outbound response is genuinely empty", async () => {
+    const request = baseRequest({
+      tripType: "round-trip",
+      returnDate: "2026-08-10",
+    });
+
+    const provider = new SerpApiFlightsProvider({
+      getSerpApiConfig: () => baseConfig(),
+      buildParams: () => new URLSearchParams(),
+      buildReturnParams: () => {
+        throw new Error("return lookup should not run for empty outbound");
+      },
+      searchHttp: async () => ({
+        search_parameters: { currency: "EUR" },
+        best_flights: [],
+        other_flights: [],
+      }),
+      mapResponse: () => {
+        throw new Error("one-way mapper should not run for empty round-trip");
+      },
+    });
+
     const flights = await provider.search(request);
-    assert.equal(flights.length, 0);
+    assert.deepEqual(flights, []);
+  });
+
+  it("scout mode throws with the same rules when return lookups yield nothing", async () => {
+    const request = baseRequest({
+      tripType: "round-trip",
+      returnDate: "2026-08-10",
+    });
+
+    const outboundOption = {
+      flights: [
+        {
+          departure_airport: { id: "MXP", time: "2026-08-01 07:00" },
+          arrival_airport: { id: "CDG", time: "2026-08-01 08:25" },
+          duration: 85,
+          airline: "Air France",
+          travel_class: "Economy",
+          flight_number: "AF 1",
+        },
+      ],
+      total_duration: 85,
+      price: 100,
+      departure_token: "scout-token-fail",
+    };
+
+    const provider = new SerpApiFlightsProvider({
+      getSerpApiConfig: () => baseConfig(),
+      buildParams: () => new URLSearchParams(),
+      buildReturnParams: (token) =>
+        new URLSearchParams({ departure_token: token }),
+      searchHttp: async (params) => {
+        if (params.get("departure_token")) {
+          throw createProviderError("Scout return search failed");
+        }
+        return {
+          search_parameters: { currency: "EUR" },
+          best_flights: [outboundOption],
+        };
+      },
+    });
+
+    await assert.rejects(
+      () => provider.search(request, { scout: true }),
+      (error: unknown) => {
+        assert.ok(isApiError(error));
+        assert.equal(error.code, "PROVIDER_ERROR");
+        return true;
+      },
+    );
+  });
+
+  it("scout mode still returns [] when outbound is empty", async () => {
+    const provider = new SerpApiFlightsProvider({
+      getSerpApiConfig: () => baseConfig(),
+      buildParams: () => new URLSearchParams(),
+      buildReturnParams: () => {
+        throw new Error("return lookup should not run for empty scout outbound");
+      },
+      searchHttp: async () => ({
+        search_parameters: { currency: "EUR" },
+        best_flights: [],
+      }),
+    });
+
+    const flights = await provider.search(
+      baseRequest({ tripType: "round-trip", returnDate: "2026-08-10" }),
+      { scout: true },
+    );
+    assert.deepEqual(flights, []);
   });
 
   it("propagates ProviderError from the HTTP client", async () => {

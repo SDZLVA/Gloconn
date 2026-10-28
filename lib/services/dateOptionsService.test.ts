@@ -372,6 +372,56 @@ describe("searchDateOptions", () => {
     assert.ok(result.options.some((o) => o.status === "timeout"));
   });
 
+  it("does not crash explore when the flights provider throws (hotels still resolve)", async () => {
+    let flightCalls = 0;
+    const flights: FlightsProvider = {
+      name: "throwing-flights",
+      async search() {
+        flightCalls += 1;
+        throw createProviderError("Simulated round-trip verification failure.");
+      },
+    };
+
+    const result = await searchDateOptions({
+      request: baseRequest({ flexDays: 1 }),
+      flexDays: 1,
+      today: futureDateISO(0),
+      providers: mockProviders({ flights }),
+    });
+
+    assert.equal(result.options.length, 2);
+    assert.equal(flightCalls, 2);
+    // Orchestrator isolates the flights throw (hotels succeed) so scoutPair
+    // does not reject. Empty packages → no_results, not a crashed explore job.
+    assert.ok(result.options.every((o) => o.status === "no_results"));
+  });
+
+  it("marks a pair as error when the scout orchestrator throws, without failing the job", async () => {
+    const flights: FlightsProvider = {
+      name: "throwing-flights",
+      async search() {
+        throw createProviderError("Flights down.");
+      },
+    };
+    const hotels: HotelsProvider = {
+      name: "throwing-hotels",
+      async search() {
+        throw createProviderError("Hotels down.");
+      },
+    };
+
+    const result = await searchDateOptions({
+      request: baseRequest({ flexDays: 1 }),
+      flexDays: 1,
+      today: futureDateISO(0),
+      providers: mockProviders({ flights, hotels }),
+    });
+
+    assert.equal(result.options.length, 2);
+    // Both requested domains fail → orchestrateTripSearch throws → chip "error".
+    assert.ok(result.options.every((o) => o.status === "error"));
+  });
+
   it("returns no_results when scout yields empty packages", async () => {
     const result = await searchDateOptions({
       request: baseRequest({ flexDays: 1 }),

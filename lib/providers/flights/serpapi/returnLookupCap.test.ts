@@ -9,6 +9,7 @@
 
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { createProviderError, isApiError } from "@/lib/api/errors";
 import type { SerpApiConfig } from "@/lib/config/types";
 import {
   MAX_ROUND_TRIP_RETURN_LOOKUPS,
@@ -190,5 +191,55 @@ describe("SerpApiFlightsProvider return-lookup cap (18.7 / 18.8)", () => {
     assert.equal(mapCalls, 2);
     assert.equal(full, mapped);
     assert.equal(scout, mapped);
+  });
+
+  it("throws ProviderError when capped lookups all fail or return no options", async () => {
+    const provider = new SerpApiFlightsProvider({
+      getSerpApiConfig: config,
+      buildParams: () => new URLSearchParams({ engine: "google_flights" }),
+      buildReturnParams: (token) =>
+        new URLSearchParams({
+          engine: "google_flights",
+          departure_token: token,
+        }),
+      searchHttp: async (params) => {
+        if (params.get("departure_token")) {
+          throw createProviderError("Return lookup failed");
+        }
+        return {
+          search_parameters: { currency: "EUR" },
+          best_flights: [1, 2, 3, 4].map(outboundOption),
+        };
+      },
+      mapResponse: () => {
+        throw new Error("one-way mapper should not run for round-trip");
+      },
+    });
+
+    await assert.rejects(
+      () => provider.search(roundTripRequest()),
+      (error: unknown) => {
+        assert.ok(isApiError(error));
+        assert.equal(error.code, "PROVIDER_ERROR");
+        return true;
+      },
+    );
+  });
+
+  it("still returns [] when outbound is empty (cap never applies)", async () => {
+    const provider = new SerpApiFlightsProvider({
+      getSerpApiConfig: config,
+      buildParams: () => new URLSearchParams({ engine: "google_flights" }),
+      buildReturnParams: () => {
+        throw new Error("return lookup should not run");
+      },
+      searchHttp: async () => ({
+        search_parameters: { currency: "EUR" },
+        best_flights: [],
+      }),
+    });
+
+    const flights = await provider.search(roundTripRequest());
+    assert.deepEqual(flights, []);
   });
 });

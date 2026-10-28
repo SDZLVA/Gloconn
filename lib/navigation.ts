@@ -18,7 +18,23 @@ function pickNavLinks(...hrefs: NavHref[]) {
   return NAV_LINKS.filter((link) => hrefs.includes(link.href));
 }
 
-/** Footer columns built from the same links as the navbar. */
-export const FOOTER_SECTIONS = [
-  { title: "Explore", links: pickNavLinks("/my-trips") },
+/** Legal pages — linked from the footer only. */
+export const LEGAL_LINKS = [
+  { href: "/privacy", label: "Privacy Policy" },
+  { href: "/terms", label: "Terms of Use" },
 ] as const;
+
+/** One link in a footer column. */
+export type FooterLink = { readonly href: string; readonly label: string };
+
+/** One footer column. */
+export type FooterSection = {
+  readonly title: string;
+  readonly links: readonly FooterLink[];
+};
+
+/** Footer columns built from the same links as the navbar, plus legal pages. */
+export const FOOTER_SECTIONS: readonly FooterSection[] = [
+  { title: "Explore", links: pickNavLinks("/my-trips") },
+  { title: "Legal", links: LEGAL_LINKS },
+];
