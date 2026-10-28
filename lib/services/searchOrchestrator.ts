@@ -196,7 +196,22 @@ async function searchAllDomains(
     trains,
     packages,
     warnings,
+    route: resolvedRoute(request),
   });
+}
+
+/**
+ * Airport codes from the enriched request, for the browser (Milestone 19).
+ * Omitted entirely when neither code resolved, so hotel-only responses are
+ * unchanged.
+ */
+function resolvedRoute(request: SearchRequest): SearchResponse["route"] {
+  const originIata = request.originIata?.trim().toUpperCase() || null;
+  const destinationIata = request.destinationIata?.trim().toUpperCase() || null;
+  if (!originIata && !destinationIata) {
+    return undefined;
+  }
+  return { originIata, destinationIata };
 }
 
 /**
