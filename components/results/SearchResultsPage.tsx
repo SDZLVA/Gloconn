@@ -34,6 +34,8 @@ import {
   shouldShowBudgetCompatibilityWarning,
 } from "@/lib/results/packagesUi";
 import { buildInitialResultsFilters } from "@/lib/results/budgetFilter";
+import { loadAffiliateConfig } from "@/lib/affiliate/config";
+import { buildFlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
 import { sortResults } from "@/lib/results/sort";
 import { getApiErrorMessage, postSearchTrips } from "@/lib/api";
 import {
@@ -384,6 +386,29 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     [filtered, sortBy, budgetAmount],
   );
 
+  // Milestone 19: one partner link per search. Computed after sorting and
+  // never fed back into it — commission must not affect result order.
+  const flightPartnerLink = useMemo(
+    () =>
+      buildFlightPartnerLink(
+        {
+          originIata: activeSearch.originIata,
+          destinationIata: activeSearch.destinationIata,
+          departureDate: activeSearch.departureDate,
+          returnDate: activeSearch.returnDate,
+          tripType: activeSearch.tripType,
+        },
+        loadAffiliateConfig(),
+      ),
+    [
+      activeSearch.originIata,
+      activeSearch.destinationIata,
+      activeSearch.departureDate,
+      activeSearch.returnDate,
+      activeSearch.tripType,
+    ],
+  );
+
   const activeFilterCount = countActiveFilters(filters, defaultFilters);
   const destination = activeSearch.destination || "your destination";
 
@@ -648,6 +673,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     tripType={activeSearch.tripType}
                     originIata={activeSearch.originIata}
                     destinationIata={activeSearch.destinationIata}
+                    flightPartnerLink={flightPartnerLink}
                   />
                 </>
               )}

@@ -1,10 +1,12 @@
 import { Card } from "@/components/ui/Card";
+import { ExternalContinueLink } from "@/components/results/ExternalContinueLink";
 import { ResultDuration } from "@/components/results/ResultDuration";
 import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
 import { ResultTypeBadge } from "@/components/results/ResultTypeBadge";
 import { formatFlightRoute, formatFlightTripPriceLabel } from "@/lib/results/packagesUi";
+import type { FlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
 import type { TripType } from "@/types/models/search-request";
 import type { FlightResult } from "@/types/results";
 
@@ -19,18 +21,30 @@ type FlightResultCardProps = {
    */
   originIata?: string | null;
   destinationIata?: string | null;
+  /**
+   * Milestone 19: partner search link for this route and dates. Omitted
+   * when the route cannot be built — the card then shows no link.
+   */
+  partnerLink?: FlightPartnerLink | null;
 };
 
 /**
  * Card displaying a flight search result.
  * Informational only — no fake booking CTA.
  * Task 4: shows route context when IATA codes are available.
+ *
+ * Milestone 19: the partner link opens a search for the same route and dates
+ * on the partner's site. It is NOT a link to this specific flight, and the
+ * partner's price can differ, so the copy says "check this route" and never
+ * "book this flight". When the link carries Glooconn's marker, the card says
+ * so — commission must always be disclosed (see /terms, section 6).
  */
 export function FlightResultCard({
   result,
   tripType = "round-trip",
   originIata,
   destinationIata,
+  partnerLink,
 }: FlightResultCardProps) {
   const stopsLabel =
     result.stops === 0 ? "Direct" : `${result.stops} stop${result.stops > 1 ? "s" : ""}`;
@@ -100,6 +114,23 @@ export function FlightResultCard({
               suffix="per person"
             />
           </div>
+
+          {partnerLink && (
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-slate-500">
+                Opens a search for this route on {partnerLink.partnerName}. Their
+                prices and flights may differ.
+                {partnerLink.tagged && " Glooconn may earn a commission."}
+              </p>
+              <ExternalContinueLink
+                href={partnerLink.href}
+                variant="brand"
+                sponsored={partnerLink.tagged}
+              >
+                Check this route on {partnerLink.partnerName}
+              </ExternalContinueLink>
+            </div>
+          )}
         </div>
       </div>
     </Card>

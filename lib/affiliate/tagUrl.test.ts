@@ -106,7 +106,7 @@ describe("PARTNER_RULES", () => {
 });
 
 describe("loadAffiliateConfig", () => {
-  const KEY = "AFFILIATE_TRAVELPAYOUTS_MARKER";
+  const KEY = "NEXT_PUBLIC_TRAVELPAYOUTS_MARKER";
 
   function withEnv(value: string | undefined, run: () => void): void {
     const previous = process.env[KEY];
