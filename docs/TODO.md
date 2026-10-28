@@ -25,9 +25,10 @@ Active and upcoming tasks. Check items off as they are completed and move done i
 ## 🟡 Code health (audit 2026-10-27)
 
 - [x] ~~8 test files contain hard-coded future dates~~ — **audit error, corrected 2026-10-28.** Re-checked all 28 files holding date literals: only `lib/search/search.test.ts` puts dates through validation, and it already derives them from `new Date()`. `sanitizeTravelDates` and `getPastTravelDateErrors` take an injectable `minDate` (default `todayISO()`), so the remaining ~200 literals are inert fixture strings that never meet a clock. The suite does not rot. No work needed.
-- [ ] `BudgetSlider` and `TravelStyleSelector` are referenced nowhere — keep deliberately or delete
+- [x] `BudgetSlider` deleted 2026-10-28 — superseded by `components/search/BudgetSelector.tsx`, nothing referenced it
+- [ ] **`TravelStyleSelector` is the UI for a live feature that users cannot reach.** `travelStyle` flows through validation, the cache key, save-trip and Amadeus cabin selection, but `lib/api/searchMappers.ts:43` pins it to `"standard"` and no form renders the control. Either wire the selector back into the search form or strip `travelStyle` from the request pipeline — leaving it half-connected is the worst of both
 - [ ] Rate limits and caches are in-process memory; weak across Vercel instances
-- [ ] Move 19 one-off validation scripts and 15 sprint JSON files into `archive/` so the repo reads cleanly for a new contributor
+- [x] ~~Move 19 one-off validation scripts and 15 sprint JSON files into `archive/`~~ — **audit error, corrected 2026-10-28.** No sprint JSON files exist anywhere in the repo, and 8 of the 13 one-off scripts are cited by name from `docs/` and `docs/releases/v0.21.0.md` as the evidence for past sprint sign-offs. Moving them would break those references to tidy a directory nobody is confused by. The repo root is already clean. Not doing it
 
 ## 🔴 NEXT — Milestone 19 (proposed) — not started
 
