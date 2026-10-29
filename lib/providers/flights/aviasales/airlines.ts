@@ -60,6 +60,7 @@ const AIRLINE_NAMES: Readonly<Record<string, string>> = {
   UX: "Air Europa",
   V7: "Volotea",
   VY: "Vueling",
+  W4: "Wizz Air Malta",
   W6: "Wizz Air",
   X3: "TUIfly",
   ZQ: "German Airways",
