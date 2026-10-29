@@ -18,6 +18,7 @@
  *   (MIL→PAR) mixes MXP, LIN, BGY and CDG, ORY, BVA.
  */
 
+import { buildAviasalesTicketUrl } from "@/lib/affiliate/aviasalesLink";
 import { airlineDisplayName } from "@/lib/providers/flights/aviasales/airlines";
 import type {
   AviasalesPricesForDatesResponse,
@@ -56,6 +57,8 @@ export type MapAviasalesOptions = {
   destinationId: string;
   currency: CurrencyCode;
   tripType: TripType;
+  /** Milestone 20: travellers, so the exact-ticket link prices the whole group. */
+  passengers?: { adults: number; children?: number; infants?: number };
 };
 
 /** Maps one ticket, or returns null when it cannot be shown honestly. */
@@ -100,6 +103,9 @@ export function mapAviasalesTicketToFlight(
     isRoundTrip ? idPart(ticket.return_at) : "ow",
   ].join("-");
 
+  const airlineCode = ticket.airline?.trim().toUpperCase() ?? "";
+  const bookingUrl = buildAviasalesTicketUrl(ticket.link, options.passengers ?? { adults: 1 });
+
   return {
     id,
     destinationId,
@@ -115,6 +121,8 @@ export function mapAviasalesTicketToFlight(
     priceIsRecent: true,
     originAirport: airportCode(ticket.origin_airport),
     destinationAirport: airportCode(ticket.destination_airport),
+    ...(/^[A-Z0-9]{2}$/.test(airlineCode) ? { airlineCode } : {}),
+    ...(bookingUrl ? { bookingUrl } : {}),
     ...(isRoundTrip ? returnLeg(ticket, returnTime) : {}),
   };
 }

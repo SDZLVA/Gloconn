@@ -39,6 +39,10 @@ import {
   buildFlightPartnerLink,
   type FlightPartnerLink,
 } from "@/lib/affiliate/flightPartnerLink";
+import {
+  buildFlightLinks,
+  type FlightLinksResolver,
+} from "@/lib/affiliate/exactFlightLinks";
 import { sortResults } from "@/lib/results/sort";
 import { getApiErrorMessage, postSearchTrips } from "@/lib/api";
 import {
@@ -405,9 +409,11 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     displayData?.route?.destinationCityIata ?? destinationIata;
   const aviasalesLink = displayData?.partnerLinks?.aviasales;
 
-  // Milestone 19: partner links, one set per search. Computed after sorting
-  // and never fed back into it — commission must not affect result order.
-  const flightPartnerLinks = useMemo((): readonly FlightPartnerLink[] => {
+  // Milestone 19: general route-search links, one set per search. Since
+  // Milestone 20 they are only the fallback for flights without exact links.
+  // Computed after sorting and never fed back into it — commission must not
+  // affect result order.
+  const routeSearchLinks = useMemo((): readonly FlightPartnerLink[] => {
     const kiwi = buildFlightPartnerLink(
         {
           originIata: originSearchCode,
@@ -431,6 +437,37 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     activeSearch.returnDate,
     activeSearch.tripType,
     aviasalesLink,
+  ]);
+
+  // Milestone 20: buttons for one exact flight / flight pair. Memoized so
+  // memoized cards keep a stable prop.
+  const travelers = activeSearch.travelers;
+  const getFlightLinks = useMemo((): FlightLinksResolver => {
+    const context = {
+      tripType: activeSearch.tripType,
+      originCode: originSearchCode,
+      destinationCode: destinationSearchCode,
+      adults: travelers?.adults,
+      children: travelers?.children,
+      infants: travelers?.infants,
+      config: loadAffiliateConfig(),
+    };
+    const cache = new Map<string, readonly FlightPartnerLink[]>();
+    return (flight) => {
+      const hit = cache.get(flight.id);
+      if (hit) return hit;
+      const links = buildFlightLinks(flight, context, routeSearchLinks);
+      cache.set(flight.id, links);
+      return links;
+    };
+  }, [
+    activeSearch.tripType,
+    originSearchCode,
+    destinationSearchCode,
+    travelers?.adults,
+    travelers?.children,
+    travelers?.infants,
+    routeSearchLinks,
   ]);
 
   const activeFilterCount = countActiveFilters(filters, defaultFilters);
@@ -678,7 +715,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     packages={packages}
                     originIata={originIata}
                     destinationIata={destinationIata}
-                    flightPartnerLinks={flightPartnerLinks}
+                    getFlightLinks={getFlightLinks}
                     budget={activeSearch.budget}
                     tripType={activeSearch.tripType}
                   />
@@ -698,7 +735,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     tripType={activeSearch.tripType}
                     originIata={originIata}
                     destinationIata={destinationIata}
-                    flightPartnerLinks={flightPartnerLinks}
+                    getFlightLinks={getFlightLinks}
                   />
                 </>
               )}

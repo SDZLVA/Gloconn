@@ -3,7 +3,7 @@ import { BusResultCard } from "@/components/results/BusResultCard";
 import { FlightResultCard } from "@/components/results/FlightResultCard";
 import { HotelResultCard } from "@/components/results/HotelResultCard";
 import { TrainResultCard } from "@/components/results/TrainResultCard";
-import type { FlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
+import type { FlightLinksResolver } from "@/lib/affiliate/exactFlightLinks";
 import type { TripType } from "@/types/models/search-request";
 import type { SearchResult } from "@/types/results";
 
@@ -14,8 +14,8 @@ type ResultCardProps = {
   /** Task 4 (Sprint 15.3): route context for flight cards. */
   originIata?: string | null;
   destinationIata?: string | null;
-  /** Milestone 19: partner link shared by every flight card in a search. */
-  flightPartnerLinks?: readonly FlightPartnerLink[];
+  /** Milestone 20: partner buttons for one flight. Keep its identity stable (memo). */
+  getFlightLinks?: FlightLinksResolver;
 };
 
 /** Dispatches to the correct card component based on result type. */
@@ -24,7 +24,7 @@ function ResultCardComponent({
   tripType,
   originIata,
   destinationIata,
-  flightPartnerLinks,
+  getFlightLinks,
 }: ResultCardProps) {
   switch (result.type) {
     case "hotel":
@@ -36,7 +36,7 @@ function ResultCardComponent({
           tripType={tripType}
           originIata={originIata}
           destinationIata={destinationIata}
-          partnerLinks={flightPartnerLinks}
+          partnerLinks={getFlightLinks?.(result)}
         />
       );
     case "bus":

@@ -1,4 +1,4 @@
-import type { FlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
+import type { FlightLinksResolver } from "@/lib/affiliate/exactFlightLinks";
 import { memo } from "react";
 import { Card } from "@/components/ui/Card";
 import { ViewPackageDetailsAction } from "@/components/results/ViewPackageDetailsAction";
@@ -21,7 +21,7 @@ type TravelPackageCardProps = {
   originIata?: string | null;
   destinationIata?: string | null;
   /** Milestone 19: partner search link for this trip's flight route. */
-  flightPartnerLinks?: readonly FlightPartnerLink[];
+  getFlightLinks?: FlightLinksResolver;
   /** Sprint 16.4: deterministic role + reason (no raw score). */
   explanation?: PackageExplanation | null;
   tripType?: "round-trip" | "one-way" | null;
@@ -37,7 +37,7 @@ function TravelPackageCardComponent({
   package: travelPackage,
   originIata,
   destinationIata,
-  flightPartnerLinks,
+  getFlightLinks,
   explanation = null,
   tripType = "round-trip",
 }: TravelPackageCardProps) {
@@ -120,7 +120,7 @@ function TravelPackageCardComponent({
             package={travelPackage}
             originIata={originIata}
             destinationIata={destinationIata}
-            flightPartnerLinks={flightPartnerLinks}
+            getFlightLinks={getFlightLinks}
             tripType={tripType}
           />
         </div>

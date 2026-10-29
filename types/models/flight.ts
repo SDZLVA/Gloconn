@@ -64,6 +64,19 @@ export type Flight = {
   returnDurationMinutes?: number;
 
   /**
+   * Milestone 20: two-letter IATA code of the airline (e.g. "U2"), used to
+   * narrow a partner search to this airline. Omitted when unknown.
+   */
+  airlineCode?: string;
+
+  /**
+   * Milestone 20: aviasales.com page for this exact ticket (plain brand
+   * URL, no tracking — the click goes through /api/out/aviasales, which
+   * adds attribution). Omitted when the source gave no usable ticket link.
+   */
+  bookingUrl?: string;
+
+  /**
    * True when this result is sample (mock) data, not a real offer. The UI
    * labels it so a sample price is never mistaken for a real one — most
    * importantly inside packages that mix live and sample data.
