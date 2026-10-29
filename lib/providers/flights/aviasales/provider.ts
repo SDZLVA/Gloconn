@@ -29,6 +29,7 @@ import { getAppConfig } from "@/lib/config";
 import type { AviasalesConfig } from "@/lib/config/types";
 import type { FlightSearchOptions, FlightsProvider } from "@/lib/providers/core/types";
 import { fetchAviasalesPricesForDates } from "@/lib/providers/flights/aviasales/client";
+import { coverageProbeEnabled, runCoverageProbe } from "@/lib/providers/flights/aviasales/coverageProbe";
 import {
   formatAviasalesDateTime,
   mapAviasalesResponse,
@@ -166,6 +167,13 @@ export class AviasalesFlightsProvider implements FlightsProvider {
       lookupParams
         ? this.fetchPrices(lookupParams, config.apiToken).catch(() => null)
         : Promise.resolve(null),
+      // TEMPORARY (Milestone 22): preview-only coverage measurement.
+      !options.scout && coverageProbeEnabled()
+        ? runCoverageProbe(params, config.apiToken, this.fetchPrices, {
+            origin: request.originIata,
+            destination: request.destinationIata,
+          }).catch(() => undefined)
+        : Promise.resolve(undefined),
     ]);
 
     const flights = mapAviasalesResponse(response, {
