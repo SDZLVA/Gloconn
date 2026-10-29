@@ -98,3 +98,28 @@ describe("mapAviasalesResponse", () => {
     assert.deepEqual(mapAviasalesResponse({ success: true }, RT), []);
   });
 });
+
+describe("recent-price behaviour (verified on the 2026-10-29 preview)", () => {
+  it("marks every Aviasales price as a recent, not live, price", () => {
+    const flight = mapAviasalesTicketToFlight(first, RT);
+    assert.equal(flight?.priceIsRecent, true);
+  });
+
+  it("keeps only the cheapest ticket when tickets differ only in the return leg", () => {
+    const sameOutboundPricier = {
+      ...first,
+      price: 67,
+      return_at: "2027-08-26T20:10:00+02:00",
+    };
+    const flights = mapAviasalesResponse(
+      { success: true, data: [sameOutboundPricier, first] },
+      RT,
+    );
+    assert.equal(flights.length, 1);
+    assert.equal(flights[0]?.price, 59);
+  });
+
+  it("names Helvetic Airways (seen as '2L' on the preview)", () => {
+    assert.equal(airlineDisplayName("2L"), "Helvetic Airways");
+  });
+});

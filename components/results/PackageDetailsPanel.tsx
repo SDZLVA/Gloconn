@@ -160,7 +160,10 @@ export function PackageDetailsPanel({
             </div>
           </dl>
           <div className="rounded-xl border border-slate-100 px-3 py-2">
-            <p className="text-xs text-slate-500">{flightPriceFootnote}</p>
+            <p className="text-xs text-slate-500">
+              {flightPriceFootnote}
+              {flight.priceIsRecent && " · recent price, may have changed"}
+            </p>
             <div className="mt-0.5">
               <ResultPrice
                 price={flight.price}

@@ -47,6 +47,7 @@ function isProviderConfigured(
 function collectProviderKeyErrors(
   providers: ProvidersConfig,
   apiKeys: ApiKeysConfig,
+  aviasalesConfigured = false,
 ): ConfigIssue[] {
   const issues: ConfigIssue[] = [];
   const domains: Array<{
@@ -79,6 +80,17 @@ function collectProviderKeyErrors(
 
     // SerpAPI credentials live on config.serpapi (validated separately).
     if (provider === "serpapi") {
+      continue;
+    }
+
+    // Aviasales uses the Travelpayouts token on config.aviasales, not apiKeys.
+    if (provider === "aviasales") {
+      if (!aviasalesConfigured) {
+        issues.push({
+          env: "TRAVELPAYOUTS_API_TOKEN",
+          message: `${label} provider "aviasales" (${envVar}) requires TRAVELPAYOUTS_API_TOKEN.`,
+        });
+      }
       continue;
     }
 
@@ -223,6 +235,7 @@ export function validateAppConfig(
     const providerKeyErrors = collectProviderKeyErrors(
       config.providers,
       config.apiKeys,
+      config.aviasales.isConfigured,
     );
 
     if (isLiveAmadeusIntended(config) && !config.amadeus.isConfigured) {

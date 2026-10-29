@@ -5,14 +5,19 @@
  * unlike SerpAPI it can serve the public site. Composes params → client →
  * mappers.
  *
- * OPEN QUESTION — verify before production. The documentation describes
- * `price` only as "price of the ticket": it does not say whether a
- * round-trip result's price covers both legs, nor whether it is per
- * passenger. The evidence points to "round-trip total for one adult" (each
- * result carries return date, return stops and return duration, and its
- * link encodes both dates and one passenger), but that must be confirmed by
- * comparing live results with the same fare on aviasales.com before this
- * provider is enabled in production. See the 18.8 lesson in docs/TODO.md.
+ * PRICE MEANING — verified 2026-10-29. The documentation describes `price`
+ * only as "price of the ticket". On the milestone-19-aviasales preview,
+ * MXP→CDG 12–15 Nov 2026 returned easyJet €117 and Air France €160;
+ * aviasales.com for the same trip ("MXP ⇄ CDG, 1 pax, economy") showed
+ * $105 (≈€97) and $184 (≈€170). So `price` is the ROUND-TRIP TOTAL FOR ONE
+ * PASSENGER, matching the card's "Round-trip · per person" label — a
+ * one-way price would be roughly half. The same comparison showed cached
+ * prices drifting 10–20% from live ones, hence `priceIsRecent` and the
+ * "may have changed" copy on cards.
+ *
+ * DATA COVERAGE — exact dates months ahead often have no cached prices
+ * (MXP→CDG 2–6 Mar 2027 returned 0 tickets; 12–15 Nov 2026 returned 9),
+ * because the cache only holds what other travellers searched recently.
  *
  * No results is a loud error, never a silent empty list: the 19.0 bug was
  * an empty flights list that the page showed as "no flights exist".

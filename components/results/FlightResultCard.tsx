@@ -118,6 +118,11 @@ export function FlightResultCard({
               suffix="per person"
             />
           </div>
+          {result.priceIsRecent && (
+            <p className="-mt-1 text-right text-xs text-slate-500">
+              Recent price found by other travellers — it may have changed.
+            </p>
+          )}
 
           {partnerLink && (
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

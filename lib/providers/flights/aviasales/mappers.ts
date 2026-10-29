@@ -110,25 +110,46 @@ export function mapAviasalesTicketToFlight(
     durationMinutes: Math.round(durationMinutes),
     stops,
     cabin: "",
+    priceIsRecent: true,
   };
 }
 
-/** Maps a full response, dropping unusable tickets and duplicates. */
+/**
+ * Identity of the outbound flight a card shows. Two tickets with the same
+ * outbound flight but different return flights look identical on a card,
+ * so only the cheapest is kept.
+ */
+function outboundKey(ticket: AviasalesTicket): string {
+  return [
+    idPart(ticket.airline),
+    idPart(ticket.flight_number),
+    idPart(ticket.departure_at),
+  ].join("-");
+}
+
+/**
+ * Maps a full response, dropping unusable tickets and keeping only the
+ * cheapest ticket per outbound flight (found on the 2026-10-29 preview:
+ * "2L 15:10 €231" and "2L 15:10 €239" differed only in the return leg).
+ */
 export function mapAviasalesResponse(
   response: AviasalesPricesForDatesResponse,
   options: MapAviasalesOptions,
 ): Flight[] {
   const tickets = Array.isArray(response.data) ? response.data : [];
-  const seen = new Set<string>();
-  const flights: Flight[] = [];
+  const cheapest = new Map<string, Flight>();
 
   for (const ticket of tickets) {
     const flight = mapAviasalesTicketToFlight(ticket, options);
-    if (flight && !seen.has(flight.id)) {
-      seen.add(flight.id);
-      flights.push(flight);
+    if (!flight) {
+      continue;
+    }
+    const key = outboundKey(ticket);
+    const current = cheapest.get(key);
+    if (!current || flight.price < current.price) {
+      cheapest.set(key, flight);
     }
   }
 
-  return flights;
+  return [...cheapest.values()];
 }
