@@ -26,7 +26,7 @@ export type FlightPartnerLink = {
   href: string;
   /** True when the link carries Glooconn's marker and can earn commission. */
   tagged: boolean;
-  partnerName: "Kiwi.com";
+  partnerName: "Kiwi.com" | "Aviasales";
 };
 
 /**

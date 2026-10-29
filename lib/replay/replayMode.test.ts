@@ -126,6 +126,7 @@ function makeConfigSkeleton(
     aviasales: {
       apiToken: "",
       market: null,
+      projectId: "",
       isConfigured: false,
     },
     serpapi: {

@@ -19,7 +19,7 @@ type RecommendedPackagesSectionProps = {
   originIata?: string | null;
   destinationIata?: string | null;
   /** Milestone 19: partner search link for this trip's flight route. */
-  flightPartnerLink?: FlightPartnerLink | null;
+  flightPartnerLinks?: readonly FlightPartnerLink[];
   /** Sprint 16.4: optional budget for "Fits your budget" role. */
   budget?: Budget | null;
   tripType?: "round-trip" | "one-way" | null;
@@ -41,7 +41,7 @@ function RecommendedPackagesSectionComponent({
   packages,
   originIata,
   destinationIata,
-  flightPartnerLink,
+  flightPartnerLinks,
   budget = null,
   tripType = "round-trip",
 }: RecommendedPackagesSectionProps) {
@@ -95,7 +95,7 @@ function RecommendedPackagesSectionComponent({
               package={travelPackage}
               originIata={originIata}
               destinationIata={destinationIata}
-              flightPartnerLink={flightPartnerLink}
+              flightPartnerLinks={flightPartnerLinks}
               explanation={explanations.get(travelPackage.id) ?? null}
               tripType={tripType}
             />

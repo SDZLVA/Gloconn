@@ -171,6 +171,7 @@ describe("F-08: config error logging — message-only, no stack traces", () => {
       aviasales: {
         apiToken: "",
         market: null,
+        projectId: "",
         isConfigured: false,
       },
       serpapi: {

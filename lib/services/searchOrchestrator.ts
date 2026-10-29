@@ -16,6 +16,7 @@ import {
   isNoRecentPricesError,
 } from "@/lib/api/searchMappers";
 import { createProviderError, createValidationError } from "@/lib/api/errors";
+import { prepareAviasalesPartnerLink } from "@/lib/affiliate/serverPartnerLinks";
 import { composePackages } from "@/lib/packages";
 import { normalizeProductTypes } from "@/lib/search/productTypes";
 import { getServiceProviders } from "@/lib/services/context";
@@ -217,7 +218,12 @@ function resolvedRoute(request: SearchRequest): SearchResponse["route"] {
   if (!originIata && !destinationIata) {
     return undefined;
   }
-  return { originIata, destinationIata };
+  return {
+    originIata,
+    destinationIata,
+    originCityIata: request.originCityIata ?? null,
+    destinationCityIata: request.destinationCityIata ?? null,
+  };
 }
 
 /**
@@ -244,7 +250,13 @@ export async function orchestrateTripSearch(
 ): Promise<SearchResponse> {
   const enriched = await enrichSearchRequest(request, providers);
   assertFlightAirportsResolved(enriched);
-  return searchAllDomains(enriched, providers, options);
+  // Runs alongside the search so it adds no waiting time; never throws.
+  const [response, aviasales] = await Promise.all([
+    searchAllDomains(enriched, providers, options),
+    // Scout searches (price hints) show no buttons — don't spend link-API calls.
+    options.scout ? Promise.resolve(undefined) : prepareAviasalesPartnerLink(enriched),
+  ]);
+  return aviasales ? { ...response, partnerLinks: { aviasales } } : response;
 }
 
 /** Returns the full result catalog via active providers (price-range defaults). */

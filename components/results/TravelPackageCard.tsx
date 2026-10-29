@@ -21,7 +21,7 @@ type TravelPackageCardProps = {
   originIata?: string | null;
   destinationIata?: string | null;
   /** Milestone 19: partner search link for this trip's flight route. */
-  flightPartnerLink?: FlightPartnerLink | null;
+  flightPartnerLinks?: readonly FlightPartnerLink[];
   /** Sprint 16.4: deterministic role + reason (no raw score). */
   explanation?: PackageExplanation | null;
   tripType?: "round-trip" | "one-way" | null;
@@ -37,7 +37,7 @@ function TravelPackageCardComponent({
   package: travelPackage,
   originIata,
   destinationIata,
-  flightPartnerLink,
+  flightPartnerLinks,
   explanation = null,
   tripType = "round-trip",
 }: TravelPackageCardProps) {
@@ -120,7 +120,7 @@ function TravelPackageCardComponent({
             package={travelPackage}
             originIata={originIata}
             destinationIata={destinationIata}
-            flightPartnerLink={flightPartnerLink}
+            flightPartnerLinks={flightPartnerLinks}
             tripType={tripType}
           />
         </div>

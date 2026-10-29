@@ -80,6 +80,11 @@ export type AviasalesConfig = {
    * documented and must be confirmed against live data.
    */
   market: string | null;
+  /**
+   * Travelpayouts project ID (`trs`) for the link-creation API. Public;
+   * the Glooconn project is 585088. Empty disables partner-link conversion.
+   */
+  projectId: string;
   isConfigured: boolean;
 };
 

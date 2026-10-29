@@ -15,7 +15,7 @@ type ResultCardProps = {
   originIata?: string | null;
   destinationIata?: string | null;
   /** Milestone 19: partner link shared by every flight card in a search. */
-  flightPartnerLink?: FlightPartnerLink | null;
+  flightPartnerLinks?: readonly FlightPartnerLink[];
 };
 
 /** Dispatches to the correct card component based on result type. */
@@ -24,7 +24,7 @@ function ResultCardComponent({
   tripType,
   originIata,
   destinationIata,
-  flightPartnerLink,
+  flightPartnerLinks,
 }: ResultCardProps) {
   switch (result.type) {
     case "hotel":
@@ -36,7 +36,7 @@ function ResultCardComponent({
           tripType={tripType}
           originIata={originIata}
           destinationIata={destinationIata}
-          partnerLink={flightPartnerLink}
+          partnerLinks={flightPartnerLinks}
         />
       );
     case "bus":

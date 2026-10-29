@@ -14,6 +14,8 @@
  *   wrong whenever the route crosses a zone. The UI hides an empty arrival.
  * - rating is 0 (unknown). The UI hides ratings that are not above 0.
  * - cabin is left empty: the documentation does not state the cabin class.
+ * - Each flight carries its own airports, because a whole-city search
+ *   (MIL→PAR) mixes MXP, LIN, BGY and CDG, ORY, BVA.
  */
 
 import { airlineDisplayName } from "@/lib/providers/flights/aviasales/airlines";
@@ -111,45 +113,54 @@ export function mapAviasalesTicketToFlight(
     stops,
     cabin: "",
     priceIsRecent: true,
+    originAirport: airportCode(ticket.origin_airport),
+    destinationAirport: airportCode(ticket.destination_airport),
+    ...(isRoundTrip ? returnLeg(ticket, returnTime) : {}),
+  };
+}
+
+function airportCode(value: string | undefined): string | undefined {
+  const code = value?.trim().toUpperCase() ?? "";
+  return /^[A-Z]{3}$/.test(code) ? code : undefined;
+}
+
+function returnLeg(
+  ticket: AviasalesTicket,
+  returnTime: string | null,
+): Pick<Flight, "returnDepartureTime" | "returnStops" | "returnDurationMinutes"> {
+  const stops = stopCount(ticket.return_transfers);
+  const duration = positiveNumber(ticket.duration_back);
+  return {
+    ...(returnTime ? { returnDepartureTime: returnTime } : {}),
+    ...(stops !== null ? { returnStops: stops } : {}),
+    ...(duration !== null ? { returnDurationMinutes: Math.round(duration) } : {}),
   };
 }
 
 /**
- * Identity of the outbound flight a card shows. Two tickets with the same
- * outbound flight but different return flights look identical on a card,
- * so only the cheapest is kept.
- */
-function outboundKey(ticket: AviasalesTicket): string {
-  return [
-    idPart(ticket.airline),
-    idPart(ticket.flight_number),
-    idPart(ticket.departure_at),
-  ].join("-");
-}
-
-/**
- * Maps a full response, dropping unusable tickets and keeping only the
- * cheapest ticket per outbound flight (found on the 2026-10-29 preview:
- * "2L 15:10 €231" and "2L 15:10 €239" differed only in the return leg).
+ * Maps a full response, dropping unusable tickets. Every distinct
+ * outbound + return combination is kept — the card shows the return leg,
+ * so fares that differ only in the return flight are distinguishable
+ * (Shehan, 2026-10-29: "show all suitable results"). Exact duplicates
+ * (same id) keep the cheaper price.
  */
 export function mapAviasalesResponse(
   response: AviasalesPricesForDatesResponse,
   options: MapAviasalesOptions,
 ): Flight[] {
   const tickets = Array.isArray(response.data) ? response.data : [];
-  const cheapest = new Map<string, Flight>();
+  const byId = new Map<string, Flight>();
 
   for (const ticket of tickets) {
     const flight = mapAviasalesTicketToFlight(ticket, options);
     if (!flight) {
       continue;
     }
-    const key = outboundKey(ticket);
-    const current = cheapest.get(key);
+    const current = byId.get(flight.id);
     if (!current || flight.price < current.price) {
-      cheapest.set(key, flight);
+      byId.set(flight.id, flight);
     }
   }
 
-  return [...cheapest.values()];
+  return [...byId.values()];
 }

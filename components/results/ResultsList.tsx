@@ -17,7 +17,7 @@ type ResultsListProps = {
   originIata?: string | null;
   destinationIata?: string | null;
   /** Milestone 19: partner link for flight cards. */
-  flightPartnerLink?: FlightPartnerLink | null;
+  flightPartnerLinks?: readonly FlightPartnerLink[];
 };
 
 type BrowseSectionProps = {
@@ -28,7 +28,7 @@ type BrowseSectionProps = {
   listAriaLabel: string;
   originIata?: string | null;
   destinationIata?: string | null;
-  flightPartnerLink?: FlightPartnerLink | null;
+  flightPartnerLinks?: readonly FlightPartnerLink[];
 };
 
 function BrowseSection({
@@ -39,7 +39,7 @@ function BrowseSection({
   listAriaLabel,
   originIata,
   destinationIata,
-  flightPartnerLink,
+  flightPartnerLinks,
 }: BrowseSectionProps) {
   if (results.length === 0) {
     return null;
@@ -61,7 +61,7 @@ function BrowseSection({
               tripType={tripType}
               originIata={originIata}
               destinationIata={destinationIata}
-              flightPartnerLink={flightPartnerLink}
+              flightPartnerLinks={flightPartnerLinks}
             />
           </li>
         ))}
@@ -82,7 +82,7 @@ export function ResultsList({
   tripType,
   originIata,
   destinationIata,
-  flightPartnerLink,
+  flightPartnerLinks,
 }: ResultsListProps) {
   if (results.length === 0) {
     return (
@@ -107,7 +107,7 @@ export function ResultsList({
         listAriaLabel="Flight results"
         originIata={originIata}
         destinationIata={destinationIata}
-        flightPartnerLink={flightPartnerLink}
+        flightPartnerLinks={flightPartnerLinks}
       />
       <BrowseSection
         title="Browse Hotels"

@@ -646,3 +646,20 @@ describe("mock providers mark their results as sample data (Milestone 19)", () =
     assert.ok(response.flights.every((f) => f.isSample === true));
   });
 });
+
+describe("orchestrateTripSearch — whole-city route (Milestone 19)", () => {
+  it("returns city codes for Milan → Paris so partner searches cover every airport", async () => {
+    setServiceProviders(providersWith({}));
+    const response = await orchestrateTripSearch(baseRequest());
+    assert.equal(response.route?.originCityIata, "MIL");
+    assert.equal(response.route?.destinationCityIata, "PAR");
+  });
+
+  it("offers an Aviasales link even without credentials — plain, untagged", async () => {
+    setServiceProviders(providersWith({}));
+    const response = await orchestrateTripSearch(baseRequest());
+    assert.ok(response.partnerLinks?.aviasales);
+    assert.equal(response.partnerLinks?.aviasales?.tagged, false);
+    assert.match(response.partnerLinks?.aviasales?.href ?? "", /^https:\/\/www\.aviasales\.com\/search\/MIL\d{4}PAR\d{4}2$/);
+  });
+});

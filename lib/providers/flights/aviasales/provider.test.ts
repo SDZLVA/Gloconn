@@ -13,7 +13,7 @@ import { ROUND_TRIP_SAMPLE } from "@/lib/providers/flights/aviasales/__fixtures_
 import type { AviasalesConfig } from "@/lib/config/types";
 import type { SearchRequest } from "@/types/models/search-request";
 
-const CONFIG: AviasalesConfig = { apiToken: "test-token", market: null, isConfigured: true };
+const CONFIG: AviasalesConfig = { apiToken: "test-token", market: null, projectId: "", isConfigured: true };
 
 function request(overrides: Partial<SearchRequest> = {}): SearchRequest {
   return {
@@ -58,6 +58,15 @@ describe("buildAviasalesParams", () => {
 
   it("uses fewer results for scout (price-hint) searches", () => {
     assert.equal(buildAviasalesParams(request(), CONFIG, { scout: true }).get("limit"), String(AVIASALES_SCOUT_LIMIT));
+  });
+
+  it("searches whole cities when city codes are known (budget airports)", () => {
+    const p = buildAviasalesParams(
+      request({ originCityIata: "MIL", destinationCityIata: "PAR", originIata: "MXP", destinationIata: "CDG" }),
+      CONFIG,
+    );
+    assert.equal(p.get("origin"), "MIL");
+    assert.equal(p.get("destination"), "PAR");
   });
 
   it("passes the market only when configured", () => {
