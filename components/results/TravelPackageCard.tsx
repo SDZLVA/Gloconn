@@ -46,7 +46,12 @@ function TravelPackageCardComponent({
   const nightsLabel = formatPackageNightsLabel(nights);
   const priceBreakdownLabel = formatPackagePriceBreakdownLabel(nights);
   const starsLabel = formatHotelStarsLabel(hotel.stars);
-  const routeLabel = formatFlightRoute(originIata, destinationIata);
+  // The flight's own airports: a whole-city search mixes MXP/BGY/LIN and
+  // CDG/ORY/BVA, so the search-level route would misdescribe Ryanair → BVA.
+  const routeLabel = formatFlightRoute(
+    flight.originAirport ?? originIata,
+    flight.destinationAirport ?? destinationIata,
+  );
   const headingId = `${id}-title`;
   const sampleNote = samplePackageNote(flight.isSample, hotel.isSample);
   const roleBadgeClass =
