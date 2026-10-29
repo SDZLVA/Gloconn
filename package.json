@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx --import ./test/register-server-only.mjs --test lib/**/*.test.ts",
+    "test": "tsx --import ./test/register-server-only.mjs --test lib/**/*.test.ts features/**/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
