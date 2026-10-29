@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/Card";
-import { ExternalContinueLink } from "@/components/results/ExternalContinueLink";
+import { PartnerLinks } from "@/components/results/PartnerLinks";
+import { formatFlightDateTime } from "@/lib/results/flightTime";
 import { SampleDataBadge } from "@/components/results/SampleDataBadge";
 import { SAMPLE_FLIGHT_NOTE } from "@/lib/results/sampleData";
 import { ResultDuration } from "@/components/results/ResultDuration";
@@ -27,7 +28,7 @@ type FlightResultCardProps = {
    * Milestone 19: partner search link for this route and dates. Omitted
    * when the route cannot be built — the card then shows no link.
    */
-  partnerLink?: FlightPartnerLink | null;
+  partnerLinks?: readonly FlightPartnerLink[];
 };
 
 /**
@@ -46,12 +47,23 @@ export function FlightResultCard({
   tripType = "round-trip",
   originIata,
   destinationIata,
-  partnerLink,
+  partnerLinks = [],
 }: FlightResultCardProps) {
   const stopsLabel =
     result.stops === 0 ? "Direct" : `${result.stops} stop${result.stops > 1 ? "s" : ""}`;
   const tripPriceLabel = formatFlightTripPriceLabel(tripType);
-  const routeLabel = formatFlightRoute(originIata, destinationIata);
+  // A whole-city search mixes airports (MXP/LIN/BGY → CDG/ORY/BVA), so the
+  // flight's own airports win over the search-level route.
+  const routeLabel = formatFlightRoute(
+    result.originAirport ?? originIata,
+    result.destinationAirport ?? destinationIata,
+  );
+  const returnStopsLabel =
+    result.returnStops === undefined
+      ? null
+      : result.returnStops === 0
+        ? "Direct"
+        : `${result.returnStops} stop${result.returnStops > 1 ? "s" : ""}`;
 
   return (
     <Card hoverable className="overflow-hidden">
@@ -87,7 +99,7 @@ export function FlightResultCard({
           <div className="flex flex-wrap items-center gap-4 text-sm">
             <div className="text-center">
               <p className="text-lg font-bold text-slate-900">
-                {result.departureTime}
+                {formatFlightDateTime(result.departureTime)}
               </p>
               <p className="text-xs text-slate-500">Depart</p>
             </div>
@@ -113,6 +125,14 @@ export function FlightResultCard({
             ) : null}
           </div>
 
+          {result.returnDepartureTime && (
+            <p className="text-sm text-slate-600">
+              <span className="font-semibold text-slate-900">Return</span>{" "}
+              {formatFlightDateTime(result.returnDepartureTime)}
+              {returnStopsLabel && ` · ${returnStopsLabel}`}
+            </p>
+          )}
+
           <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
             <p className="text-sm text-slate-500">{tripPriceLabel}</p>
             <ResultPrice
@@ -132,22 +152,7 @@ export function FlightResultCard({
             </p>
           )}
 
-          {partnerLink && (
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs text-slate-500">
-                Opens a search for this route on {partnerLink.partnerName}. Their
-                prices and flights may differ.
-                {partnerLink.tagged && " Glooconn may earn a commission."}
-              </p>
-              <ExternalContinueLink
-                href={partnerLink.href}
-                variant="brand"
-                sponsored={partnerLink.tagged}
-              >
-                Check this route on {partnerLink.partnerName}
-              </ExternalContinueLink>
-            </div>
-          )}
+          <PartnerLinks links={partnerLinks} context="flight" />
         </div>
       </div>
     </Card>

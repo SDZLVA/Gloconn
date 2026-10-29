@@ -13,6 +13,7 @@ export const MOCK_DESTINATIONS: Destination[] = [
     region: "Europe",
     popular: true,
     iataCode: "CDG",
+    cityIataCode: "PAR",
     description: "Art, cuisine, and iconic landmarks along the Seine.",
   },
   {
@@ -22,6 +23,7 @@ export const MOCK_DESTINATIONS: Destination[] = [
     region: "Europe",
     popular: true,
     iataCode: "FCO",
+    cityIataCode: "ROM",
     description: "Ancient history, piazzas, and world-class Italian food.",
   },
   {
@@ -40,6 +42,7 @@ export const MOCK_DESTINATIONS: Destination[] = [
     region: "Europe",
     popular: true,
     iataCode: "LHR",
+    cityIataCode: "LON",
     description: "Museums, theatre, and neighbourhoods from Soho to Shoreditch.",
   },
   { id: "amsterdam", name: "Amsterdam", country: "Netherlands", region: "Europe", iataCode: "AMS", description: "Canals, cycling, and world-class museums." },
@@ -63,6 +66,7 @@ export const MOCK_DESTINATIONS: Destination[] = [
     region: "Asia",
     popular: true,
     iataCode: "NRT",
+    cityIataCode: "TYO",
     description: "Neon districts, temples, and unmatched food scenes.",
   },
   {
@@ -82,6 +86,7 @@ export const MOCK_DESTINATIONS: Destination[] = [
     region: "North America",
     popular: true,
     iataCode: "JFK",
+    cityIataCode: "NYC",
     description: "Broadway, Central Park, and five-borough energy.",
   },
   { id: "miami", name: "Miami", country: "United States", region: "North America", iataCode: "MIA", description: "Art Deco beaches, nightlife, and Latin flavours." },
@@ -89,7 +94,7 @@ export const MOCK_DESTINATIONS: Destination[] = [
   { id: "sydney", name: "Sydney", country: "Australia", region: "Oceania", iataCode: "SYD", description: "Harbour icons, coastal walks, and café culture." },
   { id: "cape-town", name: "Cape Town", country: "South Africa", region: "Africa", iataCode: "CPT", description: "Table Mountain, vineyards, and coastal drives." },
   { id: "marrakech", name: "Marrakech", country: "Morocco", region: "Africa", iataCode: "RAK", description: "Souks, riads, and Sahara gateway adventures." },
-  { id: "reykjavik", name: "Reykjavik", country: "Iceland", region: "Europe", iataCode: "KEF", description: "Northern lights, hot springs, and dramatic landscapes." },
+  { id: "reykjavik", name: "Reykjavik", country: "Iceland", region: "Europe", iataCode: "KEF", cityIataCode: "REK", description: "Northern lights, hot springs, and dramatic landscapes." },
   {
     id: "milan",
     name: "Milan",
@@ -97,6 +102,7 @@ export const MOCK_DESTINATIONS: Destination[] = [
     region: "Europe",
     popular: true,
     iataCode: "MXP",
+    cityIataCode: "MIL",
     description: "Fashion capital with cathedral grandeur and lakeside escapes.",
   },
   {

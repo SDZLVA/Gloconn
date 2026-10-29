@@ -37,7 +37,7 @@ import type { SearchRequest } from "@/types/models/search-request";
 const SUPPORTED_CURRENCIES: readonly CurrencyCode[] = ["EUR", "USD", "GBP", "CHF", "JPY", "AUD", "CAD"];
 
 /** Tickets requested per search; scout mode (price hints) needs fewer. */
-export const AVIASALES_RESULT_LIMIT = 10;
+export const AVIASALES_RESULT_LIMIT = 100;
 export const AVIASALES_SCOUT_LIMIT = 3;
 
 const IATA = /^[A-Z]{3}$/;
@@ -54,8 +54,10 @@ export function buildAviasalesParams(
   config: Pick<AviasalesConfig, "market">,
   options: FlightSearchOptions = {},
 ): URLSearchParams {
-  const origin = request.originIata?.trim().toUpperCase() ?? "";
-  const destination = request.destinationIata?.trim().toUpperCase() ?? "";
+  // Whole-city codes first (MIL, PAR): budget airlines use secondary airports.
+  const origin = (request.originCityIata ?? request.originIata)?.trim().toUpperCase() ?? "";
+  const destination =
+    (request.destinationCityIata ?? request.destinationIata)?.trim().toUpperCase() ?? "";
   if (!IATA.test(origin) || !IATA.test(destination)) {
     throw createProviderError("Flight search requires origin and destination airport codes.");
   }

@@ -105,18 +105,40 @@ describe("recent-price behaviour (verified on the 2026-10-29 preview)", () => {
     assert.equal(flight?.priceIsRecent, true);
   });
 
-  it("keeps only the cheapest ticket when tickets differ only in the return leg", () => {
-    const sameOutboundPricier = {
-      ...first,
-      price: 67,
-      return_at: "2027-08-26T20:10:00+02:00",
-    };
+  it("keeps fares that differ only in the return leg (the card shows the return)", () => {
+    const laterReturn = { ...first, price: 67, return_at: "2027-08-26T20:10:00+02:00" };
+    const flights = mapAviasalesResponse({ success: true, data: [laterReturn, first] }, RT);
+    assert.equal(flights.length, 2);
+    assert.deepEqual(
+      flights.map((f) => f.returnDepartureTime).sort(),
+      ["2027-08-26 14:30", "2027-08-26 20:10"],
+    );
+  });
+
+  it("keeps the cheaper price for an exact duplicate", () => {
     const flights = mapAviasalesResponse(
-      { success: true, data: [sameOutboundPricier, first] },
+      { success: true, data: [{ ...first, price: 70 }, first] },
       RT,
     );
     assert.equal(flights.length, 1);
     assert.equal(flights[0]?.price, 59);
+  });
+
+  it("records the flight's own airports and return leg", () => {
+    const flight = mapAviasalesTicketToFlight(
+      { ...first, origin: "MIL", destination: "PAR", origin_airport: "BGY", destination_airport: "BVA" },
+      RT,
+    );
+    assert.equal(flight?.originAirport, "BGY");
+    assert.equal(flight?.destinationAirport, "BVA");
+    assert.equal(flight?.returnDepartureTime, "2027-08-26 14:30");
+    assert.equal(flight?.returnStops, 0);
+    assert.equal(flight?.returnDurationMinutes, 85);
+  });
+
+  it("adds no return fields to one-way flights", () => {
+    const flight = mapAviasalesTicketToFlight({ ...first, return_at: undefined }, OW);
+    assert.equal(flight?.returnDepartureTime, undefined);
   });
 
   it("names Helvetic Airways (seen as '2L' on the preview)", () => {

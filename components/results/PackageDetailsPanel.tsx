@@ -2,6 +2,8 @@ import type { FlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
 import type { Ref } from "react";
 import { Button } from "@/components/ui/Button";
 import { ExternalContinueLink } from "@/components/results/ExternalContinueLink";
+import { PartnerLinks } from "@/components/results/PartnerLinks";
+import { formatFlightDateTime } from "@/lib/results/flightTime";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
 import { SAMPLE_HOTEL_NOTE } from "@/lib/results/sampleData";
@@ -27,7 +29,7 @@ export type PackageDetailsPanelProps = {
   originIata?: string | null;
   destinationIata?: string | null;
   /** Milestone 19: partner search link for this trip's flight route. */
-  flightPartnerLink?: FlightPartnerLink | null;
+  flightPartnerLinks?: readonly FlightPartnerLink[];
   /** Trip type for flight price footnote. */
   tripType?: "round-trip" | "one-way" | null;
   details?: HotelPropertyDetails | null;
@@ -45,13 +47,16 @@ export function PackageDetailsPanel({
   closeButtonRef,
   originIata,
   destinationIata,
-  flightPartnerLink,
+  flightPartnerLinks,
   tripType = "round-trip",
   details = null,
   detailsStatus = "idle",
 }: PackageDetailsPanelProps) {
   const { flight, hotel, totalPrice, currency, nights } = travelPackage;
-  const routeLabel = formatFlightRoute(originIata, destinationIata);
+  const routeLabel = formatFlightRoute(
+    flight.originAirport ?? originIata,
+    flight.destinationAirport ?? destinationIata,
+  );
   const stopsLabel = formatPackageStopsLabel(flight.stops);
   const durationLabel = formatFlightDurationLabel(flight.durationMinutes);
   const starsLabel = formatHotelStarsLabel(hotel.stars);
@@ -140,9 +145,17 @@ export function PackageDetailsPanel({
             <div className="flex justify-between gap-3">
               <dt className="text-slate-500">Departure</dt>
               <dd className="font-medium text-slate-900">
-                {flight.departureTime}
+                {formatFlightDateTime(flight.departureTime)}
               </dd>
             </div>
+            {flight.returnDepartureTime && (
+              <div className="flex justify-between gap-3">
+                <dt className="text-slate-500">Return</dt>
+                <dd className="font-medium text-slate-900">
+                  {formatFlightDateTime(flight.returnDepartureTime)}
+                </dd>
+              </div>
+            )}
             {flight.arrivalTime ? (
               <div className="flex justify-between gap-3">
                 <dt className="text-slate-500">Arrival</dt>
@@ -180,24 +193,7 @@ export function PackageDetailsPanel({
             opens a search for the same route and dates on the partner's site,
             and the copy says so. It covers the flight only, never the hotel.
           */}
-          {flightPartnerLink && (
-            <div className="flex flex-col gap-2">
-              <ExternalContinueLink
-                href={flightPartnerLink.href}
-                variant="brand"
-                sponsored={flightPartnerLink.tagged}
-              >
-                Check flights for this route on {flightPartnerLink.partnerName}
-              </ExternalContinueLink>
-              <p className="text-xs leading-relaxed text-slate-500">
-                Opens a search for this route and dates on{" "}
-                {flightPartnerLink.partnerName}. It covers the flight only, not
-                the hotel. Their flights and prices may differ from this
-                package.
-                {flightPartnerLink.tagged && " Glooconn may earn a commission."}
-              </p>
-            </div>
-          )}
+          <PartnerLinks links={flightPartnerLinks ?? []} context="package" />
         </section>
 
         <section

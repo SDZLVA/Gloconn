@@ -51,6 +51,16 @@ export type SearchResponseWarning = {
 export type SearchResponseRoute = {
   originIata: string | null;
   destinationIata: string | null;
+  /** Metro codes when the city has several airports (e.g. "MIL", "PAR"). */
+  originCityIata?: string | null;
+  destinationCityIata?: string | null;
+};
+
+/** A partner search link prepared on the server (needs a secret token). */
+export type SearchResponsePartnerLink = {
+  href: string;
+  /** True when converted to a Glooconn partner link (earns commission). */
+  tagged: boolean;
 };
 
 export type SearchResponse = {
@@ -99,4 +109,9 @@ export type SearchResponse = {
    * ran or nothing resolved. Older cached responses will not have it.
    */
   route?: SearchResponseRoute;
+
+  /** Server-prepared partner links for this search (Milestone 19). */
+  partnerLinks?: {
+    aviasales?: SearchResponsePartnerLink;
+  };
 };

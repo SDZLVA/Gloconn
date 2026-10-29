@@ -51,6 +51,19 @@ export type Flight = {
   priceIsRecent?: boolean;
 
   /**
+   * Actual airports for this flight (e.g. "BGY", "BVA"). A whole-city
+   * search returns flights from different airports, so the search-level
+   * route ("MIL → PAR") would misdescribe them. Omitted when unknown.
+   */
+  originAirport?: string;
+  destinationAirport?: string;
+
+  /** Return leg, when the source provides it (display format as departureTime). */
+  returnDepartureTime?: string;
+  returnStops?: number;
+  returnDurationMinutes?: number;
+
+  /**
    * True when this result is sample (mock) data, not a real offer. The UI
    * labels it so a sample price is never mistaken for a real one — most
    * importantly inside packages that mix live and sample data.

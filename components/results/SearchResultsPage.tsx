@@ -35,7 +35,10 @@ import {
 } from "@/lib/results/packagesUi";
 import { buildInitialResultsFilters } from "@/lib/results/budgetFilter";
 import { loadAffiliateConfig } from "@/lib/affiliate/config";
-import { buildFlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
+import {
+  buildFlightPartnerLink,
+  type FlightPartnerLink,
+} from "@/lib/affiliate/flightPartnerLink";
 import { sortResults } from "@/lib/results/sort";
 import { getApiErrorMessage, postSearchTrips } from "@/lib/api";
 import {
@@ -395,28 +398,40 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const destinationIata =
     displayData?.route?.destinationIata ?? activeSearch.destinationIata ?? null;
 
-  // Milestone 19: one partner link per search. Computed after sorting and
-  // never fed back into it — commission must not affect result order.
-  const flightPartnerLink = useMemo(
-    () =>
-      buildFlightPartnerLink(
+  // Whole-city codes (MIL, PAR) make partner searches include every
+  // airport, as the Glooconn results now do. Falls back to airport codes.
+  const originSearchCode = displayData?.route?.originCityIata ?? originIata;
+  const destinationSearchCode =
+    displayData?.route?.destinationCityIata ?? destinationIata;
+  const aviasalesLink = displayData?.partnerLinks?.aviasales;
+
+  // Milestone 19: partner links, one set per search. Computed after sorting
+  // and never fed back into it — commission must not affect result order.
+  const flightPartnerLinks = useMemo((): readonly FlightPartnerLink[] => {
+    const kiwi = buildFlightPartnerLink(
         {
-          originIata,
-          destinationIata,
+          originIata: originSearchCode,
+          destinationIata: destinationSearchCode,
           departureDate: activeSearch.departureDate,
           returnDate: activeSearch.returnDate,
           tripType: activeSearch.tripType,
         },
         loadAffiliateConfig(),
-      ),
-    [
-      originIata,
-      destinationIata,
-      activeSearch.departureDate,
-      activeSearch.returnDate,
-      activeSearch.tripType,
-    ],
-  );
+    );
+    const links: FlightPartnerLink[] = [];
+    if (kiwi) links.push(kiwi);
+    if (aviasalesLink) {
+      links.push({ href: aviasalesLink.href, tagged: aviasalesLink.tagged, partnerName: "Aviasales" });
+    }
+    return links;
+  }, [
+    originSearchCode,
+    destinationSearchCode,
+    activeSearch.departureDate,
+    activeSearch.returnDate,
+    activeSearch.tripType,
+    aviasalesLink,
+  ]);
 
   const activeFilterCount = countActiveFilters(filters, defaultFilters);
   const destination = activeSearch.destination || "your destination";
@@ -663,7 +678,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     packages={packages}
                     originIata={originIata}
                     destinationIata={destinationIata}
-                    flightPartnerLink={flightPartnerLink}
+                    flightPartnerLinks={flightPartnerLinks}
                     budget={activeSearch.budget}
                     tripType={activeSearch.tripType}
                   />
@@ -683,7 +698,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     tripType={activeSearch.tripType}
                     originIata={originIata}
                     destinationIata={destinationIata}
-                    flightPartnerLink={flightPartnerLink}
+                    flightPartnerLinks={flightPartnerLinks}
                   />
                 </>
               )}

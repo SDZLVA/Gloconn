@@ -93,6 +93,10 @@ export type SearchRequest = {
    */
   destinationIata?: string;
 
+  /** Metropolitan-area codes resolved with the airports (see Destination.cityIataCode). */
+  originCityIata?: string;
+  destinationCityIata?: string;
+
   /**
    * Which result domains to query. Defaults to all three when omitted.
    */

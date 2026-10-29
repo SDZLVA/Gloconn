@@ -36,4 +36,15 @@ export type Destination = {
    * Used by flight providers such as Amadeus.
    */
   iataCode?: string;
+
+  /**
+   * IATA metropolitan-area code when the city has several airports
+   * (e.g. "PAR" covers CDG, ORY and BVA; "MIL" covers MXP, LIN and BGY).
+   * Omitted when the airport code already covers the city.
+   *
+   * Searching the whole city is what surfaces budget airlines: on
+   * 2026-10-29 Milan→Paris showed Ryanair €42 (BGY→BVA) and Transavia
+   * (→ORY) on aviasales.com, but MXP→CDG alone missed both.
+   */
+  cityIataCode?: string;
 };

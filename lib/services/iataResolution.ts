@@ -139,6 +139,9 @@ export async function enrichSearchRequestWithAirports(
     originIata: originResult.airport?.iataCode ?? request.originIata,
     destinationIata:
       destinationResult.airport?.iataCode ?? request.destinationIata,
+    originCityIata: cityCodeOf(originResult.destination) ?? request.originCityIata,
+    destinationCityIata:
+      cityCodeOf(destinationResult.destination) ?? request.destinationCityIata,
   };
 
   return {
@@ -146,6 +149,11 @@ export async function enrichSearchRequestWithAirports(
     origin: originResult.airport,
     destination: destinationResult.airport,
   };
+}
+
+function cityCodeOf(destination: Destination | null | undefined): string | undefined {
+  const code = destination?.cityIataCode?.trim().toUpperCase();
+  return code && /^[A-Z]{3}$/.test(code) ? code : undefined;
 }
 
 /**

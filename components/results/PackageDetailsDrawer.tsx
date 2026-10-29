@@ -18,7 +18,7 @@ export type PackageDetailsDrawerProps = {
   originIata?: string | null;
   destinationIata?: string | null;
   /** Milestone 19: partner search link for this trip's flight route. */
-  flightPartnerLink?: FlightPartnerLink | null;
+  flightPartnerLinks?: readonly FlightPartnerLink[];
   tripType?: "round-trip" | "one-way" | null;
 };
 
@@ -35,7 +35,7 @@ export function PackageDetailsDrawer({
   triggerId,
   originIata,
   destinationIata,
-  flightPartnerLink,
+  flightPartnerLinks,
   tripType,
 }: PackageDetailsDrawerProps) {
   const titleId = useId();
@@ -132,7 +132,7 @@ export function PackageDetailsDrawer({
         closeButtonRef={closeButtonRef}
         originIata={originIata}
         destinationIata={destinationIata}
-        flightPartnerLink={flightPartnerLink}
+        flightPartnerLinks={flightPartnerLinks}
         tripType={tripType}
         details={details}
         detailsStatus={detailsStatus}

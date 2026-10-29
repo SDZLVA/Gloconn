@@ -188,9 +188,13 @@ function loadAviasalesConfig(): AviasalesConfig {
       ? marketInput
       : null;
 
+  const projectInput = readEnv("TRAVELPAYOUTS_PROJECT_ID") ?? "";
+  const projectId = /^\d{1,12}$/.test(projectInput) ? projectInput : "";
+
   return {
     apiToken,
     market,
+    projectId,
     isConfigured: Boolean(apiToken),
   };
 }

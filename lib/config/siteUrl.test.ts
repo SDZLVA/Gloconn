@@ -47,6 +47,7 @@ function makeConfig(
     aviasales: {
       apiToken: "",
       market: null,
+      projectId: "",
       isConfigured: false,
     },
     serpapi: {

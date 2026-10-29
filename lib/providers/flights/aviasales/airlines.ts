@@ -24,6 +24,7 @@ const AIRLINE_NAMES: Readonly<Record<string, string>> = {
   DY: "Norwegian",
   EI: "Aer Lingus",
   EK: "Emirates",
+  EN: "Air Dolomiti",
   ET: "Ethiopian Airlines",
   EW: "Eurowings",
   EY: "Etihad Airways",
