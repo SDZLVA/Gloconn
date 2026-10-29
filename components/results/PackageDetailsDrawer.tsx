@@ -1,6 +1,6 @@
 "use client";
 
-import type { FlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
+import type { FlightLinksResolver } from "@/lib/affiliate/exactFlightLinks";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { PackageDetailsPanel } from "@/components/results/PackageDetailsPanel";
@@ -18,7 +18,7 @@ export type PackageDetailsDrawerProps = {
   originIata?: string | null;
   destinationIata?: string | null;
   /** Milestone 19: partner search link for this trip's flight route. */
-  flightPartnerLinks?: readonly FlightPartnerLink[];
+  getFlightLinks?: FlightLinksResolver;
   tripType?: "round-trip" | "one-way" | null;
 };
 
@@ -35,7 +35,7 @@ export function PackageDetailsDrawer({
   triggerId,
   originIata,
   destinationIata,
-  flightPartnerLinks,
+  getFlightLinks,
   tripType,
 }: PackageDetailsDrawerProps) {
   const titleId = useId();
@@ -132,7 +132,7 @@ export function PackageDetailsDrawer({
         closeButtonRef={closeButtonRef}
         originIata={originIata}
         destinationIata={destinationIata}
-        flightPartnerLinks={flightPartnerLinks}
+        getFlightLinks={getFlightLinks}
         tripType={tripType}
         details={details}
         detailsStatus={detailsStatus}

@@ -1,9 +1,11 @@
 import { ResultCard } from "@/components/results/ResultCard";
 import { ResultsEmptyState } from "@/components/results/ResultsEmptyState";
+import { RoundTripFlightPicker } from "@/components/results/RoundTripFlightPicker";
 import { groupBrowseResults } from "@/lib/results/browseResults";
-import type { FlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
+import { canPickDepartureAndReturn } from "@/lib/results/flightPairs";
+import type { FlightLinksResolver } from "@/lib/affiliate/exactFlightLinks";
 import type { TripType } from "@/types/models/search-request";
-import type { SearchResult } from "@/types/results";
+import type { FlightResult, SearchResult } from "@/types/results";
 
 type ResultsListProps = {
   results: SearchResult[];
@@ -17,7 +19,7 @@ type ResultsListProps = {
   originIata?: string | null;
   destinationIata?: string | null;
   /** Milestone 19: partner link for flight cards. */
-  flightPartnerLinks?: readonly FlightPartnerLink[];
+  getFlightLinks?: FlightLinksResolver;
 };
 
 type BrowseSectionProps = {
@@ -28,7 +30,7 @@ type BrowseSectionProps = {
   listAriaLabel: string;
   originIata?: string | null;
   destinationIata?: string | null;
-  flightPartnerLinks?: readonly FlightPartnerLink[];
+  getFlightLinks?: FlightLinksResolver;
 };
 
 function BrowseSection({
@@ -39,7 +41,7 @@ function BrowseSection({
   listAriaLabel,
   originIata,
   destinationIata,
-  flightPartnerLinks,
+  getFlightLinks,
 }: BrowseSectionProps) {
   if (results.length === 0) {
     return null;
@@ -61,7 +63,7 @@ function BrowseSection({
               tripType={tripType}
               originIata={originIata}
               destinationIata={destinationIata}
-              flightPartnerLinks={flightPartnerLinks}
+              getFlightLinks={getFlightLinks}
             />
           </li>
         ))}
@@ -82,7 +84,7 @@ export function ResultsList({
   tripType,
   originIata,
   destinationIata,
-  flightPartnerLinks,
+  getFlightLinks,
 }: ResultsListProps) {
   if (results.length === 0) {
     return (
@@ -96,19 +98,32 @@ export function ResultsList({
   }
 
   const { flights, hotels } = groupBrowseResults(results);
+  const flightResults = flights.filter(
+    (result): result is FlightResult => result.type === "flight",
+  );
 
   return (
     <div className="flex flex-col gap-8">
-      <BrowseSection
-        title="Browse Flights"
-        headingId="browse-flights-heading"
-        results={flights}
-        tripType={tripType}
-        listAriaLabel="Flight results"
-        originIata={originIata}
-        destinationIata={destinationIata}
-        flightPartnerLinks={flightPartnerLinks}
-      />
+      {/* Milestone 20: round trips are picked as departure → return. */}
+      {canPickDepartureAndReturn(flightResults, tripType) ? (
+        <RoundTripFlightPicker
+          flights={flightResults}
+          originIata={originIata}
+          destinationIata={destinationIata}
+          getFlightLinks={getFlightLinks}
+        />
+      ) : (
+        <BrowseSection
+          title="Browse Flights"
+          headingId="browse-flights-heading"
+          results={flights}
+          tripType={tripType}
+          listAriaLabel="Flight results"
+          originIata={originIata}
+          destinationIata={destinationIata}
+          getFlightLinks={getFlightLinks}
+        />
+      )}
       <BrowseSection
         title="Browse Hotels"
         headingId="browse-hotels-heading"

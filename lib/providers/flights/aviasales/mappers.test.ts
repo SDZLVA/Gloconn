@@ -145,3 +145,32 @@ describe("recent-price behaviour (verified on the 2026-10-29 preview)", () => {
     assert.equal(airlineDisplayName("2L"), "Helvetic Airways");
   });
 });
+
+describe("exact-ticket fields (Milestone 20)", () => {
+  const withLink = {
+    ...first,
+    link: "/search/MAD2807BCN26081?t=IB17852052001785210000000080MADBCN_abc_59&search_date=29102026",
+  };
+
+  it("keeps the airline code and the ticket's own aviasales.com page", () => {
+    const flight = mapAviasalesTicketToFlight(withLink, RT);
+    assert.ok(flight);
+    assert.equal(flight.airlineCode, "IB");
+    assert.equal(
+      flight.bookingUrl,
+      "https://www.aviasales.com/search/MAD2807BCN26081?t=IB17852052001785210000000080MADBCN_abc_59&search_date=29102026",
+    );
+  });
+
+  it("prices the ticket page for the whole group of travellers", () => {
+    const flight = mapAviasalesTicketToFlight(withLink, { ...RT, passengers: { adults: 2, children: 1 } });
+    assert.ok(flight?.bookingUrl);
+    assert.equal(new URL(flight.bookingUrl).pathname, "/search/MAD2807BCN260821");
+  });
+
+  it("leaves bookingUrl out when the link is unusable, instead of guessing one", () => {
+    const flight = mapAviasalesTicketToFlight({ ...first, link: "https://evil.example/x?t=12345678" }, RT);
+    assert.ok(flight);
+    assert.equal(flight.bookingUrl, undefined);
+  });
+});

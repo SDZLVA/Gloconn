@@ -120,6 +120,11 @@ export class AviasalesFlightsProvider implements FlightsProvider {
       destinationId,
       currency: resolveAviasalesCurrency(request),
       tripType: request.tripType === "round-trip" && request.returnDate ? "round-trip" : "one-way",
+      passengers: {
+        adults: request.travelers?.adults ?? 1,
+        children: request.travelers?.children ?? 0,
+        infants: request.travelers?.infants ?? 0,
+      },
     });
 
     if (flights.length === 0) {

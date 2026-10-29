@@ -25,8 +25,8 @@ type FlightResultCardProps = {
   originIata?: string | null;
   destinationIata?: string | null;
   /**
-   * Milestone 19: partner search link for this route and dates. Omitted
-   * when the route cannot be built — the card then shows no link.
+   * Partner buttons for this flight (Milestone 20: exact where possible,
+   * otherwise a route search). Empty — no buttons — when none can be built.
    */
   partnerLinks?: readonly FlightPartnerLink[];
 };
@@ -36,11 +36,11 @@ type FlightResultCardProps = {
  * Informational only — no fake booking CTA.
  * Task 4: shows route context when IATA codes are available.
  *
- * Milestone 19: the partner link opens a search for the same route and dates
- * on the partner's site. It is NOT a link to this specific flight, and the
- * partner's price can differ, so the copy says "check this route" and never
- * "book this flight". When the link carries Glooconn's marker, the card says
- * so — commission must always be disclosed (see /terms, section 6).
+ * Partner buttons: since Milestone 20 they open this exact ticket on
+ * Aviasales and a Kiwi.com search filtered to it; for flights without that
+ * data they fall back to a route search. PartnerLinks words each case
+ * honestly and discloses commission (see /terms, section 6). Round trips
+ * with return details are shown by RoundTripFlightPicker instead.
  */
 export function FlightResultCard({
   result,

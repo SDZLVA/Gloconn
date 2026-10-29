@@ -56,15 +56,84 @@ export function buildAviasalesSearchUrl(search: AviasalesSearch): string | null 
     back = parsed;
   }
 
-  const adults = count(search.adults, 1);
-  const children = count(search.children, 0);
-  const infants = count(search.infants, 0);
+  const pax = paxSegment(search);
+  if (pax === null) return null;
+
+  return `${AVIASALES_ORIGIN}/search/${origin}${out}${destination}${back}${pax}`;
+}
+
+const AVIASALES_ORIGIN = "https://www.aviasales.com";
+
+type Passengers = Pick<AviasalesSearch, "adults" | "children" | "infants">;
+
+/** adults [+ children [+ infants]], e.g. "1", "21", "201". Null when invalid. */
+function paxSegment(passengers: Passengers): string | null {
+  const adults = count(passengers.adults, 1);
+  const children = count(passengers.children, 0);
+  const infants = count(passengers.infants, 0);
   if (adults === null || children === null || infants === null) return null;
   if (infants > adults || adults + children > 9) return null;
 
   let pax = String(adults);
   if (children > 0 || infants > 0) pax += String(children);
   if (infants > 0) pax += String(infants);
+  return pax;
+}
 
-  return `https://www.aviasales.com/search/${origin}${out}${destination}${back}${pax}`;
+/** "/search/MIL2311PAR28111" → route + dates, and the passenger digits. */
+const TICKET_PATH = /^\/search\/([A-Z]{3}\d{4}[A-Z]{3}(?:\d{4})?)(\d{1,3})$/;
+
+/**
+ * Milestone 20: the page for ONE exact ticket on aviasales.com.
+ *
+ * Each Data API ticket carries `link`, e.g.
+ *   /search/MIL2311PAR28111?t=FR1795…&search_date=…&expected_price=…
+ * The `t` code identifies that exact flight (or flight pair), so the page
+ * opens on it instead of the general results. The cached search behind the
+ * link was for one passenger, so the passenger digits are replaced with the
+ * traveller's own; the ticket code and everything else are kept unchanged.
+ *
+ * Returns null for anything that is not an aviasales.com ticket path — the
+ * value is external input and becomes a link on our page.
+ */
+export function buildAviasalesTicketUrl(
+  link: string | undefined,
+  passengers: Passengers,
+): string | null {
+  const raw = typeof link === "string" ? link.trim() : "";
+  const queryStart = raw.indexOf("?");
+  if (queryStart <= 0) return null;
+
+  const path = raw.slice(0, queryStart);
+  const query = raw.slice(queryStart + 1);
+  const match = TICKET_PATH.exec(path);
+  if (!match) return null;
+
+  const params = new URLSearchParams(query);
+  const ticket = params.get("t") ?? "";
+  if (!/^[A-Za-z0-9_-]{8,600}$/.test(ticket)) return null;
+
+  const pax = paxSegment(passengers);
+  if (pax === null) return null;
+
+  return `${AVIASALES_ORIGIN}/search/${match[1]}${pax}?${params.toString()}`;
+}
+
+/** True for an exact-ticket URL produced by buildAviasalesTicketUrl. */
+export function isAviasalesTicketUrl(value: string): boolean {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return false;
+  }
+  return (
+    url.protocol === "https:" &&
+    url.hostname === "www.aviasales.com" &&
+    url.port === "" &&
+    url.username === "" &&
+    url.password === "" &&
+    TICKET_PATH.test(url.pathname) &&
+    /^[A-Za-z0-9_-]{8,600}$/.test(url.searchParams.get("t") ?? "")
+  );
 }
