@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { ExternalContinueLink } from "@/components/results/ExternalContinueLink";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
+import { SAMPLE_HOTEL_NOTE } from "@/lib/results/sampleData";
 import {
   HOTEL_DRAWER_AMENITY_LIMIT,
   selectHotelAmenitiesForDisplay,
@@ -123,6 +124,9 @@ export function HotelDetailsPanel({
               suffix="total"
             />
           </div>
+          {hotel.isSample && (
+            <p className="mt-2 text-xs text-amber-800">{SAMPLE_HOTEL_NOTE}</p>
+          )}
         </div>
 
         {amenities.length > 0 && (

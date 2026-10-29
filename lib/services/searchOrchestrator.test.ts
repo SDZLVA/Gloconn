@@ -8,6 +8,8 @@ import assert from "node:assert/strict";
 import { createProviderError, isApiError } from "@/lib/api/errors";
 import { formatDateISO } from "@/lib/calendar/dates";
 import {
+  NO_RECENT_FLIGHT_PRICES_MESSAGE,
+  NO_RECENT_PRICES_REASON,
   PROVIDER_UNAVAILABLE_WARNING_MESSAGE,
   buildSearchResponse,
   searchResponseToResults,
@@ -602,5 +604,45 @@ describe("orchestrateTripSearch — resolved route (Milestone 19)", () => {
     assert.ok(response.route, "response.route should be present");
     assert.match(response.route.originIata ?? "", /^[A-Z]{3}$/);
     assert.match(response.route.destinationIata ?? "", /^[A-Z]{3}$/);
+  });
+});
+
+describe("orchestrateTripSearch — honest flight warnings (Milestone 19)", () => {
+  it("says 'no recent prices' rather than 'temporarily unavailable' when the cache is empty", async () => {
+    setServiceProviders(
+      providersWith({
+        flights: {
+          name: "empty-cache",
+          async search() {
+            throw createProviderError("No recent flight prices were found for this route and dates.", {
+              cause: { reason: NO_RECENT_PRICES_REASON },
+            });
+          },
+        },
+      }),
+    );
+
+    const response = await orchestrateTripSearch(baseRequest());
+
+    assert.equal(response.flights.length, 0);
+    assert.equal(response.warnings?.length, 1);
+    assert.equal(response.warnings?.[0]?.code, "NO_RECENT_PRICES");
+    assert.equal(response.warnings?.[0]?.message, NO_RECENT_FLIGHT_PRICES_MESSAGE);
+  });
+
+  it("keeps the generic warning for a real outage", async () => {
+    setServiceProviders(providersWith({ flights: failingFlightsProvider() }));
+    const response = await orchestrateTripSearch(baseRequest());
+    assert.equal(response.warnings?.[0]?.code, "PROVIDER_UNAVAILABLE");
+  });
+});
+
+describe("mock providers mark their results as sample data (Milestone 19)", () => {
+  it("labels every mock hotel and flight", async () => {
+    setServiceProviders(providersWith({}));
+    const response = await orchestrateTripSearch(baseRequest());
+    assert.ok(response.hotels.length > 0 && response.flights.length > 0);
+    assert.ok(response.hotels.every((h) => h.isSample === true));
+    assert.ok(response.flights.every((f) => f.isSample === true));
   });
 });

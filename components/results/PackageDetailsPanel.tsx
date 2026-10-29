@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { ExternalContinueLink } from "@/components/results/ExternalContinueLink";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
+import { SAMPLE_HOTEL_NOTE } from "@/lib/results/sampleData";
 import { buildGoogleMapsUrl } from "@/lib/hotels/googleMapsUrl";
 import {
   formatFlightDurationLabel,
@@ -142,12 +143,14 @@ export function PackageDetailsPanel({
                 {flight.departureTime}
               </dd>
             </div>
-            <div className="flex justify-between gap-3">
-              <dt className="text-slate-500">Arrival</dt>
-              <dd className="font-medium text-slate-900">
-                {flight.arrivalTime}
-              </dd>
-            </div>
+            {flight.arrivalTime ? (
+              <div className="flex justify-between gap-3">
+                <dt className="text-slate-500">Arrival</dt>
+                <dd className="font-medium text-slate-900">
+                  {flight.arrivalTime}
+                </dd>
+              </div>
+            ) : null}
             <div className="flex justify-between gap-3">
               <dt className="text-slate-500">Stops</dt>
               <dd className="font-medium text-slate-900">{stopsLabel}</dd>
@@ -158,7 +161,11 @@ export function PackageDetailsPanel({
             </div>
           </dl>
           <div className="rounded-xl border border-slate-100 px-3 py-2">
-            <p className="text-xs text-slate-500">{flightPriceFootnote}</p>
+            <p className="text-xs text-slate-500">
+              {flightPriceFootnote}
+              {flight.priceIsRecent && " · recent price, may have changed"}
+              {flight.isSample && " · example fare, not real"}
+            </p>
             <div className="mt-0.5">
               <ResultPrice
                 price={flight.price}
@@ -220,6 +227,9 @@ export function PackageDetailsPanel({
             </div>
             <p className="text-sm text-slate-600">{locationLine}</p>
             <p className="text-sm text-slate-500">{stayLabel}</p>
+            {hotel.isSample && (
+              <p className="text-xs text-amber-800">{SAMPLE_HOTEL_NOTE}</p>
+            )}
           </div>
           <div className="rounded-xl border border-slate-100 px-3 py-2">
             <p className="text-xs text-slate-500">Hotel stay</p>

@@ -1,5 +1,7 @@
 import { Card } from "@/components/ui/Card";
 import { ExternalContinueLink } from "@/components/results/ExternalContinueLink";
+import { SampleDataBadge } from "@/components/results/SampleDataBadge";
+import { SAMPLE_FLIGHT_NOTE } from "@/lib/results/sampleData";
 import { ResultDuration } from "@/components/results/ResultDuration";
 import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
 import { ResultPrice } from "@/components/results/ResultPrice";
@@ -65,6 +67,7 @@ export function FlightResultCard({
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <ResultTypeBadge type="flight" />
+                {result.isSample && <SampleDataBadge label="Example flight" />}
                 <span className="text-xs font-medium text-slate-500">
                   {result.cabin}
                 </span>
@@ -98,12 +101,16 @@ export function FlightResultCard({
                 {stopsLabel}
               </span>
             </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-slate-900">
-                {result.arrivalTime}
-              </p>
-              <p className="text-xs text-slate-500">Arrive</p>
-            </div>
+            {/* Some sources give departure + duration but no arrival time
+                (no destination time zone). Hide it rather than guess. */}
+            {result.arrivalTime ? (
+              <div className="text-center">
+                <p className="text-lg font-bold text-slate-900">
+                  {result.arrivalTime}
+                </p>
+                <p className="text-xs text-slate-500">Arrive</p>
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
@@ -114,6 +121,16 @@ export function FlightResultCard({
               suffix="per person"
             />
           </div>
+          {result.isSample && (
+            <p className="-mt-1 text-right text-xs text-amber-800">
+              {SAMPLE_FLIGHT_NOTE}
+            </p>
+          )}
+          {result.priceIsRecent && (
+            <p className="-mt-1 text-right text-xs text-slate-500">
+              Recent price found by other travellers — it may have changed.
+            </p>
+          )}
 
           {partnerLink && (
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

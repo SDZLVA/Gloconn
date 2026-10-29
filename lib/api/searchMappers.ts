@@ -60,6 +60,37 @@ export function mergeSearchResults(
 }
 
 /** Builds a provider-agnostic unavailable warning for one search domain. */
+/** Error cause reason a flights provider uses when its cache has no prices. */
+export const NO_RECENT_PRICES_REASON = "no_recent_prices";
+
+export const NO_RECENT_FLIGHT_PRICES_MESSAGE =
+  "No recent flight prices were found for these dates. Prices come from recent searches by other travellers, so dates closer to today usually have more. Try different dates.";
+
+/**
+ * Flights warning for "the data source has nothing for these dates" — not
+ * an outage, so "temporarily unavailable" would be untrue.
+ */
+export function createNoRecentFlightPricesWarning(): SearchResponseWarning {
+  return {
+    code: "NO_RECENT_PRICES",
+    domain: "flights",
+    message: NO_RECENT_FLIGHT_PRICES_MESSAGE,
+  };
+}
+
+/** True when a flights failure means "no recent prices", not an outage. */
+export function isNoRecentPricesError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null || !("cause" in error)) {
+    return false;
+  }
+  const cause = (error as { cause?: unknown }).cause;
+  return (
+    typeof cause === "object" &&
+    cause !== null &&
+    (cause as { reason?: unknown }).reason === NO_RECENT_PRICES_REASON
+  );
+}
+
 export function createProviderUnavailableWarning(
   domain: SearchResponseWarning["domain"],
 ): SearchResponseWarning {

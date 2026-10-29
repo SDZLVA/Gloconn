@@ -168,6 +168,11 @@ describe("F-08: config error logging — message-only, no stack traces", () => {
         oauthTimeoutMs: 10000,
         fetchTimeoutMs: 15000,
       },
+      aviasales: {
+        apiToken: "",
+        market: null,
+        isConfigured: false,
+      },
       serpapi: {
         apiKey: "",
         deepSearch: false,

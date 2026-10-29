@@ -22,7 +22,8 @@ export type ProviderName =
   | "amadeus"
   | "booking"
   | "omio"
-  | "serpapi";
+  | "serpapi"
+  | "aviasales";
 
 /** Amadeus Self-Service environment (maps to a known host). */
 export type AmadeusEnvName = "test" | "production";
@@ -65,6 +66,23 @@ export type AmadeusConfig = {
  * SerpAPI Google Flights settings — loaded only via `lib/config`.
  * Dev/test flights provider (ADR-036). No HTTP or adapter code in Sprint 9.2.
  */
+/**
+ * Aviasales Data API via Travelpayouts (Milestone 19).
+ *
+ * `apiToken` is the Travelpayouts API token — a real secret. Server-only:
+ * never expose it through a NEXT_PUBLIC_ variable or a response.
+ */
+export type AviasalesConfig = {
+  apiToken: string;
+  /**
+   * Aviasales `market` (data-source market). Null uses the API default.
+   * Kept configurable because the right value for European routes is not
+   * documented and must be confirmed against live data.
+   */
+  market: string | null;
+  isConfigured: boolean;
+};
+
 export type SerpApiConfig = {
   apiKey: string;
 
@@ -183,6 +201,7 @@ export type AppConfig = {
   apiKeys: ApiKeysConfig;
   amadeus: AmadeusConfig;
   serpapi: SerpApiConfig;
+  aviasales: AviasalesConfig;
   propertyRefSeal: PropertyRefSealConfig;
   replay: ReplayConfig;
   features: FeaturesConfig;

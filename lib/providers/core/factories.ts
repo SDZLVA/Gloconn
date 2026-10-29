@@ -20,6 +20,7 @@ import type {
 import { mockCurrencyProvider } from "@/lib/providers/currencies/mock";
 import { mockDestinationProvider } from "@/lib/providers/destinations/mock";
 import { amadeusFlightsProvider } from "@/lib/providers/flights/amadeus";
+import { aviasalesFlightsProvider } from "@/lib/providers/flights/aviasales";
 import { mockFlightsProvider } from "@/lib/providers/flights/mock";
 import { serpApiFlightsProvider } from "@/lib/providers/flights/serpapi";
 import { mockTransportProvider } from "@/lib/providers/ground/mock";
@@ -106,11 +107,11 @@ export function createHotelsProvider(): HotelsProvider {
 }
 
 export function createFlightsProvider(): FlightsProvider {
-  const { providers, amadeus, serpapi } = getAppConfig();
+  const { providers, amadeus, serpapi, aviasales } = getAppConfig();
 
   if (providers.flightsInvalid) {
     throw createProviderError(
-      `Unknown flights provider "${providers.flightsInput}". Supported values: mock, amadeus, serpapi.`,
+      `Unknown flights provider "${providers.flightsInput}". Supported values: mock, amadeus, serpapi, aviasales.`,
     );
   }
 
@@ -137,6 +138,14 @@ export function createFlightsProvider(): FlightsProvider {
         return mockFlightsProvider;
       }
       return serpApiFlightsProvider;
+    case "aviasales":
+      if (!aviasales.isConfigured) {
+        console.warn(
+          "[Glooconn] FLIGHTS_PROVIDER=aviasales but TRAVELPAYOUTS_API_TOKEN is missing — using mock flights.",
+        );
+        return mockFlightsProvider;
+      }
+      return aviasalesFlightsProvider;
     case "mock":
       return mockFlightsProvider;
     default:

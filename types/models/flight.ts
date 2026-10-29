@@ -41,4 +41,19 @@ export type Flight = {
 
   /** Cabin class label (e.g. "Economy", "Business"). */
   cabin: string;
+
+  /**
+   * True when `price` comes from recent searches by other travellers
+   * (Aviasales Data API cache, 2–7 days old) rather than a live search.
+   * Verified 2026-10-29: such prices drifted 10–20% from live fares, so the
+   * UI must say the price may have changed. Omitted for live sources.
+   */
+  priceIsRecent?: boolean;
+
+  /**
+   * True when this result is sample (mock) data, not a real offer. The UI
+   * labels it so a sample price is never mistaken for a real one — most
+   * importantly inside packages that mix live and sample data.
+   */
+  isSample?: boolean;
 };

@@ -5,8 +5,18 @@ type ResultRatingProps = {
   className?: string;
 };
 
-/** Star rating display for result cards. */
+/**
+ * Star rating display for result cards.
+ *
+ * Renders nothing when there is no real rating. Live flight sources
+ * (Google Flights via SerpAPI, Aviasales) have no airline ratings and
+ * report 0; showing "★ 0.0" would read as a terrible review.
+ */
 export function ResultRating({ rating, className }: ResultRatingProps) {
+  if (!Number.isFinite(rating) || rating <= 0) {
+    return null;
+  }
+
   return (
     <span
       aria-label={`Rating ${rating.toFixed(1)} out of 5`}
