@@ -663,6 +663,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     packages={packages}
                     originIata={originIata}
                     destinationIata={destinationIata}
+                    flightPartnerLink={flightPartnerLink}
                     budget={activeSearch.budget}
                     tripType={activeSearch.tripType}
                   />

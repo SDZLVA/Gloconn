@@ -1,5 +1,6 @@
 "use client";
 
+import type { FlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
 import { memo, useMemo, useState } from "react";
 import { TravelPackageCard } from "@/components/results/TravelPackageCard";
 import { assignPackageExplanations } from "@/lib/packages/explanations";
@@ -17,6 +18,8 @@ type RecommendedPackagesSectionProps = {
   /** Task 4 (Sprint 15.3): route context threaded to package cards. */
   originIata?: string | null;
   destinationIata?: string | null;
+  /** Milestone 19: partner search link for this trip's flight route. */
+  flightPartnerLink?: FlightPartnerLink | null;
   /** Sprint 16.4: optional budget for "Fits your budget" role. */
   budget?: Budget | null;
   tripType?: "round-trip" | "one-way" | null;
@@ -38,6 +41,7 @@ function RecommendedPackagesSectionComponent({
   packages,
   originIata,
   destinationIata,
+  flightPartnerLink,
   budget = null,
   tripType = "round-trip",
 }: RecommendedPackagesSectionProps) {
@@ -91,6 +95,7 @@ function RecommendedPackagesSectionComponent({
               package={travelPackage}
               originIata={originIata}
               destinationIata={destinationIata}
+              flightPartnerLink={flightPartnerLink}
               explanation={explanations.get(travelPackage.id) ?? null}
               tripType={tripType}
             />
