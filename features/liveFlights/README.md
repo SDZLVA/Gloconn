@@ -9,10 +9,11 @@ hits a dead end.
 
 - Off: set `NEXT_PUBLIC_LIVE_FLIGHTS_ENGINE=off` in Vercel and redeploy
   without build cache.
-- Remove completely: delete this folder, delete the one
-  `<LiveFlightsSection …/>` line and its import in
-  `components/results/SearchResultsPage.tsx`, and remove the
-  `LIVE_FLIGHTS_CSP` hosts from `lib/security/csp.ts`. Nothing else uses it.
+- Remove completely: delete this folder and `app/live-flights/`, delete the
+  `<LiveFlightsSection …/>` block and its imports in
+  `components/results/SearchResultsPage.tsx`, and remove `LIVE_FLIGHTS_CSP`
+  and `SAME_ORIGIN_FRAME_PATHS` from `lib/security/csp.ts`. Nothing else
+  uses it.
 - Another provider: add a file in `engines/` implementing `LiveFlightsEngine`
   and register it in `engines/index.ts`.
 
@@ -24,3 +25,8 @@ hits a dead end.
   own sites are not credited. The widget searches by itself when the page
   URL carries `flightSearch=<Aviasales search code>` (e.g. MIL2311PAR28111),
   read from its script (tpwgts.com/wl_web), not documented.
+- It runs in an iframe of Glooconn's own page `/live-flights/frame`
+  (frameable only by Glooconn). Embedded directly, its CSS reset
+  (`@layer isolation`, declared after Tailwind's layers so it outranked
+  them) broke the whole results page, and it rewrote the page URL, dropping
+  Glooconn's search parameters. The frame reports its height by postMessage.

@@ -40,13 +40,33 @@ export function generateCspNonce(): string {
  * 'strict-dynamic' trusts scripts added by Glooconn's own nonce'd code.
  */
 const LIVE_FLIGHTS_CSP = {
-  connect: ["https://tpwgts.com", "https://*.apistp.com", "https://*.travelpayouts.com", "https://*.hotellook.com"],
-  img: ["https://tpwgts.com", "https://*.apistp.com", "https://*.travelpayouts.com", "https://*.hotellook.com"],
+  // avsplow.com: the widget's click/booking tracking; img.avs.io: airline logos
+  // (both seen blocked on the 2026-10-29 preview).
+  connect: [
+    "https://tpwgts.com",
+    "https://*.apistp.com",
+    "https://*.travelpayouts.com",
+    "https://*.hotellook.com",
+    "https://avsplow.com",
+  ],
+  img: ["https://tpwgts.com", "https://*.apistp.com", "https://*.travelpayouts.com", "https://*.hotellook.com", "https://img.avs.io"],
   style: ["https://fonts.googleapis.com"],
   font: ["https://fonts.gstatic.com"],
 };
 
-export function buildCsp(nonce: string): string {
+/**
+ * Paths only Glooconn itself may frame (frame-ancestors 'self'); every
+ * other page stays unframeable. Milestone 23: the live-flights widget page.
+ */
+export const SAME_ORIGIN_FRAME_PATHS: readonly string[] = ["/live-flights/frame"];
+
+export function isSameOriginFramePath(pathname: string): boolean {
+  return SAME_ORIGIN_FRAME_PATHS.includes(pathname);
+}
+
+export type CspOptions = { frameableBySelf?: boolean };
+
+export function buildCsp(nonce: string, options: CspOptions = {}): string {
   const scriptSrc = [
     "'self'",
     `'nonce-${nonce}'`,
@@ -64,7 +84,7 @@ export function buildCsp(nonce: string): string {
     `font-src 'self' ${LIVE_FLIGHTS_CSP.font.join(" ")}`,
     `connect-src 'self' https://*.supabase.co ${LIVE_FLIGHTS_CSP.connect.join(" ")}`,
     "form-action 'self'",
-    "frame-ancestors 'none'",
+    options.frameableBySelf ? "frame-ancestors 'self'" : "frame-ancestors 'none'",
     "base-uri 'self'",
     "object-src 'none'",
     "upgrade-insecure-requests",
@@ -92,10 +112,14 @@ export function createCspRequestHeaders(
 export function applySecurityHeaders(
   response: NextResponse,
   csp: string,
+  options: CspOptions = {},
 ): NextResponse {
   response.headers.set("Content-Security-Policy", csp);
   for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
     response.headers.set(key, value);
+  }
+  if (options.frameableBySelf) {
+    response.headers.set("X-Frame-Options", "SAMEORIGIN");
   }
   return response;
 }

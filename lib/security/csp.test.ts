@@ -12,6 +12,7 @@ import {
   createCspRequestHeaders,
   extractNonceFromCsp,
   generateCspNonce,
+  isSameOriginFramePath,
 } from "@/lib/security/csp";
 
 describe("CSP nonce helpers", () => {
@@ -71,5 +72,22 @@ describe("CSP nonce helpers", () => {
     assert.match(csp, /frame-ancestors 'none'/);
     assert.match(csp, /object-src 'none'/);
     assert.match(csp, /base-uri 'self'/);
+  });
+});
+
+describe("same-origin framing for the live-flights widget page (Milestone 23)", () => {
+  it("lets only Glooconn frame that one page", () => {
+    assert.match(buildCsp("n", { frameableBySelf: true }), /frame-ancestors 'self'/);
+    assert.match(buildCsp("n"), /frame-ancestors 'none'/);
+    assert.equal(isSameOriginFramePath("/live-flights/frame"), true);
+    assert.equal(isSameOriginFramePath("/search/results"), false);
+    assert.equal(isSameOriginFramePath("/live-flights/frame/x"), false);
+  });
+
+  it("sends X-Frame-Options SAMEORIGIN only for that page", () => {
+    const framed = applySecurityHeaders(NextResponse.next(), "x", { frameableBySelf: true });
+    assert.equal(framed.headers.get("X-Frame-Options"), "SAMEORIGIN");
+    const normal = applySecurityHeaders(NextResponse.next(), "x");
+    assert.equal(normal.headers.get("X-Frame-Options"), "DENY");
   });
 });

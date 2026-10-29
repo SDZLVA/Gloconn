@@ -31,15 +31,28 @@ export function widgetFlightSearch(search: LiveFlightsSearch): string | null {
   return url ? url.slice(url.lastIndexOf("/") + 1) : null;
 }
 
+/** Path of Glooconn's own page that hosts the widget (inside an iframe). */
+export const WIDGET_FRAME_PATH = "/live-flights/frame";
+
+/** Message the frame sends to report its content height. */
+export const FRAME_HEIGHT_MESSAGE = "glooconn:live-flights:height";
+
+const FLIGHT_SEARCH = /^[A-Z]{3}\d{4}[A-Z]{3}(?:\d{4})?\d{1,3}$/;
+
+export function isValidFlightSearch(value: string | null | undefined): value is string {
+  return typeof value === "string" && FLIGHT_SEARCH.test(value);
+}
+
 /**
- * The current page URL with the widget's parameters added, keeping every
- * Glooconn parameter. Null when the search cannot be expressed.
+ * Milestone 23: the widget runs in its own page inside an iframe. Its CSS
+ * reset (an @layer that outranked Tailwind) broke Glooconn's whole layout,
+ * and it rewrites the page URL, dropping Glooconn's search parameters.
+ * In a frame, neither can touch the results page.
  */
-export function urlWithWidgetSearch(pageUrl: string, search: LiveFlightsSearch): string | null {
+export function widgetFrameSrc(search: LiveFlightsSearch): string | null {
   const flightSearch = widgetFlightSearch(search);
   if (!flightSearch) return null;
-  const url = new URL(pageUrl);
-  url.searchParams.set("flightSearch", flightSearch);
-  if (/^[A-Z]{3}$/.test(search.currency)) url.searchParams.set("currency", search.currency);
-  return url.toString();
+  const params = new URLSearchParams({ flightSearch });
+  if (/^[A-Z]{3}$/.test(search.currency)) params.set("currency", search.currency);
+  return `${WIDGET_FRAME_PATH}?${params.toString()}`;
 }
