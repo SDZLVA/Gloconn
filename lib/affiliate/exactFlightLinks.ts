@@ -82,13 +82,13 @@ export function buildExactKiwiLink(
   flight: Flight,
   context: ExactFlightLinkContext,
 ): FlightPartnerLink | null {
-  const airline = flight.airlineCode ?? "";
-  if (!/^[A-Z0-9]{2}$/.test(airline)) return null;
+  const roundTrip = context.tripType !== "one-way";
+  const airlines = kiwiAirlines(flight, roundTrip);
+  if (airlines === null) return null;
 
   const outbound = splitDateTime(flight.departureTime);
   if (!outbound) return null;
 
-  const roundTrip = context.tripType !== "one-way";
   const back = roundTrip ? splitDateTime(flight.returnDepartureTime) : null;
   if (roundTrip && !back) return null;
 
@@ -118,14 +118,33 @@ export function buildExactKiwiLink(
     `adults=${adults}`,
     ...(children > 0 ? [`children=${children}`] : []),
     ...(infants > 0 ? [`infants=${infants}`] : []),
-    `airlinesList=${airline}`,
-    "selectedAirlinesExclude=false",
+    ...(airlines.length > 0
+      ? [`airlinesList=${airlines.join("%2C")}`, "selectedAirlinesExclude=false"]
+      : []),
     `stopNumber=${maxStops}%7Etrue`,
     `times=${hourWindow(outbound.hour)}${back ? `_${hourWindow(back.hour)}` : ""}`,
   ];
 
   const result = buildKiwiAffiliateUrl(`${base}&${params.join("&")}`, context.config, KIWI_EXACT_SUB_ID);
   return { href: result.url, tagged: result.tagged, partnerName: "Kiwi.com", exact: true };
+}
+
+const AIRLINE_CODE = /^[A-Z0-9]{2}$/;
+
+/**
+ * Airlines for Kiwi's filter. Milestone 21: both legs' airlines when known
+ * (Kiwi accepts "U2%2CFR" — checked 2026-10-29: easyJet out + Ryanair back
+ * then shows first). A return leg with an unknown airline drops the airline
+ * filter (times and stops still narrow it) rather than filtering the right
+ * flight out. Null = cannot narrow at all → no Kiwi button.
+ */
+function kiwiAirlines(flight: Flight, roundTrip: boolean): string[] | null {
+  const out = flight.outboundLeg?.airlineCode ?? flight.airlineCode ?? "";
+  if (!AIRLINE_CODE.test(out)) return null;
+  if (!roundTrip || !flight.returnLeg) return [out];
+  const back = flight.returnLeg.airlineCode ?? "";
+  if (!AIRLINE_CODE.test(back)) return [];
+  return back === out ? [out] : [out, back];
 }
 
 /** Exact Aviasales ticket button, or null when the flight has no ticket page. */

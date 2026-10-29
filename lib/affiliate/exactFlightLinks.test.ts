@@ -151,3 +151,23 @@ describe("buildFlightLinks", () => {
     );
   });
 });
+
+describe("Kiwi filter with two airlines (Milestone 21)", () => {
+  const leg = { departureTime: "2026-11-28 12:30", durationMinutes: 445, airports: ["BVA", "CAG", "MXP"] };
+
+  it("filters to both airlines when each leg's airline is known", () => {
+    const params = kiwiParams(
+      buildExactKiwiLink(
+        { ...EASYJET, returnStops: 1, returnLeg: { ...leg, airlineCode: "FR", airline: "Ryanair" } },
+        CONTEXT,
+      ),
+    );
+    assert.equal(params.get("airlinesList"), "U2,FR");
+  });
+
+  it("drops the airline filter rather than hiding the flight when the return airline is unknown", () => {
+    const params = kiwiParams(buildExactKiwiLink({ ...EASYJET, returnLeg: leg }, CONTEXT));
+    assert.equal(params.get("airlinesList"), null);
+    assert.equal(params.get("times"), "19-20-0-24_13-14-0-24");
+  });
+});

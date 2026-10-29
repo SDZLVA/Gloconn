@@ -8,6 +8,8 @@ import {
   AVIASALES_SCOUT_LIMIT,
   AviasalesFlightsProvider,
   buildAviasalesParams,
+  buildReturnLookupParams,
+  indexReturnAirlines,
 } from "@/lib/providers/flights/aviasales/provider";
 import { ROUND_TRIP_SAMPLE } from "@/lib/providers/flights/aviasales/__fixtures__/pricesForDates.sample";
 import type { AviasalesConfig } from "@/lib/config/types";
@@ -167,5 +169,37 @@ describe("fetchAviasalesPricesForDates", () => {
     } catch (error) {
       assert.ok(!String((error as Error).message).includes("secret-token"));
     }
+  });
+});
+
+describe("return-airline lookup (Milestone 21)", () => {
+  it("searches one-way in the opposite direction on the return date", () => {
+    const params = buildAviasalesParams(request(), CONFIG);
+    const lookup = buildReturnLookupParams(params);
+    assert.ok(lookup);
+    assert.equal(lookup.get("origin"), params.get("destination"));
+    assert.equal(lookup.get("destination"), params.get("origin"));
+    assert.equal(lookup.get("departure_at"), params.get("return_at"));
+    assert.equal(lookup.get("return_at"), null);
+    assert.equal(lookup.get("one_way"), "true");
+  });
+
+  it("needs a return date", () => {
+    assert.equal(buildReturnLookupParams(new URLSearchParams({ origin: "MAD", destination: "BCN" })), null);
+  });
+
+  it("indexes airlines by airports and local departure time", () => {
+    const index = indexReturnAirlines({
+      success: true,
+      data: [
+        { origin_airport: "BVA", destination_airport: "BGY", departure_at: "2026-11-28T13:25:00+01:00", airline: "FR" },
+        { origin_airport: "ORY", destination_airport: "BCN", departure_at: "2026-11-28T07:05:00+01:00", airline: "VY" },
+        { origin_airport: "CDG", destination_airport: "MXP", departure_at: "bad", airline: "AF" },
+      ],
+    });
+    assert.equal(index.get("BVA|BGY|2026-11-28 13:25"), "FR");
+    assert.equal(index.get("ORY|BCN|2026-11-28 07:05"), "VY");
+    assert.equal(index.size, 2);
+    assert.equal(indexReturnAirlines(null).size, 0);
   });
 });

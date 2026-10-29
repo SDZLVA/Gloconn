@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import { airlineDisplayName } from "@/lib/providers/flights/aviasales/airlines";
 import {
+  decodeTicketLegs,
   formatAviasalesDateTime,
   mapAviasalesResponse,
   mapAviasalesTicketToFlight,
@@ -172,5 +173,50 @@ describe("exact-ticket fields (Milestone 20)", () => {
     const flight = mapAviasalesTicketToFlight({ ...first, link: "https://evil.example/x?t=12345678" }, RT);
     assert.ok(flight);
     assert.equal(flight.bookingUrl, undefined);
+  });
+});
+
+describe("decodeTicketLegs (Milestone 21, real ticket code)", () => {
+  const ticket = {
+    origin: "MIL",
+    destination: "PAR",
+    origin_airport: "MXP",
+    destination_airport: "BVA",
+    price: 40,
+    airline: "FR",
+    departure_at: "2026-11-23T15:45:00+01:00",
+    return_at: "2026-11-28T13:25:00+01:00",
+    transfers: 0,
+    return_transfers: 0,
+    duration_to: 95,
+    duration_back: 90,
+    link: "/search/MIL2311PAR28111?t=FR17954487001795454400000095MXPBVA17958723001795877700000090BVABGY_0c37c2880763934e3fad8f814e99205a_3639",
+  };
+
+  it("adds arrival times, return airports and the return airline", () => {
+    const legs = decodeTicketLegs(ticket, true, new Map([["BVA|BGY|2026-11-28 13:25", "FR"]]));
+    assert.ok(legs?.back);
+    assert.equal(legs.outbound.arrivalTime, "2026-11-23 17:20");
+    assert.deepEqual(legs.back.airports, ["BVA", "BGY"]);
+    assert.equal(legs.back.arrivalTime, "2026-11-28 14:55");
+    assert.equal(legs.back.airline, "Ryanair");
+  });
+
+  it("leaves the return airline out when the lookup does not know it", () => {
+    const legs = decodeTicketLegs(ticket, true);
+    assert.equal(legs?.back?.airline, undefined);
+  });
+
+  it("discards the decode when it disagrees with the documented fields", () => {
+    assert.equal(decodeTicketLegs({ ...ticket, departure_at: "2026-11-23T16:45:00+01:00" }, true), null);
+    assert.equal(decodeTicketLegs({ ...ticket, destination_airport: "CDG" }, true), null);
+    assert.equal(decodeTicketLegs({ ...ticket, transfers: 1 }, true), null);
+    assert.equal(decodeTicketLegs({ ...ticket, link: "/search/MIL2311PAR28111?t=sample" }, true), null);
+  });
+
+  it("fills the flight's arrival time from the decoded leg", () => {
+    const flight = mapAviasalesTicketToFlight(ticket, { destinationId: "paris", currency: "EUR", tripType: "round-trip" });
+    assert.equal(flight?.arrivalTime, "2026-11-23 17:20");
+    assert.deepEqual(flight?.returnLeg?.airports, ["BVA", "BGY"]);
   });
 });

@@ -1,9 +1,9 @@
 import { Card } from "@/components/ui/Card";
+import { FlightLegTimeline } from "@/components/results/FlightLegTimeline";
+import { airportChangeNotes, displayLegs } from "@/lib/results/flightLegs";
 import { PartnerLinks } from "@/components/results/PartnerLinks";
-import { formatFlightDateTime } from "@/lib/results/flightTime";
 import { SampleDataBadge } from "@/components/results/SampleDataBadge";
 import { SAMPLE_FLIGHT_NOTE } from "@/lib/results/sampleData";
-import { ResultDuration } from "@/components/results/ResultDuration";
 import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
@@ -49,8 +49,7 @@ export function FlightResultCard({
   destinationIata,
   partnerLinks = [],
 }: FlightResultCardProps) {
-  const stopsLabel =
-    result.stops === 0 ? "Direct" : `${result.stops} stop${result.stops > 1 ? "s" : ""}`;
+  const legs = displayLegs(result);
   const tripPriceLabel = formatFlightTripPriceLabel(tripType);
   // A whole-city search mixes airports (MXP/LIN/BGY → CDG/ORY/BVA), so the
   // flight's own airports win over the search-level route.
@@ -58,12 +57,6 @@ export function FlightResultCard({
     result.originAirport ?? originIata,
     result.destinationAirport ?? destinationIata,
   );
-  const returnStopsLabel =
-    result.returnStops === undefined
-      ? null
-      : result.returnStops === 0
-        ? "Direct"
-        : `${result.returnStops} stop${result.returnStops > 1 ? "s" : ""}`;
 
   return (
     <Card hoverable className="overflow-hidden">
@@ -96,42 +89,18 @@ export function FlightResultCard({
             <ResultRating rating={result.rating} />
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 text-sm">
-            <div className="text-center">
-              <p className="text-lg font-bold text-slate-900">
-                {formatFlightDateTime(result.departureTime)}
-              </p>
-              <p className="text-xs text-slate-500">Depart</p>
-            </div>
-            <div className="flex flex-1 flex-col items-center gap-1 px-2">
-              <ResultDuration
-                minutes={result.durationMinutes}
-                className="text-xs font-medium text-slate-500"
+          {/* Milestone 21: each leg with airline logo, times, airports and stops. */}
+          <div className="flex flex-col gap-2">
+            <FlightLegTimeline leg={legs.outbound} label="Outbound" fallbackStops={result.stops} />
+            {legs.back && (
+              <FlightLegTimeline
+                leg={legs.back}
+                label="Return"
+                fallbackStops={result.returnStops}
+                notes={airportChangeNotes(legs)}
               />
-              <div className="h-px w-full max-w-[120px] bg-slate-200" />
-              <span className="text-xs font-medium text-brand-700">
-                {stopsLabel}
-              </span>
-            </div>
-            {/* Some sources give departure + duration but no arrival time
-                (no destination time zone). Hide it rather than guess. */}
-            {result.arrivalTime ? (
-              <div className="text-center">
-                <p className="text-lg font-bold text-slate-900">
-                  {result.arrivalTime}
-                </p>
-                <p className="text-xs text-slate-500">Arrive</p>
-              </div>
-            ) : null}
+            )}
           </div>
-
-          {result.returnDepartureTime && (
-            <p className="text-sm text-slate-600">
-              <span className="font-semibold text-slate-900">Return</span>{" "}
-              {formatFlightDateTime(result.returnDepartureTime)}
-              {returnStopsLabel && ` · ${returnStopsLabel}`}
-            </p>
-          )}
 
           <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
             <p className="text-sm text-slate-500">{tripPriceLabel}</p>

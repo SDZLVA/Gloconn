@@ -47,7 +47,7 @@ export function buildCsp(nonce: string): string {
     // Next.js still injects critical CSS as inline <style> without nonces.
     // 'unsafe-inline' for styles is required; it is not allowed for scripts.
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https://lh3.googleusercontent.com",
+    "img-src 'self' data: https://lh3.googleusercontent.com https://pics.avs.io",
     "font-src 'self'",
     "connect-src 'self' https://*.supabase.co",
     "form-action 'self'",
