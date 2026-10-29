@@ -5,6 +5,25 @@
 import type { CurrencyCode } from "@/types/models/currency";
 
 /**
+ * Milestone 21: one direction of a trip (outbound or return), with what a
+ * traveller compares — airline, times, airports, stopovers.
+ */
+export type FlightLeg = {
+  /** IATA airline code, e.g. "FR". Omitted when the source does not say. */
+  airlineCode?: string;
+  /** Display name; omitted together with airlineCode. */
+  airline?: string;
+  /** Local departure time, "YYYY-MM-DD HH:MM". */
+  departureTime: string;
+  /** Local arrival time, same format. Omitted when the time zone is unknown. */
+  arrivalTime?: string;
+  /** Door-to-door minutes, including stopovers. */
+  durationMinutes: number;
+  /** Origin, stopover airports…, destination (IATA). At least two. */
+  airports: string[];
+};
+
+/**
  * A flight option for a trip.
  * Provider-independent — no airline API-specific fields.
  */
@@ -75,6 +94,13 @@ export type Flight = {
    * adds attribution). Omitted when the source gave no usable ticket link.
    */
   bookingUrl?: string;
+
+  /**
+   * Milestone 21: full leg details when the source provides them. The flat
+   * fields above stay filled in (sorting, filters and packages use them).
+   */
+  outboundLeg?: FlightLeg;
+  returnLeg?: FlightLeg;
 
   /**
    * True when this result is sample (mock) data, not a real offer. The UI

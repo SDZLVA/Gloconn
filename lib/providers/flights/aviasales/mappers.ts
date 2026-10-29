@@ -20,12 +20,17 @@
 
 import { buildAviasalesTicketUrl } from "@/lib/affiliate/aviasalesLink";
 import { airlineDisplayName } from "@/lib/providers/flights/aviasales/airlines";
+import {
+  formatWallClock,
+  parseTicketCode,
+} from "@/lib/providers/flights/aviasales/ticketCode";
 import type {
   AviasalesPricesForDatesResponse,
   AviasalesTicket,
 } from "@/lib/providers/flights/aviasales/types";
 import type { CurrencyCode } from "@/types/models/currency";
 import type { Flight } from "@/types/models";
+import type { FlightLeg } from "@/types/models/flight";
 import type { TripType } from "@/types/models/search-request";
 
 const LOCAL_DATE_TIME = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})/;
@@ -59,7 +64,88 @@ export type MapAviasalesOptions = {
   tripType: TripType;
   /** Milestone 20: travellers, so the exact-ticket link prices the whole group. */
   passengers?: { adults: number; children?: number; infants?: number };
+  /**
+   * Milestone 21: airline of each return flight, from a one-way search in
+   * the opposite direction. Key: returnFlightKey(). The round-trip ticket
+   * itself only names the outbound airline.
+   */
+  returnAirlines?: ReadonlyMap<string, string>;
 };
+
+/** "BVA|BGY|2026-11-28 13:25" — origin, destination, local departure. */
+export function returnFlightKey(from: string, to: string, localDeparture: string): string {
+  return `${from}|${to}|${localDeparture}`;
+}
+
+function ticketCodeOf(link: string | undefined): string | null {
+  const query = typeof link === "string" ? link.split("?")[1] : undefined;
+  return query ? new URLSearchParams(query).get("t") : null;
+}
+
+function legAirline(code: string | undefined): Pick<FlightLeg, "airlineCode" | "airline"> {
+  const upper = code?.trim().toUpperCase() ?? "";
+  const name = /^[A-Z0-9]{2}$/.test(upper) ? airlineDisplayName(upper) : null;
+  return name ? { airlineCode: upper, airline: name } : {};
+}
+
+/**
+ * Milestone 21: outbound/return legs decoded from the ticket code and
+ * cross-checked against the documented fields. Null on any doubt.
+ *
+ * Times in the code are local wall-clock times at each airport (see
+ * ticketCode.ts), so arrival times are read directly — no time-zone maths,
+ * one-way tickets included. Each leg's departure must equal the documented
+ * local departure (departure_at / return_at), and its airports and stop
+ * count must match the documented ones.
+ */
+export function decodeTicketLegs(
+  ticket: AviasalesTicket,
+  isRoundTrip: boolean,
+  returnAirlines?: ReadonlyMap<string, string>,
+): { outbound: FlightLeg; back?: FlightLeg } | null {
+  const legs = parseTicketCode(ticketCodeOf(ticket.link));
+  if (!legs || legs.length !== (isRoundTrip ? 2 : 1)) return null;
+
+  const out = legs[0];
+  const departure = formatAviasalesDateTime(ticket.departure_at);
+  if (!departure || formatWallClock(out.departUnix) !== departure) return null;
+  if (ticket.origin_airport && out.airports[0] !== ticket.origin_airport.toUpperCase()) return null;
+  if (ticket.destination_airport && out.airports.at(-1) !== ticket.destination_airport.toUpperCase()) {
+    return null;
+  }
+  if (typeof ticket.transfers === "number" && out.airports.length - 2 !== ticket.transfers) return null;
+
+  const outbound: FlightLeg = {
+    ...legAirline(ticket.airline),
+    departureTime: departure,
+    arrivalTime: formatWallClock(out.arriveUnix),
+    durationMinutes: out.minutes,
+    airports: out.airports,
+  };
+  if (!isRoundTrip) return { outbound };
+
+  const back = legs[1];
+  const backDeparture = formatAviasalesDateTime(ticket.return_at);
+  if (!backDeparture || formatWallClock(back.departUnix) !== backDeparture) return null;
+  if (typeof ticket.return_transfers === "number" && back.airports.length - 2 !== ticket.return_transfers) {
+    return null;
+  }
+
+  const backAirline = returnAirlines?.get(
+    returnFlightKey(back.airports[0], back.airports.at(-1) as string, backDeparture),
+  );
+
+  return {
+    outbound,
+    back: {
+      ...legAirline(backAirline),
+      departureTime: backDeparture,
+      arrivalTime: formatWallClock(back.arriveUnix),
+      durationMinutes: back.minutes,
+      airports: back.airports,
+    },
+  };
+}
 
 /** Maps one ticket, or returns null when it cannot be shown honestly. */
 export function mapAviasalesTicketToFlight(
@@ -103,6 +189,8 @@ export function mapAviasalesTicketToFlight(
     isRoundTrip ? idPart(ticket.return_at) : "ow",
   ].join("-");
 
+  const legs = decodeTicketLegs(ticket, isRoundTrip, options.returnAirlines);
+
   const airlineCode = ticket.airline?.trim().toUpperCase() ?? "";
   const bookingUrl = buildAviasalesTicketUrl(ticket.link, options.passengers ?? { adults: 1 });
 
@@ -114,8 +202,11 @@ export function mapAviasalesTicketToFlight(
     rating: 0,
     airline,
     departureTime,
-    arrivalTime: "",
-    durationMinutes: Math.round(durationMinutes),
+    // Known only when the ticket code decodes cleanly (Milestone 21).
+    arrivalTime: legs?.outbound.arrivalTime ?? "",
+    // Door to door when known: the API's duration_to leaves out stopovers
+    // (BGY→TIA→BVA: 275 min in the API, 440 min actually).
+    durationMinutes: legs?.outbound.durationMinutes ?? Math.round(durationMinutes),
     stops,
     cabin: "",
     priceIsRecent: true,
@@ -124,6 +215,9 @@ export function mapAviasalesTicketToFlight(
     ...(/^[A-Z0-9]{2}$/.test(airlineCode) ? { airlineCode } : {}),
     ...(bookingUrl ? { bookingUrl } : {}),
     ...(isRoundTrip ? returnLeg(ticket, returnTime) : {}),
+    ...(legs?.back ? { returnDurationMinutes: legs.back.durationMinutes } : {}),
+    ...(legs ? { outboundLeg: legs.outbound } : {}),
+    ...(legs?.back ? { returnLeg: legs.back } : {}),
   };
 }
 

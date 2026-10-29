@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { AirlineLogo } from "@/components/results/AirlineLogo";
+import { FlightLegTimeline } from "@/components/results/FlightLegTimeline";
 import { PartnerLinks } from "@/components/results/PartnerLinks";
-import { ResultDuration } from "@/components/results/ResultDuration";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import type { FlightLinksResolver } from "@/lib/affiliate/exactFlightLinks";
-import { formatFlightDateTime } from "@/lib/results/flightTime";
 import { groupByDeparture, type DepartureOption } from "@/lib/results/flightPairs";
-import { formatFlightRoute } from "@/lib/results/packagesUi";
+import { airportChangeNotes, displayLegs, legAirlines } from "@/lib/results/flightLegs";
 import { focusRing } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 import type { FlightResult } from "@/types/results";
@@ -23,11 +23,6 @@ type RoundTripFlightPickerProps = {
 };
 
 const RECENT_PRICE_NOTE = "Recent price found by other travellers — it may have changed.";
-
-function stopsLabel(stops: number | undefined): string | null {
-  if (stops === undefined) return null;
-  return stops === 0 ? "Direct" : `${stops} stop${stops > 1 ? "s" : ""}`;
-}
 
 function Steps({ step }: { step: 1 | 2 | 3 }) {
   const items = ["Departure", "Return", "Book"];
@@ -55,44 +50,71 @@ function Steps({ step }: { step: 1 | 2 | 3 }) {
   );
 }
 
-/** One leg in a compact row: time, duration, stops. */
-function LegLine({
-  label,
-  time,
-  minutes,
-  stops,
-  route,
-}: {
-  label: string;
-  time: string;
-  minutes?: number;
-  stops?: number;
-  route?: string | null;
-}) {
-  const stopText = stopsLabel(stops);
+const changeLink = cn(
+  "rounded-md text-sm font-semibold text-brand-800 underline underline-offset-2",
+  focusRing,
+);
+
+/** "Ryanair" or "easyJet + Ryanair" with logos — every airline on the trip. */
+function AirlineChips({ flight, withReturn }: { flight: FlightResult; withReturn: boolean }) {
+  const legs = displayLegs(flight);
+  const shown = withReturn ? legs : { outbound: legs.outbound };
+  const codes = [shown.outbound, shown.back]
+    .filter((leg): leg is NonNullable<typeof leg> => Boolean(leg?.airline))
+    .map((leg) => ({ code: leg.airlineCode, name: leg.airline as string }));
+  const unique = codes.filter((item, index) => codes.findIndex((c) => c.name === item.name) === index);
+  const names = legAirlines(shown);
+  if (unique.length === 0) return <span />;
   return (
-    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
-      <span className="w-16 shrink-0 text-xs font-semibold uppercase tracking-wide text-slate-500">
-        {label}
+    <p className="flex flex-wrap items-center gap-2">
+      <span className="flex -space-x-2">
+        {unique.map((item) => (
+          <AirlineLogo key={item.name} code={item.code} name={item.name} className="h-8 w-8 rounded-lg ring-2 ring-white" />
+        ))}
       </span>
-      <span className="font-bold text-slate-900">{formatFlightDateTime(time)}</span>
-      {route && <span className="font-semibold text-brand-700">{route}</span>}
-      {minutes !== undefined && (
-        <ResultDuration minutes={minutes} className="text-slate-500" />
-      )}
-      {stopText && <span className="font-medium text-brand-700">{stopText}</span>}
-    </div>
+      <span className="text-sm font-bold text-slate-900">{names.join(" + ")}</span>
+    </p>
   );
 }
 
-function routeOf(
-  flight: FlightResult,
-  originIata?: string | null,
-  destinationIata?: string | null,
-): string | null {
-  return formatFlightRoute(
-    flight.originAirport ?? originIata,
-    flight.destinationAirport ?? destinationIata,
+/**
+ * Boarding-pass style card: flights on the left, a perforated stub with
+ * the price and the action on the right (below on phones).
+ */
+function TicketCard({
+  children,
+  caption,
+  price,
+  currency,
+  detail,
+  actionLabel,
+  onAction,
+}: {
+  children: ReactNode;
+  caption: string;
+  price: number;
+  currency: FlightResult["currency"];
+  detail?: string;
+  actionLabel: string;
+  onAction: () => void;
+}) {
+  return (
+    <Card hoverable className="flex flex-col overflow-hidden p-0 sm:flex-row">
+      <div className="min-w-0 flex-1">{children}</div>
+      <div className="relative flex shrink-0 items-center justify-between gap-3 border-t-2 border-dashed border-slate-200 bg-slate-50/80 px-4 py-3 sm:w-48 sm:flex-col sm:items-stretch sm:justify-center sm:border-l-2 sm:border-t-0 sm:text-center">
+        {/* Punch holes where the stub tears off. */}
+        <span aria-hidden="true" className="absolute -top-2 left-0 hidden h-4 w-4 -translate-x-1/2 rounded-full bg-slate-100 sm:-left-2 sm:top-0 sm:block sm:-translate-y-1/2 sm:translate-x-0" />
+        <span aria-hidden="true" className="absolute bottom-0 left-0 hidden h-4 w-4 rounded-full bg-slate-100 sm:-left-2 sm:block sm:translate-y-1/2" />
+        <div>
+          <p className="text-xs text-slate-500">{caption}</p>
+          <ResultPrice price={price} currency={currency} suffix="per person" />
+          {detail && <p className="mt-0.5 text-xs text-slate-500">{detail}</p>}
+        </div>
+        <Button type="button" onClick={onAction}>
+          {actionLabel}
+        </Button>
+      </div>
+    </Card>
   );
 }
 
@@ -104,8 +126,6 @@ function routeOf(
  */
 export function RoundTripFlightPicker({
   flights,
-  originIata,
-  destinationIata,
   getFlightLinks,
 }: RoundTripFlightPickerProps) {
   const departures = useMemo(() => groupByDeparture(flights), [flights]);
@@ -158,51 +178,45 @@ export function RoundTripFlightPicker({
 
       {departure && (
         <Card className="space-y-3 p-4 sm:p-5">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                Departure
-              </p>
-              <h3 className="text-base font-bold text-slate-900">{departure.outbound.airline}</h3>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setDepartureKey(null);
-                setTicketId(null);
-              }}
-              className={cn("rounded-md text-sm font-semibold text-brand-800 underline underline-offset-2", focusRing)}
-            >
-              Change departure
-            </button>
-          </div>
-          <LegLine
-            label="Out"
-            time={departure.outbound.departureTime}
-            minutes={departure.outbound.durationMinutes}
-            stops={departure.outbound.stops}
-            route={routeOf(departure.outbound, originIata, destinationIata)}
-          />
-          {ticket && (
-            <>
-              <div className="flex flex-wrap items-start justify-between gap-2 border-t border-slate-100 pt-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Return
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setTicketId(null)}
-                  className={cn("rounded-md text-sm font-semibold text-brand-800 underline underline-offset-2", focusRing)}
-                >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <AirlineChips flight={ticket ?? departure.outbound} withReturn={Boolean(ticket)} />
+            <div className="flex gap-4">
+              {ticket && (
+                <button type="button" onClick={() => setTicketId(null)} className={changeLink}>
                   Change return
                 </button>
-              </div>
-              <LegLine
-                label="Back"
-                time={ticket.returnDepartureTime ?? ""}
-                minutes={ticket.returnDurationMinutes}
-                stops={ticket.returnStops}
-              />
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setDepartureKey(null);
+                  setTicketId(null);
+                }}
+                className={changeLink}
+              >
+                Change departure
+              </button>
+            </div>
+          </div>
+          {(() => {
+            const legs = displayLegs(ticket ?? departure.outbound);
+            const notes = ticket ? airportChangeNotes(legs) : [];
+            return (
+              <>
+                <FlightLegTimeline leg={legs.outbound} label="Outbound" fallbackStops={departure.outbound.stops} />
+                {ticket && legs.back && (
+                  <FlightLegTimeline
+                    leg={legs.back}
+                    label="Return"
+                    fallbackStops={ticket.returnStops}
+                    notes={notes}
+                  />
+                )}
+              </>
+            );
+          })()}
+          {ticket && (
+            <>
               <div className="flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
                 <p className="text-sm text-slate-500">Round-trip · per person</p>
                 <ResultPrice price={ticket.price} currency={ticket.currency} suffix="per person" />
@@ -220,30 +234,21 @@ export function RoundTripFlightPicker({
         <ul className="flex flex-col gap-3" aria-label="Departure flights">
           {departures.map((option) => (
             <li key={option.key}>
-              <Card hoverable className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
-                <div className="min-w-0 space-y-2">
-                  <h3 className="text-base font-bold text-slate-900">{option.outbound.airline}</h3>
-                  <LegLine
-                    label="Out"
-                    time={option.outbound.departureTime}
-                    minutes={option.outbound.durationMinutes}
-                    stops={option.outbound.stops}
-                    route={routeOf(option.outbound, originIata, destinationIata)}
-                  />
-                  <p className="text-xs text-slate-500">
-                    {option.returns.length} return flight{option.returns.length === 1 ? "" : "s"}
-                  </p>
-                </div>
-                <div className="flex shrink-0 flex-row items-center justify-between gap-3 sm:flex-col sm:items-end">
-                  <div className="text-right">
-                    <p className="text-xs text-slate-500">Round trip from</p>
-                    <ResultPrice price={option.fromPrice} currency={option.outbound.currency} suffix="per person" />
-                  </div>
-                  <Button type="button" onClick={() => setDepartureKey(option.key)}>
-                    Choose departure
-                  </Button>
-                </div>
-              </Card>
+              <TicketCard
+                caption="Round trip from"
+                price={option.fromPrice}
+                currency={option.outbound.currency}
+                detail={`${option.returns.length} return flight${option.returns.length === 1 ? "" : "s"}`}
+                actionLabel="Choose departure"
+                onAction={() => setDepartureKey(option.key)}
+              >
+                <FlightLegTimeline
+                  leg={displayLegs(option.outbound).outbound}
+                  label="Outbound"
+                  fallbackStops={option.outbound.stops}
+                  className="border-0"
+                />
+              </TicketCard>
             </li>
           ))}
         </ul>
@@ -251,30 +256,30 @@ export function RoundTripFlightPicker({
 
       {step === 2 && departure && (
         <ul className="flex flex-col gap-3" aria-label="Return flights">
-          {departure.returns.map((flight) => (
-            <li key={flight.id}>
-              <Card hoverable className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
-                <div className="min-w-0 space-y-2">
-                  <h3 className="text-base font-bold text-slate-900">{flight.airline}</h3>
-                  <LegLine
-                    label="Back"
-                    time={flight.returnDepartureTime ?? ""}
-                    minutes={flight.returnDurationMinutes}
-                    stops={flight.returnStops}
-                  />
-                </div>
-                <div className="flex shrink-0 flex-row items-center justify-between gap-3 sm:flex-col sm:items-end">
-                  <div className="text-right">
-                    <p className="text-xs text-slate-500">Round trip total</p>
-                    <ResultPrice price={flight.price} currency={flight.currency} suffix="per person" />
-                  </div>
-                  <Button type="button" onClick={() => setTicketId(flight.id)}>
-                    Choose return
-                  </Button>
-                </div>
-              </Card>
-            </li>
-          ))}
+          {departure.returns.map((flight) => {
+            const legs = displayLegs(flight);
+            return (
+              <li key={flight.id}>
+                <TicketCard
+                  caption="Round trip total"
+                  price={flight.price}
+                  currency={flight.currency}
+                  actionLabel="Choose return"
+                  onAction={() => setTicketId(flight.id)}
+                >
+                  {legs.back && (
+                    <FlightLegTimeline
+                      leg={legs.back}
+                      label="Return"
+                      fallbackStops={flight.returnStops}
+                      notes={airportChangeNotes(legs)}
+                      className="border-0"
+                    />
+                  )}
+                </TicketCard>
+              </li>
+            );
+          })}
         </ul>
       )}
 
