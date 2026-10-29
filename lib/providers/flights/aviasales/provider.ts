@@ -24,6 +24,7 @@
  */
 
 import { createProviderError } from "@/lib/api/errors";
+import { NO_RECENT_PRICES_REASON } from "@/lib/api/searchMappers";
 import { getAppConfig } from "@/lib/config";
 import type { AviasalesConfig } from "@/lib/config/types";
 import type { FlightSearchOptions, FlightsProvider } from "@/lib/providers/core/types";
@@ -121,7 +122,7 @@ export class AviasalesFlightsProvider implements FlightsProvider {
 
     if (flights.length === 0) {
       throw createProviderError("No recent flight prices were found for this route and dates.", {
-        cause: { reason: "no_recent_prices" },
+        cause: { reason: NO_RECENT_PRICES_REASON },
       });
     }
 

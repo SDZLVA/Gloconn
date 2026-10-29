@@ -14,7 +14,8 @@ export class MockHotelsProvider implements HotelsProvider {
   readonly name = "mock";
 
   async search(request: SearchRequest): Promise<Hotel[]> {
-    return mockDelay(searchMockHotels(request));
+    const hotels = await mockDelay(searchMockHotels(request));
+    return hotels.map((hotel) => ({ ...hotel, isSample: true }));
   }
 }
 

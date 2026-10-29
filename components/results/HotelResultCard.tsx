@@ -4,6 +4,8 @@ import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderIm
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
 import { ResultTypeBadge } from "@/components/results/ResultTypeBadge";
+import { SampleDataBadge } from "@/components/results/SampleDataBadge";
+import { SAMPLE_HOTEL_NOTE } from "@/lib/results/sampleData";
 import {
   formatHotelAmenitiesSummary,
 } from "@/lib/hotels/amenitiesUi";
@@ -40,6 +42,7 @@ export function HotelResultCard({ result }: HotelResultCardProps) {
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <ResultTypeBadge type="hotel" />
+                {result.isSample && <SampleDataBadge label="Example hotel" />}
                 {starsLabel === "Unrated" ? (
                   <span className="text-xs font-medium text-slate-500">
                     {starsLabel}
@@ -71,6 +74,9 @@ export function HotelResultCard({ result }: HotelResultCardProps) {
                 currency={result.currency}
                 suffix="total"
               />
+              {result.isSample && (
+                <p className="text-xs text-amber-800">{SAMPLE_HOTEL_NOTE}</p>
+              )}
             </div>
             <ViewHotelAction hotel={result} />
           </div>

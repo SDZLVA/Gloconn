@@ -49,4 +49,11 @@ export type Flight = {
    * UI must say the price may have changed. Omitted for live sources.
    */
   priceIsRecent?: boolean;
+
+  /**
+   * True when this result is sample (mock) data, not a real offer. The UI
+   * labels it so a sample price is never mistaken for a real one — most
+   * importantly inside packages that mix live and sample data.
+   */
+  isSample?: boolean;
 };

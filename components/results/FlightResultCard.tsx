@@ -1,5 +1,7 @@
 import { Card } from "@/components/ui/Card";
 import { ExternalContinueLink } from "@/components/results/ExternalContinueLink";
+import { SampleDataBadge } from "@/components/results/SampleDataBadge";
+import { SAMPLE_FLIGHT_NOTE } from "@/lib/results/sampleData";
 import { ResultDuration } from "@/components/results/ResultDuration";
 import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
 import { ResultPrice } from "@/components/results/ResultPrice";
@@ -65,6 +67,7 @@ export function FlightResultCard({
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <ResultTypeBadge type="flight" />
+                {result.isSample && <SampleDataBadge label="Example flight" />}
                 <span className="text-xs font-medium text-slate-500">
                   {result.cabin}
                 </span>
@@ -118,6 +121,11 @@ export function FlightResultCard({
               suffix="per person"
             />
           </div>
+          {result.isSample && (
+            <p className="-mt-1 text-right text-xs text-amber-800">
+              {SAMPLE_FLIGHT_NOTE}
+            </p>
+          )}
           {result.priceIsRecent && (
             <p className="-mt-1 text-right text-xs text-slate-500">
               Recent price found by other travellers — it may have changed.

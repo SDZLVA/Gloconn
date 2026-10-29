@@ -11,7 +11,9 @@
 import {
   buildSearchResponse,
   createCatalogSearchRequest,
+  createNoRecentFlightPricesWarning,
   createProviderUnavailableWarning,
+  isNoRecentPricesError,
 } from "@/lib/api/searchMappers";
 import { createProviderError, createValidationError } from "@/lib/api/errors";
 import { composePackages } from "@/lib/packages";
@@ -165,7 +167,11 @@ async function searchAllDomains(
       succeeded += 1;
     } else {
       failed += 1;
-      warnings.push(createProviderUnavailableWarning("flights"));
+      warnings.push(
+        isNoRecentPricesError(flightsSettled.reason)
+          ? createNoRecentFlightPricesWarning()
+          : createProviderUnavailableWarning("flights"),
+      );
     }
   }
 

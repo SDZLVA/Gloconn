@@ -61,6 +61,7 @@ const AIRLINE_NAMES: Readonly<Record<string, string>> = {
   VY: "Vueling",
   W6: "Wizz Air",
   X3: "TUIfly",
+  ZQ: "German Airways",
   "2L": "Helvetic Airways",
   "6E": "IndiGo",
 };

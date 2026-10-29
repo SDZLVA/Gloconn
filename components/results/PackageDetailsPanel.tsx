@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { ExternalContinueLink } from "@/components/results/ExternalContinueLink";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import { ResultRating } from "@/components/results/ResultRating";
+import { SAMPLE_HOTEL_NOTE } from "@/lib/results/sampleData";
 import { buildGoogleMapsUrl } from "@/lib/hotels/googleMapsUrl";
 import {
   formatFlightDurationLabel,
@@ -163,6 +164,7 @@ export function PackageDetailsPanel({
             <p className="text-xs text-slate-500">
               {flightPriceFootnote}
               {flight.priceIsRecent && " · recent price, may have changed"}
+              {flight.isSample && " · example fare, not real"}
             </p>
             <div className="mt-0.5">
               <ResultPrice
@@ -225,6 +227,9 @@ export function PackageDetailsPanel({
             </div>
             <p className="text-sm text-slate-600">{locationLine}</p>
             <p className="text-sm text-slate-500">{stayLabel}</p>
+            {hotel.isSample && (
+              <p className="text-xs text-amber-800">{SAMPLE_HOTEL_NOTE}</p>
+            )}
           </div>
           <div className="rounded-xl border border-slate-100 px-3 py-2">
             <p className="text-xs text-slate-500">Hotel stay</p>

@@ -2,6 +2,8 @@ import type { FlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
 import { memo } from "react";
 import { Card } from "@/components/ui/Card";
 import { ViewPackageDetailsAction } from "@/components/results/ViewPackageDetailsAction";
+import { SampleDataBadge } from "@/components/results/SampleDataBadge";
+import { samplePackageNote } from "@/lib/results/sampleData";
 import { ResultPrice } from "@/components/results/ResultPrice";
 import {
   formatFlightRoute,
@@ -46,6 +48,7 @@ function TravelPackageCardComponent({
   const starsLabel = formatHotelStarsLabel(hotel.stars);
   const routeLabel = formatFlightRoute(originIata, destinationIata);
   const headingId = `${id}-title`;
+  const sampleNote = samplePackageNote(flight.isSample, hotel.isSample);
   const roleBadgeClass =
     explanation?.role === "recommended"
       ? "bg-brand-50 text-brand-800"
@@ -78,6 +81,7 @@ function TravelPackageCardComponent({
               Package
             </span>
           )}
+          {sampleNote && <SampleDataBadge />}
         </div>
 
         <div className="min-w-0 space-y-1">
@@ -108,6 +112,9 @@ function TravelPackageCardComponent({
               currency={currency}
               suffix="est. total"
             />
+            {sampleNote && (
+              <p className="text-xs text-amber-800">{sampleNote}</p>
+            )}
           </div>
           <ViewPackageDetailsAction
             package={travelPackage}

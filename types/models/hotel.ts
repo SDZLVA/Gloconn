@@ -56,4 +56,11 @@ export type Hotel = {
    * Authenticated ciphertext — not a raw provider token. Do not render in the UI.
    */
   providerPropertyRef?: string;
+
+  /**
+   * True when this result is sample (mock) data, not a real offer. The UI
+   * labels it so a sample price is never mistaken for a real one — most
+   * importantly inside packages that mix live and sample data.
+   */
+  isSample?: boolean;
 };

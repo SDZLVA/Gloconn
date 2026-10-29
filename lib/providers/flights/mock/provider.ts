@@ -21,7 +21,8 @@ export class MockFlightsProvider implements FlightsProvider {
     options?: FlightSearchOptions,
   ): Promise<Flight[]> {
     void options; // Mock data is already cheap; scout does not change results.
-    return mockDelay(searchMockFlights(request));
+    const flights = await mockDelay(searchMockFlights(request));
+    return flights.map((flight) => ({ ...flight, isSample: true }));
   }
 }
 
