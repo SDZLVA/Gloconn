@@ -1,4 +1,5 @@
 import { LiveResultsBand } from "@/components/live/LiveResultsBand";
+import { LiveHotelsResults } from "@/components/live/hotels/LiveHotelsResults";
 import { stay22MapUrl } from "@/features/liveHotels/stay22";
 import { buildBookingSearchUrl } from "@/lib/hotels/bookingSearchUrl";
 import { formatShortDate } from "@/lib/calendar/dates";
@@ -28,8 +29,22 @@ export function LiveHotelsResultsPage({ search, initialForm }: LiveHotelsResults
     .map(formatShortDate)
     .join(" – ");
   const bookingUrl = buildBookingSearchUrl(search);
-  // Milestone 29: live hotels on a map (Stay22). Switch off with NEXT_PUBLIC_STAY22_AID=off.
-  const mapUrl = process.env.NEXT_PUBLIC_STAY22_AID === "off" ? null : stay22MapUrl(search);
+  // Hotel engine (NEXT_PUBLIC_HOTELS_ENGINE): "liteapi" (default, M30),
+  // "stay22" (M29 map — muted for now), "off" (coming-soon note).
+  const engine = process.env.NEXT_PUBLIC_HOTELS_ENGINE || "liteapi";
+  const mapUrl = engine === "stay22" ? stay22MapUrl(search) : null;
+  const liteSearch =
+    engine === "liteapi" && search.destination && search.departureDate && search.returnDate
+      ? {
+          destination: search.destination,
+          checkin: search.departureDate,
+          checkout: search.returnDate,
+          adults: Math.max(1, search.travelers?.adults ?? 1),
+          children: Math.max(0, search.travelers?.children ?? 0),
+          rooms: Math.max(1, rooms),
+          currency: search.budget?.currency ?? "EUR",
+        }
+      : null;
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -43,7 +58,9 @@ export function LiveHotelsResultsPage({ search, initialForm }: LiveHotelsResults
         </p>
       </header>
 
-      {mapUrl ? (
+      {liteSearch ? (
+        <LiveHotelsResults search={liteSearch} stayBudget={search.budget?.amount ?? null} cityName={destination} />
+      ) : mapUrl ? (
         <section className="space-y-2" aria-labelledby="live-hotels-heading">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
             <h2 id="live-hotels-heading" className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
