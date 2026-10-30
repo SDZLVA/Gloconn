@@ -15,7 +15,7 @@ export function SearchModeTabs({ value, onChange, className }: SearchModeTabsPro
     <div
       role="tablist"
       aria-label="What are you searching for?"
-      className={cn("-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 sm:gap-2", className)}
+      className={cn("-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] sm:gap-2 [&::-webkit-scrollbar]:hidden", className)}
     >
       {SEARCH_MODES.map((mode) => {
         const active = mode.value === value;

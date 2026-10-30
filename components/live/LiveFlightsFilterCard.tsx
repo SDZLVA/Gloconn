@@ -45,6 +45,9 @@ export function LiveFlightsFilterCard({ filters, onChange, facets, currency, cla
     (filters.airlines.length > 0 ? 1 : 0) +
     (filters.maxPrice ? 1 : 0);
 
+  // The widget can list one airline twice (e.g. easyJet U2 and EC).
+  const airlineNames = [...new Set(facets.airlines)];
+
   function toggleAirline(name: string) {
     const airlines = filters.airlines.includes(name)
       ? filters.airlines.filter((item) => item !== name)
@@ -117,11 +120,11 @@ export function LiveFlightsFilterCard({ filters, onChange, facets, currency, cla
 
       <fieldset className="space-y-2">
         <legend className="text-sm font-semibold text-slate-800">Airlines</legend>
-        {facets.airlines.length === 0 ? (
+        {airlineNames.length === 0 ? (
           <p className="text-sm text-slate-500">{facets.searching === false ? "No airlines to filter." : "Loading airlines…"}</p>
         ) : (
           <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
-            {facets.airlines.map((name) => (
+            {airlineNames.map((name) => (
               <label key={name} className="flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
                 <input
                   type="checkbox"

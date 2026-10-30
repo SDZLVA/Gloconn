@@ -15,6 +15,27 @@ import type { SearchFormState } from "@/types/search-form";
 
 export type BarMode = Exclude<SearchMode, "transport">;
 
+/**
+ * Turns a field component's "label above a bordered box" layout into a white
+ * cell with the label inside it (Booking-style). Targets the components'
+ * own markup: root div > label + input (autocomplete) or button (pickers).
+ */
+const CELL = cn(
+  "relative min-w-0 [&>div]:gap-1",
+  "[&>div>label]:pointer-events-none [&>div>label]:absolute [&>div>label]:left-4 [&>div>label]:top-[0.6rem] [&>div>label]:z-[2]",
+  "[&>div>label]:text-xs [&>div>label]:font-medium [&>div>label]:tracking-normal [&>div>label]:text-slate-500",
+  "[&>div>label>span]:hidden",
+  "[&_input[role=combobox]]:min-h-[3.75rem] [&_input[role=combobox]]:rounded-xl [&_input[role=combobox]]:border-transparent [&_input[role=combobox]]:bg-white",
+  "[&_input[role=combobox]]:pb-[0.45rem] [&_input[role=combobox]]:pt-6 [&_input[role=combobox]]:text-[0.95rem] [&_input[role=combobox]]:font-semibold",
+  "[&_input[role=combobox]:focus]:border-brand-700 [&_input[role=combobox]:focus]:shadow-[0_0_0_3px_#dbeafe]",
+  "[&>div>button]:min-h-[3.75rem] [&>div>button]:rounded-xl [&>div>button]:border-transparent [&>div>button]:bg-white",
+  "[&>div>button]:pb-[0.45rem] [&>div>button]:pt-6 [&>div>button]:text-[0.95rem] [&>div>button]:font-semibold",
+  "[&>div>button:focus]:border-brand-700 [&>div>button:focus]:shadow-[0_0_0_3px_#dbeafe]",
+  "[&_[role=alert]]:mt-1 [&_[role=alert]]:rounded-lg [&_[role=alert]]:bg-red-50 [&_[role=alert]]:px-2 [&_[role=alert]]:py-1 [&_[role=alert]]:text-xs",
+);
+const CELL_ICON = "[&>div>label]:left-10";
+const CELL_DATE = "[&>div>label]:left-[3.25rem]";
+
 type ModeSearchBarProps = {
   mode: BarMode;
   initialForm?: Partial<SearchFormState>;
@@ -100,7 +121,7 @@ export function ModeSearchBar({
       <div className="flex flex-col gap-1 rounded-2xl bg-sky-300 p-1 shadow-xl shadow-brand-900/20 lg:flex-row lg:items-stretch">
         {showOrigin && (
           <>
-            <div className="gc-cell gc-cell--icon lg:flex-[1.25]">
+            <div className={cn(CELL, CELL_ICON, "lg:flex-[1.25]")}>
               <OriginAutocomplete
                 value={form.origin}
                 onChange={actions.updateOrigin}
@@ -126,7 +147,7 @@ export function ModeSearchBar({
           </>
         )}
 
-        <div className={cn("gc-cell gc-cell--icon", showOrigin ? "lg:flex-[1.25]" : "lg:flex-[1.6]")}>
+        <div className={cn(CELL, CELL_ICON, showOrigin ? "lg:flex-[1.25]" : "lg:flex-[1.6]")}>
           <DestinationAutocomplete
             label={mode === "hotels" ? "Destination" : "To"}
             placeholder={mode === "hotels" ? "Where are you going?" : "Where to?"}
@@ -138,7 +159,7 @@ export function ModeSearchBar({
           />
         </div>
 
-        <div className="gc-cell gc-cell--date lg:flex-[1.3]">
+        <div className={cn(CELL, CELL_DATE, "lg:flex-[1.3]")}>
           <TravelDatesSelector
             tripType={form.tripType}
             departureDate={form.departureDate}
@@ -151,7 +172,7 @@ export function ModeSearchBar({
           />
         </div>
 
-        <div className="gc-cell lg:flex-1">
+        <div className={cn(CELL, "lg:flex-1")}>
           {mode === "flights" ? (
             <TravelersSelector
               value={form.travelers}
