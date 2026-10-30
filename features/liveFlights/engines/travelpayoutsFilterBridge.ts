@@ -105,8 +105,9 @@ export function applyFilters(controls: WidgetControls, filters: LiveFlightsFilte
  * Milestone 25: whether the widget is still collecting prices, and hide its
  * large progress block (Glooconn shows a slim line instead).
  */
-export function takeOverProgress(controls: WidgetControls): boolean {
-  const bars = queryAll<HTMLElement>(controls.roots, '[class*="SearchProgressbar-module__searchProgressbar"]');
+export function takeOverProgress(target: WidgetControls | Document): boolean {
+  const roots = "roots" in target ? target.roots : allRoots(target);
+  const bars = queryAll<HTMLElement>(roots, '[class*="SearchProgressbar-module__searchProgressbar"]');
   for (const bar of bars) {
     if (bar.style.display !== "none") bar.style.display = "none";
   }

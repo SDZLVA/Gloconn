@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { activeLiveFlightsEngine } from "@/features/liveFlights/config";
 import type {
   LiveFlightsFacets,
@@ -28,7 +28,13 @@ type LiveFlightsSectionProps = {
  */
 export function LiveFlightsSection({ search, filters, onFacets }: LiveFlightsSectionProps) {
   const engine = activeLiveFlightsEngine();
-  const [searching, setSearching] = useState(false);
+  // Searching from the start: the live search begins when the page opens.
+  const [searching, setSearching] = useState(true);
+  // Safety net: never claim to be searching forever (full search ≈ 25 s).
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSearching(false), 45_000);
+    return () => window.clearTimeout(timer);
+  }, [search]);
   const handleFacets = useCallback(
     (facets: LiveFlightsFacets) => {
       setSearching(Boolean(facets.searching));
@@ -59,7 +65,7 @@ export function LiveFlightsSection({ search, filters, onFacets }: LiveFlightsSec
               <span className="absolute inline-flex h-full w-full rounded-full bg-brand-600 opacity-60 motion-safe:animate-ping" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-700" />
             </span>
-            Checking more airlines — new prices appear automatically.
+            Searching airlines and agencies — new prices appear automatically.
           </>
         ) : (
           "Live search complete."
