@@ -1,4 +1,5 @@
 import { LiveResultsBand } from "@/components/live/LiveResultsBand";
+import { stay22MapUrl } from "@/features/liveHotels/stay22";
 import { buildBookingSearchUrl } from "@/lib/hotels/bookingSearchUrl";
 import { formatShortDate } from "@/lib/calendar/dates";
 import type { SearchRequest } from "@/types/models/search-request";
@@ -27,6 +28,8 @@ export function LiveHotelsResultsPage({ search, initialForm }: LiveHotelsResults
     .map(formatShortDate)
     .join(" – ");
   const bookingUrl = buildBookingSearchUrl(search);
+  // Milestone 29: live hotels on a map (Stay22). Switch off with NEXT_PUBLIC_STAY22_AID=off.
+  const mapUrl = process.env.NEXT_PUBLIC_STAY22_AID === "off" ? null : stay22MapUrl(search);
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -40,6 +43,27 @@ export function LiveHotelsResultsPage({ search, initialForm }: LiveHotelsResults
         </p>
       </header>
 
+      {mapUrl ? (
+        <section className="space-y-2" aria-labelledby="live-hotels-heading">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <h2 id="live-hotels-heading" className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+              Live hotel prices
+            </h2>
+            <p className="text-xs text-slate-500">
+              Prices from Booking.com, Expedia, Vrbo and more via Stay22 · Glooconn may earn a commission
+            </p>
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <iframe
+              src={mapUrl}
+              title={`Hotels in ${destination} with live prices`}
+              className="block h-[70vh] min-h-[520px] w-full border-0"
+              allow="geolocation"
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
+          </div>
+        </section>
+      ) : (
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="hotels-soon">
         <p className="inline-flex rounded-full bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-700">
           Live hotel prices · coming soon
@@ -63,6 +87,7 @@ export function LiveHotelsResultsPage({ search, initialForm }: LiveHotelsResults
           </a>
         )}
       </section>
+      )}
     </div>
   );
 }

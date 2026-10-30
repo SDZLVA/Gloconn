@@ -2,7 +2,7 @@
  * CSP / security header unit tests (F-06 hydration fix).
  */
 
-import { describe, it } from "node:test";
+import { describe, it, test } from "node:test";
 import assert from "node:assert/strict";
 import { NextResponse } from "next/server";
 import {
@@ -90,4 +90,8 @@ describe("same-origin framing for the live-flights widget page (Milestone 23)", 
     const normal = applySecurityHeaders(NextResponse.next(), "x");
     assert.equal(normal.headers.get("X-Frame-Options"), "DENY");
   });
+});
+
+test("Milestone 29: only Glooconn and the Stay22 hotels map may be framed", () => {
+  assert.match(buildCsp("n"), /frame-src 'self' https:\/\/www\.stay22\.com/);
 });

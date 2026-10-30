@@ -83,6 +83,8 @@ export function buildCsp(nonce: string, options: CspOptions = {}): string {
     `img-src 'self' data: https://lh3.googleusercontent.com https://pics.avs.io ${LIVE_FLIGHTS_CSP.img.join(" ")}`,
     `font-src 'self' ${LIVE_FLIGHTS_CSP.font.join(" ")}`,
     `connect-src 'self' https://*.supabase.co ${LIVE_FLIGHTS_CSP.connect.join(" ")}`,
+    // Milestone 29: the Stay22 hotels map on the Hotels results page.
+    "frame-src 'self' https://www.stay22.com",
     "form-action 'self'",
     options.frameableBySelf ? "frame-ancestors 'self'" : "frame-ancestors 'none'",
     "base-uri 'self'",
