@@ -166,13 +166,15 @@ async function searchAllDomains(
     if (flightsSettled.status === "fulfilled") {
       flights = flightsSettled.value;
       succeeded += 1;
+    } else if (isNoRecentPricesError(flightsSettled.reason)) {
+      // Milestone 22: an empty answer is not an outage. Counting it as a
+      // failure turned a flights-only search into "Could not load travel
+      // results" (HTTP 502) instead of the honest no-recent-prices message.
+      succeeded += 1;
+      warnings.push(createNoRecentFlightPricesWarning());
     } else {
       failed += 1;
-      warnings.push(
-        isNoRecentPricesError(flightsSettled.reason)
-          ? createNoRecentFlightPricesWarning()
-          : createProviderUnavailableWarning("flights"),
-      );
+      warnings.push(createProviderUnavailableWarning("flights"));
     }
   }
 

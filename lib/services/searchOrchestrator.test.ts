@@ -630,6 +630,26 @@ describe("orchestrateTripSearch — honest flight warnings (Milestone 19)", () =
     assert.equal(response.warnings?.[0]?.message, NO_RECENT_FLIGHT_PRICES_MESSAGE);
   });
 
+  it("a flights-only search with no recent prices is an empty answer, not an error (Milestone 22)", async () => {
+    setServiceProviders(
+      providersWith({
+        flights: {
+          name: "empty-cache",
+          async search() {
+            throw createProviderError("No recent flight prices were found for this route and dates.", {
+              cause: { reason: NO_RECENT_PRICES_REASON },
+            });
+          },
+        },
+      }),
+    );
+
+    const response = await orchestrateTripSearch({ ...baseRequest(), productTypes: ["flights"] });
+
+    assert.equal(response.flights.length, 0);
+    assert.equal(response.warnings?.[0]?.code, "NO_RECENT_PRICES");
+  });
+
   it("keeps the generic warning for a real outage", async () => {
     setServiceProviders(providersWith({ flights: failingFlightsProvider() }));
     const response = await orchestrateTripSearch(baseRequest());

@@ -61,6 +61,8 @@ import {
 } from "@/components/results/ResultsFilterSidebar";
 import { DatePriceStrip } from "@/components/results/DatePriceStrip";
 import { RecommendedPackagesSection } from "@/components/results/RecommendedPackagesSection";
+import { LiveFlightsSection } from "@/features/liveFlights/LiveFlightsSection";
+import type { LiveFlightsSearch } from "@/features/liveFlights/types";
 import { ResultsEmptyState } from "@/components/results/ResultsEmptyState";
 import { ResultsErrorState } from "@/components/results/ResultsErrorState";
 import { ResultsHeader } from "@/components/results/ResultsHeader";
@@ -470,6 +472,35 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     routeSearchLinks,
   ]);
 
+  // Milestone 23: the traveller's search for the live-flights engine.
+  const liveFlightsSearch = useMemo((): LiveFlightsSearch | null => {
+    const wantsFlights = !activeSearch.productTypes || activeSearch.productTypes.includes("flights");
+    if (!wantsFlights || !originSearchCode || !destinationSearchCode || !activeSearch.departureDate) {
+      return null;
+    }
+    return {
+      originCode: originSearchCode,
+      destinationCode: destinationSearchCode,
+      departureDate: activeSearch.departureDate,
+      returnDate: activeSearch.tripType === "one-way" ? null : activeSearch.returnDate ?? null,
+      adults: travelers?.adults ?? 1,
+      children: travelers?.children ?? 0,
+      infants: travelers?.infants ?? 0,
+      currency: activeSearch.budget?.currency ?? "EUR",
+    };
+  }, [
+    activeSearch.productTypes,
+    activeSearch.departureDate,
+    activeSearch.returnDate,
+    activeSearch.tripType,
+    activeSearch.budget?.currency,
+    originSearchCode,
+    destinationSearchCode,
+    travelers?.adults,
+    travelers?.children,
+    travelers?.infants,
+  ]);
+
   const activeFilterCount = countActiveFilters(filters, defaultFilters);
   const destination = activeSearch.destination || "your destination";
 
@@ -738,6 +769,14 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     getFlightLinks={getFlightLinks}
                   />
                 </>
+              )}
+
+              {/* Milestone 23: removable live-flights engine (features/liveFlights). */}
+              {hasData && !showSkeleton && (
+                <LiveFlightsSection
+                  search={liveFlightsSearch}
+                  ownResultsEmpty={!allResults.some((result) => result.type === "flight")}
+                />
               )}
             </div>
           </div>

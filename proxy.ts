@@ -11,6 +11,7 @@ import {
   buildCsp,
   createCspRequestHeaders,
   generateCspNonce,
+  isSameOriginFramePath,
 } from "@/lib/security/csp";
 
 // ---------------------------------------------------------------------------
@@ -88,7 +89,9 @@ export async function proxy(request: NextRequest) {
   if (rateLimitResponse) return rateLimitResponse;
 
   const nonce = generateCspNonce();
-  const csp = buildCsp(nonce);
+  // Milestone 23: only the live-flights widget page may be framed, and only by Glooconn.
+  const frameableBySelf = isSameOriginFramePath(request.nextUrl.pathname);
+  const csp = buildCsp(nonce, { frameableBySelf });
 
   // Rebuild headers after any cookie mutations so Cookie + CSP stay in sync.
   const buildRequestHeaders = (): Headers =>
@@ -103,7 +106,7 @@ export async function proxy(request: NextRequest) {
       }),
   });
 
-  return applySecurityHeaders(sessionResponse, csp);
+  return applySecurityHeaders(sessionResponse, csp, { frameableBySelf });
 }
 
 export const config = {
