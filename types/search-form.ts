@@ -54,6 +54,11 @@ export type SearchFormErrors = Partial<
 export type UseSearchFormOptions = {
   /** Prefill fields (e.g. from URL params when editing a search). */
   initialForm?: Partial<SearchFormState>;
+  /**
+   * Milestone 28: extra query params added to the results URL on submit
+   * (e.g. `stops=0` for "Direct flights only"). Read at submit time.
+   */
+  resultParams?: Record<string, string>;
 };
 
 /**

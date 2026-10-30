@@ -19,7 +19,7 @@ export function AppShell({ children }: AppShellProps) {
     <div className="flex min-h-full flex-1 flex-col">
       <Navbar />
 
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-clip">
         <PageContainer className="py-8 sm:py-10 lg:py-12">{children}</PageContainer>
       </main>
 

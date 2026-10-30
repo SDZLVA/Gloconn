@@ -1,6 +1,7 @@
 import { validateBudget } from "@/lib/search/budget";
 import { getPastTravelDateErrors } from "@/lib/search/dates";
 import { validatePassengers } from "@/lib/search/passengers";
+import { needsOrigin } from "@/lib/search/modes";
 import { resolveProductTypes } from "@/lib/search/productTypes";
 import type { SearchFormErrors, SearchFormState } from "@/types/search-form";
 
@@ -11,7 +12,8 @@ import type { SearchFormErrors, SearchFormState } from "@/types/search-form";
 export function validateSearchForm(form: SearchFormState): SearchFormErrors {
   const errors: SearchFormErrors = {};
 
-  if (!form.origin.trim()) {
+  // Milestone 28: a hotels-only search has no departure place.
+  if (needsOrigin(form.productTypes) && !form.origin.trim()) {
     errors.origin = "Please enter where you are leaving from.";
   }
 

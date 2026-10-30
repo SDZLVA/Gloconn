@@ -7,6 +7,7 @@ import {
 } from "@/features/liveFlights/engines/travelpayoutsWidgetSearch";
 import {
   applyFilters,
+  applyMaxPrice,
   findControls,
   hideOwnFilters,
   takeOverProgress,
@@ -39,6 +40,10 @@ export function TravelpayoutsWidgetPanel({ search, filters, onFacets }: LiveFlig
     let reportedAirlines = "";
     let reportedSearching = true;
     let bridged = false;
+    // Milestone 28: the price slider is dragged asynchronously.
+    let priceApplied: string | null = null;
+    let priceAnchor: HTMLInputElement | null = null;
+    let priceBusy = false;
 
     const tick = () => {
       let doc: Document | null = null;
@@ -76,6 +81,27 @@ export function TravelpayoutsWidgetPanel({ search, filters, onFacets }: LiveFlig
         appliedKey = key;
         anchor = controls.layovers[0] ?? null;
         applyFilters(controls, filtersRef.current);
+      }
+
+      const maxPrice = filtersRef.current.maxPrice ?? null;
+      // While prices are still arriving the range grows; re-check every 5 s.
+      const priceKey = `${maxPrice}:${searching ? Math.floor(Date.now() / 5000) : "done"}`;
+      if (!priceBusy && (priceKey !== priceApplied || priceAnchor !== controls.layovers[0])) {
+        priceBusy = true;
+        const anchorNow = controls.layovers[0] ?? null;
+        void applyMaxPrice(controls, maxPrice)
+          .then((done) => {
+            if (done) {
+              priceApplied = priceKey;
+              priceAnchor = anchorNow;
+            }
+          })
+          .catch(() => {
+            /* the widget changed; the next tick retries */
+          })
+          .finally(() => {
+            priceBusy = false;
+          });
       }
     };
 
