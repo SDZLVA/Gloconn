@@ -42,6 +42,10 @@ export function renderWidgetFrame(
 <link rel="preconnect" href="https://tickets-api.apistp.com" crossorigin>
 <style>
   html, body { margin: 0; background: transparent; }
+  /* Milestone 27: the parent sizes the frame to its content, so the frame
+     itself never scrolls (no second scrollbar inside the results page). */
+  html { overflow: hidden; scrollbar-width: none; }
+  html::-webkit-scrollbar { display: none; }
   body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
   #tpwl-search { display: none; }
 </style>
@@ -60,7 +64,13 @@ export function renderWidgetFrame(
     var last = "";
     function report() {
       if (window.parent === window) return;
-      var h = Math.ceil(document.documentElement.scrollHeight);
+      // Milestone 27: measure the results themselves. documentElement's
+      // scrollHeight can stay at an old, larger value, and lags behind
+      // results that keep streaming in.
+      var tickets = document.getElementById("tpwl-tickets");
+      var h = tickets
+        ? Math.ceil(tickets.getBoundingClientRect().bottom + window.scrollY) + 8
+        : Math.ceil(document.documentElement.scrollHeight);
       var modal = !!document.body && getComputedStyle(document.body).overflow === "hidden";
       var key = h + ":" + modal;
       if (key !== last) {
@@ -99,8 +109,15 @@ export function renderWidgetFrame(
     setInterval(skin, 400);
 
     window.addEventListener("load", report);
-    if (window.ResizeObserver) new ResizeObserver(report).observe(document.documentElement);
-    setInterval(report, 1000);
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(report);
+      ro.observe(document.documentElement);
+      document.addEventListener("DOMContentLoaded", function () {
+        var t = document.getElementById("tpwl-tickets");
+        if (t) ro.observe(t);
+      });
+    }
+    setInterval(report, 500);
   })();
 </script>
 </head>

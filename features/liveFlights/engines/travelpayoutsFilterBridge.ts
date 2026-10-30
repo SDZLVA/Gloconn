@@ -121,8 +121,12 @@ export function takeOverProgress(target: WidgetControls | Document): boolean {
 export function hideOwnFilters(controls: WidgetControls): void {
   for (const element of queryAll<HTMLElement>(
     controls.roots,
-    '[class*="FlightFiltersMobileMenu-module__root"], [class*="FlightFilters-module__root"]',
+    '[class*="FlightFiltersMobileMenu-module__root"], [class*="FlightFilters-module__root"], [class*="TicketsWidget-module__filtersMobileMenu"]',
   )) {
-    if (element.style.display !== "none") element.style.display = "none";
+    // Milestone 27: "important" — the widget's own CSS sets display with
+    // !important, which beat a plain inline display:none.
+    if (element.style.getPropertyPriority("display") !== "important") {
+      element.style.setProperty("display", "none", "important");
+    }
   }
 }
