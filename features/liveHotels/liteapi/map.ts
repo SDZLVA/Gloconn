@@ -94,11 +94,12 @@ export function mapLiteApiRates(body: unknown, fallbackCurrency: string): LiveHo
     hotels.push({
       id,
       name: asString(info.name) ?? "Hotel",
-      photo: asString(info.main_photo) ?? asString(info.thumbnail) ?? asString(info.mainPhoto),
+      // The 400px thumbnail is plenty for a card; main_photo is ~3000px.
+      photo: asString(info.thumbnail) ?? asString(info.main_photo) ?? asString(info.mainPhoto),
       address: address(info.address),
       stars: Math.max(0, Math.min(5, Math.round(asNumber(info.stars) ?? asNumber(info.starRating) ?? 0))),
       rating: rating !== null && rating > 0 ? Math.min(10, rating) : null,
-      reviewCount: asNumber(info.reviewCount) ?? asNumber(info.reviews_count) ?? null,
+      reviewCount: asNumber(info.review_count) ?? asNumber(info.reviewCount) ?? asNumber(info.reviews_count) ?? null,
       latitude: asNumber(location.latitude) ?? asNumber(location.lat),
       longitude: asNumber(location.longitude) ?? asNumber(location.lng),
       totalPrice: Math.round(offer.total * 100) / 100,
