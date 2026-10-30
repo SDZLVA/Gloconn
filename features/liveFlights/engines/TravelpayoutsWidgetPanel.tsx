@@ -48,6 +48,9 @@ export function TravelpayoutsWidgetPanel({ search, filters, onFacets }: LiveFlig
         doc = null;
       }
       const controls = doc ? findControls(doc) : null;
+      // Before the first results the controls don't exist yet; hide the
+      // widget's large progress block from the start anyway.
+      if (doc && !controls) takeOverProgress(doc);
       if (!controls) {
         if (bridged) {
           bridged = false;
