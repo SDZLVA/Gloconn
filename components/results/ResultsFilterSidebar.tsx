@@ -274,6 +274,22 @@ export function ResultsFilterSidebar({
               </select>
             </div>
 
+            {/* Milestone 24: applied to the live flights list only. */}
+            <label className="flex cursor-pointer items-start gap-2.5 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={Boolean(filters.baggageIncluded)}
+                onChange={() =>
+                  onFiltersChange({ ...filters, baggageIncluded: !filters.baggageIncluded })
+                }
+                className={cn("mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-700", focusRing)}
+              />
+              <span>
+                Baggage included
+                <span className="block text-xs text-slate-500">Live flights only</span>
+              </span>
+            </label>
+
             {facets.cabins.length > 0 && (
               <fieldset>
                 <legend className={formLabel}>Cabin class</legend>

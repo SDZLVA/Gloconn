@@ -160,6 +160,7 @@ export function countActiveFilters(
   if (filters.maxStops != null) count += 1;
   if (filters.cabins.length > 0) count += 1;
   if (filters.airlines.length > 0) count += 1;
+  if (filters.baggageIncluded) count += 1;
   if (filters.operators.length > 0) count += 1;
   if (filters.minStars > defaults.minStars) count += 1;
   if (filters.amenities.length > 0) count += 1;
