@@ -59,3 +59,12 @@ describe("renderWidgetFrame", () => {
     assert.equal(renderWidgetFrame(new URLSearchParams("flightSearch=MIL2311PAR28111"), null, "24018").status, 400);
   });
 });
+
+describe("widget skin (Milestone 26)", () => {
+  it("is embedded in the frame page and cannot close its script tag", () => {
+    const { html } = renderWidgetFrame(new URLSearchParams("flightSearch=MIL2311PAR28111"), "n", "24018");
+    assert.match(html, /data-glooconn-skin/);
+    assert.match(html, /FlightCard-module__cardLeftButton/);
+    assert.equal(/<\/(?!script>)/i.test(html.split("<script")[1]?.split("</script>")[0] ?? ""), false);
+  });
+});
