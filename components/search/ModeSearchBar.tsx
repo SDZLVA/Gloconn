@@ -22,7 +22,7 @@ export type BarMode = Exclude<SearchMode, "transport">;
  */
 const CELL = cn(
   "relative min-w-0 [&>div]:gap-1",
-  "[&>div>label]:pointer-events-none [&>div>label]:absolute [&>div>label]:left-4 [&>div>label]:top-[0.6rem] [&>div>label]:z-[2]",
+  "[&>div>label]:pointer-events-none [&>div>label]:absolute [&>div>label]:top-[0.6rem] [&>div>label]:z-[2]",
   "[&>div>label]:text-xs [&>div>label]:font-medium [&>div>label]:tracking-normal [&>div>label]:text-slate-500",
   "[&>div>label>span]:hidden",
   "[&_input[role=combobox]]:min-h-[3.75rem] [&_input[role=combobox]]:rounded-xl [&_input[role=combobox]]:border-transparent [&_input[role=combobox]]:bg-white",
@@ -33,6 +33,8 @@ const CELL = cn(
   "[&>div>button:focus]:border-brand-700 [&>div>button:focus]:shadow-[0_0_0_3px_#dbeafe]",
   "[&_[role=alert]]:mt-1 [&_[role=alert]]:rounded-lg [&_[role=alert]]:bg-red-50 [&_[role=alert]]:px-2 [&_[role=alert]]:py-1 [&_[role=alert]]:text-xs",
 );
+// One label position per cell (cn() does not merge conflicting classes).
+const CELL_PLAIN = "[&>div>label]:left-4";
 const CELL_ICON = "[&>div>label]:left-10";
 const CELL_DATE = "[&>div>label]:left-[3.25rem]";
 
@@ -172,7 +174,7 @@ export function ModeSearchBar({
           />
         </div>
 
-        <div className={cn(CELL, "lg:flex-1")}>
+        <div className={cn(CELL, CELL_PLAIN, "lg:flex-1")}>
           {mode === "flights" ? (
             <TravelersSelector
               value={form.travelers}
