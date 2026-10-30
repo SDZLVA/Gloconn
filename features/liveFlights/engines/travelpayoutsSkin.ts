@@ -17,6 +17,9 @@
 // slate-50 #f8fafc, slate-200 #e2e8f0, slate-300 #cbd5e1, slate-900 #0f172a.
 export const WIDGET_SKIN_CSS = `
 [class*="DirectFlights-module__root"]{display:none!important}
+[class*="FlightFiltersMobileMenu-module__root"],[class*="TicketsWidget-module__filtersMobileMenu"],[class*="FlightFilters-module__root"]{display:none!important}
+[class*="FlightMatrixMobile-module__"],[class*="FlightMatrix-module__root"]{display:none!important}
+[class*="TicketsWidget-module__root___"]{margin-top:0!important}
 [class*="FlightCard-module__card___"]{display:grid!important;grid-template-columns:minmax(0,1fr) 232px!important;grid-template-rows:auto!important;gap:0!important;background:#fff!important;border:1px solid #e2e8f0!important;border-radius:16px!important;box-shadow:0 1px 2px rgba(15,23,42,.05)!important;margin:22px 0 0!important;position:relative!important;overflow:visible!important;transition:box-shadow .15s ease,border-color .15s ease}
 [class*="FlightCard-module__card___"]:hover{border-color:#bfdbfe!important;box-shadow:0 10px 28px rgba(15,23,42,.08)!important}
 [class*="FlightCard-module__cardRight___"]{grid-column:1!important;grid-row:1!important;margin:0!important;padding:22px 24px!important;min-width:0}
