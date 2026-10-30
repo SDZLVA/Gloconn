@@ -170,7 +170,9 @@ export function useSearchForm(
       rememberOriginByLabel(form.origin);
     }
 
-    router.push(buildResultsUrlFromRequest(result.request));
+    const url = buildResultsUrlFromRequest(result.request);
+    const extra = new URLSearchParams(options.resultParams ?? {}).toString();
+    router.push(extra ? `${url}&${extra}` : url);
   }
 
   const actions: SearchFormActions = {

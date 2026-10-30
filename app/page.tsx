@@ -1,13 +1,9 @@
-import { HeroSection } from "@/components/home/HeroSection";
+import { HomeSearchHero } from "@/components/home/HomeSearchHero";
 
 /**
- * Home page — welcome hero with a search card (UI only for now).
+ * Home page — Milestone 28: mode tabs (Packages, Flights, Hotels, Mixed
+ * Transport) with a one-row search bar for each.
  */
 export default function Home() {
-  return (
-    <HeroSection
-      title="Search flights and hotels. Get the best package."
-      subtitle="Enter your destination and dates — Glooconn finds flights and hotels, combines them into recommended packages, and lets you compare."
-    />
-  );
+  return <HomeSearchHero />;
 }

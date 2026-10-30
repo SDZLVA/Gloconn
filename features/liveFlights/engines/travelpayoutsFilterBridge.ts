@@ -11,6 +11,8 @@
 
 import {
   airlineSelected,
+  findSliderFraction,
+  parseWidgetPrice,
   widgetAirlineName,
   widgetStopsToCheck,
 } from "@/features/liveFlights/engines/travelpayoutsFilterMap";
@@ -129,4 +131,93 @@ export function hideOwnFilters(controls: WidgetControls): void {
       element.style.setProperty("display", "none", "important");
     }
   }
+}
+
+/**
+ * Milestone 28: sets the widget's own Price filter ("To € …") so it shows
+ * only fares within Glooconn's max price / budget. The widget has a
+ * pointer-driven slider (no input), so this drags it with synthetic
+ * pointer events and reads the label it shows back. Only the filter's
+ * own label is read, never the results.
+ *
+ * The filter panel is hidden by Glooconn; it is kept laid out off screen
+ * (fixed, invisible, inert) so the slider has a size to drag along.
+ * Returns false when the price filter is not there (yet) — try again later.
+ */
+export async function applyMaxPrice(
+  controls: WidgetControls,
+  maxPrice: number | null,
+): Promise<boolean> {
+  const header = queryAll<HTMLButtonElement>(controls.roots, 'button[class*="Expandable-module__header"]').find(
+    (button) => (button.textContent ?? "").trim().toLowerCase() === "price",
+  );
+  if (!header) return false;
+
+  const container = header.closest<HTMLElement>('[class*="FlightFilters-module__filerContainer"]');
+  const content = header.closest<HTMLElement>('[class*="FlightFiltersContent-module__root"]');
+  if (container) {
+    const offscreen: Record<string, string> = {
+      display: "block",
+      position: "fixed",
+      left: "-10000px",
+      top: "0",
+      width: "360px",
+      visibility: "hidden",
+      "pointer-events": "none",
+    };
+    for (const [property, value] of Object.entries(offscreen)) {
+      if (container.style.getPropertyValue(property) !== value) {
+        container.style.setProperty(property, value, "important");
+      }
+    }
+  }
+  if (content && content.style.getPropertyValue("display") !== "block") {
+    content.style.setProperty("display", "block", "important");
+  }
+
+  const body = header.parentElement?.querySelector<HTMLElement>('[class*="PriceFilter-module__body"]') ?? null;
+  if (!body) {
+    header.click(); // renders the price filter
+    return false;
+  }
+  const control = body.querySelector<HTMLElement>('[class*="RangeInput-module__control"]');
+  const line = body.querySelector<HTMLElement>('[class*="RangeInput-module__line"]');
+  const info = body.querySelector<HTMLElement>('[class*="PriceFilter-module__info"]');
+  if (!control || !line || !info) return false;
+  const lineBox = line.getBoundingClientRect();
+  if (lineBox.width <= 0) return false;
+
+  const view = control.ownerDocument.defaultView;
+  if (!view) return false;
+  const start = control.getBoundingClientRect();
+  const y = start.top + start.height / 2;
+  const fire = (type: string, x: number, buttons: number) => {
+    const init = { clientX: x, clientY: y, bubbles: true, composed: true, button: 0, buttons };
+    const pointer = new view.PointerEvent(type, { ...init, pointerId: 1, isPrimary: true, pointerType: "mouse" });
+    const mouse = new view.MouseEvent(type.replace("pointer", "mouse"), init);
+    const targets: EventTarget[] = type === "pointerdown" ? [control] : [control, control.ownerDocument, view];
+    for (const target of targets) {
+      target.dispatchEvent(pointer);
+      target.dispatchEvent(mouse);
+    }
+  };
+  const xAt = (fraction: number) => lineBox.left + lineBox.width * fraction;
+  const settle = () => new Promise((resolve) => view.setTimeout(resolve, 40));
+
+  const noLimit = maxPrice === null || maxPrice <= 0;
+  if (noLimit && control.style.left === "100%") return true; // already "any price"
+
+  fire("pointerdown", start.left + start.width / 2, 1);
+  let target = 1;
+  if (!noLimit) {
+    target = await findSliderFraction(maxPrice ?? 0, async (fraction) => {
+      fire("pointermove", xAt(fraction), 1);
+      await settle();
+      // Re-query: the widget may re-render the label.
+      return parseWidgetPrice(body.querySelector('[class*="PriceFilter-module__info"]')?.textContent);
+    });
+  }
+  fire("pointermove", xAt(target), 1);
+  fire("pointerup", xAt(target), 0);
+  return true;
 }

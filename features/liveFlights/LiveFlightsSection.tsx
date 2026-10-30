@@ -15,6 +15,8 @@ type LiveFlightsSectionProps = {
   filters: LiveFlightsFilters;
   /** The live list's airlines, for the sidebar. */
   onFacets?: (facets: LiveFlightsFacets) => void;
+  /** Milestone 28: heading text (the flights-only page says "Live flight prices"). */
+  title?: string;
 };
 
 /**
@@ -26,7 +28,7 @@ type LiveFlightsSectionProps = {
  * commission disclosure stays, in one short line of small print (see
  * /terms, section 6).
  */
-export function LiveFlightsSection({ search, filters, onFacets }: LiveFlightsSectionProps) {
+export function LiveFlightsSection({ search, filters, onFacets, title = "All live flights" }: LiveFlightsSectionProps) {
   const engine = activeLiveFlightsEngine();
   // Searching from the start: the live search begins when the page opens.
   const [searching, setSearching] = useState(true);
@@ -50,7 +52,7 @@ export function LiveFlightsSection({ search, filters, onFacets }: LiveFlightsSec
     <section className="space-y-2" aria-labelledby="live-flights-heading" hidden={!filters.showFlights}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h2 id="live-flights-heading" className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
-          All live flights
+          {title}
         </h2>
         <p className="text-xs text-slate-500">Prices from {engine.partnerName} partners · Glooconn may earn a commission</p>
       </div>

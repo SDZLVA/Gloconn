@@ -43,6 +43,11 @@ export type LiveFlightsFilters = {
   airlines: string[];
   /** Only fares with checked baggage. */
   baggageIncluded: boolean;
+  /**
+   * Milestone 28: highest total price, in the search currency; null = any.
+   * Optional so older callers keep working.
+   */
+  maxPrice?: number | null;
 };
 
 /** What the live engine can offer to Glooconn's sidebar. */
@@ -63,4 +68,5 @@ export const NO_LIVE_FILTERS: LiveFlightsFilters = {
   maxStops: null,
   airlines: [],
   baggageIncluded: false,
+  maxPrice: null,
 };

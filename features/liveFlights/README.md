@@ -39,3 +39,15 @@ full-width brand-700 button right; stacked on phones) and hides its
 "Direct flights" summary. The frame page adds the style to every shadow
 root on a 400 ms timer because the widget re-renders. Styling only — the
 widget's data is never read or re-rendered.
+
+## Milestone 28 — Flights tab
+
+- The home page has four tabs (Packages, Flights, Hotels, Mixed Transport).
+  A Flights search (`productTypes=flights`) opens `components/live/LiveFlightsResultsPage`:
+  only this engine's live list, Glooconn's own flight API is not called.
+- The left filter card drives the widget's stops, baggage, airlines and **price**.
+  Price: the widget's slider has no input, so `applyMaxPrice` drags it with
+  synthetic pointer events (binary search on the label it shows). The search
+  budget fills "Max price".
+- To remove the engine, also point the Flights tab back at the Packages results
+  (`app/search/results/page.tsx`, the `mode === "flights"` branch).

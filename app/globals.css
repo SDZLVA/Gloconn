@@ -121,3 +121,66 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * Milestone 28 — one-row search bar (home tabs + results pages).
+ * Each field component is wrapped in `.gc-cell`; this turns its
+ * "label above a bordered box" layout into a white cell with the label
+ * inside, Booking-style. Plain CSS (unlayered) so it wins over utilities.
+ */
+.gc-cell {
+  position: relative;
+  min-width: 0;
+}
+.gc-cell > div {
+  gap: 0.25rem;
+}
+.gc-cell > div > label {
+  position: absolute;
+  top: 0.6rem;
+  left: 1rem;
+  z-index: 2;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #64748b;
+  pointer-events: none;
+}
+.gc-cell--icon > div > label {
+  left: 2.5rem;
+}
+.gc-cell--date > div > label {
+  left: 3.25rem;
+}
+.gc-cell > div > label > span[aria-hidden="true"] {
+  display: none;
+}
+.gc-cell input[role="combobox"],
+.gc-cell > div > button {
+  min-height: 3.75rem;
+  padding-top: 1.5rem;
+  padding-bottom: 0.45rem;
+  border-color: transparent;
+  border-radius: 0.75rem;
+  background: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+.gc-cell input[role="combobox"]::placeholder {
+  font-weight: 500;
+  color: #94a3b8;
+}
+.gc-cell input[role="combobox"]:focus,
+.gc-cell > div > button:focus {
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 3px #dbeafe;
+}
+.gc-cell [role="alert"] {
+  margin-top: 0.25rem;
+  border-radius: 0.5rem;
+  background: #fef2f2;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
