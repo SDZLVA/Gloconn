@@ -30,3 +30,12 @@ hits a dead end.
   (`@layer isolation`, declared after Tailwind's layers so it outranked
   them) broke the whole results page, and it rewrote the page URL, dropping
   Glooconn's search parameters. The frame reports its height by postMessage.
+
+## Look (Milestone 26)
+
+`engines/travelpayoutsSkin.ts` restyles the widget's own result cards in
+Glooconn's theme (separate cards, flights left, price column with a
+full-width brand-700 button right; stacked on phones) and hides its
+"Direct flights" summary. The frame page adds the style to every shadow
+root on a 400 ms timer because the widget re-renders. Styling only — the
+widget's data is never read or re-rendered.

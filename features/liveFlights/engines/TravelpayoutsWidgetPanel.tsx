@@ -125,7 +125,8 @@ export function TravelpayoutsWidgetPanel({ search, filters, onFacets }: LiveFlig
       title="Live flights search results"
       // Eager, not lazy: the live search starts as soon as the results page
       // opens, so it has usually finished by the time it is scrolled to.
-      className="w-full rounded-2xl border border-slate-200 bg-white"
+      // Milestone 26: no frame border; the results are separate Glooconn-style cards.
+      className="w-full bg-transparent"
       // While the widget's pop-up is open the frame is one screen tall, so
       // the pop-up (pinned to the frame's top) is fully visible.
       style={{ height: modalOpen ? "100dvh" : contentHeight }}

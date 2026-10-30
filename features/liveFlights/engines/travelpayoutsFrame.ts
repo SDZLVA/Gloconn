@@ -9,6 +9,7 @@ import {
   isValidFlightSearch,
   widgetScriptUrl,
 } from "@/features/liveFlights/engines/travelpayoutsWidgetSearch";
+import { WIDGET_SKIN_CSS } from "@/features/liveFlights/engines/travelpayoutsSkin";
 
 function escapeAttr(value: string): string {
   return value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -74,6 +75,29 @@ export function renderWidgetFrame(
       new MutationObserver(report).observe(document.body, { attributes: true, attributeFilter: ["style", "class"] });
       report();
     });
+    // Milestone 26: Glooconn look. The widget renders into shadow roots and
+    // keeps re-rendering, so the style is (re)added to every root on a timer.
+    var SKIN = ${JSON.stringify(WIDGET_SKIN_CSS)};
+    function skin() {
+      var roots = [document];
+      (function walk(root) {
+        var all = root.querySelectorAll("*");
+        for (var i = 0; i < all.length; i++) {
+          if (all[i].shadowRoot) { roots.push(all[i].shadowRoot); walk(all[i].shadowRoot); }
+        }
+      })(document);
+      for (var j = 0; j < roots.length; j++) {
+        var host = roots[j] === document ? document.head : roots[j];
+        if (!host.querySelector("style[data-glooconn-skin]")) {
+          var style = document.createElement("style");
+          style.setAttribute("data-glooconn-skin", "");
+          style.textContent = SKIN;
+          host.appendChild(style);
+        }
+      }
+    }
+    setInterval(skin, 400);
+
     window.addEventListener("load", report);
     if (window.ResizeObserver) new ResizeObserver(report).observe(document.documentElement);
     setInterval(report, 1000);
