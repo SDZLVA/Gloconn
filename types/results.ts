@@ -50,6 +50,12 @@ export type ResultsFilters = {
   /** Bus/train operator names to include. Empty = any. Bus/train only. */
   operators: string[];
 
+  /**
+   * Milestone 24: only fares with checked baggage. Applies to the live
+   * flights list; Glooconn's cached prices carry no baggage details.
+   */
+  baggageIncluded?: boolean;
+
   /** Minimum hotel star rating (0 = any). Hotels only. */
   minStars: number;
 

@@ -62,7 +62,11 @@ import {
 import { DatePriceStrip } from "@/components/results/DatePriceStrip";
 import { RecommendedPackagesSection } from "@/components/results/RecommendedPackagesSection";
 import { LiveFlightsSection } from "@/features/liveFlights/LiveFlightsSection";
-import type { LiveFlightsSearch } from "@/features/liveFlights/types";
+import type {
+  LiveFlightsFacets,
+  LiveFlightsFilters,
+  LiveFlightsSearch,
+} from "@/features/liveFlights/types";
 import { ResultsEmptyState } from "@/components/results/ResultsEmptyState";
 import { ResultsErrorState } from "@/components/results/ResultsErrorState";
 import { ResultsHeader } from "@/components/results/ResultsHeader";
@@ -352,10 +356,17 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   }, [activeSearch]);
 
   // Facets / filter / sort only recompute when their inputs change (already memoized).
-  const facets = useMemo(
-    () => collectFilterFacets(allResults),
-    [allResults],
-  );
+  // Milestone 24: the live list reports its airlines, so the one sidebar
+  // filter can offer every airline in either list.
+  const [liveFacets, setLiveFacets] = useState<LiveFlightsFacets | null>(null);
+  const facets = useMemo(() => {
+    const own = collectFilterFacets(allResults);
+    if (!liveFacets?.bridged || liveFacets.airlines.length === 0) return own;
+    const airlines = Array.from(new Set([...own.airlines, ...liveFacets.airlines])).sort((a, b) =>
+      a.localeCompare(b),
+    );
+    return { ...own, airlines };
+  }, [allResults, liveFacets]);
 
   const priceRange = useMemo(() => {
     if (allResults.length === 0) {
@@ -500,6 +511,17 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     travelers?.children,
     travelers?.infants,
   ]);
+
+  // Milestone 24: the sidebar's flight filters, for the live list too.
+  const liveFlightsFilters = useMemo(
+    (): LiveFlightsFilters => ({
+      showFlights: filters.types.includes("flight"),
+      maxStops: filters.maxStops,
+      airlines: filters.airlines,
+      baggageIncluded: Boolean(filters.baggageIncluded),
+    }),
+    [filters.types, filters.maxStops, filters.airlines, filters.baggageIncluded],
+  );
 
   const activeFilterCount = countActiveFilters(filters, defaultFilters);
   const destination = activeSearch.destination || "your destination";
@@ -776,6 +798,8 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                 <LiveFlightsSection
                   search={liveFlightsSearch}
                   ownResultsEmpty={!allResults.some((result) => result.type === "flight")}
+                  filters={liveFlightsFilters}
+                  onFacets={setLiveFacets}
                 />
               )}
             </div>

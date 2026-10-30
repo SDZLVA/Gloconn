@@ -15,11 +15,47 @@ export type LiveFlightsSearch = {
   currency: string;
 };
 
+export type LiveFlightsPanelProps = {
+  search: LiveFlightsSearch;
+  filters: LiveFlightsFilters;
+  onFacets?: (facets: LiveFlightsFacets) => void;
+};
+
 export type LiveFlightsEngine = {
   /** Value of NEXT_PUBLIC_LIVE_FLIGHTS_ENGINE that selects this engine. */
   id: string;
   /** Partner name shown to travellers. */
   partnerName: string;
-  /** Renders the live results for a search. */
-  Panel: ComponentType<{ search: LiveFlightsSearch }>;
+  /** Renders the live results for a search, filtered by Glooconn's sidebar. */
+  Panel: ComponentType<LiveFlightsPanelProps>;
+};
+
+/**
+ * Milestone 24: Glooconn's sidebar filters, as far as a live engine can
+ * apply them. One filter for both lists.
+ */
+export type LiveFlightsFilters = {
+  /** Show the live list at all (sidebar "Result type → Flights"). */
+  showFlights: boolean;
+  /** Maximum stops; null = any. */
+  maxStops: number | null;
+  /** Airline names to include; empty = any. */
+  airlines: string[];
+  /** Only fares with checked baggage. */
+  baggageIncluded: boolean;
+};
+
+/** What the live engine can offer to Glooconn's sidebar. */
+export type LiveFlightsFacets = {
+  /** Airline names present in the live results. */
+  airlines: string[];
+  /** True once the engine has taken over filtering (its own UI is hidden). */
+  bridged: boolean;
+};
+
+export const NO_LIVE_FILTERS: LiveFlightsFilters = {
+  showFlights: true,
+  maxStops: null,
+  airlines: [],
+  baggageIncluded: false,
 };

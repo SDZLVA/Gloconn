@@ -5,7 +5,13 @@ import {
   FRAME_HEIGHT_MESSAGE,
   widgetFrameSrc,
 } from "@/features/liveFlights/engines/travelpayoutsWidgetSearch";
-import type { LiveFlightsSearch } from "@/features/liveFlights/types";
+import {
+  applyFilters,
+  findControls,
+  hideOwnFilters,
+  readWidgetAirlines,
+} from "@/features/liveFlights/engines/travelpayoutsFilterBridge";
+import type { LiveFlightsPanelProps } from "@/features/liveFlights/types";
 
 const INITIAL_HEIGHT = 560;
 
@@ -15,8 +21,61 @@ const INITIAL_HEIGHT = 560;
  * works for our domain; being framed keeps its CSS reset and its URL
  * rewriting away from the results page. The frame reports its height.
  */
-export function TravelpayoutsWidgetPanel({ search }: { search: LiveFlightsSearch }) {
+export function TravelpayoutsWidgetPanel({ search, filters, onFacets }: LiveFlightsPanelProps) {
   const frameRef = useRef<HTMLIFrameElement>(null);
+  // Latest values for the polling loop below (it must not restart on each change).
+  const filtersRef = useRef(filters);
+  const onFacetsRef = useRef(onFacets);
+  useEffect(() => {
+    filtersRef.current = filters;
+    onFacetsRef.current = onFacets;
+  });
+
+  // Milestone 24: Glooconn's sidebar drives the widget's own filters.
+  useEffect(() => {
+    let appliedKey = "";
+    let anchor: HTMLInputElement | null = null;
+    let reportedAirlines = "";
+    let bridged = false;
+
+    const tick = () => {
+      let doc: Document | null = null;
+      try {
+        doc = frameRef.current?.contentDocument ?? null;
+      } catch {
+        doc = null;
+      }
+      const controls = doc ? findControls(doc) : null;
+      if (!controls) {
+        if (bridged) {
+          bridged = false;
+          onFacetsRef.current?.({ airlines: [], bridged: false });
+        }
+        return;
+      }
+
+      hideOwnFilters(controls);
+      const airlines = readWidgetAirlines(controls);
+      const airlinesKey = airlines.join("|");
+      if (!bridged || airlinesKey !== reportedAirlines) {
+        bridged = true;
+        reportedAirlines = airlinesKey;
+        onFacetsRef.current?.({ airlines, bridged: true });
+      }
+
+      // Re-apply when the filters change or the widget re-rendered its controls.
+      const key = JSON.stringify(filtersRef.current);
+      if (key !== appliedKey || anchor !== controls.layovers[0]) {
+        appliedKey = key;
+        anchor = controls.layovers[0] ?? null;
+        applyFilters(controls, filtersRef.current);
+      }
+    };
+
+    const timer = window.setInterval(tick, 700);
+    return () => window.clearInterval(timer);
+  }, []);
+
   const [contentHeight, setContentHeight] = useState(INITIAL_HEIGHT);
   const [modalOpen, setModalOpen] = useState(false);
   const src = widgetFrameSrc(search);
