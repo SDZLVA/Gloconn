@@ -80,7 +80,9 @@ export function buildCsp(nonce: string, options: CspOptions = {}): string {
     // Next.js still injects critical CSS as inline <style> without nonces.
     // 'unsafe-inline' for styles is required; it is not allowed for scripts.
     `style-src 'self' 'unsafe-inline' ${LIVE_FLIGHTS_CSP.style.join(" ")}`,
-    `img-src 'self' data: https://lh3.googleusercontent.com https://pics.avs.io ${LIVE_FLIGHTS_CSP.img.join(" ")}`,
+    // Milestone 30: hotel photos come from LiteAPI's image CDNs (several hosts)
+    // and the hotels map uses OpenStreetMap tiles — images only, so any https.
+    `img-src 'self' data: https: https://lh3.googleusercontent.com https://pics.avs.io ${LIVE_FLIGHTS_CSP.img.join(" ")}`,
     `font-src 'self' ${LIVE_FLIGHTS_CSP.font.join(" ")}`,
     `connect-src 'self' https://*.supabase.co ${LIVE_FLIGHTS_CSP.connect.join(" ")}`,
     // Milestone 29: the Stay22 hotels map on the Hotels results page.
