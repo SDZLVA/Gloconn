@@ -9,6 +9,7 @@ import {
   applyFilters,
   findControls,
   hideOwnFilters,
+  takeOverProgress,
   readWidgetAirlines,
 } from "@/features/liveFlights/engines/travelpayoutsFilterBridge";
 import type { LiveFlightsPanelProps } from "@/features/liveFlights/types";
@@ -36,6 +37,7 @@ export function TravelpayoutsWidgetPanel({ search, filters, onFacets }: LiveFlig
     let appliedKey = "";
     let anchor: HTMLInputElement | null = null;
     let reportedAirlines = "";
+    let reportedSearching = true;
     let bridged = false;
 
     const tick = () => {
@@ -49,18 +51,20 @@ export function TravelpayoutsWidgetPanel({ search, filters, onFacets }: LiveFlig
       if (!controls) {
         if (bridged) {
           bridged = false;
-          onFacetsRef.current?.({ airlines: [], bridged: false });
+          onFacetsRef.current?.({ airlines: [], bridged: false, searching: false });
         }
         return;
       }
 
       hideOwnFilters(controls);
+      const searching = takeOverProgress(controls);
       const airlines = readWidgetAirlines(controls);
       const airlinesKey = airlines.join("|");
-      if (!bridged || airlinesKey !== reportedAirlines) {
+      if (!bridged || airlinesKey !== reportedAirlines || searching !== reportedSearching) {
         bridged = true;
         reportedAirlines = airlinesKey;
-        onFacetsRef.current?.({ airlines, bridged: true });
+        reportedSearching = searching;
+        onFacetsRef.current?.({ airlines, bridged: true, searching });
       }
 
       // Re-apply when the filters change or the widget re-rendered its controls.
@@ -116,7 +120,8 @@ export function TravelpayoutsWidgetPanel({ search, filters, onFacets }: LiveFlig
       key={src}
       src={src}
       title="Live flights search results"
-      loading="lazy"
+      // Eager, not lazy: the live search starts as soon as the results page
+      // opens, so it has usually finished by the time it is scrolled to.
       className="w-full rounded-2xl border border-slate-200 bg-white"
       // While the widget's pop-up is open the frame is one screen tall, so
       // the pop-up (pinned to the frame's top) is fully visible.

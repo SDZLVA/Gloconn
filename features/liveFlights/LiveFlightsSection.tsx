@@ -11,9 +11,7 @@ import type {
 type LiveFlightsSectionProps = {
   /** Null when the search has no usable route or dates — nothing is shown. */
   search: LiveFlightsSearch | null;
-  /** True when Glooconn's own flight list is empty for these dates. */
-  ownResultsEmpty: boolean;
-  /** Milestone 24: Glooconn's sidebar filters, applied to the live list. */
+  /** Glooconn's sidebar filters, applied to the live list (Milestone 24). */
   filters: LiveFlightsFilters;
   /** The live list's airlines, for the sidebar. */
   onFacets?: (facets: LiveFlightsFacets) => void;
@@ -22,13 +20,18 @@ type LiveFlightsSectionProps = {
 /**
  * "All live flights" (Milestone 23): a partner's live search under
  * Glooconn's own results. The only entry point of features/liveFlights.
+ *
+ * Milestone 25 (Shehan, 2026-10-30): no explanation paragraph; a slim
+ * "checking more" line replaces the widget's large progress block. The
+ * commission disclosure stays, in one short line of small print (see
+ * /terms, section 6).
  */
-export function LiveFlightsSection({ search, ownResultsEmpty, filters, onFacets }: LiveFlightsSectionProps) {
+export function LiveFlightsSection({ search, filters, onFacets }: LiveFlightsSectionProps) {
   const engine = activeLiveFlightsEngine();
-  const [bridged, setBridged] = useState(false);
+  const [searching, setSearching] = useState(false);
   const handleFacets = useCallback(
     (facets: LiveFlightsFacets) => {
-      setBridged(facets.bridged);
+      setSearching(Boolean(facets.searching));
       onFacets?.(facets);
     },
     [onFacets],
@@ -38,19 +41,30 @@ export function LiveFlightsSection({ search, ownResultsEmpty, filters, onFacets 
 
   return (
     // Hidden (not unmounted) when Flights is unticked, so the search is kept.
-    <section className="space-y-3" aria-labelledby="live-flights-heading" hidden={!filters.showFlights}>
-      <div className="space-y-1">
+    <section className="space-y-2" aria-labelledby="live-flights-heading" hidden={!filters.showFlights}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h2 id="live-flights-heading" className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
           All live flights
         </h2>
-        <p className="text-sm text-slate-600">
-          {ownResultsEmpty
-            ? "We have no recent prices for these dates, so here is a live search for the same trip."
-            : "A live search for the same trip, including flights not listed above."}{" "}
-          {bridged && "The filters apply to both lists. "}Search by {engine.partnerName}. Booking happens on the
-          partner&apos;s site; Glooconn may earn a commission.
-        </p>
+        <p className="text-xs text-slate-500">Prices from {engine.partnerName} partners · Glooconn may earn a commission</p>
       </div>
+      <p
+        role="status"
+        aria-live="polite"
+        className={searching ? "flex items-center gap-2 text-sm text-slate-600" : "sr-only"}
+      >
+        {searching ? (
+          <>
+            <span className="relative flex h-2 w-2" aria-hidden="true">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-brand-600 opacity-60 motion-safe:animate-ping" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-700" />
+            </span>
+            Checking more airlines — new prices appear automatically.
+          </>
+        ) : (
+          "Live search complete."
+        )}
+      </p>
       <Panel search={search} filters={filters} onFacets={handleFacets} />
     </section>
   );

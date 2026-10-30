@@ -362,9 +362,16 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const facets = useMemo(() => {
     const own = collectFilterFacets(allResults);
     if (!liveFacets?.bridged || liveFacets.airlines.length === 0) return own;
-    const airlines = Array.from(new Set([...own.airlines, ...liveFacets.airlines])).sort((a, b) =>
-      a.localeCompare(b),
-    );
+    // One entry per airline: "SWISS"/"Swiss", "AirDolomiti"/"Air Dolomiti"
+    // are the same airline spelled differently in the two lists. Glooconn's
+    // own spelling wins, so its own filter still matches exactly; the live
+    // list matches names loosely.
+    const key = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const byKey = new Map<string, string>();
+    for (const name of [...own.airlines, ...liveFacets.airlines]) {
+      if (!byKey.has(key(name))) byKey.set(key(name), name);
+    }
+    const airlines = [...byKey.values()].sort((a, b) => a.localeCompare(b));
     return { ...own, airlines };
   }, [allResults, liveFacets]);
 
@@ -797,7 +804,6 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
               {hasData && !showSkeleton && (
                 <LiveFlightsSection
                   search={liveFlightsSearch}
-                  ownResultsEmpty={!allResults.some((result) => result.type === "flight")}
                   filters={liveFlightsFilters}
                   onFacets={setLiveFacets}
                 />
