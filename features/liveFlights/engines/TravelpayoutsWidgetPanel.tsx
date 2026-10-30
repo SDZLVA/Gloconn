@@ -17,16 +17,26 @@ const INITIAL_HEIGHT = 560;
  */
 export function TravelpayoutsWidgetPanel({ search }: { search: LiveFlightsSearch }) {
   const frameRef = useRef<HTMLIFrameElement>(null);
-  const [height, setHeight] = useState(INITIAL_HEIGHT);
+  const [contentHeight, setContentHeight] = useState(INITIAL_HEIGHT);
+  const [modalOpen, setModalOpen] = useState(false);
   const src = widgetFrameSrc(search);
 
   useEffect(() => {
     function onMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
       if (event.source !== frameRef.current?.contentWindow) return;
-      const data = event.data as { type?: unknown; height?: unknown };
-      if (data?.type === FRAME_HEIGHT_MESSAGE && typeof data.height === "number" && data.height > 0) {
-        setHeight(Math.min(Math.max(data.height, 200), 20_000));
+      const data = event.data as { type?: unknown; height?: unknown; modal?: unknown };
+      if (data?.type !== FRAME_HEIGHT_MESSAGE) return;
+      const modal = data.modal === true;
+      setModalOpen((wasOpen) => {
+        // Bring the flight-details pop-up into view when it opens.
+        if (modal && !wasOpen) {
+          requestAnimationFrame(() => frameRef.current?.scrollIntoView({ block: "start" }));
+        }
+        return modal;
+      });
+      if (!modal && typeof data.height === "number" && data.height > 0) {
+        setContentHeight(Math.min(Math.max(data.height, 200), 20_000));
       }
     }
     window.addEventListener("message", onMessage);
@@ -49,7 +59,9 @@ export function TravelpayoutsWidgetPanel({ search }: { search: LiveFlightsSearch
       title="Live flights search results"
       loading="lazy"
       className="w-full rounded-2xl border border-slate-200 bg-white"
-      style={{ height }}
+      // While the widget's pop-up is open the frame is one screen tall, so
+      // the pop-up (pinned to the frame's top) is fully visible.
+      style={{ height: modalOpen ? "100dvh" : contentHeight }}
     />
   );
 }

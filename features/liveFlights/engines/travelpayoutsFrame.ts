@@ -50,14 +50,27 @@ export function renderWidgetFrame(
     s.src = ${JSON.stringify(scriptUrl)};
     document.head.appendChild(s);
 
-    var last = 0;
+    // The widget locks body scrolling while its flight-details pop-up is
+    // open; the parent then shrinks the frame to the screen so the pop-up
+    // (pinned to the frame's top) is visible.
+    var last = "";
     function report() {
+      if (window.parent === window) return;
       var h = Math.ceil(document.documentElement.scrollHeight);
-      if (h !== last && window.parent !== window) {
-        last = h;
-        window.parent.postMessage({ type: ${JSON.stringify(FRAME_HEIGHT_MESSAGE)}, height: h }, window.location.origin);
+      var modal = !!document.body && getComputedStyle(document.body).overflow === "hidden";
+      var key = h + ":" + modal;
+      if (key !== last) {
+        last = key;
+        window.parent.postMessage(
+          { type: ${JSON.stringify(FRAME_HEIGHT_MESSAGE)}, height: h, modal: modal },
+          window.location.origin
+        );
       }
     }
+    document.addEventListener("DOMContentLoaded", function () {
+      new MutationObserver(report).observe(document.body, { attributes: true, attributeFilter: ["style", "class"] });
+      report();
+    });
     window.addEventListener("load", report);
     if (window.ResizeObserver) new ResizeObserver(report).observe(document.documentElement);
     setInterval(report, 1000);
