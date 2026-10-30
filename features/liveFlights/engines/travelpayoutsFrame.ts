@@ -36,6 +36,9 @@ export function renderWidgetFrame(
 <meta name="robots" content="noindex, nofollow">
 <title>Live flights</title>
 <base target="_blank">
+<link rel="preconnect" href="https://tpwgts.com">
+<link rel="preconnect" href="https://api.apistp.com" crossorigin>
+<link rel="preconnect" href="https://tickets-api.apistp.com" crossorigin>
 <style>
   html, body { margin: 0; background: transparent; }
   body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }

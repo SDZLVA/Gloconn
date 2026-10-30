@@ -102,6 +102,18 @@ export function applyFilters(controls: WidgetControls, filters: LiveFlightsFilte
 }
 
 /**
+ * Milestone 25: whether the widget is still collecting prices, and hide its
+ * large progress block (Glooconn shows a slim line instead).
+ */
+export function takeOverProgress(controls: WidgetControls): boolean {
+  const bars = queryAll<HTMLElement>(controls.roots, '[class*="SearchProgressbar-module__searchProgressbar"]');
+  for (const bar of bars) {
+    if (bar.style.display !== "none") bar.style.display = "none";
+  }
+  return bars.length > 0;
+}
+
+/**
  * Hides the widget's own filter bar and panel — Glooconn's sidebar is the
  * filter now. Re-applied on every tick because the widget may re-render.
  */

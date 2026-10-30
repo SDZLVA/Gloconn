@@ -51,6 +51,11 @@ export type LiveFlightsFacets = {
   airlines: string[];
   /** True once the engine has taken over filtering (its own UI is hidden). */
   bridged: boolean;
+  /**
+   * Milestone 25: still collecting prices from more providers. First results
+   * show after ~3 s; the full search runs ~25 s (measured 2026-10-30).
+   */
+  searching?: boolean;
 };
 
 export const NO_LIVE_FILTERS: LiveFlightsFilters = {

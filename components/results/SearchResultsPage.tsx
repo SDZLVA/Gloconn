@@ -804,7 +804,6 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
               {hasData && !showSkeleton && (
                 <LiveFlightsSection
                   search={liveFlightsSearch}
-                  ownResultsEmpty={!allResults.some((result) => result.type === "flight")}
                   filters={liveFlightsFilters}
                   onFacets={setLiveFacets}
                 />
