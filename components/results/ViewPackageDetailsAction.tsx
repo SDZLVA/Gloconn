@@ -15,6 +15,9 @@ type ViewPackageDetailsActionProps = {
   /** Milestone 19: partner search link for this trip's flight route. */
   getFlightLinks?: FlightLinksResolver;
   tripType?: "round-trip" | "one-way" | null;
+  /** Milestone 32: button text and style (redesign uses a solid "View package"). */
+  label?: string;
+  variant?: "primary" | "secondary";
 };
 
 /**
@@ -28,6 +31,8 @@ export function ViewPackageDetailsAction({
   destinationIata,
   getFlightLinks,
   tripType,
+  label = "View package details",
+  variant = "secondary",
 }: ViewPackageDetailsActionProps) {
   const [open, setOpen] = useState(false);
   const triggerId = useId();
@@ -37,13 +42,13 @@ export function ViewPackageDetailsAction({
       <Button
         id={triggerId}
         type="button"
-        variant="secondary"
+        variant={variant}
         className={cn("min-h-11 min-w-11 px-4 py-2.5", className)}
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        View package details
+        {label}
       </Button>
       <PackageDetailsDrawer
         package={travelPackage}

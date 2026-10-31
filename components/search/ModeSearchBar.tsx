@@ -25,10 +25,10 @@ const CELL = cn(
   "[&>div>label]:pointer-events-none [&>div>label]:absolute [&>div>label]:top-[0.6rem] [&>div>label]:z-[2]",
   "[&>div>label]:text-xs [&>div>label]:font-medium [&>div>label]:tracking-normal [&>div>label]:text-slate-500",
   "[&>div>label>span]:hidden",
-  "[&_input[role=combobox]]:min-h-[3.75rem] [&_input[role=combobox]]:rounded-xl [&_input[role=combobox]]:border-transparent [&_input[role=combobox]]:bg-white",
+  "[&_input[role=combobox]]:min-h-[3.75rem] [&_input[role=combobox]]:rounded-xl [&_input[role=combobox]]:border-slate-200 [&_input[role=combobox]]:bg-white",
   "[&_input[role=combobox]]:pb-[0.45rem] [&_input[role=combobox]]:pt-6 [&_input[role=combobox]]:text-[0.95rem] [&_input[role=combobox]]:font-semibold",
   "[&_input[role=combobox]:focus]:border-brand-700 [&_input[role=combobox]:focus]:shadow-[0_0_0_3px_#dbeafe]",
-  "[&>div>button]:min-h-[3.75rem] [&>div>button]:rounded-xl [&>div>button]:border-transparent [&>div>button]:bg-white",
+  "[&>div>button]:min-h-[3.75rem] [&>div>button]:rounded-xl [&>div>button]:border-slate-200 [&>div>button]:bg-white",
   "[&>div>button]:pb-[0.45rem] [&>div>button]:pt-6 [&>div>button]:text-[0.95rem] [&>div>button]:font-semibold",
   "[&>div>button:focus]:border-brand-700 [&>div>button:focus]:shadow-[0_0_0_3px_#dbeafe]",
   "[&_[role=alert]]:mt-1 [&_[role=alert]]:rounded-lg [&_[role=alert]]:bg-red-50 [&_[role=alert]]:px-2 [&_[role=alert]]:py-1 [&_[role=alert]]:text-xs",
@@ -87,7 +87,7 @@ export function ModeSearchBar({
       className={cn("w-full", className)}
     >
       {mode === "flights" && (
-        <div className="mb-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-white">
+        <div className="mb-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-slate-700">
           <div role="radiogroup" aria-label="Trip type" className="flex items-center gap-5">
             {(
               [
@@ -102,7 +102,7 @@ export function ModeSearchBar({
                   value={value}
                   checked={form.tripType === value}
                   onChange={() => actions.updateTripType(value)}
-                  className="h-4 w-4 accent-sky-300"
+                  className="h-4 w-4 accent-brand-700"
                 />
                 {label}
               </label>
@@ -113,14 +113,14 @@ export function ModeSearchBar({
               type="checkbox"
               checked={directOnly}
               onChange={(event) => setDirectOnly(event.target.checked)}
-              className="h-4 w-4 rounded accent-sky-300"
+              className="h-4 w-4 rounded accent-brand-700"
             />
             Direct flights only
           </label>
         </div>
       )}
 
-      <div className="flex flex-col gap-1 rounded-2xl bg-sky-300 p-1 shadow-xl shadow-brand-900/20 lg:flex-row lg:items-stretch">
+      <div className="flex flex-col gap-2 lg:flex-row lg:items-stretch">
         {showOrigin && (
           <>
             <div className={cn(CELL, CELL_ICON, "lg:flex-[1.25]")}>
@@ -138,7 +138,7 @@ export function ModeSearchBar({
               aria-label="Swap origin and destination"
               title="Swap"
               className={cn(
-                "flex h-10 items-center justify-center rounded-xl bg-white text-brand-700 motion-safe:transition-colors hover:bg-brand-50 lg:h-auto lg:w-11 lg:shrink-0",
+                "flex h-10 items-center justify-center self-center rounded-full border border-slate-200 bg-white text-brand-700 motion-safe:transition-colors hover:bg-brand-50 lg:h-10 lg:w-10 lg:shrink-0",
                 focusRing,
               )}
             >
@@ -208,10 +208,13 @@ export function ModeSearchBar({
         <button
           type="submit"
           className={cn(
-            "min-h-[3.75rem] rounded-xl bg-brand-700 px-8 text-base font-bold text-white shadow-md shadow-brand-900/20 motion-safe:transition-colors hover:bg-brand-800 lg:shrink-0",
+            "inline-flex min-h-[3.75rem] items-center justify-center gap-2 rounded-xl bg-brand-700 px-8 text-base font-bold text-white shadow-lg shadow-brand-700/25 motion-safe:transition-colors hover:bg-brand-800 lg:shrink-0",
             focusRing,
           )}
         >
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+            <path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm9 16-4.35-4.35" />
+          </svg>
           Search
         </button>
       </div>
@@ -235,7 +238,7 @@ function BarBudgetField({ value, currency, onChange, onCurrencyChange, error, la
     <div className="relative min-w-0 lg:flex-[0.95]">
       <div
         className={cn(
-          "relative flex min-h-[3.75rem] items-end gap-1.5 rounded-xl border border-transparent bg-white px-4 pb-[0.45rem] pt-6",
+          "relative flex min-h-[3.75rem] items-end gap-1.5 rounded-xl border border-slate-200 bg-white px-4 pb-[0.45rem] pt-6",
           "focus-within:border-brand-700 focus-within:shadow-[0_0_0_3px_#dbeafe]",
         )}
       >

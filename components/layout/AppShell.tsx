@@ -1,4 +1,5 @@
 import { Footer } from "@/components/layout/Footer";
+import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageContainer } from "@/components/layout/PageContainer";
 
@@ -16,7 +17,7 @@ type AppShellProps = {
  */
 export function AppShell({ children }: AppShellProps) {
   return (
-    <div className="flex min-h-full flex-1 flex-col">
+    <div className="flex min-h-full flex-1 flex-col pb-16 md:pb-0">
       <Navbar />
 
       <main className="flex-1 overflow-x-clip">
@@ -24,6 +25,7 @@ export function AppShell({ children }: AppShellProps) {
       </main>
 
       <Footer />
+      <MobileTabBar />
     </div>
   );
 }
