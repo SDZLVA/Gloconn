@@ -75,3 +75,31 @@ test("whitelabelOccupancies is base64 of the rooms array", async () => {
     { adults: 1, children: [] },
   ]);
 });
+
+test("hotel details: HTML description to text and loose field mapping", async () => {
+  const { htmlToText, mapLiteApiHotelDetails } = await import("@/features/liveHotels/liteapi/details");
+  const text = htmlToText("<p>Hello&nbsp;<b>world</b></p><p>Two &amp; three</p>") ?? "";
+  assert.match(text, /Hello world/);
+  assert.match(text, /Two & three/);
+  assert.doesNotMatch(text, /</);
+  const details = mapLiteApiHotelDetails({
+    data: {
+      id: "lp1",
+      name: "AMANO Grand Central",
+      hotelImages: [{ url: "https://x/1.jpg", urlHd: "https://x/1hd.jpg" }, { url: "https://x/2.jpg" }],
+      main_photo: "https://x/1hd.jpg",
+      starRating: 4,
+      rating: 8.6,
+      address: "Heidestraße 62",
+      city: "Berlin",
+      location: { latitude: 52.5, longitude: 13.4 },
+      hotelFacilities: ["Free WiFi", "Bar", "Free WiFi"],
+    },
+  });
+  assert.ok(details);
+  assert.deepEqual(details!.images, ["https://x/1hd.jpg", "https://x/2.jpg"]);
+  assert.deepEqual(details!.facilities, ["Free WiFi", "Bar"]);
+  assert.equal(details!.stars, 4);
+  assert.equal(details!.latitude, 52.5);
+  assert.equal(mapLiteApiHotelDetails({ error: "x" }), null);
+});

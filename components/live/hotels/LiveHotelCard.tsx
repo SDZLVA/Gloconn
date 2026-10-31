@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { formatMoney } from "@/components/live/hotels/HotelsTileMap";
 import { ratingLabel } from "@/features/liveHotels/filters";
 import type { LiveHotel } from "@/features/liveHotels/types";
@@ -34,7 +35,13 @@ export function LiveHotelCard({ hotel, nights, guestsLabel, bookingUrl, onShowOn
       <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:justify-between">
         <div className="min-w-0 space-y-1.5">
           <h3 className="text-lg font-bold leading-snug text-brand-800">
-            {hotel.name}
+            {bookingUrl ? (
+              <Link href={bookingUrl} className="hover:underline">
+                {hotel.name}
+              </Link>
+            ) : (
+              hotel.name
+            )}
             {hotel.stars > 0 && (
               <span className="ml-2 align-middle text-sm tracking-tight text-amber-500" aria-label={`${hotel.stars} stars`}>
                 {"★".repeat(hotel.stars)}
@@ -73,14 +80,12 @@ export function LiveHotelCard({ hotel, nights, guestsLabel, bookingUrl, onShowOn
             <p className="text-2xl font-extrabold text-slate-900">{formatMoney(hotel.totalPrice, hotel.currency)}</p>
             <p className="text-xs text-slate-500">{formatMoney(hotel.totalPrice / nights, hotel.currency)} per night · incl. taxes</p>
             {bookingUrl ? (
-              <a
+              <Link
                 href={bookingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="mt-2 inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white shadow-sm hover:bg-brand-800"
               >
-                See availability ›<span className="sr-only"> (opens in a new tab)</span>
-              </a>
+                See availability ›
+              </Link>
             ) : (
               <p className="mt-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">Online booking coming soon</p>
             )}

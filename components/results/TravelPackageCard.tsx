@@ -2,7 +2,7 @@ import type { FlightLinksResolver } from "@/lib/affiliate/exactFlightLinks";
 import { memo } from "react";
 import { AirlineLogo } from "@/components/results/AirlineLogo";
 import { SampleDataBadge } from "@/components/results/SampleDataBadge";
-import { ViewPackageDetailsAction } from "@/components/results/ViewPackageDetailsAction";
+import { ViewPackageLink } from "@/components/results/ViewPackageLink";
 import { samplePackageNote } from "@/lib/results/sampleData";
 import { formatPackagePriceBreakdownLabel, formatPackageStopsLabel } from "@/lib/results/packagesUi";
 import { cn } from "@/lib/utils";
@@ -159,14 +159,13 @@ function TravelPackageCardComponent({
           <p className="text-xs font-semibold text-slate-600">est. total</p>
           <p className="text-[11px] leading-snug text-slate-500">{formatPackagePriceBreakdownLabel(nights)}</p>
         </div>
-        <ViewPackageDetailsAction
+        <ViewPackageLink
           package={travelPackage}
+          explanation={explanation}
           originIata={originIata}
           destinationIata={destinationIata}
           getFlightLinks={getFlightLinks}
           tripType={tripType}
-          label="View package"
-          variant="primary"
           className="w-auto md:w-full"
         />
       </div>

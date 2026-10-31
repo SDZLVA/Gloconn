@@ -5,7 +5,6 @@ import { HotelsFilterCard } from "@/components/live/hotels/HotelsFilterCard";
 import { HotelsTileMap } from "@/components/live/hotels/HotelsTileMap";
 import { LiveHotelCard } from "@/components/live/hotels/LiveHotelCard";
 import { filterHotels } from "@/features/liveHotels/filters";
-import { whitelabelOccupancies } from "@/features/liveHotels/occupancies";
 import { DEFAULT_HOTEL_FILTERS, type LiveHotelsFilters, type LiveHotelsResponse, type LiveHotelsSearch } from "@/features/liveHotels/types";
 
 type LiveHotelsResultsProps = {
@@ -18,22 +17,21 @@ type LiveHotelsResultsProps = {
 type State = { status: "loading" } | { status: "done"; data: LiveHotelsResponse };
 
 /**
- * Milestone 31: "See availability" → the hotel's page on Glooconn's LiteAPI
- * white-label booking site (set NEXT_PUBLIC_LITEAPI_WHITELABEL_URL, e.g.
- * https://glooconn.nuitee.link). Format from LiteAPI's "Deeplinking to
- * Whitelabel": /hotels/{hotelId}?checkin&checkout&occupancies(base64)&currency&language.
+ * Milestone 33: "See availability" opens Glooconn's own hotel page
+ * (/hotels/{id}), which shows photos, the map and the price and links to the
+ * LiteAPI white-label booking site.
  */
-function bookingUrl(hotelId: string, search: LiveHotelsSearch): string | null {
-  const base = process.env.NEXT_PUBLIC_LITEAPI_WHITELABEL_URL?.trim().replace(/\/$/, "");
-  if (!base) return null;
+function hotelPageUrl(hotelId: string, search: LiveHotelsSearch, back: string): string {
   const params = new URLSearchParams({
     checkin: search.checkin,
     checkout: search.checkout,
-    occupancies: whitelabelOccupancies(search.adults, search.children, search.rooms),
+    adults: String(search.adults),
+    children: String(search.children),
+    rooms: String(search.rooms),
     currency: search.currency,
-    language: "en",
   });
-  return `${base}/hotels/${encodeURIComponent(hotelId)}?${params.toString()}`;
+  if (back) params.set("back", back);
+  return `/hotels/${encodeURIComponent(hotelId)}?${params.toString()}`;
 }
 
 /**
@@ -45,6 +43,9 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
   const [filters, setFilters] = useState<LiveHotelsFilters>(DEFAULT_HOTEL_FILTERS);
   const [mapOpen, setMapOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // Where the hotel page's "Back to results" returns to.
+  const [backUrl, setBackUrl] = useState("");
+  useEffect(() => setBackUrl(window.location.pathname + window.location.search), []);
 
   const query = useMemo(
     () =>
@@ -182,7 +183,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
               hotel={hotel}
               nights={data.nights}
               guestsLabel={guestsLabel}
-              bookingUrl={bookingUrl(hotel.id, search)}
+              bookingUrl={hotelPageUrl(hotel.id, search, backUrl)}
               onShowOnMap={() => showOnMap(hotel.id)}
               highlighted={hotel.id === selectedId}
             />
