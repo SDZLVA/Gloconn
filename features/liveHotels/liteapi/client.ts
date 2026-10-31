@@ -32,8 +32,8 @@ export class LiteApiError extends Error {
 }
 
 export async function searchLiteApiHotels(
-  search: LiveHotelsSearch,
-  place: LiteApiPlace,
+  search: Omit<LiveHotelsSearch, "destination"> & { destination?: string },
+  place: LiteApiPlace | { hotelIds: string[] },
   guestNationality: string,
 ): Promise<{ hotels: LiveHotel[]; raw: unknown }> {
   const key = liteApiKey();
@@ -55,8 +55,8 @@ export async function searchLiteApiHotels(
         currency: search.currency,
         guestNationality,
         occupancies: buildOccupancies(search.adults, search.children, search.rooms),
-        cityName: place.cityName,
-        countryCode: place.countryCode,
+        // Milestone 33: a single hotel's page searches by its id.
+        ...("hotelIds" in place ? { hotelIds: place.hotelIds } : { cityName: place.cityName, countryCode: place.countryCode }),
         maxRatesPerHotel: 1,
         includeHotelData: true,
         limit: RESULT_LIMIT,
