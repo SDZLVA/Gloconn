@@ -73,7 +73,7 @@ function RecommendedPackagesSectionComponent({
       aria-labelledby="recommended-packages-heading"
     >
       <h2 id="recommended-packages-heading" className="sr-only">
-        Recommended packages
+        Recommended Packages
       </h2>
 
       <ul

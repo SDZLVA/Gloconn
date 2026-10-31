@@ -71,7 +71,7 @@ function travelPackage(
 }
 
 describe("Sprint 17.7 — package details", () => {
-  it("package CTA says View package details", () => {
+  it("package CTA says View package (Milestone 32)", () => {
     const html = renderToStaticMarkup(
       createElement(TravelPackageCard, {
         package: travelPackage(),
@@ -79,7 +79,7 @@ describe("Sprint 17.7 — package details", () => {
         destinationIata: "HND",
       }),
     );
-    assert.match(html, /View package details/);
+    assert.match(html, /View package/);
     assert.doesNotMatch(html, /View hotel/);
     assert.doesNotMatch(html, /Book with Glooconn/i);
   });

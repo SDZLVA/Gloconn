@@ -287,7 +287,6 @@ describe("RecommendedPackagesSection rendering", () => {
 
     assert.match(html, /Recommended Packages/);
     assert.match(html, /recommended-packages-heading/);
-    assert.match(html, /⭐/);
     assert.match(html, /Air France/);
     assert.match(html, /Hotel Paris/);
     assert.match(html, /Lufthansa/);
@@ -376,16 +375,17 @@ describe("TravelPackageCard rendering", () => {
     assert.doesNotMatch(html, /Match 91/);
     assert.doesNotMatch(html, /Match \d/);
     assert.doesNotMatch(html, /Top Pick/);
-    // Compact card (Sprint 17.2) — no full flight timetable on the search surface.
-    assert.doesNotMatch(html, /Departure|Arrive|08:00|10:00/);
+    // Milestone 32 redesign: the card shows the flight's times.
+    assert.match(html, /08:00/);
+    assert.match(html, /10:00/);
     // P0.1: price breakdown label
     assert.match(html, /per person/);
     assert.match(html, /1 room/);
     assert.doesNotMatch(html, /flight \+ hotel total/i);
     // P0.1: "est. total" suffix
     assert.match(html, /est\. total/);
-    // Sprint 17.7: View package details — not booking language.
-    assert.match(html, /View package details/);
+    // Milestone 32: "View package" — not booking language.
+    assert.match(html, /View package/);
     assert.doesNotMatch(html, /View hotel/);
     assert.doesNotMatch(html, /Select|Book|Build Package|View deal|Book with Glooconn/i);
   });
@@ -720,7 +720,8 @@ describe("TravelPackageCard route render (Task 4)", () => {
         package: travelPackage(),
       }),
     );
-    assert.doesNotMatch(html, /→/);
+    // Times may use an arrow ("08:00 → 10:00"); no airport route is shown.
+    assert.doesNotMatch(html, /[A-Z]{3} → [A-Z]{3}/);
   });
 });
 

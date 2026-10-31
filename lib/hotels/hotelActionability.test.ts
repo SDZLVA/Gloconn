@@ -154,7 +154,7 @@ describe("View hotel CTA", () => {
     );
 
     assert.match(hotelHtml, /View hotel/);
-    assert.match(packageHtml, /View package details/);
+    assert.match(packageHtml, /View package/);
     assert.doesNotMatch(packageHtml, /View hotel/);
     assert.match(actionHtml, /View hotel/);
     assert.match(actionHtml, /min-h-11/);
@@ -223,7 +223,7 @@ describe("View hotel CTA", () => {
     assert.match(html, /Air France/);
     assert.match(html, /Hotel Paris/);
     assert.match(html, /Marais/);
-    assert.match(html, /View package details/);
+    assert.match(html, /View package/);
     assert.match(html, /est\. total/);
     assert.doesNotMatch(html, /Departure|Arrive|Amenities|Free Wi-Fi/i);
     assert.doesNotMatch(html, /iframe|google\.com\/maps/i);

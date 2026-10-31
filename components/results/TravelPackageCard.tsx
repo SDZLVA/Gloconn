@@ -129,10 +129,12 @@ function TravelPackageCardComponent({
           </span>
           <div className="min-w-0 space-y-1">
             <p className="truncate text-sm font-bold text-slate-900">{hotel.name}</p>
-            {hotel.stars > 0 && (
+            {hotel.stars > 0 ? (
               <p className="text-sm leading-none text-amber-500" aria-label={`${hotel.stars} stars`}>
                 {"★".repeat(Math.round(hotel.stars))}
               </p>
+            ) : (
+              <p className="text-xs text-slate-500">Unrated</p>
             )}
             {score > 0 && (
               <p className="flex items-center gap-1.5 text-xs">
@@ -140,7 +142,8 @@ function TravelPackageCardComponent({
                 <span className="font-semibold text-emerald-700">{scoreWord(score)}</span>
               </p>
             )}
-            <p className="truncate text-xs text-slate-500">{explanation?.reason?.trim() || hotel.location}</p>
+            <p className="truncate text-xs text-slate-500">{hotel.location}</p>
+            {explanation?.reason?.trim() && <p className="text-xs font-medium text-brand-700">{explanation.reason.trim()}</p>}
           </div>
         </div>
         {sampleNote && (
