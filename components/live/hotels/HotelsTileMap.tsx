@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { LiveHotel } from "@/features/liveHotels/types";
+import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
 /**
@@ -188,12 +189,4 @@ export function HotelsTileMap({ hotels, nights, height, preview = false, selecte
       <span className="absolute bottom-0 right-0 z-30 bg-white/80 px-1.5 text-[10px] text-slate-600">© OpenStreetMap contributors</span>
     </div>
   );
-}
-
-export function formatMoney(amount: number, currency: string): string {
-  try {
-    return new Intl.NumberFormat("en-GB", { style: "currency", currency, maximumFractionDigits: 0 }).format(amount);
-  } catch {
-    return `${currency} ${Math.round(amount)}`;
-  }
 }

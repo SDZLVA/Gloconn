@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatMoney } from "@/components/live/hotels/HotelsTileMap";
+import { formatMoney } from "@/lib/money";
 import { ratingLabel } from "@/features/liveHotels/filters";
 import type { LiveHotel } from "@/features/liveHotels/types";
 import { cn } from "@/lib/utils";
