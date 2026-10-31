@@ -78,6 +78,8 @@ function TravelPackageCardComponent({
   const routeBits = [from && to ? `${from} → ${to}` : "", formatPackageStopsLabel(flight.stops), duration(flight.durationMinutes)].filter(Boolean);
   const sampleNote = samplePackageNote(flight.isSample, hotel.isSample);
   const headingId = `${id}-title`;
+  // Glooconn hotel ratings are out of 5; the redesign shows guest scores out of 10.
+  const score = hotel.rating > 0 ? (hotel.rating <= 5 ? hotel.rating * 2 : hotel.rating) : 0;
 
   return (
     <article
@@ -132,10 +134,10 @@ function TravelPackageCardComponent({
                 {"★".repeat(Math.round(hotel.stars))}
               </p>
             )}
-            {hotel.rating > 0 && (
+            {score > 0 && (
               <p className="flex items-center gap-1.5 text-xs">
-                <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 font-bold text-emerald-700">{hotel.rating.toFixed(1)}</span>
-                <span className="font-semibold text-emerald-700">{scoreWord(hotel.rating)}</span>
+                <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 font-bold text-emerald-700">{score.toFixed(1)}</span>
+                <span className="font-semibold text-emerald-700">{scoreWord(score)}</span>
               </p>
             )}
             <p className="truncate text-xs text-slate-500">{explanation?.reason?.trim() || hotel.location}</p>

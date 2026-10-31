@@ -125,6 +125,7 @@ export function ModeSearchBar({
           <>
             <div className={cn(CELL, CELL_ICON, "lg:flex-[1.25]")}>
               <OriginAutocomplete
+                placeholder="Leaving from"
                 value={form.origin}
                 onChange={actions.updateOrigin}
                 onOriginSelect={actions.selectOrigin}
@@ -174,7 +175,7 @@ export function ModeSearchBar({
           />
         </div>
 
-        <div className={cn(CELL, CELL_PLAIN, "lg:flex-1")}>
+        <div className={cn(CELL, CELL_PLAIN, "lg:flex-[1.2]")}>
           {mode === "flights" ? (
             <TravelersSelector
               value={form.travelers}

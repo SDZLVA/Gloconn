@@ -10,6 +10,7 @@ type OriginAutocompleteProps = {
   error?: string;
   required?: boolean;
   className?: string;
+  placeholder?: string;
 };
 
 /**
@@ -23,12 +24,13 @@ export function OriginAutocomplete({
   error,
   required = false,
   className,
+  placeholder = "Where are you leaving from?",
 }: OriginAutocompleteProps) {
   return (
     <DestinationAutocomplete
       id="search-origin"
       label="From"
-      placeholder="Where are you leaving from?"
+      placeholder={placeholder}
       value={value}
       onChange={onChange}
       onDestinationSelect={onOriginSelect}

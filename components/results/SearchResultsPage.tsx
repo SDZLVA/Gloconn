@@ -414,6 +414,11 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   );
   // Milestone 32: one list per tab.
   const [view, setView] = useState<"packages" | "flights" | "hotels">("packages");
+  // No packages (e.g. no recent flight prices) → open the Flights tab, where the live list is.
+  const [viewTouched, setViewTouched] = useState(false);
+  useEffect(() => {
+    if (!viewTouched && displayData) setView((displayData.packages?.length ?? 0) > 0 ? "packages" : "flights");
+  }, [displayData, viewTouched]);
   const flightResults = useMemo(() => sorted.filter((r) => r.type === "flight"), [sorted]);
   const hotelResults = useMemo(() => sorted.filter((r) => r.type === "hotel"), [sorted]);
   const editForm = useMemo(
@@ -796,7 +801,10 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                           type="button"
                           role="tab"
                           aria-selected={view === value}
-                          onClick={() => setView(value)}
+                          onClick={() => {
+                            setViewTouched(true);
+                            setView(value);
+                          }}
                           className={cn(
                             "whitespace-nowrap border-b-2 px-3 pb-3 pt-1 text-sm font-semibold",
                             view === value ? "border-brand-700 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800",
