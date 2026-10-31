@@ -66,3 +66,12 @@ test("filterHotels applies budget per night, stars, rating and sort", () => {
   assert.deepEqual(filterHotels(list, { ...DEFAULT_HOTEL_FILTERS, sort: "price" }, nights).map((h) => h.id), ["b", "a", "c"]);
   assert.deepEqual(filterHotels(list, { ...DEFAULT_HOTEL_FILTERS, refundableOnly: true }, nights).map((h) => h.id), ["b"]);
 });
+
+test("whitelabelOccupancies is base64 of the rooms array", async () => {
+  const { whitelabelOccupancies } = await import("@/features/liveHotels/occupancies");
+  const decoded = JSON.parse(Buffer.from(whitelabelOccupancies(3, 0, 2), "base64").toString("utf8"));
+  assert.deepEqual(decoded, [
+    { adults: 2, children: [] },
+    { adults: 1, children: [] },
+  ]);
+});

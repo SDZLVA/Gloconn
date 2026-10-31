@@ -5,6 +5,7 @@ import { HotelsFilterCard } from "@/components/live/hotels/HotelsFilterCard";
 import { HotelsTileMap } from "@/components/live/hotels/HotelsTileMap";
 import { LiveHotelCard } from "@/components/live/hotels/LiveHotelCard";
 import { filterHotels } from "@/features/liveHotels/filters";
+import { whitelabelOccupancies } from "@/features/liveHotels/occupancies";
 import { DEFAULT_HOTEL_FILTERS, type LiveHotelsFilters, type LiveHotelsResponse, type LiveHotelsSearch } from "@/features/liveHotels/types";
 
 type LiveHotelsResultsProps = {
@@ -16,16 +17,21 @@ type LiveHotelsResultsProps = {
 
 type State = { status: "loading" } | { status: "done"; data: LiveHotelsResponse };
 
-/** Optional LiteAPI white-label site for "See availability" (set when it exists). */
+/**
+ * Milestone 31: "See availability" → the hotel's page on Glooconn's LiteAPI
+ * white-label booking site (set NEXT_PUBLIC_LITEAPI_WHITELABEL_URL, e.g.
+ * https://glooconn.nuitee.link). Format from LiteAPI's "Deeplinking to
+ * Whitelabel": /hotels/{hotelId}?checkin&checkout&occupancies(base64)&currency&language.
+ */
 function bookingUrl(hotelId: string, search: LiveHotelsSearch): string | null {
-  const base = process.env.NEXT_PUBLIC_LITEAPI_WHITELABEL_URL?.replace(/\/$/, "");
+  const base = process.env.NEXT_PUBLIC_LITEAPI_WHITELABEL_URL?.trim().replace(/\/$/, "");
   if (!base) return null;
   const params = new URLSearchParams({
     checkin: search.checkin,
     checkout: search.checkout,
-    adults: String(search.adults),
-    rooms: String(search.rooms),
+    occupancies: whitelabelOccupancies(search.adults, search.children, search.rooms),
     currency: search.currency,
+    language: "en",
   });
   return `${base}/hotels/${encodeURIComponent(hotelId)}?${params.toString()}`;
 }
@@ -148,7 +154,6 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
             </select>
           </label>
         </div>
-        <p className="text-xs text-slate-500">Live prices from LiteAPI hotel partners · Glooconn may earn a commission</p>
 
         {state.status === "loading" &&
           Array.from({ length: 4 }, (_, i) => (
