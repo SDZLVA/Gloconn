@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { AmenityIcon, topAmenities } from "@/components/hotel/AmenityIcon";
 import { HotelGallery } from "@/components/hotel/HotelGallery";
 import { HotelLocationMap } from "@/components/hotel/HotelLocationMap";
-import { formatMoney } from "@/components/live/hotels/HotelsTileMap";
+import { formatMoney } from "@/lib/money";
 import { nightsBetween, ratingLabel } from "@/features/liveHotels/filters";
 import { searchLiteApiHotels } from "@/features/liveHotels/liteapi/client";
 import { getLiteApiHotelDetails } from "@/features/liveHotels/liteapi/details";
