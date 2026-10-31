@@ -66,9 +66,6 @@ export function LiveHotelsResultsPage({ search, initialForm }: LiveHotelsResults
             <h2 id="live-hotels-heading" className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
               Live hotel prices
             </h2>
-            <p className="text-xs text-slate-500">
-              Prices from Booking.com, Expedia, Vrbo and more via Stay22 · Glooconn may earn a commission
-            </p>
           </div>
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
             <iframe

@@ -7,6 +7,9 @@ import "server-only";
  */
 
 import { mapLiteApiRates } from "@/features/liveHotels/liteapi/map";
+import { buildOccupancies } from "@/features/liveHotels/occupancies";
+
+export { buildOccupancies };
 import type { LiteApiPlace } from "@/features/liveHotels/liteapi/location";
 import type { LiveHotel, LiveHotelsSearch } from "@/features/liveHotels/types";
 
@@ -26,19 +29,6 @@ export class LiteApiError extends Error {
   ) {
     super(message);
   }
-}
-
-/** Splits guests over rooms the way travellers expect (adults first). */
-export function buildOccupancies(adults: number, children: number, rooms: number) {
-  const roomCount = Math.max(1, Math.min(rooms, adults));
-  const occupancies: { adults: number; children: number[] }[] = [];
-  for (let i = 0; i < roomCount; i += 1) {
-    const roomAdults = Math.floor(adults / roomCount) + (i < adults % roomCount ? 1 : 0);
-    const roomChildren = Math.floor(children / roomCount) + (i < children % roomCount ? 1 : 0);
-    // Ages are not asked in the search form; 8 is a neutral child age.
-    occupancies.push({ adults: roomAdults, children: Array.from({ length: roomChildren }, () => 8) });
-  }
-  return occupancies;
 }
 
 export async function searchLiteApiHotels(

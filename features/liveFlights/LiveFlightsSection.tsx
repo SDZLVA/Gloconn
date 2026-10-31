@@ -54,7 +54,6 @@ export function LiveFlightsSection({ search, filters, onFacets, title = "All liv
         <h2 id="live-flights-heading" className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
           {title}
         </h2>
-        <p className="text-xs text-slate-500">Prices from {engine.partnerName} partners · Glooconn may earn a commission</p>
       </div>
       <p
         role="status"

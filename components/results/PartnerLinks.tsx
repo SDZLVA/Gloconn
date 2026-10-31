@@ -32,7 +32,6 @@ export function PartnerLinks({ links, context }: PartnerLinksProps) {
     return null;
   }
 
-  const anyTagged = links.some((link) => link.tagged);
   const kiwiExact = links.some((link) => link.exact && link.partnerName === "Kiwi.com");
   const anyGeneral = links.some((link) => !link.exact);
 
@@ -43,7 +42,6 @@ export function PartnerLinks({ links, context }: PartnerLinksProps) {
         {context === "package" && " It covers the flights only, not the hotel."}
         {kiwiExact && " Kiwi.com may not sell the same flights."}
         {anyGeneral ? " Their flights and prices may differ." : " Prices may have changed."}
-        {anyTagged && " Glooconn may earn a commission."}
       </p>
       <div className="flex flex-col gap-2 sm:flex-row">
         {links.map((link) => (

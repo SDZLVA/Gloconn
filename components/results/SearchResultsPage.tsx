@@ -731,6 +731,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                   onFiltersChange={setFilters}
                   priceRange={priceRange}
                   facets={facets}
+                  currency={activeSearch.budget?.currency ?? "EUR"}
                 />
               ) : (
                 <Card className="space-y-4 p-4 sm:p-5" aria-hidden="true">
