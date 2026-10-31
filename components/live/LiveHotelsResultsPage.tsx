@@ -1,8 +1,7 @@
-import { LiveResultsBand } from "@/components/live/LiveResultsBand";
+import { TripHeader } from "@/components/results/TripHeader";
 import { LiveHotelsResults } from "@/components/live/hotels/LiveHotelsResults";
 import { stay22MapUrl } from "@/features/liveHotels/stay22";
 import { buildBookingSearchUrl } from "@/lib/hotels/bookingSearchUrl";
-import { formatShortDate } from "@/lib/calendar/dates";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchFormState } from "@/types/search-form";
 
@@ -22,12 +21,7 @@ type LiveHotelsResultsPageProps = {
  */
 export function LiveHotelsResultsPage({ search, initialForm }: LiveHotelsResultsPageProps) {
   const destination = (search.destination ?? "").split(",")[0]?.trim() || "your destination";
-  const guests = (search.travelers?.adults ?? 1) + (search.travelers?.children ?? 0);
   const rooms = search.travelers?.rooms ?? 1;
-  const dates = [search.departureDate, search.returnDate]
-    .filter((value): value is string => Boolean(value))
-    .map(formatShortDate)
-    .join(" – ");
   const bookingUrl = buildBookingSearchUrl(search);
   // Hotel engine (NEXT_PUBLIC_HOTELS_ENGINE): "liteapi" (default, M30),
   // "stay22" (M29 map — muted for now), "off" (coming-soon note).
@@ -48,15 +42,7 @@ export function LiveHotelsResultsPage({ search, initialForm }: LiveHotelsResults
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <LiveResultsBand mode="hotels" initialForm={initialForm} />
-
-      <header className="space-y-1">
-        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Stays in {destination}</h1>
-        <p className="text-sm text-slate-600">
-          {dates} · {guests} {guests === 1 ? "guest" : "guests"} · {rooms} {rooms === 1 ? "room" : "rooms"}
-          {search.budget?.amount ? ` · budget ${search.budget.currency} ${search.budget.amount}` : ""}
-        </p>
-      </header>
+      <TripHeader mode="hotels" search={search} initialForm={initialForm} />
 
       {liteSearch ? (
         <LiveHotelsResults search={liteSearch} stayBudget={search.budget?.amount ?? null} cityName={destination} />

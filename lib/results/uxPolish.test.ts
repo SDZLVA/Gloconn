@@ -191,7 +191,8 @@ describe("results hierarchy headings", () => {
     assert.ok(
       combined.indexOf("Browse Flights") < combined.indexOf("Browse Hotels"),
     );
-    assert.match(packagesHtml, /⭐/);
+    // Milestone 32: tabs replace the old "⭐ Recommended Packages" heading (sr-only heading now).
+    assert.match(packagesHtml, /recommended-packages-heading/);
   });
 });
 

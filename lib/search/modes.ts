@@ -19,8 +19,8 @@ export const SEARCH_MODES: ReadonlyArray<{
   {
     value: "packages",
     label: "Packages",
-    heading: "Flight + hotel within your budget",
-    description: "Glooconn pairs flights and stays into packages you can afford.",
+    heading: "Travel more for less",
+    description: "We combine flights and hotels into complete packages, so you can plan the perfect trip within your budget.",
     available: true,
   },
   {
@@ -34,7 +34,7 @@ export const SEARCH_MODES: ReadonlyArray<{
     value: "hotels",
     label: "Hotels",
     heading: "Find your next stay",
-    description: "Hotels, homes and apartments for your dates and budget.",
+    description: "Live prices on hotels, homes and apartments for your dates and budget.",
     available: true,
   },
   {

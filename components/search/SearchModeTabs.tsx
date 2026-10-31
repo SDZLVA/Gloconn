@@ -27,17 +27,18 @@ export function SearchModeTabs({ value, onChange, className }: SearchModeTabsPro
             aria-selected={active}
             onClick={() => onChange(mode.value)}
             className={cn(
-              "flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold motion-safe:transition-colors",
-              "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
-              active ? "border-white bg-white/15 text-white" : "border-transparent text-blue-100 hover:bg-white/10 hover:text-white",
+              "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold motion-safe:transition-colors",
+              "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-700",
+              active ? "bg-brand-700 text-white shadow-md shadow-brand-700/25" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
             )}
           >
             <ModeIcon mode={mode.value} />
             {mode.label}
             {!mode.available && (
-              <span className="rounded-full bg-sky-300 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-brand-900">
-                Soon
-              </span>
+              <span className="rounded-full bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-sky-700">Soon</span>
+            )}
+            {mode.value === "hotels" && (
+              <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none text-emerald-700">New</span>
             )}
           </button>
         );

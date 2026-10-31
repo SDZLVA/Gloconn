@@ -51,7 +51,7 @@ import {
 } from "@/lib/api/dateOptionsClient";
 import { clearCachedSearchResult } from "@/lib/api/searchResultCache";
 import { searchResponseToResults } from "@/lib/api/searchMappers";
-import { buildHomeSearchUrlFromRequest } from "@/lib/search/params";
+import { buildHomeSearchUrlFromRequest, parseSearchParamsToForm } from "@/lib/search/params";
 import { buildSearchCacheKey } from "@/lib/search/cacheKey";
 import { normalizeFlexDays } from "@/lib/search/flexibleDates";
 import { useServiceQuery } from "@/hooks/useServiceQuery";
@@ -69,11 +69,10 @@ import type {
 } from "@/features/liveFlights/types";
 import { ResultsEmptyState } from "@/components/results/ResultsEmptyState";
 import { ResultsErrorState } from "@/components/results/ResultsErrorState";
-import { ResultsHeader } from "@/components/results/ResultsHeader";
+import { TripHeader } from "@/components/results/TripHeader";
+import { SaveTripButton } from "@/components/trips/SaveTripButton";
 import { ResultsList } from "@/components/results/ResultsList";
 import { ResultsLoadingSkeleton } from "@/components/results/ResultsLoadingSkeleton";
-import { ResultsSortBar } from "@/components/results/ResultsSortBar";
-import { ResultsSummaryBar } from "@/components/results/ResultsSummaryBar";
 import { ResultsWarningsBanner } from "@/components/results/ResultsWarningsBanner";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -87,6 +86,7 @@ import type {
 import type { TravelPackage } from "@/types/models/travel-package";
 import type { SearchDateOptionsResult } from "@/lib/services/dateOptionsService";
 import {
+  SORT_OPTIONS,
   type ResultsFilters,
   type SearchResult,
   type SortOption,
@@ -412,6 +412,19 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     () => sortResults(filtered, sortBy, { budgetAmount }),
     [filtered, sortBy, budgetAmount],
   );
+  // Milestone 32: one list per tab.
+  const [view, setView] = useState<"packages" | "flights" | "hotels">("packages");
+  // No packages (e.g. no recent flight prices) → open the Flights tab, where the live list is.
+  const [viewTouched, setViewTouched] = useState(false);
+  useEffect(() => {
+    if (!viewTouched && displayData) setView((displayData.packages?.length ?? 0) > 0 ? "packages" : "flights");
+  }, [displayData, viewTouched]);
+  const flightResults = useMemo(() => sorted.filter((r) => r.type === "flight"), [sorted]);
+  const hotelResults = useMemo(() => sorted.filter((r) => r.type === "hotel"), [sorted]);
+  const editForm = useMemo(
+    () => parseSearchParamsToForm(new URLSearchParams(editSearchHref.split("?")[1] ?? "")),
+    [editSearchHref],
+  );
 
   // Airport codes are resolved on the server; the URL only carries place
   // labels, so activeSearch.originIata is normally empty. Prefer the codes
@@ -569,12 +582,13 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <ResultsHeader
-        destination={activeSearch.destination}
-        origin={activeSearch.origin}
+      {/* Milestone 32: redesign header (title, trip summary, Edit search, Save trip). */}
+      <TripHeader
+        mode="packages"
+        search={activeSearch}
+        initialForm={editForm}
+        actions={<SaveTripButton search={activeSearch} />}
       />
-
-      <ResultsSummaryBar search={activeSearch} />
 
       {hasError && (
         <ResultsErrorState
@@ -772,42 +786,93 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                       </div>
                     ) : null;
                   })()}
-                  <RecommendedPackagesSection
-                    packages={packages}
-                    originIata={originIata}
-                    destinationIata={destinationIata}
-                    getFlightLinks={getFlightLinks}
-                    budget={activeSearch.budget}
-                    tripType={activeSearch.tripType}
-                  />
-                  <ResultsSortBar
-                    sortBy={sortBy}
-                    onSortChange={setSortBy}
-                    resultCount={sorted.length}
-                    flightCount={sorted.filter((r) => r.type === "flight").length}
-                    hotelCount={sorted.filter((r) => r.type === "hotel").length}
-                    isLoading={isLoading && hasData && !isChipSearchLoading}
-                  />
-                  <ResultsList
-                    results={sorted}
-                    destination={destination}
-                    editSearchHref={editSearchHref}
-                    onClearFilters={clearFilters}
-                    tripType={activeSearch.tripType}
-                    originIata={originIata}
-                    destinationIata={destinationIata}
-                    getFlightLinks={getFlightLinks}
-                  />
+                  {/* Milestone 32: tabs — Recommended Packages · Flights · Hotels — and Sort by. */}
+                  <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-200">
+                    <div role="tablist" aria-label="Result lists" className="-mb-px flex gap-1 overflow-x-auto">
+                      {(
+                        [
+                          ["packages", `Recommended Packages (${packages.length})`],
+                          ["flights", `Flights (${flightResults.length})`],
+                          ["hotels", `Hotels (${hotelResults.length})`],
+                        ] as const
+                      ).map(([value, label]) => (
+                        <button
+                          key={value}
+                          type="button"
+                          role="tab"
+                          aria-selected={view === value}
+                          onClick={() => {
+                            setViewTouched(true);
+                            setView(value);
+                          }}
+                          className={cn(
+                            "whitespace-nowrap border-b-2 px-3 pb-3 pt-1 text-sm font-semibold",
+                            view === value ? "border-brand-700 text-brand-700" : "border-transparent text-slate-500 hover:text-slate-800",
+                            focusRing,
+                          )}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                    {view !== "packages" && (
+                      <label className="mb-2 flex items-center gap-2 text-sm text-slate-500">
+                        Sort by
+                        <select
+                          value={sortBy}
+                          onChange={(event) => setSortBy(event.target.value as SortOption)}
+                          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-800"
+                        >
+                          {SORT_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
+                  </div>
+
+                  {view === "packages" && (
+                    <RecommendedPackagesSection
+                      packages={packages}
+                      originIata={originIata}
+                      destinationIata={destinationIata}
+                      getFlightLinks={getFlightLinks}
+                      budget={activeSearch.budget}
+                      tripType={activeSearch.tripType}
+                      destinationName={(activeSearch.destination ?? "").split(",")[0]?.trim()}
+                    />
+                  )}
+                  {view === "packages" && packages.length === 0 && (
+                    <p className="rounded-2xl border border-slate-200 bg-white px-5 py-6 text-sm text-slate-600">
+                      No packages for this search yet — see the Flights and Hotels tabs.
+                    </p>
+                  )}
+                  {view !== "packages" && (
+                    <ResultsList
+                      results={view === "flights" ? flightResults : hotelResults}
+                      destination={destination}
+                      editSearchHref={editSearchHref}
+                      onClearFilters={clearFilters}
+                      tripType={activeSearch.tripType}
+                      originIata={originIata}
+                      destinationIata={destinationIata}
+                      getFlightLinks={getFlightLinks}
+                    />
+                  )}
                 </>
               )}
 
               {/* Milestone 23: removable live-flights engine (features/liveFlights). */}
               {hasData && !showSkeleton && (
+                <div hidden={view !== "flights"}>
                 <LiveFlightsSection
                   search={liveFlightsSearch}
                   filters={liveFlightsFilters}
                   onFacets={setLiveFacets}
                 />
+                </div>
               )}
             </div>
           </div>

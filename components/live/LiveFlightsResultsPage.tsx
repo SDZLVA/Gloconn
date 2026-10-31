@@ -2,10 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { LiveFlightsFilterCard } from "@/components/live/LiveFlightsFilterCard";
-import { LiveResultsBand } from "@/components/live/LiveResultsBand";
+import { TripHeader } from "@/components/results/TripHeader";
 import { LiveFlightsSection } from "@/features/liveFlights/LiveFlightsSection";
 import type { LiveFlightsFacets, LiveFlightsFilters, LiveFlightsSearch } from "@/features/liveFlights/types";
-import { formatShortDate } from "@/lib/calendar/dates";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchFormState } from "@/types/search-form";
 
@@ -55,25 +54,10 @@ export function LiveFlightsResultsPage({
     };
   }, [originCode, destinationCode, search.departureDate, search.returnDate, search.tripType, travelers, currency]);
 
-  const travelerCount = (travelers?.adults ?? 1) + (travelers?.children ?? 0) + (travelers?.infants ?? 0);
-  const dates = [search.departureDate, search.tripType === "one-way" ? null : search.returnDate]
-    .filter((value): value is string => Boolean(value))
-    .map(formatShortDate)
-    .join(" – ");
 
   return (
     <div className="space-y-6 sm:space-y-8">
-      <LiveResultsBand mode="flights" initialForm={initialForm} initialDirectOnly={initialMaxStops === 0} />
-
-      <header className="space-y-1">
-        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-          {cityName(search.origin)} → {cityName(search.destination)}
-        </h1>
-        <p className="text-sm text-slate-600">
-          {search.tripType === "one-way" ? "One way" : "Round trip"} · {dates} · {travelerCount}{" "}
-          {travelerCount === 1 ? "traveler" : "travelers"}
-        </p>
-      </header>
+      <TripHeader mode="flights" search={search} initialForm={initialForm} initialDirectOnly={initialMaxStops === 0} />
 
       {liveSearch ? (
         <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
@@ -97,9 +81,4 @@ export function LiveFlightsResultsPage({
       )}
     </div>
   );
-}
-
-/** "Milan, Italy" → "Milan". */
-function cityName(label: string | undefined): string {
-  return (label ?? "").split(",")[0]?.trim() || "—";
 }

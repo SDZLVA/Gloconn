@@ -23,6 +23,8 @@ type RecommendedPackagesSectionProps = {
   /** Sprint 16.4: optional budget for "Fits your budget" role. */
   budget?: Budget | null;
   tripType?: "round-trip" | "one-way" | null;
+  /** Milestone 32: city on the package cards' picture tile. */
+  destinationName?: string;
 };
 
 /**
@@ -44,6 +46,7 @@ function RecommendedPackagesSectionComponent({
   getFlightLinks,
   budget = null,
   tripType = "round-trip",
+  destinationName,
 }: RecommendedPackagesSectionProps) {
   const [showAll, setShowAll] = useState(false);
 
@@ -69,21 +72,9 @@ function RecommendedPackagesSectionComponent({
       className="space-y-4"
       aria-labelledby="recommended-packages-heading"
     >
-      <div className="space-y-1">
-        <p className="text-xs font-semibold uppercase tracking-wider text-brand-700">
-          Recommendations
-        </p>
-        <h2
-          id="recommended-packages-heading"
-          className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl"
-        >
-          <span aria-hidden="true">⭐ </span>
-          Recommended Packages
-        </h2>
-        <p className="text-sm text-slate-600">
-          Flight and hotel combinations matched to your search.
-        </p>
-      </div>
+      <h2 id="recommended-packages-heading" className="sr-only">
+        Recommended Packages
+      </h2>
 
       <ul
         className="flex flex-col gap-4"
@@ -98,6 +89,7 @@ function RecommendedPackagesSectionComponent({
               getFlightLinks={getFlightLinks}
               explanation={explanations.get(travelPackage.id) ?? null}
               tripType={tripType}
+              destinationName={destinationName}
             />
           </li>
         ))}

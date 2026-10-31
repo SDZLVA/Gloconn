@@ -55,7 +55,7 @@ export function UserMenu({
       <Link
         href="/login"
         className={cn(
-          "hidden rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 motion-safe:transition-colors motion-safe:hover:bg-slate-50 md:inline-flex",
+          "hidden rounded-xl bg-brand-900 px-5 py-2 text-sm font-semibold text-white shadow-sm motion-safe:transition-colors hover:bg-brand-800 md:inline-flex",
           focusRing,
         )}
       >
