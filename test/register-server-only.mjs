@@ -4,6 +4,9 @@
  */
 
 import Module from "node:module";
+
+// Milestone 34: tests never download the worldwide places files.
+process.env.GLOOCONN_WORLD_PLACES = "off";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 

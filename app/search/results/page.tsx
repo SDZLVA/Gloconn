@@ -53,8 +53,9 @@ export default async function SearchResultsRoute({
       <LiveFlightsResultsPage
         search={search}
         initialForm={parseSearchParamsToForm(urlParams)}
-        originCode={request.originCityIata ?? request.originIata ?? null}
-        destinationCode={request.destinationCityIata ?? request.destinationIata ?? null}
+        // Milestone 34: a picked airport ("airport-LHR") searches that airport; a city searches all its airports.
+        originCode={(search.originId?.startsWith("airport-") ? request.originIata : request.originCityIata ?? request.originIata) ?? null}
+        destinationCode={(search.destinationId?.startsWith("airport-") ? request.destinationIata : request.destinationCityIata ?? request.destinationIata) ?? null}
         initialMaxStops={stops !== null && /^[0-2]$/.test(stops) ? Number(stops) : null}
       />
     );

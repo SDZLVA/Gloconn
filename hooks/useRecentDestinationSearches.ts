@@ -1,5 +1,6 @@
 "use client";
 
+import { getWorldPlace } from "@/lib/destinations/worldCache";
 import { useCallback, useMemo, useState } from "react";
 import { getDestinationsByIds } from "@/lib/destinations";
 import {
@@ -27,10 +28,13 @@ export function useRecentDestinationSearches(
     readInitialRecentIds(scope),
   );
 
-  const recentDestinations = useMemo(
-    () => getDestinationsByIds(recentIds),
-    [recentIds],
-  );
+  // Milestone 34: also worldwide places picked earlier (kept in this browser).
+  const recentDestinations = useMemo(() => {
+    const catalog = new Map(getDestinationsByIds(recentIds).map((d) => [d.id, d]));
+    return recentIds
+      .map((id) => catalog.get(id) ?? getWorldPlace(id))
+      .filter((d): d is NonNullable<typeof d> => d !== null && d !== undefined);
+  }, [recentIds]);
 
   const addRecent = useCallback(
     (destination: Destination) => {

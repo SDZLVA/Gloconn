@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { rememberWorldPlace } from "@/lib/destinations/worldCache";
 import {
   Autocomplete,
   type AutocompleteSection,
@@ -35,6 +36,22 @@ type DestinationAutocompleteProps = {
   className?: string;
   /** Separate localStorage bucket for destination vs origin recents. */
   recentScope?: RecentSearchScope;
+  /**
+   * Milestone 34: also suggest places worldwide — "cities" (hotels,
+   * packages) or "all" = cities + airports (flights). Off when omitted.
+   */
+  worldKind?: "cities" | "all";
+};
+
+type WorldSuggestion = {
+  id: string;
+  label: string;
+  description: string;
+  kind: "city" | "airport";
+  name: string;
+  country: string;
+  iata: string;
+  cityIata: string;
 };
 
 function toOptions(ranked: RankedDestination[]) {
@@ -61,6 +78,7 @@ export function DestinationAutocomplete({
   required = false,
   className,
   recentScope = "destination",
+  worldKind,
 }: DestinationAutocompleteProps) {
   const { recentDestinations, addRecent, reloadRecent } =
     useRecentDestinationSearches(recentScope);
@@ -68,6 +86,21 @@ export function DestinationAutocomplete({
   const query = value.trim();
   const debouncedQuery = useDebouncedValue(query, DESTINATION_FILTER_DEBOUNCE_MS);
   const isSearching = debouncedQuery.length > 0;
+
+  // Milestone 34: worldwide suggestions from /api/places.
+  const [world, setWorld] = useState<WorldSuggestion[]>([]);
+  useEffect(() => {
+    if (!worldKind || debouncedQuery.length < 2) {
+      setWorld([]);
+      return;
+    }
+    const controller = new AbortController();
+    fetch(`/api/places?q=${encodeURIComponent(debouncedQuery)}&kind=${worldKind}`, { signal: controller.signal })
+      .then((r) => (r.ok ? r.json() : { places: [] }))
+      .then((body: { places?: WorldSuggestion[] }) => setWorld(Array.isArray(body.places) ? body.places : []))
+      .catch(() => {});
+    return () => controller.abort();
+  }, [debouncedQuery, worldKind]);
 
   const recentIds = useMemo(
     () => recentDestinations.map((destination) => destination.id),
@@ -124,6 +157,27 @@ export function DestinationAutocomplete({
         });
       }
 
+      // Worldwide matches the catalog doesn't already show (same IATA code).
+      const shownCodes = new Set(
+        searchSections.flatMap((section) => section.options.map((option) => option.description?.split(" · ").pop())),
+      );
+      const worldCities = world.filter((p) => p.kind === "city" && !shownCodes.has(p.iata));
+      const worldAirports = world.filter((p) => p.kind === "airport" && !shownCodes.has(p.iata));
+      if (worldCities.length > 0) {
+        searchSections.push({
+          id: "world-cities",
+          heading: "Cities",
+          options: worldCities.map((p) => ({ id: p.id, label: p.label, description: p.description })),
+        });
+      }
+      if (worldAirports.length > 0) {
+        searchSections.push({
+          id: "world-airports",
+          heading: "Airports",
+          options: worldAirports.map((p) => ({ id: p.id, label: p.label, description: p.description })),
+        });
+      }
+
       return searchSections;
     }
 
@@ -153,10 +207,25 @@ export function DestinationAutocomplete({
     }
 
     return idleSections;
-  }, [isSearching, debouncedQuery, recentDestinations, recentIds]);
+  }, [isSearching, debouncedQuery, recentDestinations, recentIds, world]);
 
   function handleSelect(option: { id: string; label: string }) {
-    const destination = findDestinationById(option.id);
+    const picked = world.find((p) => p.id === option.id);
+    if (picked) {
+      const destination = {
+        id: picked.id,
+        name: picked.name,
+        country: picked.country,
+        region: picked.kind === "city" ? "City" : "Airport",
+        iataCode: picked.iata,
+        cityIataCode: picked.cityIata,
+      };
+      rememberWorldPlace(destination);
+      addRecent(destination);
+      onDestinationSelect?.({ label: option.label, id: picked.id });
+      return;
+    }
+    const destination = findDestinationById(option.id) ?? recentDestinations.find((d) => d.id === option.id) ?? null;
     if (!destination) {
       return;
     }

@@ -6,6 +6,7 @@
  */
 
 import type { DestinationProvider } from "@/lib/providers/core/types";
+import { findWorldDestinationByLabel, getWorldDestination, isWorldPlaceId } from "@/lib/places/world";
 import type { Destination } from "@/types/models/destination";
 import type { SearchRequest } from "@/types/models/search-request";
 
@@ -94,8 +95,17 @@ export async function resolveAirportForPlace(
   let destinationId = place.id?.trim() || undefined;
   let destination: Destination | null = null;
 
-  if (destinationId) {
+  // Milestone 34: worldwide places ("city-CMB", "airport-LHR").
+  if (destinationId && isWorldPlaceId(destinationId)) {
+    destination = await getWorldDestination(destinationId);
+  } else if (destinationId) {
     destination = await destinations.getDestinationById(destinationId);
+  }
+
+  // Worldwide match by label before the catalog, whose label lookup falls
+  // back to Paris for unknown places.
+  if (!destination && label) {
+    destination = await findWorldDestinationByLabel(label);
   }
 
   if (!destination && label) {

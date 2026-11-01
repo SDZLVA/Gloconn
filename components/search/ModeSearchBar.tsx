@@ -125,6 +125,7 @@ export function ModeSearchBar({
           <>
             <div className={cn(CELL, CELL_ICON, "lg:flex-[1.25]")}>
               <OriginAutocomplete
+                worldKind={mode === "flights" ? "all" : "cities"}
                 placeholder="Leaving from"
                 value={form.origin}
                 onChange={actions.updateOrigin}
@@ -152,6 +153,7 @@ export function ModeSearchBar({
 
         <div className={cn(CELL, CELL_ICON, showOrigin ? "lg:flex-[1.25]" : "lg:flex-[1.6]")}>
           <DestinationAutocomplete
+            worldKind={mode === "flights" ? "all" : "cities"}
             label={mode === "hotels" ? "Destination" : "To"}
             placeholder={mode === "hotels" ? "Where are you going?" : "Where to?"}
             value={form.destination}
