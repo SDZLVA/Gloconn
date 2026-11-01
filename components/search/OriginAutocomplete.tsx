@@ -11,6 +11,7 @@ type OriginAutocompleteProps = {
   required?: boolean;
   className?: string;
   placeholder?: string;
+  worldKind?: "cities" | "all";
 };
 
 /**
@@ -25,6 +26,7 @@ export function OriginAutocomplete({
   required = false,
   className,
   placeholder = "Where are you leaving from?",
+  worldKind,
 }: OriginAutocompleteProps) {
   return (
     <DestinationAutocomplete
@@ -35,6 +37,7 @@ export function OriginAutocomplete({
       onChange={onChange}
       onDestinationSelect={onOriginSelect}
       recentScope="origin"
+      worldKind={worldKind}
       error={error}
       required={required}
       className={className}

@@ -74,7 +74,9 @@ function HomeSearchHeroInner({ initial }: { initial: HeroState }) {
 
   return (
     <div className="-mt-8 sm:-mt-10 lg:-mt-12">
-      <section aria-labelledby="hero-heading" className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden">
+      <section aria-labelledby="hero-heading" className="relative left-1/2 w-screen -translate-x-1/2">
+        {/* Milestone 34: only the picture is clipped — the search suggestions may hang below the hero. */}
+        <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         {/* Shehan's hero photo (public/home, WebP made from "Cover 1.png"). */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -89,6 +91,7 @@ function HomeSearchHeroInner({ initial }: { initial: HeroState }) {
         {/* Pale wash on the left so the headline stays readable; fades out at the bottom. */}
         <div className="absolute inset-0 bg-gradient-to-r from-white/85 via-white/45 to-transparent" aria-hidden="true" />
         <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-slate-50/90" aria-hidden="true" />
+        </div>
         <div className={cn(pageContainer, "relative pb-10 pt-12 sm:pb-14 sm:pt-20")}>
           <h1 id="hero-heading" className="max-w-xl text-4xl font-extrabold leading-[1.05] tracking-tight text-brand-900 sm:text-6xl">
             {meta.heading}
