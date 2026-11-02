@@ -5,7 +5,9 @@ import { FilterCheck, FilterMoneyInput, FilterPanel, FilterRadios, FilterSection
 import type { LiveHotelsFilters } from "@/features/liveHotels/types";
 
 type HotelsFilterCardProps = {
+  /** What the results currently show. */
   filters: LiveHotelsFilters;
+  /** Called with the new filters when the traveller presses Confirm (or Clear all). */
   onChange: (filters: LiveHotelsFilters) => void;
   currency: string;
   /** How many hotels each star class has (for the counts). */
@@ -19,23 +21,38 @@ const RATING_OPTIONS = [
   { value: 9, label: "Superb: 9+" },
 ];
 
-/** Hotels page filter (Milestone 30; Milestone 31: shared FilterPanel look). Filters in the browser. */
+/**
+ * Hotels page filter (Milestone 30; M31 shared look). Milestone 35: choices
+ * are a draft until the traveller presses Confirm.
+ */
 export function HotelsFilterCard({ filters, onChange, currency, starCounts }: HotelsFilterCardProps) {
-  const [budget, setBudget] = useState(filters.maxPerNight ? String(filters.maxPerNight) : "");
-  useEffect(() => setBudget(filters.maxPerNight ? String(filters.maxPerNight) : ""), [filters.maxPerNight]);
-  useEffect(() => {
-    const next = budget ? Number(budget) : null;
-    if (next === filters.maxPerNight) return;
-    const timer = window.setTimeout(() => onChange({ ...filters, maxPerNight: next }), 400);
-    return () => window.clearTimeout(timer);
-  }, [budget, filters, onChange]);
+  const [draft, setDraft] = useState(filters);
+  // Follow changes made elsewhere (e.g. the budget prefill once prices arrive).
+  useEffect(() => setDraft(filters), [filters]);
 
-  const active = (filters.maxPerNight ? 1 : 0) + filters.stars.length + (filters.minRating ? 1 : 0) + (filters.refundableOnly ? 1 : 0);
+  const dirty =
+    draft.maxPerNight !== filters.maxPerNight ||
+    draft.minRating !== filters.minRating ||
+    draft.refundableOnly !== filters.refundableOnly ||
+    draft.stars.join() !== filters.stars.join();
+  const active = (draft.maxPerNight ? 1 : 0) + draft.stars.length + (draft.minRating ? 1 : 0) + (draft.refundableOnly ? 1 : 0);
 
   return (
-    <FilterPanel activeCount={active} onClear={() => onChange({ ...filters, maxPerNight: null, stars: [], minRating: 0, refundableOnly: false })}>
+    <FilterPanel
+      activeCount={active}
+      dirty={dirty}
+      onConfirm={() => onChange({ ...filters, maxPerNight: draft.maxPerNight, stars: draft.stars, minRating: draft.minRating, refundableOnly: draft.refundableOnly })}
+      onClear={() => onChange({ ...filters, maxPerNight: null, stars: [], minRating: 0, refundableOnly: false })}
+    >
       <FilterSection title="Your budget" hint="Max price per night">
-        <FilterMoneyInput id="hotel-budget" label="Max price per night" currency={currency} value={budget} onChange={setBudget} placeholder="Any price" />
+        <FilterMoneyInput
+          id="hotel-budget"
+          label="Max price per night"
+          currency={currency}
+          value={draft.maxPerNight ? String(draft.maxPerNight) : ""}
+          onChange={(value) => setDraft({ ...draft, maxPerNight: value ? Number(value) : null })}
+          placeholder="Any price"
+        />
       </FilterSection>
 
       <FilterSection title="Star rating">
@@ -44,18 +61,18 @@ export function HotelsFilterCard({ filters, onChange, currency, starCounts }: Ho
             key={stars}
             label={`${stars} stars`}
             count={starCounts[stars] ?? 0}
-            checked={filters.stars.includes(stars)}
-            onChange={(on) => onChange({ ...filters, stars: on ? [...filters.stars, stars] : filters.stars.filter((s) => s !== stars) })}
+            checked={draft.stars.includes(stars)}
+            onChange={(on) => setDraft({ ...draft, stars: on ? [...draft.stars, stars] : draft.stars.filter((s) => s !== stars) })}
           />
         ))}
       </FilterSection>
 
       <FilterSection title="Review score">
-        <FilterRadios name="hotel-rating" value={filters.minRating} options={RATING_OPTIONS} onChange={(minRating) => onChange({ ...filters, minRating })} />
+        <FilterRadios name="hotel-rating" value={draft.minRating} options={RATING_OPTIONS} onChange={(minRating) => setDraft({ ...draft, minRating })} />
       </FilterSection>
 
       <FilterSection title="Cancellation">
-        <FilterCheck label="Free cancellation" checked={filters.refundableOnly} onChange={(refundableOnly) => onChange({ ...filters, refundableOnly })} />
+        <FilterCheck label="Free cancellation" checked={draft.refundableOnly} onChange={(refundableOnly) => setDraft({ ...draft, refundableOnly })} />
       </FilterSection>
     </FilterPanel>
   );

@@ -2,7 +2,7 @@
  * Sprint 17.6 — real-data replay mode tests.
  */
 
-import { afterEach, describe, it } from "node:test";
+import { afterEach, describe, it, mock } from "node:test";
 import assert from "node:assert/strict";
 import { resetAppConfig, getAppConfig, loadAppConfig } from "@/lib/config";
 import { validateAppConfig } from "@/lib/config/validate";
@@ -287,6 +287,8 @@ describe("Sprint 17.6 — replay mode", () => {
       throw new Error(`Unexpected fetch in replay: ${String(args[0])}`);
     };
 
+    // The fixtures are for 1–5 Nov 2026; past dates are refused, so pin "today" before them.
+    mock.timers.enable({ apis: ["Date"], now: new Date("2026-10-15T12:00:00Z") });
     try {
       const result = await searchTrips(milanParisRequest());
       assert.equal(result.success, true);
@@ -296,6 +298,7 @@ describe("Sprint 17.6 — replay mode", () => {
       }
       assert.equal(fetchCalls, 0, "replay search must not call fetch/SerpAPI");
     } finally {
+      mock.timers.reset();
       globalThis.fetch = originalFetch;
     }
   });

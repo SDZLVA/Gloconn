@@ -48,7 +48,20 @@ export type LiveFlightsFilters = {
    * Optional so older callers keep working.
    */
   maxPrice?: number | null;
+  /** Milestone 35: the widget's own sort; undefined = recommended. */
+  sort?: LiveFlightsSort;
 };
+
+/** Sort modes of the live list (the widget's own values). */
+export type LiveFlightsSort = "best" | "cheapest" | "trip_duration" | "departure_time" | "arrival_time";
+
+export const LIVE_FLIGHTS_SORT_OPTIONS: { value: LiveFlightsSort; label: string }[] = [
+  { value: "best", label: "Recommended" },
+  { value: "cheapest", label: "Cheapest" },
+  { value: "trip_duration", label: "Fastest" },
+  { value: "departure_time", label: "Departure time" },
+  { value: "arrival_time", label: "Arrival time" },
+];
 
 /** What the live engine can offer to Glooconn's sidebar. */
 export type LiveFlightsFacets = {
