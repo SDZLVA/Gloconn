@@ -86,7 +86,8 @@ function setChecked(input: HTMLInputElement, checked: boolean): void {
 }
 
 /** Applies Glooconn's filters to the widget. Clicks only what differs. */
-export function applyFilters(controls: WidgetControls, filters: LiveFlightsFilters): void {
+/** Returns false when something was not ready yet (retry on the next tick). */
+export function applyFilters(controls: WidgetControls, filters: LiveFlightsFilters): boolean {
   const available = controls.layovers.map((input) => Number(input.value)).filter(Number.isFinite);
   const stops = new Set(widgetStopsToCheck(filters.maxStops, available));
   for (const input of controls.layovers) setChecked(input, stops.has(Number(input.value)));
@@ -101,6 +102,26 @@ export function applyFilters(controls: WidgetControls, filters: LiveFlightsFilte
       setChecked(input, filters.airlines.length > 0 && airlineSelected(name, filters.airlines));
     }
   }
+
+  return applySort(controls, filters.sort ?? "best");
+}
+
+/**
+ * Milestone 35: picks the widget's own "Sort by" option (Recommended,
+ * Cheapest, Trip duration, ...). Like the airlines it works while the
+ * widget's panel is hidden.
+ */
+export function applySort(controls: WidgetControls, sort: string): boolean {
+  const section = queryAll<HTMLElement>(controls.roots, '[data-testid="expandable-sort-filter"]')[0];
+  if (!section) return true; // no sort in this widget version: nothing to do
+  if (!section.querySelector('input[type="radio"]')) {
+    section.querySelector<HTMLButtonElement>("button")?.click(); // renders the options
+    return false;
+  }
+  const option = [...section.querySelectorAll<HTMLInputElement>('input[type="radio"]')].find((input) => input.value === sort);
+  if (!option) return true;
+  if (!option.checked) (option.closest("label") ?? option).click();
+  return true;
 }
 
 /**

@@ -12,7 +12,9 @@ const STOP_OPTIONS: { value: number | null; label: string }[] = [
 ];
 
 type LiveFlightsFilterCardProps = {
+  /** What the live list currently shows. */
   filters: LiveFlightsFilters;
+  /** Called with the new filters when the traveller presses Confirm (or Clear all). */
   onChange: (filters: LiveFlightsFilters) => void;
   facets: LiveFlightsFacets;
   currency: string;
@@ -20,21 +22,20 @@ type LiveFlightsFilterCardProps = {
 };
 
 /**
- * Flights page filter (Milestone 28; Milestone 31: shared FilterPanel look).
- * Drives the live list's own filters (stops, baggage, airlines, price).
+ * Flights page filter (Milestone 28; M31 shared look). Milestone 35: choices
+ * are a draft until the traveller presses Confirm.
  */
 export function LiveFlightsFilterCard({ filters, onChange, facets, currency, className }: LiveFlightsFilterCardProps) {
-  const [priceDraft, setPriceDraft] = useState(filters.maxPrice ? String(filters.maxPrice) : "");
-  useEffect(() => setPriceDraft(filters.maxPrice ? String(filters.maxPrice) : ""), [filters.maxPrice]);
-  useEffect(() => {
-    const next = priceDraft ? Number(priceDraft) : null;
-    if (next === (filters.maxPrice ?? null)) return;
-    const timer = window.setTimeout(() => onChange({ ...filters, maxPrice: next }), 600);
-    return () => window.clearTimeout(timer);
-  }, [priceDraft, filters, onChange]);
+  const [draft, setDraft] = useState(filters);
+  useEffect(() => setDraft(filters), [filters]);
 
+  const dirty =
+    (draft.maxPrice ?? null) !== (filters.maxPrice ?? null) ||
+    draft.maxStops !== filters.maxStops ||
+    draft.baggageIncluded !== filters.baggageIncluded ||
+    draft.airlines.join("|") !== filters.airlines.join("|");
   const activeCount =
-    (filters.maxStops !== null ? 1 : 0) + (filters.baggageIncluded ? 1 : 0) + (filters.airlines.length > 0 ? 1 : 0) + (filters.maxPrice ? 1 : 0);
+    (draft.maxStops !== null ? 1 : 0) + (draft.baggageIncluded ? 1 : 0) + (draft.airlines.length > 0 ? 1 : 0) + (draft.maxPrice ? 1 : 0);
   // The widget can list one airline twice (e.g. easyJet U2 and EC).
   const airlineNames = [...new Set(facets.airlines)];
 
@@ -42,18 +43,29 @@ export function LiveFlightsFilterCard({ filters, onChange, facets, currency, cla
     <FilterPanel
       className={className}
       activeCount={activeCount}
+      dirty={dirty}
+      onConfirm={() =>
+        onChange({ ...filters, maxPrice: draft.maxPrice ?? null, maxStops: draft.maxStops, baggageIncluded: draft.baggageIncluded, airlines: draft.airlines })
+      }
       onClear={() => onChange({ ...filters, maxStops: null, baggageIncluded: false, airlines: [], maxPrice: null })}
     >
       <FilterSection title="Your budget" hint="Max price, total for all travelers">
-        <FilterMoneyInput id="live-max-price" label="Max price" currency={currency} value={priceDraft} onChange={setPriceDraft} placeholder="Any price" />
+        <FilterMoneyInput
+          id="live-max-price"
+          label="Max price"
+          currency={currency}
+          value={draft.maxPrice ? String(draft.maxPrice) : ""}
+          onChange={(value) => setDraft({ ...draft, maxPrice: value ? Number(value) : null })}
+          placeholder="Any price"
+        />
       </FilterSection>
 
       <FilterSection title="Stops">
-        <FilterRadios name="live-stops" value={filters.maxStops} options={STOP_OPTIONS} onChange={(maxStops) => onChange({ ...filters, maxStops })} />
+        <FilterRadios name="live-stops" value={draft.maxStops} options={STOP_OPTIONS} onChange={(maxStops) => setDraft({ ...draft, maxStops })} />
       </FilterSection>
 
       <FilterSection title="Baggage">
-        <FilterCheck label="Checked bag included" checked={filters.baggageIncluded} onChange={(baggageIncluded) => onChange({ ...filters, baggageIncluded })} />
+        <FilterCheck label="Checked bag included" checked={draft.baggageIncluded} onChange={(baggageIncluded) => setDraft({ ...draft, baggageIncluded })} />
       </FilterSection>
 
       <FilterSection title="Airlines">
@@ -65,9 +77,9 @@ export function LiveFlightsFilterCard({ filters, onChange, facets, currency, cla
               <FilterCheck
                 key={name}
                 label={name}
-                checked={filters.airlines.includes(name)}
+                checked={draft.airlines.includes(name)}
                 onChange={(on) =>
-                  onChange({ ...filters, airlines: on ? [...filters.airlines, name] : filters.airlines.filter((item) => item !== name) })
+                  setDraft({ ...draft, airlines: on ? [...draft.airlines, name] : draft.airlines.filter((item) => item !== name) })
                 }
               />
             ))}

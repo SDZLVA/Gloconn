@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useApplyRefresh } from "@/hooks/useApplyRefresh";
 import { HotelsFilterCard } from "@/components/live/hotels/HotelsFilterCard";
 import { HotelsTileMap } from "@/components/live/hotels/HotelsTileMap";
 import { LiveHotelCard } from "@/components/live/hotels/LiveHotelCard";
@@ -43,6 +44,8 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
   const [filters, setFilters] = useState<LiveHotelsFilters>(DEFAULT_HOTEL_FILTERS);
   const [mapOpen, setMapOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { refreshing, refresh } = useApplyRefresh();
+  const listTop = useRef<HTMLElement | null>(null);
   // Where the hotel page's "Back to results" returns to.
   const [backUrl, setBackUrl] = useState("");
   useEffect(() => setBackUrl(window.location.pathname + window.location.search), []);
@@ -133,10 +136,10 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
             </button>
           </div>
         </div>
-        <HotelsFilterCard filters={filters} onChange={setFilters} currency={search.currency} starCounts={starCounts} />
+        <HotelsFilterCard filters={filters} onChange={(next) => { setFilters(next); refresh(listTop.current); }} currency={search.currency} starCounts={starCounts} />
       </aside>
 
-      <section className="min-w-0 space-y-4" aria-labelledby="hotels-count">
+      <section ref={listTop} className="min-w-0 scroll-mt-24 space-y-4" aria-labelledby="hotels-count">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 id="hotels-count" className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">
             {data ? `${cityName}: ${shown.length} ${shown.length === 1 ? "property" : "properties"} found` : `Searching stays in ${cityName}…`}
@@ -145,7 +148,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
             <span>Sort by:</span>
             <select
               value={filters.sort}
-              onChange={(event) => setFilters({ ...filters, sort: event.target.value as LiveHotelsFilters["sort"] })}
+              onChange={(event) => { setFilters({ ...filters, sort: event.target.value as LiveHotelsFilters["sort"] }); refresh(); }}
               className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-slate-900 focus:outline-none"
             >
               <option value="recommended">Top picks</option>
@@ -156,7 +159,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
           </label>
         </div>
 
-        {state.status === "loading" &&
+        {(state.status === "loading" || refreshing) &&
           Array.from({ length: 4 }, (_, i) => (
             <div key={i} className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:grid-cols-[220px_1fr]" aria-hidden="true">
               <div className="h-44 animate-pulse rounded-xl bg-slate-200 motion-reduce:animate-none" />
@@ -168,7 +171,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
             </div>
           ))}
 
-        {data && shown.length === 0 && (
+        {data && !refreshing && shown.length === 0 && (
           <div className="rounded-2xl border border-slate-200 bg-white px-5 py-6 text-sm text-slate-700">
             {data.hotels.length === 0
               ? "No live availability for these dates. Try other dates or a nearby city."
@@ -177,6 +180,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
         )}
 
         {data &&
+          !refreshing &&
           shown.map((hotel) => (
             <LiveHotelCard
               key={hotel.id}

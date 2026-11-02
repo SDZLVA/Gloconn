@@ -80,7 +80,7 @@ export function TravelpayoutsWidgetPanel({ search, filters, onFacets }: LiveFlig
       if (key !== appliedKey || anchor !== controls.layovers[0]) {
         appliedKey = key;
         anchor = controls.layovers[0] ?? null;
-        applyFilters(controls, filtersRef.current);
+        if (!applyFilters(controls, filtersRef.current)) appliedKey = ""; // sort options not rendered yet: retry
       }
 
       const maxPrice = filtersRef.current.maxPrice ?? null;

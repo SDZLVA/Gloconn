@@ -1,10 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { useApplyRefresh } from "@/hooks/useApplyRefresh";
 import { LiveFlightsFilterCard } from "@/components/live/LiveFlightsFilterCard";
 import { TripHeader } from "@/components/results/TripHeader";
 import { LiveFlightsSection } from "@/features/liveFlights/LiveFlightsSection";
-import type { LiveFlightsFacets, LiveFlightsFilters, LiveFlightsSearch } from "@/features/liveFlights/types";
+import {
+  LIVE_FLIGHTS_SORT_OPTIONS,
+  type LiveFlightsFacets,
+  type LiveFlightsFilters,
+  type LiveFlightsSearch,
+  type LiveFlightsSort,
+} from "@/features/liveFlights/types";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchFormState } from "@/types/search-form";
 
@@ -36,7 +43,10 @@ export function LiveFlightsResultsPage({
     airlines: [],
     baggageIncluded: false,
     maxPrice: search.budget?.amount && search.budget.amount > 0 ? search.budget.amount : null,
+    sort: "best",
   });
+  const { refreshing, refresh } = useApplyRefresh(900);
+  const listTop = useRef<HTMLDivElement | null>(null);
   const [facets, setFacets] = useState<LiveFlightsFacets>({ airlines: [], bridged: false });
 
   const travelers = search.travelers;
@@ -62,15 +72,41 @@ export function LiveFlightsResultsPage({
       {liveSearch ? (
         <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
           <aside className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
-            <LiveFlightsFilterCard filters={filters} onChange={setFilters} facets={facets} currency={currency} />
+            <LiveFlightsFilterCard filters={filters} onChange={(next) => { setFilters(next); refresh(listTop.current); }} facets={facets} currency={currency} />
           </aside>
-          <div className="min-w-0">
+          <div ref={listTop} className="min-w-0 scroll-mt-24">
+            <div className="mb-3 flex justify-end">
+              <label className="flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800">
+                <span>Sort by:</span>
+                <select
+                  value={filters.sort ?? "best"}
+                  onChange={(event) => {
+                    setFilters({ ...filters, sort: event.target.value as LiveFlightsSort });
+                    refresh();
+                  }}
+                  className="cursor-pointer border-0 bg-transparent p-0 font-semibold text-slate-900 focus:outline-none"
+                >
+                  {LIVE_FLIGHTS_SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className={refreshing ? "pointer-events-none opacity-40 transition-opacity" : "transition-opacity"} aria-busy={refreshing}>
             <LiveFlightsSection
               search={liveSearch}
               filters={filters}
               onFacets={setFacets}
               title="Live flight prices"
             />
+            </div>
+            {refreshing && (
+              <p role="status" className="mt-3 text-center text-sm font-semibold text-brand-700">
+                Updating results…
+              </p>
+            )}
           </div>
         </div>
       ) : (

@@ -14,11 +14,15 @@ type FilterPanelProps = {
   title?: string;
   activeCount?: number;
   onClear?: () => void;
+  /** Milestone 35: filters only apply when the traveller presses Confirm. */
+  onConfirm?: () => void;
+  /** True when the choices differ from what the results currently show. */
+  dirty?: boolean;
   className?: string;
   children: React.ReactNode;
 };
 
-export function FilterPanel({ title = "Filter by", activeCount = 0, onClear, className, children }: FilterPanelProps) {
+export function FilterPanel({ title = "Filter by", activeCount = 0, onClear, onConfirm, dirty = false, className, children }: FilterPanelProps) {
   return (
     <Card className={cn("divide-y divide-slate-100 p-0", className)}>
       <div className="flex items-center justify-between px-5 py-4">
@@ -30,6 +34,18 @@ export function FilterPanel({ title = "Filter by", activeCount = 0, onClear, cla
         )}
       </div>
       {children}
+      {onConfirm && (
+        <div className="sticky bottom-0 rounded-b-2xl bg-white px-5 py-4">
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="min-h-11 w-full rounded-xl bg-brand-700 px-4 text-sm font-bold text-white shadow-md shadow-brand-700/20 hover:bg-brand-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-700"
+          >
+            Confirm{dirty ? " filters" : ""}
+          </button>
+          {dirty && <p className="mt-2 text-center text-xs text-slate-500">Press Confirm to update the results.</p>}
+        </div>
+      )}
     </Card>
   );
 }

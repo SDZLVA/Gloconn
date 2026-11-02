@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { FilterCheck, FilterList, FilterMoneyInput, FilterPanel, FilterRadios, FilterSection } from "@/components/filters/FilterPanel";
 import type {
@@ -10,9 +10,6 @@ import type {
 } from "@/types/results";
 import { DEFAULT_RESULTS_FILTERS, RESULT_TYPE_LABELS } from "@/types/results";
 import { MVP_RESULT_TYPES } from "@/lib/results/mvpUi";
-
-/** Debounce price commits so filter/sort/rank do not run on every keystroke. */
-const PRICE_FILTER_DEBOUNCE_MS = 200;
 
 /** Sprint 14.2 MVP — hotel + flight only (bus/train filters hidden). */
 const FILTERABLE_TYPES = MVP_RESULT_TYPES;
@@ -57,49 +54,21 @@ function toggleStringValue(values: string[], value: string): string[] {
 
 /** Sidebar with type, price, rating, and model-backed quality filters. */
 export function ResultsFilterSidebar({
-  filters,
-  onFiltersChange,
+  filters: appliedFilters,
+  onFiltersChange: applyFilters,
   priceRange,
   facets,
   currency = "EUR",
   className,
 }: ResultsFilterSidebarProps) {
-  // Local price draft — UI stays responsive; parent filters update after debounce.
-  const [draftMinPrice, setDraftMinPrice] = useState(filters.minPrice);
-  const [draftMaxPrice, setDraftMaxPrice] = useState(filters.maxPrice);
-  const filtersRef = useRef(filters);
-
-  // Keep latest filters for the debounced commit without reading refs during render.
-  useEffect(() => {
-    filtersRef.current = filters;
-  }, [filters]);
-
-  // Sync draft when parent resets filters (clear all / new search baseline).
-  useEffect(() => {
-    setDraftMinPrice(filters.minPrice);
-    setDraftMaxPrice(filters.maxPrice);
-  }, [filters.minPrice, filters.maxPrice]);
-
-  useEffect(() => {
-    if (
-      draftMinPrice === filtersRef.current.minPrice &&
-      draftMaxPrice === filtersRef.current.maxPrice
-    ) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      onFiltersChange({
-        ...filtersRef.current,
-        minPrice: draftMinPrice,
-        maxPrice: draftMaxPrice,
-      });
-    }, PRICE_FILTER_DEBOUNCE_MS);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [draftMinPrice, draftMaxPrice, onFiltersChange]);
+  // Milestone 35: choices are a draft until the traveller presses Confirm.
+  const [filters, setDraft] = useState(appliedFilters);
+  const onFiltersChange = setDraft;
+  // Follow resets made elsewhere (new search, Clear all).
+  useEffect(() => setDraft(appliedFilters), [appliedFilters]);
+  const draftMinPrice = filters.minPrice;
+  const draftMaxPrice = filters.maxPrice;
+  const dirty = JSON.stringify(filters) !== JSON.stringify(appliedFilters);
 
   function toggleType(type: ResultType) {
     const types = filters.types.includes(type)
@@ -113,7 +82,7 @@ export function ResultsFilterSidebar({
   }
 
   function clearFilters() {
-    onFiltersChange({
+    applyFilters({
       ...DEFAULT_RESULTS_FILTERS,
       minPrice: priceRange.min,
       maxPrice: priceRange.max,
@@ -145,7 +114,7 @@ export function ResultsFilterSidebar({
 
   // Milestone 31: same FilterPanel look as the Flights and Hotels pages.
   return (
-    <FilterPanel className={className} activeCount={activeCount} onClear={clearFilters}>
+    <FilterPanel className={className} activeCount={activeCount} onClear={clearFilters} dirty={dirty} onConfirm={() => applyFilters(filters)}>
       <FilterSection title="Show">
         {FILTERABLE_TYPES.map((type) => (
           <FilterCheck key={type} label={RESULT_TYPE_LABELS[type]} checked={filters.types.includes(type)} onChange={() => toggleType(type)} />
@@ -159,14 +128,14 @@ export function ResultsFilterSidebar({
             label="Minimum price"
             currency={currency}
             value={String(draftMinPrice)}
-            onChange={(value) => setDraftMinPrice(Number(value || priceRange.min))}
+            onChange={(value) => onFiltersChange({ ...filters, minPrice: Number(value || priceRange.min) })}
           />
           <FilterMoneyInput
             id="max-price"
             label="Maximum price"
             currency={currency}
             value={String(draftMaxPrice)}
-            onChange={(value) => setDraftMaxPrice(Number(value || priceRange.max))}
+            onChange={(value) => onFiltersChange({ ...filters, maxPrice: Number(value || priceRange.max) })}
           />
         </div>
       </FilterSection>
