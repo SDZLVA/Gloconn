@@ -6,6 +6,9 @@
 
 let countryCodes: Map<string, string> | null = null;
 
+/** ISO codes that are reserved or retired and share a name with a real country. */
+const RETIRED_CODES = new Set(["FX", "NT", "SU", "YU", "ZR", "TP", "DD", "BU", "CS"]);
+
 function normalize(value: string): string {
   return value
     .normalize("NFD")
@@ -28,7 +31,8 @@ function codeForCountry(name: string): string | null {
         } catch {
           label = undefined;
         }
-        if (label && label !== code) countryCodes.set(normalize(label), code);
+        // Skip retired codes (FX = "metropolitan France" would beat FR for "France").
+        if (label && label !== code && !RETIRED_CODES.has(code)) countryCodes.set(normalize(label), code);
       }
     }
     // Common alternative spellings.

@@ -10,6 +10,7 @@ test("placeFromLabel turns a Glooconn label into city + country code", () => {
   assert.deepEqual(placeFromLabel("London, United Kingdom"), { cityName: "London", countryCode: "GB" });
   assert.deepEqual(placeFromLabel("Kandana, Sri Lanka"), { cityName: "Kandana", countryCode: "LK" });
   assert.deepEqual(placeFromLabel("Cancún, Mexico"), { cityName: "Cancún", countryCode: "MX" });
+  assert.deepEqual(placeFromLabel("Paris, France"), { cityName: "Paris", countryCode: "FR" });
   assert.equal(placeFromLabel("Atlantis"), null);
 });
 
