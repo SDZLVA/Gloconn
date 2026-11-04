@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApplyRefresh } from "@/hooks/useApplyRefresh";
+import { FiltersAside, MobileResultsBar, useMobileFilters } from "@/components/filters/MobileFilters";
 import { HotelsFilterCard } from "@/components/live/hotels/HotelsFilterCard";
 import { HotelsTileMap } from "@/components/live/hotels/HotelsTileMap";
 import { LiveHotelCard } from "@/components/live/hotels/LiveHotelCard";
@@ -14,6 +15,13 @@ type LiveHotelsResultsProps = {
   stayBudget: number | null;
   cityName: string;
 };
+
+const HOTEL_SORT_OPTIONS = [
+  { value: "recommended", label: "Top picks" },
+  { value: "price", label: "Price (lowest first)" },
+  { value: "rating", label: "Review score" },
+  { value: "stars", label: "Stars" },
+] as const;
 
 type State = { status: "loading" } | { status: "done"; data: LiveHotelsResponse };
 
@@ -46,6 +54,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { refreshing, refresh } = useApplyRefresh();
   const listTop = useRef<HTMLElement | null>(null);
+  const { open: filtersSheetOpen, setOpen: setFiltersSheetOpen } = useMobileFilters();
   // Where the hotel page's "Back to results" returns to.
   const [backUrl, setBackUrl] = useState("");
   useEffect(() => setBackUrl(window.location.pathname + window.location.search), []);
@@ -119,8 +128,25 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
 
   return (
     <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start">
-      <aside className="space-y-4 lg:sticky lg:top-24">
-        <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <MobileResultsBar
+        filtersId="hotel-filters"
+        onOpenFilters={() => setFiltersSheetOpen(true)}
+        activeFilterCount={(filters.maxPerNight ? 1 : 0) + filters.stars.length + (filters.minRating ? 1 : 0) + (filters.refundableOnly ? 1 : 0)}
+        sortValue={filters.sort}
+        sortOptions={HOTEL_SORT_OPTIONS}
+        onSortChange={(value) => {
+          setFilters({ ...filters, sort: value as LiveHotelsFilters["sort"] });
+          refresh();
+        }}
+        onOpenMap={data ? () => setMapOpen(true) : undefined}
+      />
+      <FiltersAside
+        id="hotel-filters"
+        open={filtersSheetOpen}
+        onClose={() => setFiltersSheetOpen(false)}
+        className="space-y-4 lg:sticky lg:top-24"
+      >
+        <div className="relative hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:block">
           <HotelsTileMap hotels={data?.hotels ?? []} nights={data?.nights ?? 1} height={190} preview />
           <div className="absolute inset-0 flex items-center justify-center">
             <button
@@ -136,15 +162,15 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
             </button>
           </div>
         </div>
-        <HotelsFilterCard filters={filters} onChange={(next) => { setFilters(next); refresh(listTop.current); }} currency={search.currency} starCounts={starCounts} />
-      </aside>
+        <HotelsFilterCard filters={filters} onChange={(next) => { setFilters(next); setFiltersSheetOpen(false); refresh(listTop.current); }} currency={search.currency} starCounts={starCounts} />
+      </FiltersAside>
 
       <section ref={listTop} className="min-w-0 scroll-mt-24 space-y-4" aria-labelledby="hotels-count">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 id="hotels-count" className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">
             {data ? `${cityName}: ${shown.length} ${shown.length === 1 ? "property" : "properties"} found` : `Searching stays in ${cityName}…`}
           </h2>
-          <label className="flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800">
+          <label className="hidden items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 lg:flex">
             <span>Sort by:</span>
             <select
               value={filters.sort}

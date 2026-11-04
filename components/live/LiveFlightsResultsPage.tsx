@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { useApplyRefresh } from "@/hooks/useApplyRefresh";
+import { FiltersAside, MobileResultsBar, useMobileFilters } from "@/components/filters/MobileFilters";
 import { LiveFlightsFilterCard } from "@/components/live/LiveFlightsFilterCard";
 import { TripHeader } from "@/components/results/TripHeader";
 import { LiveFlightsSection } from "@/features/liveFlights/LiveFlightsSection";
@@ -47,6 +48,9 @@ export function LiveFlightsResultsPage({
   });
   const { refreshing, refresh } = useApplyRefresh(900);
   const listTop = useRef<HTMLDivElement | null>(null);
+  const { open: filtersSheetOpen, setOpen: setFiltersSheetOpen } = useMobileFilters();
+  const activeFilterCount =
+    (filters.maxStops !== null ? 1 : 0) + (filters.baggageIncluded ? 1 : 0) + (filters.airlines.length > 0 ? 1 : 0) + (filters.maxPrice ? 1 : 0);
   const [facets, setFacets] = useState<LiveFlightsFacets>({ airlines: [], bridged: false });
 
   const travelers = search.travelers;
@@ -71,11 +75,27 @@ export function LiveFlightsResultsPage({
 
       {liveSearch ? (
         <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
-          <aside className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
-            <LiveFlightsFilterCard filters={filters} onChange={(next) => { setFilters(next); refresh(listTop.current); }} facets={facets} currency={currency} />
-          </aside>
+          <MobileResultsBar
+            filtersId="flight-filters"
+            onOpenFilters={() => setFiltersSheetOpen(true)}
+            activeFilterCount={activeFilterCount}
+            sortValue={filters.sort ?? "best"}
+            sortOptions={LIVE_FLIGHTS_SORT_OPTIONS}
+            onSortChange={(value) => {
+              setFilters({ ...filters, sort: value as LiveFlightsSort });
+              refresh();
+            }}
+          />
+          <FiltersAside
+            id="flight-filters"
+            open={filtersSheetOpen}
+            onClose={() => setFiltersSheetOpen(false)}
+            className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto"
+          >
+            <LiveFlightsFilterCard filters={filters} onChange={(next) => { setFilters(next); setFiltersSheetOpen(false); refresh(listTop.current); }} facets={facets} currency={currency} />
+          </FiltersAside>
           <div ref={listTop} className="min-w-0 scroll-mt-24">
-            <div className="mb-3 flex justify-end">
+            <div className="mb-3 hidden justify-end lg:flex">
               <label className="flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800">
                 <span>Sort by:</span>
                 <select
