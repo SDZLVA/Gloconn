@@ -62,7 +62,7 @@ export function toGlooconnHotel(hotel: LiveHotel, request: SearchRequest, nights
   };
 }
 
-async function searchHotels(request: SearchRequest, currency: string, nationality: string): Promise<LiveHotel[]> {
+export async function searchLiveHotels(request: SearchRequest, currency: string, nationality: string): Promise<LiveHotel[]> {
   const place = placeFromLabel(request.destination ?? "");
   if (!place) throw new Error("unknown place");
   const search = {
@@ -95,7 +95,7 @@ export const travelpayoutsLiteApiEngine: PackagesEngine = {
 
     const flightsPromise: Promise<Flight[]> = aviasalesFlightsProvider.search(request);
     const hotelsPromise: Promise<LiveHotel[]> =
-      hasStay && liteApiKey() ? searchHotels(request, currency, nationality) : Promise.resolve([]);
+      hasStay && liteApiKey() ? searchLiveHotels(request, currency, nationality) : Promise.resolve([]);
     const [flightsSettled, hotelsSettled] = await Promise.allSettled([flightsPromise, hotelsPromise]);
 
     let flights: Flight[] = [];

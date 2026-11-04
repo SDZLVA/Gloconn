@@ -1,3 +1,4 @@
+import type { StayPackage } from "@/types/models/stay-package";
 /**
  * SearchResponse model — normalized output from a trip search.
  */
@@ -88,6 +89,12 @@ export type SearchResponse = {
    * Not counted in `totalCount` (packages are derived from flights/hotels).
    */
   packages: TravelPackage[];
+
+  /**
+   * Milestone 40b: hotel-led packages (live hotel + money left for live
+   * White Label flights). Present only from the packages engine.
+   */
+  stayPackages?: StayPackage[];
 
   /**
    * Total count of provider domain results (hotels, flights, buses, trains,

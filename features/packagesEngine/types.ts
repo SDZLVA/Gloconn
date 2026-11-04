@@ -7,6 +7,7 @@
 
 import type { Flight, Hotel, TravelPackage } from "@/types/models";
 import type { SearchRequest } from "@/types/models/search-request";
+import type { StayPackage } from "@/types/models/stay-package";
 import type { SearchResponseWarning } from "@/types/models/search-response";
 
 export type PackagesEngineContext = {
@@ -18,6 +19,8 @@ export type PackagesEngineResult = {
   flights: Flight[];
   hotels: Hotel[];
   packages: TravelPackage[];
+  /** Milestone 40b: hotel-led packages (flights are the live White Label results). */
+  stayPackages?: StayPackage[];
   warnings: SearchResponseWarning[];
 };
 

@@ -157,6 +157,7 @@ async function searchAllDomains(
       buses: transport.buses,
       trains: transport.trains,
       packages: result.packages,
+      stayPackages: result.stayPackages,
       warnings: result.warnings,
       route: resolvedRoute(request),
     });
