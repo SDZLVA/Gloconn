@@ -134,9 +134,17 @@ export function PackagePageView({ packageId }: { packageId: string }) {
               <span className="relative text-lg font-bold text-white drop-shadow">{to}</span>
             </div>
             <div className="relative flex aspect-[4/3] items-end overflow-hidden rounded-2xl bg-gradient-to-br from-slate-700 via-slate-500 to-amber-300 p-4">
-              <svg viewBox="0 0 24 24" className="absolute right-4 top-4 h-10 w-10 text-white/40" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                <path d="M3 20V9l9-5 9 5v11M9 20v-6h6v6" />
-              </svg>
+              {hotel.photo ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={hotel.photo} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                  <span className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" aria-hidden="true" />
+                </>
+              ) : (
+                <svg viewBox="0 0 24 24" className="absolute right-4 top-4 h-10 w-10 text-white/40" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                  <path d="M3 20V9l9-5 9 5v11M9 20v-6h6v6" />
+                </svg>
+              )}
               <span className="relative text-lg font-bold text-white drop-shadow">{hotel.name}</span>
             </div>
           </div>
@@ -187,7 +195,10 @@ export function PackagePageView({ packageId }: { packageId: string }) {
 
             <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="text-lg font-bold text-slate-900">
-                Hotel details <span className="text-sm font-normal text-slate-500">{formatPackageNightsLabel(pkg.nights)} · 1 room</span>
+                Hotel details{" "}
+                <span className="text-sm font-normal text-slate-500">
+                  {formatPackageNightsLabel(pkg.nights)} · {pkg.breakdown?.rooms ?? 1} {(pkg.breakdown?.rooms ?? 1) === 1 ? "room" : "rooms"}
+                </span>
               </h2>
               <p className="mt-3 font-semibold text-slate-900">{hotel.name}</p>
               {hotel.stars > 0 && <p className="text-amber-500">{"★".repeat(Math.round(hotel.stars))}</p>}
@@ -214,14 +225,33 @@ export function PackagePageView({ packageId }: { packageId: string }) {
                 )}
               </div>
               <div className="space-y-2">
-                <p className="text-sm font-bold text-slate-800">2. Choose your stay</p>
-                <p className="text-sm text-slate-600">See live hotel prices in {to} for the same dates.</p>
-                <Link
-                  href={`/search/results?${hotelsQuery.toString()}`}
-                  className="inline-flex min-h-11 items-center justify-center rounded-xl border border-brand-700 px-4 text-sm font-bold text-brand-700 hover:bg-brand-50"
-                >
-                  See live hotels
-                </Link>
+                <p className="text-sm font-bold text-slate-800">2. {hotel.detailsUrl ? "Book the hotel" : "Choose your stay"}</p>
+                {hotel.detailsUrl ? (
+                  <>
+                    <p className="text-sm text-slate-600">
+                      {hotel.name} · {money(pkg.breakdown?.hotelTotal ?? hotel.price, pkg.currency)} for the stay
+                    </p>
+                    <Link
+                      href={hotel.detailsUrl}
+                      className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800"
+                    >
+                      See this hotel &amp; book
+                    </Link>
+                    <Link href={`/search/results?${hotelsQuery.toString()}`} className="block text-sm font-semibold text-brand-700 hover:text-brand-900">
+                      Or see other hotels in {to}
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-slate-600">See live hotel prices in {to} for the same dates.</p>
+                    <Link
+                      href={`/search/results?${hotelsQuery.toString()}`}
+                      className="inline-flex min-h-11 items-center justify-center rounded-xl border border-brand-700 px-4 text-sm font-bold text-brand-700 hover:bg-brand-50"
+                    >
+                      See live hotels
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </section>
@@ -231,7 +261,21 @@ export function PackagePageView({ packageId }: { packageId: string }) {
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-sm font-semibold text-slate-700">Estimated total</p>
             <p className="mt-1 text-4xl font-extrabold text-slate-900">{money(pkg.totalPrice, pkg.currency)}</p>
-            <p className="text-xs text-slate-500">{formatPackagePriceBreakdownLabel(pkg.nights)}</p>
+            <p className="text-xs text-slate-500">{formatPackagePriceBreakdownLabel(pkg.nights, pkg.breakdown)}</p>
+            {pkg.breakdown && (
+              <dl className="mt-3 space-y-1 border-t border-slate-100 pt-3 text-sm text-slate-700">
+                <div className="flex justify-between gap-3">
+                  <dt>
+                    Flights ({money(pkg.breakdown.flightPerPerson, pkg.currency)} × {pkg.breakdown.travelers})
+                  </dt>
+                  <dd className="font-semibold">{money(pkg.breakdown.flightTotal, pkg.currency)}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt>Hotel ({formatPackageNightsLabel(pkg.nights)})</dt>
+                  <dd className="font-semibold">{money(pkg.breakdown.hotelTotal, pkg.currency)}</dd>
+                </div>
+              </dl>
+            )}
             <a
               href="#options"
               className="mt-4 flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white shadow-md shadow-brand-700/20 hover:bg-brand-800"

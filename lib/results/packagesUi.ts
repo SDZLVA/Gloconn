@@ -91,8 +91,15 @@ export function formatPackageNightsLabel(nights: number): string {
  */
 export function formatPackagePriceBreakdownLabel(
   nights: number,
+  breakdown?: { travelers: number; rooms: number } | null,
 ): string {
   const nightsLabel = formatPackageNightsLabel(nights);
+  if (breakdown) {
+    // Milestone 40: packages engine totals are for the whole group.
+    const t = breakdown.travelers;
+    const r = breakdown.rooms;
+    return `Flights for ${t} ${t === 1 ? "traveler" : "travelers"} + hotel (${nightsLabel}, ${r} ${r === 1 ? "room" : "rooms"})`;
+  }
   return `Flight (per person) + hotel (${nightsLabel}, 1 room)`;
 }
 

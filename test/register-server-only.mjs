@@ -7,6 +7,8 @@ import Module from "node:module";
 
 // Milestone 34: tests never download the worldwide places files.
 process.env.GLOOCONN_WORLD_PLACES = "off";
+// Milestone 40: tests compose packages with the injected (mock) providers.
+process.env.PACKAGES_ENGINE = process.env.PACKAGES_ENGINE ?? "legacy";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 

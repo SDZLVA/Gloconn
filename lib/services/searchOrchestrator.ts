@@ -18,6 +18,8 @@ import {
 import { createProviderError, createValidationError } from "@/lib/api/errors";
 import { prepareAviasalesPartnerLink } from "@/lib/affiliate/serverPartnerLinks";
 import { composePackages } from "@/lib/packages";
+import { activePackagesEngine } from "@/features/packagesEngine/config";
+import type { PackagesEngineContext } from "@/features/packagesEngine/types";
 import { normalizeProductTypes } from "@/lib/search/productTypes";
 import { getServiceProviders } from "@/lib/services/context";
 import {
@@ -42,6 +44,10 @@ export type OrchestrateTripSearchOptions = {
    * (SerpAPI: 1 return lookup instead of up to 3). Default false.
    */
   scout?: boolean;
+  /** Milestone 40: visitor details for the packages engine (hotel prices). */
+  context?: PackagesEngineContext;
+  /** Milestone 40: let the packages engine handle flights + hotels searches. */
+  usePackagesEngine?: boolean;
 };
 
 /**
@@ -126,6 +132,36 @@ async function searchAllDomains(
     requested.push("transport");
   }
 
+  // Milestone 40: a packages search (flights + hotels) goes to the packages
+  // engine (features/packagesEngine) instead of the separate providers.
+  const engineChoice = activePackagesEngine();
+  if (
+    options.usePackagesEngine &&
+    options.scout !== true &&
+    engineChoice.kind === "engine" &&
+    requested.includes("hotels") &&
+    requested.includes("flights")
+  ) {
+    const [result, transport] = await Promise.all([
+      engineChoice.engine.search(request, options.context),
+      requested.includes("transport")
+        ? providers.transport.search(request).catch(() => emptyTransport())
+        : Promise.resolve(emptyTransport()),
+    ]);
+    if (result.flights.length === 0 && result.hotels.length === 0 && result.warnings.some((w) => w.code === "PROVIDER_UNAVAILABLE")) {
+      throw createProviderError("Could not load travel results. Please try again.");
+    }
+    return buildSearchResponse({
+      hotels: result.hotels,
+      flights: result.flights,
+      buses: transport.buses,
+      trains: transport.trains,
+      packages: result.packages,
+      warnings: result.warnings,
+      route: resolvedRoute(request),
+    });
+  }
+
   const flightSearchOptions =
     options.scout === true ? { scout: true as const } : undefined;
 
@@ -196,7 +232,8 @@ async function searchAllDomains(
     );
   }
 
-  const packages = composePackagesIfPossible(flights, hotels, request);
+  const packages =
+    engineChoice.kind === "off" ? [] : composePackagesIfPossible(flights, hotels, request);
 
   return buildSearchResponse({
     hotels,
@@ -254,7 +291,7 @@ export async function orchestrateTripSearch(
   assertFlightAirportsResolved(enriched);
   // Runs alongside the search so it adds no waiting time; never throws.
   const [response, aviasales] = await Promise.all([
-    searchAllDomains(enriched, providers, options),
+    searchAllDomains(enriched, providers, { usePackagesEngine: true, ...options }),
     // Scout searches (price hints) show no buttons — don't spend link-API calls.
     options.scout ? Promise.resolve(undefined) : prepareAviasalesPartnerLink(enriched),
   ]);
