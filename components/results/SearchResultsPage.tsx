@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApplyRefresh } from "@/hooks/useApplyRefresh";
+import { FiltersAside, MobileResultsBar, useMobileFilters } from "@/components/filters/MobileFilters";
 import Link from "next/link";
 import {
   collectFilterFacets,
@@ -57,7 +58,6 @@ import { buildSearchCacheKey } from "@/lib/search/cacheKey";
 import { normalizeFlexDays } from "@/lib/search/flexibleDates";
 import { useServiceQuery } from "@/hooks/useServiceQuery";
 import {
-  MobileFilterToggle,
   ResultsFilterSidebar,
 } from "@/components/results/ResultsFilterSidebar";
 import { DatePriceStrip } from "@/components/results/DatePriceStrip";
@@ -166,7 +166,8 @@ function exploreStateFromResult(
 /** Client orchestrator for the search results page (presentation + existing query). */
 export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const [sortBy, setSortBy] = useState<SortOption>("recommended");
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  // Milestone 38: on phones the filters open as a full-screen sheet.
+  const { open: filtersSheetOpen, setOpen: setFiltersSheetOpen } = useMobileFilters();
   /** Bumps the query deps so "Try again" re-runs the same search (bypass cache). */
   const [retryCount, setRetryCount] = useState(0);
   /** Flexible-dates explore UI (Sprint 18.5+). */
@@ -454,9 +455,10 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const applyFilters = useCallback(
     (next: ResultsFilters) => {
       setFilters(next);
+      setFiltersSheetOpen(false);
       refresh(listTop.current);
     },
-    [refresh],
+    [refresh, setFiltersSheetOpen],
   );
   const flightResults = useMemo(() => sorted.filter((r) => r.type === "flight"), [sorted]);
   const hotelResults = useMemo(() => sorted.filter((r) => r.type === "hotel"), [sorted]);
@@ -616,10 +618,6 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     setRetryCount((count) => count + 1);
   }, [activeSearch]);
 
-  const handleToggleFilters = useCallback(() => {
-    setFiltersOpen((open) => !open);
-  }, []);
-
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Milestone 32: redesign header (title, trip summary, Edit search, Save trip). */}
@@ -764,20 +762,24 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
 
       {showResultsChrome && (
         <>
-          <MobileFilterToggle
-            isOpen={filtersOpen}
-            onToggle={handleToggleFilters}
+          <MobileResultsBar
+            filtersId="results-filters-panel"
+            onOpenFilters={() => setFiltersSheetOpen(true)}
             activeFilterCount={activeFilterCount}
-            controlsId="results-filters-panel"
+            sortValue={sortBy}
+            sortOptions={SORT_OPTIONS}
+            onSortChange={(value) => {
+              setSortBy(value as SortOption);
+              refresh();
+            }}
           />
 
           <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:items-start xl:grid-cols-[280px_minmax(0,1fr)]">
-            <aside
+            <FiltersAside
               id="results-filters-panel"
-              className={cn(
-                "lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto",
-                filtersOpen ? "block" : "hidden lg:block",
-              )}
+              open={filtersSheetOpen}
+              onClose={() => setFiltersSheetOpen(false)}
+              className="lg:sticky lg:top-24 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto"
             >
               {hasData && !showSkeleton ? (
                 <ResultsFilterSidebar
@@ -798,7 +800,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                   <div className="h-16 w-full animate-pulse rounded-xl bg-slate-200/80 motion-reduce:animate-none" />
                 </Card>
               )}
-            </aside>
+            </FiltersAside>
 
             <div className="min-w-0 space-y-4">
               {showSkeleton && <ResultsLoadingSkeleton />}
@@ -856,7 +858,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                       ))}
                     </div>
                     {(
-                      <label className="mb-2 flex items-center gap-2 text-sm text-slate-500">
+                      <label className="mb-2 hidden items-center gap-2 text-sm text-slate-500 lg:flex">
                         Sort by
                         <select
                           value={sortBy}

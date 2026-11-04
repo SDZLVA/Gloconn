@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
+import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AppShell } from "@/components/layout/AppShell";
 import { getAppConfig } from "@/lib/config";
@@ -64,6 +65,8 @@ export default async function RootLayout({
     >
       <body className="flex min-h-full flex-col font-sans">
         <AppShell>{children}</AppShell>
+        {/* Milestone 37: Vercel Web Analytics — visitors and page views, no cookies. */}
+        <Analytics />
       </body>
     </html>
   );
