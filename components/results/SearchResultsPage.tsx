@@ -62,6 +62,8 @@ import {
 } from "@/components/results/ResultsFilterSidebar";
 import { DatePriceStrip } from "@/components/results/DatePriceStrip";
 import { RecommendedPackagesSection } from "@/components/results/RecommendedPackagesSection";
+import { StayPackagesSection } from "@/components/results/StayPackagesSection";
+import type { StayPackage } from "@/types/models/stay-package";
 import { LiveFlightsSection } from "@/features/liveFlights/LiveFlightsSection";
 import type {
   LiveFlightsFacets,
@@ -102,6 +104,7 @@ type SearchResultsPageProps = {
 const EMPTY_RESULTS: SearchResult[] = [];
 const EMPTY_WARNINGS: SearchResponseWarning[] = [];
 const EMPTY_PACKAGES: TravelPackage[] = [];
+const EMPTY_STAYS: StayPackage[] = [];
 
 type ExploreUiState =
   | { status: "idle" }
@@ -247,6 +250,8 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   }, [displayData]);
 
   const packages = displayData?.packages ?? EMPTY_PACKAGES;
+  // Milestone 40b: hotel-led packages from the packages engine.
+  const stayPackages = displayData?.stayPackages ?? EMPTY_STAYS;
   const warnings = displayData?.warnings ?? EMPTY_WARNINGS;
 
   const showBudgetCompatibilityWarning =
@@ -429,9 +434,21 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   // No packages (e.g. no recent flight prices) → open the Flights tab, where the live list is.
   const [viewTouched, setViewTouched] = useState(false);
   useEffect(() => {
-    if (!viewTouched && displayData) setView((displayData.packages?.length ?? 0) > 0 ? "packages" : "flights");
+    if (!viewTouched && displayData) setView((displayData.packages?.length ?? 0) + (displayData.stayPackages?.length ?? 0) > 0 ? "packages" : "flights");
   }, [displayData, viewTouched]);
   // Milestone 35: the sidebar filters and the Sort button also work on the packages.
+  const visibleStays = useMemo(() => {
+    if (stayPackages.length === 0) return stayPackages;
+    // Sidebar filters (price, review score, stars, amenities) apply to the hotel.
+    const ok = new Set(filterResults(allResults, { ...filters, types: ["hotel"] }).map((r) => r.id));
+    const list = stayPackages.filter((stay) => ok.has(stay.hotel.id));
+    if (sortBy === "price-asc") list.sort((a, b) => a.hotelTotal - b.hotelTotal);
+    else if (sortBy === "rating-desc") list.sort((a, b) => b.hotel.rating - a.hotel.rating);
+    else if (sortBy === "value-desc") list.sort((a, b) => b.score - a.score);
+    return list;
+  }, [stayPackages, allResults, filters, sortBy]);
+  const usesStays = stayPackages.length > 0;
+  const packageCount = usesStays ? visibleStays.length : 0;
   const visiblePackages = useMemo(() => {
     const ok = new Set(
       filterResults(allResults, { ...filters, types: ["hotel", "flight"], minPrice: 0, maxPrice: Number.MAX_SAFE_INTEGER }).map((r) => r.id),
@@ -833,8 +850,8 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                     <div role="tablist" aria-label="Result lists" className="-mb-px flex gap-1 overflow-x-auto">
                       {(
                         [
-                          ["packages", `Recommended Packages (${visiblePackages.length})`],
-                          ["flights", `Flights (${flightResults.length})`],
+                          ["packages", `Recommended Packages (${usesStays ? packageCount : visiblePackages.length})`],
+                          ["flights", flightResults.length === 0 && liveFlightsSearch ? "Live flights" : `Flights (${flightResults.length})`],
                           ["hotels", `Hotels (${hotelResults.length})`],
                         ] as const
                       ).map(([value, label]) => (
@@ -879,7 +896,14 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                   </div>
 
                   <div ref={listTop} className={cn("scroll-mt-24 space-y-4", refreshing && "pointer-events-none opacity-40 transition-opacity")} aria-busy={refreshing}>
-                  {view === "packages" && (
+                  {view === "packages" && usesStays && (
+                    <StayPackagesSection
+                      stays={visibleStays}
+                      flights={liveFlightsSearch}
+                      destinationName={(activeSearch.destination ?? "").split(",")[0]?.trim()}
+                    />
+                  )}
+                  {view === "packages" && !usesStays && (
                     <RecommendedPackagesSection
                       packages={visiblePackages}
                       originIata={originIata}
@@ -890,14 +914,14 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                       destinationName={(activeSearch.destination ?? "").split(",")[0]?.trim()}
                     />
                   )}
-                  {view === "packages" && visiblePackages.length === 0 && (
+                  {view === "packages" && (usesStays ? visibleStays.length === 0 : visiblePackages.length === 0) && (
                     <p className="rounded-2xl border border-slate-200 bg-white px-5 py-6 text-sm text-slate-600">
-                      {packages.length > 0
+                      {packages.length > 0 || usesStays
                         ? "No packages match your filters. Try a higher budget or fewer filters."
                         : "No packages for this search yet — see the Flights and Hotels tabs."}
                     </p>
                   )}
-                  {view !== "packages" && (
+                  {view !== "packages" && !(view === "flights" && flightResults.length === 0 && liveFlightsSearch) && (
                     <ResultsList
                       results={view === "flights" ? flightResults : hotelResults}
                       destination={destination}

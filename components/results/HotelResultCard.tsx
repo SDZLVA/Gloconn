@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { ViewHotelAction } from "@/components/results/ViewHotelAction";
 import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
@@ -31,11 +32,16 @@ export function HotelResultCard({ result }: HotelResultCardProps) {
   return (
     <Card hoverable className="overflow-hidden">
       <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-stretch sm:gap-5 sm:p-5">
-        <ResultPlaceholderImage
-          type="hotel"
-          label={result.location}
-          className="h-36 w-full sm:h-auto sm:w-36"
-        />
+        {result.photo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={result.photo} alt="" loading="lazy" className="h-36 w-full rounded-xl object-cover sm:h-auto sm:w-36" />
+        ) : (
+          <ResultPlaceholderImage
+            type="hotel"
+            label={result.location}
+            className="h-36 w-full sm:h-auto sm:w-36"
+          />
+        )}
 
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <div className="flex flex-wrap items-start justify-between gap-2">
@@ -78,7 +84,16 @@ export function HotelResultCard({ result }: HotelResultCardProps) {
                 <p className="text-xs text-amber-800">{SAMPLE_HOTEL_NOTE}</p>
               )}
             </div>
-            <ViewHotelAction hotel={result} />
+            {result.detailsUrl ? (
+              <Link
+                href={result.detailsUrl}
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-800"
+              >
+                See availability
+              </Link>
+            ) : (
+              <ViewHotelAction hotel={result} />
+            )}
           </div>
         </div>
       </div>

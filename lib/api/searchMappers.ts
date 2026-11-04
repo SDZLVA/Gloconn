@@ -109,6 +109,7 @@ type BuildSearchResponseInput = {
   restaurants?: SearchResponse["restaurants"];
   attractions?: SearchResponse["attractions"];
   packages?: TravelPackage[];
+  stayPackages?: SearchResponse["stayPackages"];
   warnings?: SearchResponseWarning[];
   searchedAt?: string;
   route?: SearchResponse["route"];
@@ -135,6 +136,7 @@ export function buildSearchResponse(
     restaurants,
     attractions,
     packages,
+    ...(input.stayPackages?.length ? { stayPackages: input.stayPackages } : {}),
     totalCount:
       hotels.length +
       flights.length +

@@ -14,6 +14,7 @@ import {
   orchestrateTripSearch,
 } from "@/lib/services/searchOrchestrator";
 import type { SearchRequest } from "@/types/models/search-request";
+import type { PackagesEngineContext } from "@/features/packagesEngine/types";
 import type { SearchResponse } from "@/types/models/search-response";
 import type { SearchData, TravelStyle } from "@/types/search";
 import { INITIAL_PASSENGERS } from "@/types/search-form";
@@ -21,6 +22,7 @@ import { INITIAL_PASSENGERS } from "@/types/search-form";
 /** Runs a full validated search and returns a SearchResponse (with optional warnings). */
 export async function searchTrips(
   search: Partial<SearchData> | Partial<SearchRequest>,
+  context: PackagesEngineContext = {},
 ): Promise<ServiceResult<SearchResponse>> {
   const validation = validateSearchRequest(search);
   if (!validation.success) {
@@ -36,7 +38,7 @@ export async function searchTrips(
   }
 
   return runService(
-    () => orchestrateTripSearch(validation.data),
+    () => orchestrateTripSearch(validation.data, undefined, { context }),
     "Could not load search results.",
   );
 }

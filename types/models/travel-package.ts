@@ -43,4 +43,19 @@ export type TravelPackage = {
    * Higher is better. Produced by PackageComposer scoring.
    */
   score: number;
+
+  /**
+   * Milestone 40 (packages engine): exact totals for the whole group.
+   * When set, totalPrice = flightTotal + hotelTotal and the card explains it.
+   */
+  breakdown?: {
+    flightPerPerson: number;
+    flightTotal: number;
+    hotelTotal: number;
+    travelers: number;
+    rooms: number;
+  };
+
+  /** Milestone 40: true when no package fits the budget and this is the cheapest option. */
+  overBudget?: boolean;
 };

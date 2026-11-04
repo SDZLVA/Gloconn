@@ -86,10 +86,18 @@ function TravelPackageCardComponent({
       aria-labelledby={headingId}
       className="grid overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm motion-safe:transition-shadow hover:shadow-md md:grid-cols-[170px_minmax(0,1fr)_200px]"
     >
-      <div className="relative min-h-[140px] bg-gradient-to-br from-brand-700 via-brand-600 to-sky-400">
-        <svg viewBox="0 0 120 80" className="absolute inset-x-0 bottom-0 h-3/4 w-full text-white/25" fill="currentColor" aria-hidden="true">
-          <path d="M0 80V52h10V38h8v14h8V30h12v22h6V20l8-8 8 8v32h6V36h10v16h8V44h10v36Z" />
-        </svg>
+      <div className="relative min-h-[140px] overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-sky-400">
+        {hotel.photo ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={hotel.photo} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
+            <span className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" aria-hidden="true" />
+          </>
+        ) : (
+          <svg viewBox="0 0 120 80" className="absolute inset-x-0 bottom-0 h-3/4 w-full text-white/25" fill="currentColor" aria-hidden="true">
+            <path d="M0 80V52h10V38h8v14h8V30h12v22h6V20l8-8 8 8v32h6V36h10v16h8V44h10v36Z" />
+          </svg>
+        )}
         {explanation && (
           <span className={cn("absolute left-3 top-3 rounded-md px-2 py-1 text-xs font-bold text-white shadow", badgeTone(explanation.role))}>
             {explanation.label}
@@ -156,8 +164,8 @@ function TravelPackageCardComponent({
       <div className="flex flex-row items-center justify-between gap-3 border-t border-slate-100 bg-brand-50/70 p-4 md:flex-col md:items-stretch md:justify-center md:border-l md:border-t-0">
         <div>
           <p className="text-2xl font-extrabold text-slate-900">{formatMoney(totalPrice, currency)}</p>
-          <p className="text-xs font-semibold text-slate-600">est. total</p>
-          <p className="text-[11px] leading-snug text-slate-500">{formatPackagePriceBreakdownLabel(nights)}</p>
+          <p className="text-xs font-semibold text-slate-600">{travelPackage.overBudget ? "over your budget" : "est. total"}</p>
+          <p className="text-[11px] leading-snug text-slate-500">{formatPackagePriceBreakdownLabel(nights, travelPackage.breakdown)}</p>
         </div>
         <ViewPackageLink
           package={travelPackage}

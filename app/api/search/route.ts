@@ -56,7 +56,9 @@ export async function POST(request: Request) {
 
   try {
     const body = (await request.json()) as Partial<SearchRequest>;
-    const result = await searchTrips(body);
+    // Milestone 40: hotel prices can depend on the visitor's country.
+    const country = request.headers.get("x-vercel-ip-country") ?? "";
+    const result = await searchTrips(body, /^[A-Z]{2}$/.test(country) ? { guestNationality: country } : {});
     return toJsonResponse(result);
   } catch {
     return toErrorJsonResponse(null, "Invalid search request body.");

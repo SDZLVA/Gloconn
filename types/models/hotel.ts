@@ -63,4 +63,13 @@ export type Hotel = {
    * importantly inside packages that mix live and sample data.
    */
   isSample?: boolean;
+
+  /** Milestone 40: photo URL from the live hotel source. */
+  photo?: string | null;
+
+  /** Milestone 40: Glooconn's own hotel page for this stay (/hotels/{id}?…). */
+  detailsUrl?: string;
+
+  /** Milestone 40: number of guest reviews. */
+  reviewCount?: number | null;
 };
