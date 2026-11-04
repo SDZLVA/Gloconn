@@ -56,7 +56,12 @@ export async function GET(request: Request) {
   // Preview deployments only: show one raw LiteAPI item to check the field mapping.
   const debug = process.env.VERCEL_ENV === "preview" && url.searchParams.get("debug") === "1";
 
-  const key = JSON.stringify(search);
+  // Preview only: try another supplier timeout (seconds) to measure speed vs results.
+  const timeoutParam = Number(url.searchParams.get("t"));
+  const supplierTimeout =
+    process.env.VERCEL_ENV === "preview" && Number.isFinite(timeoutParam) && timeoutParam > 0 ? timeoutParam : undefined;
+
+  const key = JSON.stringify({ ...search, supplierTimeout });
   const hit = debug ? undefined : cache.get(key);
   if (hit && Date.now() - hit.at < CACHE_MS) return json(hit.body, 200, true);
 
@@ -72,7 +77,7 @@ export async function GET(request: Request) {
     : "US";
 
   try {
-    const { hotels, raw } = await searchLiteApiHotels(search, place, nationality);
+    const { hotels, raw } = await searchLiteApiHotels(search, place, nationality, supplierTimeout);
     if (debug) {
       const r = (raw ?? {}) as { data?: unknown[]; hotels?: unknown[] };
       return new Response(

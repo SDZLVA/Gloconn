@@ -16,6 +16,13 @@ import type { LiveHotel, LiveHotelsSearch } from "@/features/liveHotels/types";
 const RATES_URL = "https://api.liteapi.travel/v3.0/hotels/rates";
 const TIMEOUT_MS = 20_000;
 const RESULT_LIMIT = 60;
+/**
+ * Milestone 39: how long LiteAPI waits for its suppliers, in seconds. LiteAPI
+ * waits the full time before answering, so this is roughly the search time
+ * (12 s made every hotel search take ~12 s). Most suppliers answer within
+ * a few seconds; the slow ones rarely change the cheapest prices.
+ */
+export const DEFAULT_SUPPLIER_TIMEOUT_S = 5;
 
 export function liteApiKey(): string | null {
   const key = process.env.LITEAPI_API_KEY?.trim();
@@ -35,6 +42,7 @@ export async function searchLiteApiHotels(
   search: Omit<LiveHotelsSearch, "destination"> & { destination?: string },
   place: LiteApiPlace | { hotelIds: string[] },
   guestNationality: string,
+  supplierTimeoutS: number = DEFAULT_SUPPLIER_TIMEOUT_S,
 ): Promise<{ hotels: LiveHotel[]; raw: unknown }> {
   const key = liteApiKey();
   if (!key) throw new LiteApiError("LiteAPI is not configured", 503);
@@ -60,7 +68,7 @@ export async function searchLiteApiHotels(
         maxRatesPerHotel: 1,
         includeHotelData: true,
         limit: RESULT_LIMIT,
-        timeout: 12,
+        timeout: Math.min(15, Math.max(2, Math.round(supplierTimeoutS))),
       }),
       signal: controller.signal,
       cache: "no-store",
