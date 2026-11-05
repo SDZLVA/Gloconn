@@ -29,3 +29,18 @@ test("mapDataFlights ignores empty or broken answers", () => {
   assert.deepEqual(mapDataFlights(null, search), []);
   assert.deepEqual(mapDataFlights({ data: { ROM: { "0": { price: 0 } } } }, search), []);
 });
+
+test("mapDataFlights keeps only the exact dates and trip type asked for", () => {
+  const raw = {
+    data: {
+      ROM: {
+        "0": { price: 84, airline: "U2", departure_at: "2026-12-10T20:55:00+01:00", return_at: "2026-12-14T06:45:00Z", duration_to: 160 },
+        "1": { price: 60, airline: "FR", departure_at: "2026-12-11T08:00:00Z", return_at: "2026-12-14T09:00:00Z" },
+      },
+    },
+  };
+  const flights = mapDataFlights(raw, search);
+  assert.equal(flights.length, 1);
+  assert.equal(flights[0].durationMinutes, 160);
+  assert.deepEqual(mapDataFlights(raw, { ...search, returnDate: null }), []);
+});

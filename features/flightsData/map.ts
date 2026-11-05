@@ -52,6 +52,10 @@ export function mapDataFlights(raw: unknown, search: DataFlightsSearch, destinat
       const stops = Math.max(0, Math.round(asNumber(stopsKey) ?? 0));
       const outDate = departureAt.slice(0, 10);
       const backDate = returnAt ? returnAt.slice(0, 10) : null;
+      // Only offers for the exact trip asked for: a one-way search must not
+      // show a round-trip price, and other dates would mislead.
+      if (search.returnDate ? backDate !== search.returnDate : returnAt) continue;
+      if (outDate !== search.departureDate) continue;
       const bookingUrl = buildAviasalesSearchUrl({
         origin: search.origin,
         destination: dest || search.destination,
@@ -72,7 +76,7 @@ export function mapDataFlights(raw: unknown, search: DataFlightsSearch, destinat
         ...(airlineCode ? { airlineCode } : {}),
         departureTime: localTime(departureAt),
         arrivalTime: "",
-        durationMinutes: 0,
+        durationMinutes: Math.max(0, Math.round(asNumber(offer.duration_to) ?? 0)),
         stops,
         cabin: "Economy",
         priceIsRecent: true,
