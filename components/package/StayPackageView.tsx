@@ -21,6 +21,9 @@ const scoreWord = (s: number) => (s >= 9 ? "Superb" : s >= 8.5 ? "Excellent" : s
 export function StayPackageView({ stayId }: { stayId: string }) {
   const [payload, setPayload] = useState<StayViewPayload | null | "loading">("loading");
   useEffect(() => setPayload(loadStayView(stayId)), [stayId]);
+  // The live flights open inside the package box (kept loaded once opened).
+  const [flightsOpen, setFlightsOpen] = useState(false);
+  const [flightsLoaded, setFlightsLoaded] = useState(false);
 
   const filters = useMemo((): LiveFlightsFilters | null => {
     if (!payload || payload === "loading") return null;
@@ -57,7 +60,6 @@ export function StayPackageView({ stayId }: { stayId: string }) {
   const dates = [search.departureDate, search.returnDate].filter((v): v is string => Boolean(v)).map(formatShortDate).join(" – ");
   const score = hotel.rating > 0 ? (hotel.rating <= 5 ? hotel.rating * 2 : hotel.rating) : 0;
   const people = `${stay.travelers} ${stay.travelers === 1 ? "traveler" : "travelers"}`;
-  const packageFrom = stay.flightEstimate !== null ? Math.round((stay.hotelTotal + stay.flightEstimate) * 100) / 100 : null;
 
   return (
     <div className="space-y-6">
@@ -71,144 +73,111 @@ export function StayPackageView({ stayId }: { stayId: string }) {
         <p className="mt-1 text-sm text-slate-600">{[dates, people, formatPackageNightsLabel(stay.nights)].filter(Boolean).join(" · ")}</p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="min-w-0 space-y-6">
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm sm:grid sm:grid-cols-[240px_minmax(0,1fr)]">
-            <div className="relative min-h-[180px] bg-gradient-to-br from-slate-700 via-slate-500 to-amber-300">
-              {hotel.photo && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={hotel.photo} alt="" className="absolute inset-0 h-full w-full object-cover" />
-              )}
-            </div>
-            <div className="space-y-2 p-5">
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">1 · Your hotel</p>
-              <h2 className="text-xl font-bold text-slate-900">{hotel.name}</h2>
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                {hotel.stars > 0 && <span className="text-amber-500">{"★".repeat(Math.round(hotel.stars))}</span>}
-                {score > 0 && (
-                  <span className="flex items-center gap-1.5">
-                    <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 font-bold text-emerald-700">{score.toFixed(1)}</span>
-                    <span className="font-semibold text-emerald-700">{scoreWord(score)}</span>
-                  </span>
-                )}
+      {/* Milestone 42: one package box — price, hotel and flights with their booking options together. */}
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm" aria-labelledby="package-price">
+        <div className="flex flex-wrap items-end justify-between gap-4 border-b border-slate-100 bg-brand-50/60 p-5">
+          <div>
+            <p id="package-price" className="text-sm font-semibold text-slate-700">Package price</p>
+            <p className="mt-1 text-3xl font-extrabold text-slate-900">
+              {formatMoney(stay.hotelTotal, stay.currency)} <span className="text-lg font-bold text-slate-500">+ flights</span>
+            </p>
+            <p className="text-xs text-slate-500">
+              {people} · {formatPackageNightsLabel(stay.nights)} · hotel + return flights at today&apos;s live price
+            </p>
+          </div>
+          {stay.budget !== null && (
+            <dl className="text-sm text-slate-700">
+              <div className="flex justify-between gap-6">
+                <dt>Your budget</dt>
+                <dd className="font-semibold">{formatMoney(stay.budget, stay.currency)}</dd>
               </div>
-              <p className="text-sm text-slate-600">{hotel.location}</p>
-              <p className="text-sm text-slate-700">
-                {formatMoney(stay.hotelTotal, stay.currency)} for {formatPackageNightsLabel(stay.nights)} · {stay.rooms} {stay.rooms === 1 ? "room" : "rooms"}
-              </p>
-              {hotel.detailsUrl && (
-                <Link
-                  href={hotel.detailsUrl}
-                  className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-800"
-                >
-                  See this hotel &amp; book
-                </Link>
+              {stay.flightBudget !== null && (
+                <div className="flex justify-between gap-6">
+                  <dt>Left for flights</dt>
+                  <dd className="font-bold text-emerald-700">{formatMoney(stay.flightBudget, stay.currency)}</dd>
+                </div>
               )}
-            </div>
-          </section>
+            </dl>
+          )}
+        </div>
 
-          <section id="live-flights" className="scroll-mt-24 space-y-3">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">2 · Your flights</p>
-              <p className="text-sm text-slate-600">
+        <div className="grid gap-4 border-b border-slate-100 p-5 sm:grid-cols-[160px_minmax(0,1fr)_auto] sm:items-center">
+          <div className="relative h-28 overflow-hidden rounded-xl bg-gradient-to-br from-slate-700 via-slate-500 to-amber-300 sm:h-24">
+            {hotel.photo && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={hotel.photo} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            )}
+          </div>
+          <div className="min-w-0 space-y-1">
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-500">1 · Hotel</p>
+            <p className="text-lg font-bold text-slate-900">{hotel.name}</p>
+            <p className="flex flex-wrap items-center gap-2 text-sm">
+              {hotel.stars > 0 && <span className="text-amber-500">{"★".repeat(Math.round(hotel.stars))}</span>}
+              {score > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 font-bold text-emerald-700">{score.toFixed(1)}</span>
+                  <span className="font-semibold text-emerald-700">{scoreWord(score)}</span>
+                </span>
+              )}
+              <span className="text-slate-500">{hotel.location}</span>
+            </p>
+          </div>
+          <div className="space-y-2 sm:text-right">
+            <p className="text-xl font-extrabold text-slate-900">{formatMoney(stay.hotelTotal, stay.currency)}</p>
+            <p className="text-xs text-slate-500">
+              {formatPackageNightsLabel(stay.nights)} · {stay.rooms} {stay.rooms === 1 ? "room" : "rooms"}
+            </p>
+            {hotel.detailsUrl && (
+              <Link
+                href={hotel.detailsUrl}
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-800"
+              >
+                Book hotel · all room options
+              </Link>
+            )}
+          </div>
+        </div>
+
+        <div className="p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-wide text-slate-500">2 · Return flights</p>
+              <p className="text-sm text-slate-700">
                 {stay.flightBudget !== null
-                  ? `Live prices, showing only flights up to ${formatMoney(stay.flightBudget, stay.currency)} for ${people} — what's left of your budget after the hotel.`
+                  ? `Live prices for ${people}, only flights up to ${formatMoney(stay.flightBudget, stay.currency)} — cheapest first.`
                   : `Live prices for ${people}, cheapest first.`}
               </p>
             </div>
-            {flights ? (
-              <LiveFlightsSection search={flights} filters={filters} title="Live flights" />
-            ) : (
-              <p className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
-                We couldn&apos;t match these places to airports. Search flights from the Flights tab.
-              </p>
+            {flights && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFlightsOpen((open) => !open);
+                  setFlightsLoaded(true);
+                }}
+                aria-expanded={flightsOpen}
+                aria-controls="live-flights"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-brand-700 px-5 text-sm font-bold text-brand-700 hover:bg-brand-50"
+              >
+                {flightsOpen ? "Hide flight options ↑" : "Book flights · all flight options ↓"}
+              </button>
             )}
-          </section>
-        </div>
-
-        <aside className="order-first space-y-4 lg:order-none lg:sticky lg:top-24 lg:self-start">
-          {/* Milestone 41: one summary — package price, then hotel and flights with their booking options. */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-semibold text-slate-700">Package price</p>
-            {packageFrom !== null ? (
-              <p className="mt-1 text-4xl font-extrabold text-slate-900">
-                <span className="text-base font-semibold text-slate-500">from </span>
-                {formatMoney(packageFrom, stay.currency)}
-              </p>
-            ) : (
-              <p className="mt-1 text-2xl font-extrabold text-slate-900">
-                {formatMoney(stay.hotelTotal, stay.currency)} <span className="text-base font-semibold text-slate-500">+ flights</span>
-              </p>
-            )}
-            <p className="text-xs text-slate-500">
-              {people} · {formatPackageNightsLabel(stay.nights)} · hotel + return flights
-            </p>
-
-            <div className="mt-4 space-y-3 border-t border-slate-100 pt-4">
-              <div className="space-y-2">
-                <div className="flex items-baseline justify-between gap-3 text-sm text-slate-700">
-                  <span>Hotel ({formatPackageNightsLabel(stay.nights)})</span>
-                  <span className="font-bold text-slate-900">{formatMoney(stay.hotelTotal, stay.currency)}</span>
-                </div>
-                {hotel.detailsUrl && (
-                  <Link
-                    href={hotel.detailsUrl}
-                    className="flex min-h-11 w-full items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800"
-                  >
-                    Book hotel · all room options
-                  </Link>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-baseline justify-between gap-3 text-sm text-slate-700">
-                  <span>Flights ({people})</span>
-                  <span className="font-bold text-slate-900">
-                    {stay.flightEstimate !== null
-                      ? `from ${formatMoney(stay.flightEstimate, stay.currency)}`
-                      : stay.flightBudget !== null
-                        ? `up to ${formatMoney(stay.flightBudget, stay.currency)}`
-                        : "live prices"}
-                  </span>
-                </div>
-                {flights && (
-                  <a
-                    href="#live-flights"
-                    className="flex min-h-11 w-full items-center justify-center rounded-xl border border-brand-700 px-4 text-sm font-bold text-brand-700 hover:bg-brand-50"
-                  >
-                    Book flights · all flight options ↓
-                  </a>
-                )}
-              </div>
-            </div>
-
-            {stay.budget !== null && (
-              <div className="mt-4 space-y-1 border-t border-slate-100 pt-3 text-sm text-slate-700">
-                <div className="flex justify-between gap-3">
-                  <span>Your budget</span>
-                  <span className="font-semibold">{formatMoney(stay.budget, stay.currency)}</span>
-                </div>
-                {stay.flightBudget !== null && (
-                  <div className="flex justify-between gap-3">
-                    <span>Left for flights</span>
-                    <span className="font-semibold">{formatMoney(stay.flightBudget, stay.currency)}</span>
-                  </div>
-                )}
-              </div>
-            )}
-            {stay.overBudget && (
-              <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
-                This hotel leaves little or nothing for flights within your budget.
-              </p>
-            )}
-            <p className="mt-3 text-[11px] leading-snug text-slate-500">
-              {stay.flightEstimate !== null
-                ? `“From” uses the cheapest recent fare on this route${stay.flightEstimateNearby ? " (similar dates)" : ""}; the live flights below show today's prices and every booking option.`
-                : "The live flights below show today's prices and every booking option."}
-            </p>
           </div>
-        </aside>
-      </div>
+          {!flights && (
+            <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+              We couldn&apos;t match these places to airports. Search flights from the Flights tab.
+            </p>
+          )}
+          {flights && flightsLoaded && (
+            <div id="live-flights" hidden={!flightsOpen} className="mt-4 border-t border-slate-100 pt-4">
+              <LiveFlightsSection search={flights} filters={filters} title="Flight options" />
+              <p className="mt-2 text-xs text-slate-500">
+                Each ticket&apos;s price is the live total for {people}. Pick a ticket to book it with the airline or agency; your package price is the hotel plus that ticket.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
