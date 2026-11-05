@@ -22,6 +22,8 @@ export type LiveHotel = {
   boardName: string | null;
   refundable: boolean;
   offerId: string | null;
+  /** Milestone 44: the hotel on another site (Booking.com engine); opened in a new tab. */
+  externalUrl?: string | null;
 };
 
 export type LiveHotelsSearch = {
