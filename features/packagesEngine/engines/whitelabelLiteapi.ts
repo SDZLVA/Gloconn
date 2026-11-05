@@ -11,7 +11,9 @@ import "server-only";
 
 import { createProviderUnavailableWarning } from "@/lib/api/searchMappers";
 import { aviasalesFlightsProvider } from "@/lib/providers/flights/aviasales";
-import { resolveAviasalesCurrency } from "@/lib/providers/flights/aviasales/provider";
+import { buildAviasalesParams, resolveAviasalesCurrency } from "@/lib/providers/flights/aviasales/provider";
+import { fetchAviasalesPricesForDates } from "@/lib/providers/flights/aviasales/client";
+import { getAppConfig } from "@/lib/config";
 import { nightsBetween } from "@/features/liveHotels/filters";
 import { liteApiKey } from "@/features/liveHotels/liteapi/client";
 import { searchLiveHotels, toGlooconnHotel } from "@/features/packagesEngine/engines/travelpayoutsLiteapi";
@@ -21,6 +23,32 @@ import type { Hotel } from "@/types/models";
 import type { SearchResponseWarning } from "@/types/models/search-response";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const DAY_MS = 86_400_000;
+
+/**
+ * Milestone 41: when no recent fare exists for the exact dates, the cheapest
+ * recent fare in the same months for a similar trip length (±2 nights), per
+ * person. An estimate for "from" prices only; null when nothing is known.
+ */
+async function nearbyFlightEstimate(request: Parameters<PackagesEngine["search"]>[0], nights: number): Promise<number | null> {
+  const config = getAppConfig().aviasales;
+  if (!config.apiToken?.trim() || !request.returnDate) return null;
+  const params = buildAviasalesParams(request, config, { scout: true });
+  params.set("departure_at", request.departureDate.slice(0, 7));
+  params.set("return_at", request.returnDate.slice(0, 7));
+  params.set("limit", "30");
+  const response = await fetchAviasalesPricesForDates(params, config.apiToken);
+  const prices = (response?.data ?? [])
+    .filter((ticket) => {
+      const out = Date.parse(ticket.departure_at ?? "");
+      const back = Date.parse(ticket.return_at ?? "");
+      if (!Number.isFinite(out) || !Number.isFinite(back)) return false;
+      return Math.abs(Math.round((back - out) / DAY_MS) - nights) <= 2;
+    })
+    .map((ticket) => ticket.price ?? 0)
+    .filter((price) => price > 0);
+  return prices.length > 0 ? Math.min(...prices) : null;
+}
 
 export const whitelabelLiteApiEngine: PackagesEngine = {
   id: "whitelabel-liteapi",
@@ -54,7 +82,13 @@ export const whitelabelLiteApiEngine: PackagesEngine = {
       flightsSettled.status === "fulfilled" && flightsSettled.value.length > 0
         ? Math.min(...flightsSettled.value.filter((f) => f.currency === currency && f.price > 0).map((f) => f.price))
         : Infinity;
-    const flightEstimate = Number.isFinite(cheapestFlight) ? Math.round(cheapestFlight * travelers * 100) / 100 : null;
+    let perPerson: number | null = Number.isFinite(cheapestFlight) ? cheapestFlight : null;
+    let estimateFromNearbyDates = false;
+    if (perPerson === null) {
+      perPerson = await nearbyFlightEstimate(request, nights).catch(() => null);
+      estimateFromNearbyDates = perPerson !== null;
+    }
+    const flightEstimate = perPerson !== null ? Math.round(perPerson * travelers * 100) / 100 : null;
 
     const budget = request.budget && request.budget.amount > 0 && request.budget.currency === currency ? request.budget.amount : null;
     const stayPackages = buildStayPackages(hotels, {
@@ -63,7 +97,7 @@ export const whitelabelLiteApiEngine: PackagesEngine = {
       travelers,
       rooms: Math.max(1, request.travelers.rooms),
       nights,
-    });
+    }).map((stay) => (estimateFromNearbyDates ? { ...stay, flightEstimateNearby: true } : stay));
     if (stayPackages.some((pkg) => pkg.overBudget)) {
       warnings.push({
         code: "PACKAGES_OVER_BUDGET",

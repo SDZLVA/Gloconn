@@ -59,8 +59,11 @@ export function buildStayPackages(hotels: Hotel[], options: StayOptions): StayPa
             : 0.6 * quality + 0.4 * cheapness;
         return { hotel, score };
       })
-      .sort((a, b) => b.score - a.score || a.hotel.price - b.hotel.price)
-      .slice(0, max);
+      .sort((a, b) => b.score - a.score || a.hotel.price - b.hotel.price);
+    // Always include the cheapest stay, so "Cheapest" is really the cheapest.
+    const cheapest = ranked.reduce((best, item) => (item.hotel.price < best.hotel.price ? item : best), ranked[0]);
+    ranked = ranked.slice(0, max);
+    if (cheapest && !ranked.includes(cheapest)) ranked = [...ranked.slice(0, max - 1), cheapest];
   }
 
   const cheapestId = [...ranked].sort((a, b) => a.hotel.price - b.hotel.price)[0]?.hotel.id;
