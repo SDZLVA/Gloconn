@@ -87,9 +87,10 @@ export function HotelResultCard({ result }: HotelResultCardProps) {
             {result.detailsUrl ? (
               <Link
                 href={result.detailsUrl}
+                {...(/^https?:\/\//.test(result.detailsUrl) ? { target: "_blank", rel: "noopener noreferrer nofollow" } : {})}
                 className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-800"
               >
-                See availability
+                {/^https?:\/\//.test(result.detailsUrl) ? "See on Booking.com ↗" : "See availability"}
               </Link>
             ) : (
               <ViewHotelAction hotel={result} />

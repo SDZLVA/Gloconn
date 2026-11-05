@@ -1,6 +1,8 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { DataFlightsList, filterDataFlights } from "@/components/live/DataFlightsList";
+import type { Flight } from "@/types/models";
 import { useApplyRefresh } from "@/hooks/useApplyRefresh";
 import { FiltersAside, MobileResultsBar, useMobileFilters } from "@/components/filters/MobileFilters";
 import { LiveFlightsFilterCard } from "@/components/live/LiveFlightsFilterCard";
@@ -68,6 +70,42 @@ export function LiveFlightsResultsPage({
     };
   }, [originCode, destinationCode, search.departureDate, search.returnDate, search.tripType, travelers, currency]);
 
+  // Milestone 45: flights engine (NEXT_PUBLIC_FLIGHTS_ENGINE): "travelpayouts-rapidapi"
+  // (default — Travelpayouts Flight Data via RapidAPI) or "whitelabel" (live box).
+  // With the data engine, the live box only appears when no recent prices exist.
+  const flightsEngine = process.env.NEXT_PUBLIC_FLIGHTS_ENGINE || "travelpayouts-rapidapi";
+  const [data, setData] = useState<{ status: "idle" | "loading" | "done"; flights: Flight[] }>({ status: "idle", flights: [] });
+  useEffect(() => {
+    if (flightsEngine === "whitelabel" || !liveSearch) return;
+    let cancelled = false;
+    setData({ status: "loading", flights: [] });
+    const params = new URLSearchParams({
+      origin: liveSearch.originCode,
+      destination: liveSearch.destinationCode,
+      departureDate: liveSearch.departureDate,
+      returnDate: liveSearch.returnDate ?? "",
+      adults: String(liveSearch.adults),
+      children: String(liveSearch.children),
+      infants: String(liveSearch.infants),
+      currency: liveSearch.currency,
+    });
+    fetch(`/api/flights/data?${params.toString()}`)
+      .then((r) => r.json() as Promise<{ ok?: boolean; flights?: Flight[] }>)
+      .catch(() => ({ ok: false, flights: [] as Flight[] }))
+      .then((body) => {
+        if (cancelled) return;
+        const flights = body.ok && Array.isArray(body.flights) ? body.flights : [];
+        setData({ status: "done", flights });
+        if (flights.length > 0) setFacets({ airlines: [...new Set(flights.map((f) => f.airline))], bridged: true, searching: false });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [flightsEngine, liveSearch]);
+  const groupSize = (travelers?.adults ?? 1) + (travelers?.children ?? 0);
+  const useData = flightsEngine !== "whitelabel" && (data.status === "loading" || data.flights.length > 0);
+  const shownFlights = useMemo(() => filterDataFlights(data.flights, filters, Math.max(1, groupSize)), [data.flights, filters, groupSize]);
+
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -115,12 +153,24 @@ export function LiveFlightsResultsPage({
               </label>
             </div>
             <div className={refreshing ? "pointer-events-none opacity-40 transition-opacity" : "transition-opacity"} aria-busy={refreshing}>
-            <LiveFlightsSection
-              search={liveSearch}
-              filters={filters}
-              onFacets={setFacets}
-              title="Live flight prices"
-            />
+            {useData ? (
+              data.status === "loading" ? (
+                <div className="space-y-4" aria-label="Loading flights">
+                  {Array.from({ length: 3 }, (_, i) => (
+                    <div key={i} className="h-32 animate-pulse rounded-2xl bg-slate-200 motion-reduce:animate-none" />
+                  ))}
+                </div>
+              ) : (
+                <DataFlightsList flights={shownFlights} travelers={Math.max(1, groupSize)} roundTrip={Boolean(liveSearch.returnDate)} />
+              )
+            ) : (
+              <LiveFlightsSection
+                search={liveSearch}
+                filters={filters}
+                onFacets={setFacets}
+                title="Live flight prices"
+              />
+            )}
             </div>
             {refreshing && (
               <p role="status" className="mt-3 text-center text-sm font-semibold text-brand-700">
