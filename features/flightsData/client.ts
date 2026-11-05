@@ -12,7 +12,8 @@ import { mapDataFlights, type DataFlightsSearch } from "@/features/flightsData/m
 import type { Flight } from "@/types/models";
 
 const DEFAULT_HOST = "travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com";
-const TIMEOUT_MS = 12_000;
+const DIRECT_BASE = "https://api.travelpayouts.com";
+const TIMEOUT_MS = 6_000;
 const CACHE_MS = 10 * 60_000;
 const cache = new Map<string, { at: number; flights: Flight[] }>();
 
@@ -52,22 +53,55 @@ export async function searchDataFlights(
   });
   if (search.returnDate) params.set("return_date", search.returnDate);
 
+  const query = params.toString();
+  // 1) RapidAPI proxy. 2) If RapidAPI answers with an error (its listing has
+  // returned 404 for this path), the same Travelpayouts data API directly,
+  // with the same token — same provider, same cached prices.
+  const attempts: Array<{ url: string; headers: Record<string, string> }> = [
+    {
+      url: `https://${host}/v1/prices/cheap?${query}`,
+      headers: { "x-rapidapi-key": key, "x-rapidapi-host": host, "X-Access-Token": token, accept: "application/json" },
+    },
+    {
+      url: `${DIRECT_BASE}/v1/prices/cheap?${query}`,
+      headers: { "X-Access-Token": token, accept: "application/json" },
+    },
+  ];
+  const details: string[] = [];
+  let lastStatus = 502;
+  for (const attempt of attempts) {
+    const result = await fetchJson(attempt.url, attempt.headers);
+    if (result.ok) {
+      const flights = mapDataFlights(result.raw, search, destinationId);
+      cache.set(cacheKey, { at: Date.now(), flights });
+      if (cache.size > 300) cache.delete(cache.keys().next().value!);
+      return { flights, raw: result.raw };
+    }
+    lastStatus = result.status;
+    details.push(`${new URL(attempt.url).host} ${result.status} ${result.text.slice(0, 200)}`);
+  }
+  throw new DataFlightsError(`Flight data ${lastStatus}`, lastStatus, details.join(" | "));
+}
+
+async function fetchJson(
+  url: string,
+  headers: Record<string, string>,
+): Promise<{ ok: boolean; status: number; raw: unknown; text: string }> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const response = await fetch(`https://${host}/v1/prices/cheap?${params.toString()}`, {
-      headers: { "x-rapidapi-key": key, "x-rapidapi-host": host, "X-Access-Token": token, accept: "application/json" },
-      signal: controller.signal,
-      cache: "no-store",
-    });
-    const raw: unknown = await response.json().catch(() => null);
-    if (!response.ok) {
-      throw new DataFlightsError(`Flight data ${response.status}`, response.status, `${host} ${JSON.stringify(raw)?.slice(0, 300)}`);
+    const response = await fetch(url, { headers, signal: controller.signal, cache: "no-store" });
+    const text = await response.text().catch(() => "");
+    let raw: unknown = null;
+    try {
+      raw = JSON.parse(text);
+    } catch {
+      raw = null;
     }
-    const flights = mapDataFlights(raw, search, destinationId);
-    cache.set(cacheKey, { at: Date.now(), flights });
-    if (cache.size > 300) cache.delete(cache.keys().next().value!);
-    return { flights, raw };
+    const ok = response.ok && raw !== null && typeof raw === "object" && (raw as { success?: boolean }).success !== false;
+    return { ok, status: response.status, raw, text };
+  } catch (error) {
+    return { ok: false, status: 504, raw: null, text: error instanceof Error ? error.name : "fetch failed" };
   } finally {
     clearTimeout(timer);
   }
