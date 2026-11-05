@@ -61,14 +61,27 @@ export function StayPackageCard({ stay, flights, destinationName }: StayPackageC
         <p className="text-sm text-slate-700">
           <span className="font-semibold">✈ Live flights</span>
           {stay.flightBudget !== null ? <> up to {formatMoney(stay.flightBudget, stay.currency)} for {people}</> : <> for {people}</>}
+          {stay.flightEstimate !== null && (
+            <span className="text-slate-500"> · recently from {formatMoney(stay.flightEstimate, stay.currency)}</span>
+          )}
         </p>
         {hotel.amenities.length > 0 && <p className="text-xs text-emerald-700">{hotel.amenities.join(" · ")}</p>}
       </div>
 
       <div className="flex flex-row items-center justify-between gap-3 border-t border-slate-100 bg-brand-50/70 p-4 md:flex-col md:items-stretch md:justify-center md:border-l md:border-t-0">
         <div>
-          <p className="text-xs font-semibold text-slate-600">Hotel, {formatPackageNightsLabel(stay.nights)}</p>
-          <p className="text-2xl font-extrabold text-slate-900">{formatMoney(stay.hotelTotal, stay.currency)}</p>
+          {stay.flightEstimate !== null ? (
+            <>
+              <p className="text-xs font-semibold text-slate-600">Package from</p>
+              <p className="text-2xl font-extrabold text-slate-900">{formatMoney(stay.hotelTotal + stay.flightEstimate, stay.currency)}</p>
+              <p className="text-[11px] text-slate-500">Hotel {formatMoney(stay.hotelTotal, stay.currency)} + flights from {formatMoney(stay.flightEstimate, stay.currency)}</p>
+            </>
+          ) : (
+            <>
+              <p className="text-xs font-semibold text-slate-600">Hotel, {formatPackageNightsLabel(stay.nights)}</p>
+              <p className="text-2xl font-extrabold text-slate-900">{formatMoney(stay.hotelTotal, stay.currency)}</p>
+            </>
+          )}
           <p className="text-[11px] leading-snug text-slate-500">
             {stay.overBudget
               ? "Over your budget with flights"
