@@ -11,6 +11,8 @@ import { DEFAULT_HOTEL_FILTERS, type LiveHotelsFilters, type LiveHotelsResponse,
 
 type LiveHotelsResultsProps = {
   search: LiveHotelsSearch;
+  /** Milestone 44: which hotels API to ask (LiteAPI by default). */
+  endpoint?: string;
   /** Budget for the whole stay from the search bar, if any. */
   stayBudget: number | null;
   cityName: string;
@@ -43,11 +45,27 @@ function hotelPageUrl(hotelId: string, search: LiveHotelsSearch, back: string): 
   return `/hotels/${encodeURIComponent(hotelId)}?${params.toString()}`;
 }
 
+/** Milestone 44: Booking.com hotel link with the search's dates and guests. */
+function externalHotelUrl(url: string, search: LiveHotelsSearch): string {
+  try {
+    const target = new URL(url);
+    target.searchParams.set("checkin", search.checkin);
+    target.searchParams.set("checkout", search.checkout);
+    target.searchParams.set("group_adults", String(search.adults));
+    target.searchParams.set("group_children", String(search.children));
+    target.searchParams.set("no_rooms", String(search.rooms));
+    target.searchParams.set("selected_currency", search.currency);
+    return target.toString();
+  } catch {
+    return url;
+  }
+}
+
 /**
  * Milestone 30 — Hotels tab results from LiteAPI, Booking.com-style:
  * map preview + "Filter by" on the left, hotel cards on the right.
  */
-export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsResultsProps) {
+export function LiveHotelsResults({ search, stayBudget, cityName, endpoint = "/api/hotels/live" }: LiveHotelsResultsProps) {
   const [state, setState] = useState<State>({ status: "loading" });
   const [filters, setFilters] = useState<LiveHotelsFilters>(DEFAULT_HOTEL_FILTERS);
   const [mapOpen, setMapOpen] = useState(false);
@@ -76,7 +94,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
   useEffect(() => {
     let cancelled = false;
     setState({ status: "loading" });
-    fetch(`/api/hotels/live?${query}`)
+    fetch(`${endpoint}?${query}`)
       .then((response) => response.json() as Promise<LiveHotelsResponse>)
       .catch((): LiveHotelsResponse => ({ ok: false, code: "PROVIDER_ERROR", message: "Live hotel prices are unavailable right now." }))
       .then((data) => {
@@ -89,7 +107,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
     return () => {
       cancelled = true;
     };
-  }, [query, stayBudget]);
+  }, [query, stayBudget, endpoint]);
 
   const data = state.status === "done" && state.data.ok ? state.data : null;
   const shown = useMemo(() => (data ? filterHotels(data.hotels, filters, data.nights) : []), [data, filters]);
@@ -213,7 +231,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName }: LiveHotelsRe
               hotel={hotel}
               nights={data.nights}
               guestsLabel={guestsLabel}
-              bookingUrl={hotelPageUrl(hotel.id, search, backUrl)}
+              bookingUrl={hotel.externalUrl ? externalHotelUrl(hotel.externalUrl, search) : hotelPageUrl(hotel.id, search, backUrl)}
               onShowOnMap={() => showOnMap(hotel.id)}
               highlighted={hotel.id === selectedId}
             />

@@ -15,6 +15,9 @@ type LiveHotelCardProps = {
 
 /** Milestone 30 — one hotel, Booking.com-style layout in Glooconn's look. */
 export function LiveHotelCard({ hotel, nights, guestsLabel, bookingUrl, onShowOnMap, highlighted }: LiveHotelCardProps) {
+  // Milestone 44: Booking.com engine links open Booking.com in a new tab.
+  const external = Boolean(bookingUrl && /^https?:\/\//.test(bookingUrl));
+  const externalProps = external ? { target: "_blank", rel: "noopener noreferrer nofollow" } : {};
   return (
     <article
       id={`hotel-${hotel.id}`}
@@ -36,7 +39,7 @@ export function LiveHotelCard({ hotel, nights, guestsLabel, bookingUrl, onShowOn
         <div className="min-w-0 space-y-1.5">
           <h3 className="text-lg font-bold leading-snug text-brand-800">
             {bookingUrl ? (
-              <Link href={bookingUrl} className="hover:underline">
+              <Link href={bookingUrl} className="hover:underline" {...externalProps}>
                 {hotel.name}
               </Link>
             ) : (
@@ -82,9 +85,10 @@ export function LiveHotelCard({ hotel, nights, guestsLabel, bookingUrl, onShowOn
             {bookingUrl ? (
               <Link
                 href={bookingUrl}
+                {...externalProps}
                 className="mt-2 inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white shadow-sm hover:bg-brand-800"
               >
-                See availability ›
+                {external ? "See on Booking.com ↗" : "See availability ›"}
               </Link>
             ) : (
               <p className="mt-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">Online booking coming soon</p>

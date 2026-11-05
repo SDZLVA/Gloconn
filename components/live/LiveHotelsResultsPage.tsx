@@ -23,12 +23,12 @@ export function LiveHotelsResultsPage({ search, initialForm }: LiveHotelsResults
   const destination = (search.destination ?? "").split(",")[0]?.trim() || "your destination";
   const rooms = search.travelers?.rooms ?? 1;
   const bookingUrl = buildBookingSearchUrl(search);
-  // Hotel engine (NEXT_PUBLIC_HOTELS_ENGINE): "liteapi" (default, M30),
+  // Hotel engine (NEXT_PUBLIC_HOTELS_ENGINE): "liteapi" (default, M30), "bookingcom" (M44, RapidAPI),
   // "stay22" (M29 map — muted for now), "off" (coming-soon note).
   const engine = process.env.NEXT_PUBLIC_HOTELS_ENGINE || "liteapi";
   const mapUrl = engine === "stay22" ? stay22MapUrl(search) : null;
   const liteSearch =
-    engine === "liteapi" && search.destination && search.departureDate && search.returnDate
+    (engine === "liteapi" || engine === "bookingcom") && search.destination && search.departureDate && search.returnDate
       ? {
           destination: search.destination,
           checkin: search.departureDate,
@@ -45,7 +45,12 @@ export function LiveHotelsResultsPage({ search, initialForm }: LiveHotelsResults
       <TripHeader mode="hotels" search={search} initialForm={initialForm} />
 
       {liteSearch ? (
-        <LiveHotelsResults search={liteSearch} stayBudget={search.budget?.amount ?? null} cityName={destination} />
+        <LiveHotelsResults
+          search={liteSearch}
+          stayBudget={search.budget?.amount ?? null}
+          cityName={destination}
+          endpoint={engine === "bookingcom" ? "/api/hotels/bookingcom" : "/api/hotels/live"}
+        />
       ) : mapUrl ? (
         <section className="space-y-2" aria-labelledby="live-hotels-heading">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
