@@ -10,6 +10,8 @@ import "server-only";
 
 import { mapBookingProperties, pickDestination } from "@/features/liveHotels/bookingcom/map";
 import type { LiveHotel, LiveHotelsSearch } from "@/features/liveHotels/types";
+import { convertAmount } from "@/features/fx/ecb";
+import { eurRates } from "@/features/fx/rates";
 
 const HOST = "apidojo-booking-v1.p.rapidapi.com";
 const TIMEOUT_MS = 15_000;
@@ -81,5 +83,21 @@ export async function searchBookingHotels(
     travel_purpose: "leisure",
     search_id: "none",
   });
-  return { hotels: mapBookingProperties(raw, search.currency), raw };
+  return { hotels: await inSearchCurrency(mapBookingProperties(raw, search.currency), search.currency), raw };
+}
+
+/**
+ * Booking.com answers in the hotel's local currency (London → GBP). Convert to
+ * the search currency (ECB rates) so prices match the flights and the rest of
+ * the page. If rates can't be loaded, prices stay in the local currency.
+ */
+async function inSearchCurrency(hotels: LiveHotel[], currency: string): Promise<LiveHotel[]> {
+  const target = currency.toUpperCase();
+  if (hotels.every((h) => h.currency.toUpperCase() === target)) return hotels;
+  const rates = await eurRates();
+  if (!rates) return hotels;
+  return hotels.map((hotel) => {
+    const amount = convertAmount(hotel.totalPrice, hotel.currency, target, rates);
+    return amount === null ? hotel : { ...hotel, totalPrice: amount, currency: target };
+  });
 }

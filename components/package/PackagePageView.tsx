@@ -233,6 +233,7 @@ export function PackagePageView({ packageId }: { packageId: string }) {
                     </p>
                     <Link
                       href={hotel.detailsUrl}
+                      {...(/^https?:\/\//.test(hotel.detailsUrl) ? { target: "_blank", rel: "noopener noreferrer nofollow" } : {})}
                       className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800"
                     >
                       See this hotel &amp; book

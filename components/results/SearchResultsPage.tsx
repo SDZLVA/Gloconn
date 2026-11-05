@@ -939,7 +939,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
 
               {/* Milestone 23: removable live-flights engine (features/liveFlights). */}
               {hasData && !showSkeleton && (
-                <div hidden={view !== "flights"}>
+                <div hidden={view !== "flights" || allResults.some((r) => r.type === "flight")}>
                 <LiveFlightsSection
                   search={liveFlightsSearch}
                   filters={liveFlightsFilters}
