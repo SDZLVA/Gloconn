@@ -24,6 +24,8 @@ export class DataFlightsError extends Error {
   constructor(
     message: string,
     readonly status: number,
+    /** Short provider answer, for preview debugging only. */
+    readonly detail: string = "",
   ) {
     super(message);
   }
@@ -59,7 +61,9 @@ export async function searchDataFlights(
       cache: "no-store",
     });
     const raw: unknown = await response.json().catch(() => null);
-    if (!response.ok) throw new DataFlightsError(`Flight data ${response.status}`, response.status);
+    if (!response.ok) {
+      throw new DataFlightsError(`Flight data ${response.status}`, response.status, `${host} ${JSON.stringify(raw)?.slice(0, 300)}`);
+    }
     const flights = mapDataFlights(raw, search, destinationId);
     cache.set(cacheKey, { at: Date.now(), flights });
     if (cache.size > 300) cache.delete(cache.keys().next().value!);

@@ -61,6 +61,9 @@ export async function GET(request: Request) {
   } catch (error) {
     const status = error instanceof DataFlightsError ? error.status : 0;
     console.error("[flights-data] search failed", status || (error as Error)?.name);
+    if (debug) {
+      return json({ error: true, status, name: (error as Error)?.name, message: (error as Error)?.message, detail: error instanceof DataFlightsError ? error.detail : "" }, 502);
+    }
     return json({ ok: false, code: "PROVIDER_ERROR", message: "Flight prices are unavailable right now." }, 502);
   }
 }
