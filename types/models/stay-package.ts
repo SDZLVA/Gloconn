@@ -22,6 +22,8 @@ export type StayPackage = {
   flightBudget: number | null;
   /** Cheapest recent round-trip flights for the group (estimate), if known. */
   flightEstimate: number | null;
+  /** Milestone 41: the estimate comes from nearby dates (no fare for the exact dates). */
+  flightEstimateNearby?: boolean;
   /** 0–100, higher is better. */
   score: number;
   /** Short badge: "Best match", "Cheapest", "Top rated". */
