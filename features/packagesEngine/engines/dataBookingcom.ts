@@ -17,12 +17,14 @@ import type { LiveHotel } from "@/features/liveHotels/types";
 import { dataFlightsConfigured, searchDataFlights } from "@/features/flightsData/client";
 import { combinePackages } from "@/features/packagesEngine/combine";
 import { buildStayPackages } from "@/features/packagesEngine/stays";
+import { retryOnce } from "@/features/packagesEngine/retry";
 import type { PackagesEngine, PackagesEngineResult } from "@/features/packagesEngine/types";
 import type { Flight, Hotel } from "@/types/models";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchResponseWarning } from "@/types/models/search-response";
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
 
 function bookingLink(hotel: LiveHotel, request: SearchRequest, currency: string): string | undefined {
   if (!hotel.externalUrl) return undefined;
@@ -77,7 +79,7 @@ export const dataBookingcomEngine: PackagesEngine = {
 
     const flightsPromise: Promise<Flight[]> =
       dataFlightsConfigured() && origin && destination
-        ? searchDataFlights(
+        ? retryOnce(() => searchDataFlights(
             {
               origin,
               destination,
@@ -89,11 +91,11 @@ export const dataBookingcomEngine: PackagesEngine = {
               currency,
             },
             request.destinationId ?? "",
-          ).then((r) => r.flights)
+          )).then((r) => r.flights)
         : Promise.reject(new Error("flight data not configured"));
     const hotelsPromise: Promise<LiveHotel[]> =
       hasStay && rapidApiKey()
-        ? searchBookingHotels({
+        ? retryOnce(() => searchBookingHotels({
             destination: request.destination ?? "",
             checkin: request.departureDate,
             checkout: request.returnDate!,
@@ -101,7 +103,7 @@ export const dataBookingcomEngine: PackagesEngine = {
             children: Math.max(0, request.travelers.children),
             rooms: Math.max(1, request.travelers.rooms),
             currency,
-          }).then((r) => r.hotels)
+          })).then((r) => r.hotels)
         : Promise.resolve([]);
     const [flightsSettled, hotelsSettled] = await Promise.allSettled([flightsPromise, hotelsPromise]);
 
