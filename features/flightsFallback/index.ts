@@ -32,7 +32,7 @@ export function visitorId(headers: Headers): string {
 }
 
 const liveKey = (s: DataFlightsSearch) =>
-  `flights:${s.origin}:${s.destination}:${s.departureDate}:${s.returnDate ?? "ow"}:${s.adults}-${s.children}-${s.infants}:${s.currency}`;
+  `flights:v2:${s.origin}:${s.destination}:${s.departureDate}:${s.returnDate ?? "ow"}:${s.adults}-${s.children}-${s.infants}:${s.currency}`;
 
 export async function searchFlightsWithFallback(
   search: DataFlightsSearch,
