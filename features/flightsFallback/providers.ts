@@ -11,6 +11,24 @@ import { mapGoogleFlights, mapSkyItineraries, pickSkyPlace, skyscannerUrl } from
 import { claimCall, readCache, writeCache } from "@/features/flightsFallback/store";
 import type { DataFlightsSearch } from "@/features/flightsData/map";
 import type { Flight } from "@/types/models";
+import { getWorldIndex } from "@/lib/places/world";
+
+/**
+ * Google Flights wants airport codes; Glooconn often searches city codes
+ * (ROM, LON). A city becomes its airports, comma-separated (max 7), biggest first.
+ */
+async function googleIds(code: string): Promise<string> {
+  try {
+    const idx = await getWorldIndex();
+    const airports = idx.places
+      .filter((p) => p.kind === "airport" && p.cityIata === code && p.iata !== code)
+      .sort((a, b) => b.weight - a.weight)
+      .map((p) => p.iata);
+    return airports.length > 0 ? [...new Set(airports)].slice(0, 7).join(",") : code;
+  } catch {
+    return code;
+  }
+}
 
 const SKY_HOST = "sky-scrapper.p.rapidapi.com";
 
@@ -117,8 +135,8 @@ export async function searchGoogle(search: DataFlightsSearch, destinationId = ""
   if (!(await claimCall("google", CAPS.google.daily, CAPS.google.monthly))) return { flights: [], raw: null };
   const params = new URLSearchParams({
     engine: "google_flights",
-    departure_id: search.origin,
-    arrival_id: search.destination,
+    departure_id: await googleIds(search.origin),
+    arrival_id: await googleIds(search.destination),
     outbound_date: search.departureDate,
     type: search.returnDate ? "1" : "2",
     currency: search.currency,
@@ -132,7 +150,10 @@ export async function searchGoogle(search: DataFlightsSearch, destinationId = ""
   let raw: unknown;
   try {
     raw = await getJson(`https://serpapi.com/search?${params.toString()}`, {});
-    trace?.push(`google: ${JSON.stringify(raw).slice(0, 400)}`);
+    const r = raw as { error?: string; best_flights?: unknown[]; other_flights?: unknown[]; search_parameters?: unknown };
+    trace?.push(
+      `google: error=${r.error ?? "-"} best=${r.best_flights?.length ?? 0} other=${r.other_flights?.length ?? 0} ids=${params.get("departure_id")}>${params.get("arrival_id")} first=${JSON.stringify(r.best_flights?.[0] ?? r.other_flights?.[0] ?? null).slice(0, 300)}`,
+    );
   } catch (error) {
     trace?.push(`google: ${(error as Error).message.replace(key, "[key]")}`);
     return { flights: [], raw: null };
