@@ -137,3 +137,29 @@ export function isAviasalesTicketUrl(value: string): boolean {
     /^[A-Za-z0-9_-]{8,600}$/.test(url.searchParams.get("t") ?? "")
   );
 }
+
+/**
+ * Milestone 51: true for a plain aviasales.com search URL made by
+ * buildAviasalesSearchUrl (route + dates + passengers, no ticket code).
+ * Saved-fare and live-price cards link to these; before this, the
+ * /api/out/aviasales redirect only accepted exact-ticket URLs and said
+ * "This flight link is not valid."
+ */
+export function isAviasalesSearchUrl(value: string): boolean {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return false;
+  }
+  return (
+    url.protocol === "https:" &&
+    url.hostname === "www.aviasales.com" &&
+    url.port === "" &&
+    url.username === "" &&
+    url.password === "" &&
+    url.search === "" &&
+    url.hash === "" &&
+    TICKET_PATH.test(url.pathname)
+  );
+}

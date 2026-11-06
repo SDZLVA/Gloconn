@@ -15,7 +15,7 @@
 import "server-only";
 
 import { loadAffiliateConfig } from "@/lib/affiliate/config";
-import { isAviasalesTicketUrl } from "@/lib/affiliate/aviasalesLink";
+import { isAviasalesSearchUrl, isAviasalesTicketUrl } from "@/lib/affiliate/aviasalesLink";
 import { createPartnerLink } from "@/lib/affiliate/partnerLinksApi";
 import { getAppConfig } from "@/lib/config";
 
@@ -30,7 +30,7 @@ export async function resolveAviasalesRedirect(
   target: string | null,
   convert: typeof createPartnerLink = createPartnerLink,
 ): Promise<AviasalesRedirect> {
-  if (!target || target.length > 2_000 || !isAviasalesTicketUrl(target)) {
+  if (!target || target.length > 2_000 || !(isAviasalesTicketUrl(target) || isAviasalesSearchUrl(target))) {
     return { ok: false };
   }
   try {

@@ -34,12 +34,22 @@ describe("resolveAviasalesRedirect", () => {
       null,
       "",
       "https://evil.example/search/MIL2311PAR28111?t=FR17955147001795520400",
-      "https://www.aviasales.com/search/MIL2311PAR28111",
+      "https://www.aviasales.com/search/MIL2311PAR28111?next=https://evil.example",
+      "https://www.aviasales.com/login",
       "javascript:alert(1)",
       "/search/MIL2311PAR28111?t=FR17955147001795520400",
     ]) {
       assert.deepEqual(await resolveAviasalesRedirect(bad, convert), { ok: false }, String(bad));
     }
     assert.equal(called, false);
+  });
+
+  it("accepts a plain aviasales.com search link (milestone 51)", async () => {
+    const convert = async () => "https://aviasales.tp.st/abc";
+    assert.deepEqual(await resolveAviasalesRedirect("https://www.aviasales.com/search/ROM2311LON27112", convert), {
+      ok: true,
+      location: "https://aviasales.tp.st/abc",
+      tagged: true,
+    });
   });
 });
