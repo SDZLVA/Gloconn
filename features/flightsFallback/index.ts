@@ -19,7 +19,8 @@ import type { Flight } from "@/types/models";
 
 const LIVE_TTL_MS = 6 * 60 * 60_000;
 const EMPTY_TTL_MS = 60 * 60_000;
-export const VISITOR_LIMIT = 3;
+// One search can ask twice (Packages + Flights tab); 6 ≈ 3–6 searches a day.
+export const VISITOR_LIMIT = 6;
 
 export type FlightsSource = "travelpayouts" | "skyscanner" | "google" | "none";
 export type FallbackResult = { flights: Flight[]; source: FlightsSource; raw?: unknown; why?: string; trace?: string[] };
