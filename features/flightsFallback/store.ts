@@ -51,6 +51,7 @@ export async function claimCall(provider: string, daily: number, monthly: number
   if (!db) return false;
   try {
     const { data, error } = await db.rpc("claim_api_call", { p_provider: provider, p_daily: daily, p_monthly: monthly });
+    if (error) console.error("[flights-fallback] quota claim failed", error.code, error.message);
     return !error && data === true;
   } catch {
     return false;
@@ -63,6 +64,7 @@ export async function claimVisitor(visitor: string, limit: number): Promise<bool
   if (!db || !visitor) return false;
   try {
     const { data, error } = await db.rpc("claim_api_visitor", { p_visitor: visitor, p_limit: limit });
+    if (error) console.error("[flights-fallback] visitor claim failed", error.code, error.message);
     return !error && data === true;
   } catch {
     return false;

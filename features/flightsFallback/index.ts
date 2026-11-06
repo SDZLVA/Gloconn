@@ -21,7 +21,7 @@ const EMPTY_TTL_MS = 60 * 60_000;
 export const VISITOR_LIMIT = 3;
 
 export type FlightsSource = "travelpayouts" | "skyscanner" | "google" | "none";
-export type FallbackResult = { flights: Flight[]; source: FlightsSource; raw?: unknown };
+export type FallbackResult = { flights: Flight[]; source: FlightsSource; raw?: unknown; why?: string };
 
 /** Hashed visitor id from request headers (never store raw IPs). */
 export function visitorId(headers: Headers): string {
@@ -44,12 +44,14 @@ export async function searchFlightsWithFallback(
       .catch(() => [] as Flight[]);
     if (saved.length > 0) return { flights: saved.map((f) => ({ ...f, source: "travelpayouts" as const })), source: "travelpayouts" };
   }
-  if (!storeConfigured()) return { flights: [], source: "none" };
+  if (!storeConfigured()) return { flights: [], source: "none", why: "no SUPABASE_SERVICE_ROLE_KEY" };
 
   const key = liveKey(search);
   const cached = await readCache<FallbackResult>(key);
   if (cached) return { flights: cached.flights ?? [], source: cached.source ?? "none" };
-  if (!(await claimVisitor(options.visitor, VISITOR_LIMIT))) return { flights: [], source: "none" };
+  if (!(await claimVisitor(options.visitor, VISITOR_LIMIT))) {
+    return { flights: [], source: "none", why: options.visitor ? "visitor limit or store error" : "no visitor id" };
+  }
 
   for (const [source, run] of [
     ["skyscanner", searchSkyscanner],
@@ -62,7 +64,7 @@ export async function searchFlightsWithFallback(
       return options.debug ? { ...result, raw: found.raw } : result;
     }
   }
-  const none: FallbackResult = { flights: [], source: "none" };
+  const none: FallbackResult = { flights: [], source: "none", ...(options.debug ? { why: "providers found nothing" } : {}) };
   await writeCache(key, none, EMPTY_TTL_MS);
   return none;
 }
