@@ -62,7 +62,8 @@ export async function GET(request: Request) {
   try {
     const result = await searchFlightsWithFallback(search, { visitor: bot ? "" : visitorId(request.headers), debug, only: debug ? (url.searchParams.get("only") ?? undefined) : undefined });
     if (debug) return json({ source: result.source, why: result.why ?? null, trace: result.trace ?? [], raw: result.raw ?? null, mapped: result.flights.slice(0, 3) });
-    return json({ ok: true, flights: result.flights, source: result.source }, 200, true);
+    // An empty answer can be one visitor's limit — never let the CDN share it.
+    return json({ ok: true, flights: result.flights, source: result.source }, 200, result.flights.length > 0);
   } catch (error) {
     const status = error instanceof DataFlightsError ? error.status : 0;
     console.error("[flights-data] search failed", status || (error as Error)?.name);

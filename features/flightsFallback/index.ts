@@ -51,8 +51,9 @@ export async function searchFlightsWithFallback(
   // Preview debug skips the saved answer so a fix can be tested at once.
   const cached = options.debug ? null : await readCache<FallbackResult>(key);
   if (cached) return { flights: cached.flights ?? [], source: cached.source ?? "none" };
-  // Preview debug (my own tests) skips the per-visitor limit; provider caps still apply.
-  if (!options.debug && !(await claimVisitor(options.visitor, VISITOR_LIMIT))) {
+  // Preview (only used for testing) skips the per-visitor limit; provider caps still apply.
+  const preview = process.env.VERCEL_ENV === "preview";
+  if (!options.debug && !preview && !(await claimVisitor(options.visitor, VISITOR_LIMIT))) {
     return { flights: [], source: "none", why: options.visitor ? "visitor limit or store error" : "no visitor id" };
   }
 
