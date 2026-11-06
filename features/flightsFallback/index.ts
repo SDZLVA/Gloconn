@@ -4,8 +4,8 @@ import "server-only";
  * Milestone 49 — flights with fallbacks (replaces the White Label live box):
  *   1. Travelpayouts saved fares (free)          — always first
  *   2. Saved live answer (Supabase, 6 h)          — free
- *   3. Sky Scrapper / Skyscanner (capped)         — only if 1–2 found nothing
- *   4. SerpApi Google Flights (capped)            — only if 3 found nothing
+ *   3. SerpApi Google Flights (capped, ~3 s)      — only if 1–2 found nothing
+ *   4. Skyscanner Flights, RapidAPI (capped, ~25 s) — only if 3 found nothing
  * A visitor (hashed IP) can trigger at most VISITOR_LIMIT paid lookups a day.
  */
 
@@ -56,8 +56,9 @@ export async function searchFlightsWithFallback(
 
   const trace: string[] = [];
   for (const [source, run] of [
-    ["skyscanner", searchSkyscanner],
+    // Google answers in ~3 s; Skyscanner takes ~25 s, so it goes second.
     ["google", searchGoogle],
+    ["skyscanner", searchSkyscanner],
   ] as const) {
     const found = await run(search, destinationId, trace).catch((e: unknown) => {
       trace.push(`${source} failed: ${(e as Error)?.message ?? e}`);

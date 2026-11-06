@@ -1,6 +1,6 @@
 /**
  * Milestone 49 — live flight fallbacks → Glooconn Flight[] (pure, tested).
- *   Sky Scrapper (Skyscanner data, RapidAPI)  → mapSkyItineraries
+ *   Skyscanner Flights (RapidAPI, Crawlio)    → mapSkyItineraries
  *   SerpApi Google Flights                    → mapGoogleFlights
  * Prices are stored per person (Glooconn convention). `groupPrice` says
  * whether the provider's price is for all travellers together.
@@ -65,36 +65,39 @@ export function skyscannerUrl(originSkyId: string, destinationSkyId: string, sea
   return `https://www.skyscanner.net/transport/flights/${path}/?${q.toString()}`;
 }
 
-/** Sky Scrapper /api/v2/flights/searchFlights → Flight[]. */
+/**
+ * Skyscanner Flights (RapidAPI, Crawlio — skyscanner-flights4) →  Flight[]:
+ * { results: [{ id, price_raw, carriers: ["Wizz Air Malta"], legs: [{ from, to,
+ *   dep, arr, dur_min, stops, segments: [{ flight: "W46001" }] }, …],
+ *   queryLegs: [{ resolvedOrigin: { iata: "ROME" }, resolvedDest: { iata: "LOND" } }] }] }
+ */
 export function mapSkyItineraries(
   raw: unknown,
   search: DataFlightsSearch,
-  opts: { groupPrice: boolean; sourceUrl?: string; destinationId?: string },
+  opts: { groupPrice: boolean; destinationId?: string },
 ): Flight[] {
-  const data = isObject(raw) && isObject(raw.data) ? raw.data : null;
+  const rows = isObject(raw) ? list(raw.results).filter(isObject) : [];
   const flights: Flight[] = [];
-  for (const item of list(data?.itineraries)) {
-    if (!isObject(item)) continue;
-    const price = asNumber(isObject(item.price) ? item.price.raw : null);
+  for (const item of rows) {
+    const price = asNumber(item.price_raw);
     const legs = list(item.legs).filter(isObject);
     const out = legs[0];
     if (!price || price <= 0 || !out) continue;
     const back = search.returnDate ? legs[1] : undefined;
     if (search.returnDate && !back) continue;
-    const departure = asString(out.departure);
+    const departure = asString(out.dep);
     if (!departure || departure.slice(0, 10) !== search.departureDate) continue;
-    if (back && asString(back.departure)?.slice(0, 10) !== search.returnDate) continue;
+    if (back && asString(back.dep)?.slice(0, 10) !== search.returnDate) continue;
     const segment = list(out.segments).find(isObject);
-    const carrier = isObject(out.carriers) ? list(out.carriers.marketing).find(isObject) : undefined;
-    const marketing = segment && isObject(segment.marketingCarrier) ? segment.marketingCarrier : undefined;
-    const airlineCode = iataCode(marketing?.displayCode) ?? iataCode(marketing?.alternateId) ?? iataCode(carrier?.alternateId) ?? "";
-    const airline = asString(carrier?.name) ?? asString(marketing?.name) ?? airlineDisplayName(airlineCode) ?? "Airline";
-    const origin = isObject(out.origin) ? (asString(out.origin.displayCode) ?? asString(out.origin.id)) : null;
-    const destination = isObject(out.destination) ? (asString(out.destination.displayCode) ?? asString(out.destination.id)) : null;
-    const number = asString(segment?.flightNumber);
+    const flightNo = asString(segment?.flight) ?? "";
+    const airlineCode = iataCode(flightNo.slice(0, 2)) ?? "";
+    const airline = asString(list(item.carriers)[0]) ?? airlineDisplayName(airlineCode) ?? "Airline";
+    const query = list(item.queryLegs).find(isObject);
+    const fromSky = isObject(query?.resolvedOrigin) ? asString(query.resolvedOrigin.iata) : null;
+    const toSky = isObject(query?.resolvedDest) ? asString(query.resolvedDest.iata) : null;
     const bookingUrl = aviasales(search);
     flights.push({
-      id: `sky-${asString(item.id) ?? `${airlineCode}${number ?? ""}-${departure}`}`.replace(/[^A-Za-z0-9_-]/g, "").slice(0, 120),
+      id: `sky-${asString(item.id) ?? `${flightNo}-${departure}`}`.replace(/[^A-Za-z0-9_-]/g, "").slice(0, 120),
       destinationId: opts.destinationId ?? "",
       price: perPerson(price, search, opts.groupPrice),
       currency: search.currency as Flight["currency"],
@@ -102,22 +105,22 @@ export function mapSkyItineraries(
       airline,
       ...(airlineCode ? { airlineCode } : {}),
       departureTime: localTime(departure),
-      arrivalTime: localTime(asString(out.arrival)),
-      durationMinutes: Math.max(0, Math.round(asNumber(out.durationInMinutes) ?? 0)),
-      stops: Math.max(0, Math.round(asNumber(out.stopCount) ?? 0)),
+      arrivalTime: localTime(asString(out.arr)),
+      durationMinutes: Math.max(0, Math.round(asNumber(out.dur_min) ?? 0)),
+      stops: Math.max(0, Math.round(asNumber(out.stops) ?? 0)),
       cabin: "Economy",
-      originAirport: origin ?? search.origin,
-      destinationAirport: destination ?? search.destination,
+      originAirport: asString(out.from) ?? search.origin,
+      destinationAirport: asString(out.to) ?? search.destination,
       ...(back
         ? {
-            returnDepartureTime: localTime(asString(back.departure)),
-            returnStops: Math.max(0, Math.round(asNumber(back.stopCount) ?? 0)),
-            returnDurationMinutes: Math.max(0, Math.round(asNumber(back.durationInMinutes) ?? 0)),
+            returnDepartureTime: localTime(asString(back.dep)),
+            returnStops: Math.max(0, Math.round(asNumber(back.stops) ?? 0)),
+            returnDurationMinutes: Math.max(0, Math.round(asNumber(back.dur_min) ?? 0)),
           }
         : {}),
       ...(bookingUrl ? { bookingUrl } : {}),
       source: "skyscanner",
-      ...(opts.sourceUrl ? { sourceUrl: opts.sourceUrl } : {}),
+      sourceUrl: skyscannerUrl(fromSky ?? search.origin, toSky ?? search.destination, search),
     } as Flight);
   }
   return flights.sort((a, b) => a.price - b.price);
@@ -169,22 +172,4 @@ export function mapGoogleFlights(
     } as Flight);
   }
   return flights.sort((a, b) => a.price - b.price);
-}
-
-/** Sky Scrapper /api/v1/flights/searchAirport → the city (or first airport) to search from. */
-export function pickSkyPlace(raw: unknown, iata: string): { skyId: string; entityId: string } | null {
-  const rows = isObject(raw) ? list(raw.data).filter(isObject) : [];
-  const params = (row: Json) => {
-    const nav = isObject(row.navigation) ? row.navigation : null;
-    const p = nav && isObject(nav.relevantFlightParams) ? nav.relevantFlightParams : null;
-    const skyId = asString(p?.skyId) ?? asString(row.skyId);
-    const entityId = asString(p?.entityId) ?? asString(row.entityId);
-    return skyId && entityId ? { skyId, entityId, type: asString(nav?.entityType) ?? "" } : null;
-  };
-  const places = rows.map(params).filter((p): p is { skyId: string; entityId: string; type: string } => p !== null);
-  const code = iata.toUpperCase();
-  const exact = places.find((p) => p.skyId.toUpperCase() === code);
-  const city = places.find((p) => p.type === "CITY");
-  const pick = exact ?? city ?? places[0];
-  return pick ? { skyId: pick.skyId, entityId: pick.entityId } : null;
 }
