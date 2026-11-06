@@ -45,6 +45,10 @@ export const metadata: Metadata = {
     title: `${SITE_NAME} — ${SITE_TAGLINE}`,
     description: SITE_DESCRIPTION,
   },
+  // Milestone 50: Omio affiliate programme (Impact) site verification.
+  other: {
+    "impact-site-verification": "e6e404f2-f702-4340-87c0-93d88c04972e",
+  },
 };
 
 /**
