@@ -14,7 +14,7 @@ import { convertAmount } from "@/features/fx/ecb";
 import { eurRates } from "@/features/fx/rates";
 
 const HOST = "apidojo-booking-v1.p.rapidapi.com";
-const TIMEOUT_MS = 15_000;
+const TIMEOUT_MS = 10_000;
 const DEST_CACHE_MS = 24 * 60 * 60_000;
 const destCache = new Map<string, { at: number; dest: { destId: string; destType: string } | null }>();
 

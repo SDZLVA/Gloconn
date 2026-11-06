@@ -224,7 +224,7 @@ describe("View hotel CTA", () => {
     assert.match(html, /Hotel Paris/);
     assert.match(html, /Marais/);
     assert.match(html, /View package/);
-    assert.match(html, /est\. total/);
+    assert.match(html, /Total from/);
     assert.doesNotMatch(html, /Departure|Arrive|Amenities|Free Wi-Fi/i);
     assert.doesNotMatch(html, /iframe|google\.com\/maps/i);
   });

@@ -67,3 +67,9 @@ test("no budget: recommended mix, not the same hotel over and over", () => {
 test("hotelQuality reads 0–5 scores", () => {
   assert.ok(hotelQuality(hotel("a", 1, 4.5, 5)) > hotelQuality(hotel("b", 1, 3, 2)));
 });
+
+test("one saved fare still pairs with many hotels (milestone 47)", () => {
+  const hotels = Array.from({ length: 12 }, (_, i) => hotel(`h${i}`, 200 + i * 20, 4, 3));
+  const packages = combinePackages([flight("f1", 90)], hotels, { ...base, budget: null });
+  assert.equal(packages.length, 12);
+});

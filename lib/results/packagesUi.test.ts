@@ -382,8 +382,8 @@ describe("TravelPackageCard rendering", () => {
     assert.match(html, /per person/);
     assert.match(html, /1 room/);
     assert.doesNotMatch(html, /flight \+ hotel total/i);
-    // P0.1: "est. total" suffix
-    assert.match(html, /est\. total/);
+    // Milestone 47: "Total from" label
+    assert.match(html, /Total from/);
     // Milestone 32: "View package" — not booking language.
     assert.match(html, /View package/);
     assert.doesNotMatch(html, /View hotel/);

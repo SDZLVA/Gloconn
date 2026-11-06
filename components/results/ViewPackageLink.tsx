@@ -6,6 +6,7 @@ import type { PackageExplanation } from "@/lib/packages/explanations";
 import { focusRing } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 import type { TravelPackage } from "@/types/models/travel-package";
+import type { Flight } from "@/types/models";
 
 type ViewPackageLinkProps = {
   package: TravelPackage;
@@ -14,8 +15,25 @@ type ViewPackageLinkProps = {
   originIata?: string | null;
   destinationIata?: string | null;
   tripType?: "round-trip" | "one-way" | null;
+  /** Milestone 47: every flight for these dates, so the package page can offer them. */
+  flightOptions?: readonly Flight[];
   className?: string;
 };
+
+const MAX_FLIGHT_OPTIONS = 10;
+
+/** The package's flight plus the other flights in the same currency, cheapest first, no duplicates. */
+export function packageFlightChoices(travelPackage: TravelPackage, flights: readonly Flight[] = []): Flight[] {
+  const seen = new Set<string>();
+  const out: Flight[] = [];
+  for (const flight of [travelPackage.flight, ...[...flights].sort((a, b) => a.price - b.price)]) {
+    if (!flight || seen.has(flight.id) || flight.price <= 0 || flight.currency !== travelPackage.currency) continue;
+    seen.add(flight.id);
+    out.push(flight);
+  }
+  const [own, ...rest] = out;
+  return [own, ...rest.slice(0, MAX_FLIGHT_OPTIONS - 1)].filter(Boolean).sort((a, b) => a.price - b.price);
+}
 
 /**
  * Milestone 33 — "View package" opens the package's own page. A plain link
@@ -28,6 +46,7 @@ export function ViewPackageLink({
   originIata = null,
   destinationIata = null,
   tripType = "round-trip",
+  flightOptions = [],
   className,
 }: ViewPackageLinkProps) {
   return (
@@ -38,6 +57,10 @@ export function ViewPackageLink({
           package: travelPackage,
           explanation,
           flightLinks: [...(getFlightLinks?.(travelPackage.flight) ?? [])],
+          flightOptions: packageFlightChoices(travelPackage, flightOptions).map((flight) => ({
+            flight,
+            links: [...(getFlightLinks?.(flight) ?? [])],
+          })),
           resultsUrl: window.location.pathname + window.location.search,
           originIata,
           destinationIata,

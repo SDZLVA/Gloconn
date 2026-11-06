@@ -912,6 +912,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                       budget={activeSearch.budget}
                       tripType={activeSearch.tripType}
                       destinationName={(activeSearch.destination ?? "").split(",")[0]?.trim()}
+                      flightOptions={displayData?.flights}
                     />
                   )}
                   {view === "packages" && (usesStays ? visibleStays.length === 0 : visiblePackages.length === 0) && (

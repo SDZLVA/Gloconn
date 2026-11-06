@@ -8,12 +8,18 @@
 import type { FlightPartnerLink } from "@/lib/affiliate/flightPartnerLink";
 import type { PackageExplanation } from "@/lib/packages/explanations";
 import type { TravelPackage } from "@/types/models/travel-package";
+import type { Flight } from "@/types/models";
+
+/** Milestone 47: one flight the traveller can pick on the package page. */
+export type PackageFlightOption = { flight: Flight; links: FlightPartnerLink[] };
 
 export type PackageViewPayload = {
   package: TravelPackage;
   explanation: PackageExplanation | null;
   /** Partner buttons for this package's flights, worked out on the results page. */
   flightLinks: FlightPartnerLink[];
+  /** Milestone 47: all flights for these dates (cheapest first); picking one updates the total. */
+  flightOptions?: PackageFlightOption[];
   /** The results page URL (path + query), for "Back to results" and the search details. */
   resultsUrl: string;
   originIata: string | null;
