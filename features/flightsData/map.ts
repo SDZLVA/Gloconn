@@ -89,3 +89,72 @@ export function mapDataFlights(raw: unknown, search: DataFlightsSearch, destinat
   }
   return flights.sort((a, b) => a.price - b.price);
 }
+
+
+/**
+ * Milestone 48 — /aviasales/v3/prices_for_dates → Flight[]:
+ * { data: [{ price, airline, flight_number, departure_at, return_at,
+ *   transfers, return_transfers, duration_to, duration_back }] }.
+ * Exact dates and trip type only, like mapDataFlights.
+ */
+export function mapV3Flights(raw: unknown, search: DataFlightsSearch, destinationId = ""): Flight[] {
+  const rows = isObject(raw) && Array.isArray(raw.data) ? raw.data : [];
+  const flights: Flight[] = [];
+  for (const row of rows) {
+    if (!isObject(row)) continue;
+    const price = asNumber(row.price);
+    const departureAt = asString(row.departure_at);
+    if (!price || price <= 0 || !departureAt) continue;
+    const returnAt = asString(row.return_at);
+    const outDate = departureAt.slice(0, 10);
+    const backDate = returnAt ? returnAt.slice(0, 10) : null;
+    if (outDate !== search.departureDate) continue;
+    if (search.returnDate ? backDate !== search.returnDate : returnAt) continue;
+    const airlineCode = asString(row.airline)?.toUpperCase() ?? "";
+    const number = asNumber(row.flight_number);
+    const stops = Math.max(0, Math.round(asNumber(row.transfers) ?? 0));
+    const returnStops = Math.max(0, Math.round(asNumber(row.return_transfers) ?? stops));
+    const dest = asString(row.destination) ?? search.destination;
+    const bookingUrl = buildAviasalesSearchUrl({
+      origin: search.origin,
+      destination: dest,
+      departureDate: outDate,
+      returnDate: backDate,
+      adults: search.adults,
+      children: search.children,
+      infants: search.infants,
+    });
+    const back = Math.round(asNumber(row.duration_back) ?? 0);
+    flights.push({
+      id: `tpd3-${dest}-${stops}-${departureAt.slice(0, 16)}-${airlineCode}${number ?? ""}`.replace(/[^A-Za-z0-9_-]/g, ""),
+      destinationId,
+      price: Math.round(price * 100) / 100,
+      currency: search.currency as Flight["currency"],
+      rating: 0,
+      airline: airlineDisplayName(airlineCode) ?? (airlineCode || "Airline"),
+      ...(airlineCode ? { airlineCode } : {}),
+      departureTime: localTime(departureAt),
+      arrivalTime: "",
+      durationMinutes: Math.max(0, Math.round(asNumber(row.duration_to) ?? 0)),
+      stops,
+      cabin: "Economy",
+      priceIsRecent: true,
+      originAirport: search.origin,
+      destinationAirport: dest,
+      ...(returnAt ? { returnDepartureTime: localTime(returnAt), returnStops, ...(back > 0 ? { returnDurationMinutes: back } : {}) } : {}),
+      ...(bookingUrl ? { bookingUrl } : {}),
+    } as Flight);
+  }
+  return flights.sort((a, b) => a.price - b.price);
+}
+
+/** Both lists together: same airline + times kept once (cheaper wins), cheapest first. */
+export function mergeFlights(...lists: Flight[][]): Flight[] {
+  const best = new Map<string, Flight>();
+  for (const flight of lists.flat()) {
+    const key = `${flight.airlineCode ?? flight.airline}|${flight.departureTime}|${flight.returnDepartureTime ?? ""}`;
+    const seen = best.get(key);
+    if (!seen || flight.price < seen.price) best.set(key, flight);
+  }
+  return [...best.values()].sort((a, b) => a.price - b.price);
+}

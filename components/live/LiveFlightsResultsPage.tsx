@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DataFlightsList, filterDataFlights } from "@/components/live/DataFlightsList";
+import { NoFlightPrices, WHITE_LABEL_ON } from "@/components/live/NoFlightPrices";
 import type { Flight } from "@/types/models";
 import { useApplyRefresh } from "@/hooks/useApplyRefresh";
 import { FiltersAside, MobileResultsBar, useMobileFilters } from "@/components/filters/MobileFilters";
@@ -103,7 +104,8 @@ export function LiveFlightsResultsPage({
     };
   }, [flightsEngine, liveSearch]);
   const groupSize = (travelers?.adults ?? 1) + (travelers?.children ?? 0);
-  const useData = flightsEngine !== "whitelabel" && (data.status === "loading" || data.flights.length > 0);
+  // Milestone 49: without White Label, the data list (or its empty state) always shows.
+  const useData = flightsEngine !== "whitelabel" && (data.status === "loading" || data.flights.length > 0 || !WHITE_LABEL_ON);
   const shownFlights = useMemo(() => filterDataFlights(data.flights, filters, Math.max(1, groupSize)), [data.flights, filters, groupSize]);
 
 
@@ -160,6 +162,16 @@ export function LiveFlightsResultsPage({
                     <div key={i} className="h-32 animate-pulse rounded-2xl bg-slate-200 motion-reduce:animate-none" />
                   ))}
                 </div>
+              ) : data.flights.length === 0 ? (
+                <NoFlightPrices
+                  origin={liveSearch.originCode}
+                  destination={liveSearch.destinationCode}
+                  departureDate={liveSearch.departureDate}
+                  returnDate={liveSearch.returnDate ?? null}
+                  adults={liveSearch.adults}
+                  kids={liveSearch.children}
+                  infants={liveSearch.infants}
+                />
               ) : (
                 <DataFlightsList flights={shownFlights} travelers={Math.max(1, groupSize)} roundTrip={Boolean(liveSearch.returnDate)} />
               )

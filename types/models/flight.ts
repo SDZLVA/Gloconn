@@ -96,6 +96,13 @@ export type Flight = {
   bookingUrl?: string;
 
   /**
+   * Milestone 49: where the price came from (travelpayouts = saved fares;
+   * skyscanner / google = live at search time) and a link to that source.
+   */
+  source?: "travelpayouts" | "skyscanner" | "google";
+  sourceUrl?: string;
+
+  /**
    * Milestone 21: full leg details when the source provides them. The flat
    * fields above stay filled in (sorting, filters and packages use them).
    */

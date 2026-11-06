@@ -14,7 +14,8 @@ import { resolveAviasalesCurrency } from "@/lib/providers/flights/aviasales/prov
 import { nightsBetween } from "@/features/liveHotels/filters";
 import { rapidApiKey, searchBookingHotels } from "@/features/liveHotels/bookingcom/client";
 import type { LiveHotel } from "@/features/liveHotels/types";
-import { dataFlightsConfigured, searchDataFlights } from "@/features/flightsData/client";
+import { dataFlightsConfigured } from "@/features/flightsData/client";
+import { searchFlightsWithFallback } from "@/features/flightsFallback";
 import { combinePackages } from "@/features/packagesEngine/combine";
 import { buildStayPackages } from "@/features/packagesEngine/stays";
 import { retryOnce } from "@/features/packagesEngine/retry";
@@ -66,7 +67,7 @@ function toHotel(hotel: LiveHotel, request: SearchRequest, nights: number, curre
 
 export const dataBookingcomEngine: PackagesEngine = {
   id: "travelpayouts-bookingcom",
-  async search(request): Promise<PackagesEngineResult> {
+  async search(request, context): Promise<PackagesEngineResult> {
     const warnings: SearchResponseWarning[] = [];
     const currency = resolveAviasalesCurrency(request);
     const travelers = Math.max(1, request.travelers.adults + request.travelers.children);
@@ -79,7 +80,7 @@ export const dataBookingcomEngine: PackagesEngine = {
 
     const flightsPromise: Promise<Flight[]> =
       dataFlightsConfigured() && origin && destination
-        ? retryOnce(() => searchDataFlights(
+        ? retryOnce(() => searchFlightsWithFallback(
             {
               origin,
               destination,
@@ -90,7 +91,7 @@ export const dataBookingcomEngine: PackagesEngine = {
               infants: request.travelers.infants,
               currency,
             },
-            request.destinationId ?? "",
+            { visitor: context?.visitor ?? "", destinationId: request.destinationId ?? "" },
           )).then((r) => r.flights)
         : Promise.reject(new Error("flight data not configured"));
     const hotelsPromise: Promise<LiveHotel[]> =

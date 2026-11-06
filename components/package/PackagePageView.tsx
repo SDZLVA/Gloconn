@@ -344,7 +344,10 @@ export function PackagePageView({ packageId }: { packageId: string }) {
               </div>
             </dl>
             <p className="mt-2 text-[11px] leading-snug text-slate-500">
-              Flight prices are recent fares found by other travellers. The final price is confirmed on the booking site.
+              {flight.source === "google" || flight.source === "skyscanner"
+                ? `Flight prices are live from ${flight.source === "google" ? "Google Flights" : "Skyscanner"} when you searched (updated every few hours).`
+                : "Flight prices are recent fares found by other travellers."}{" "}
+              The final price is confirmed on the booking site.
             </p>
             <a
               href="#options"

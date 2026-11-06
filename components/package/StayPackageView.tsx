@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { LiveFlightsSection } from "@/features/liveFlights/LiveFlightsSection";
+import { NoFlightPrices, WHITE_LABEL_ON } from "@/components/live/NoFlightPrices";
 import type { LiveFlightsFilters } from "@/features/liveFlights/types";
 import { formatShortDate } from "@/lib/calendar/dates";
 import { formatMoney } from "@/lib/money";
@@ -111,12 +112,24 @@ export function StayPackageView({ stayId }: { stayId: string }) {
             <div>
               <p className="text-xs font-bold uppercase tracking-wide text-slate-500">2 · Your flights</p>
               <p className="text-sm text-slate-600">
-                {stay.flightBudget !== null
+                {!WHITE_LABEL_ON
+                  ? `No flight price was found for these dates yet. Compare today's prices for ${people} on Aviasales.`
+                  : stay.flightBudget !== null
                   ? `Live prices, showing only flights up to ${formatMoney(stay.flightBudget, stay.currency)} for ${people} — what's left of your budget after the hotel.`
                   : `Live prices for ${people}, cheapest first.`}
               </p>
             </div>
-            {flights ? (
+            {flights && !WHITE_LABEL_ON ? (
+              <NoFlightPrices
+                origin={flights.originCode}
+                destination={flights.destinationCode}
+                departureDate={flights.departureDate}
+                returnDate={flights.returnDate ?? null}
+                adults={flights.adults}
+                kids={flights.children}
+                infants={flights.infants}
+              />
+            ) : flights ? (
               <LiveFlightsSection search={flights} filters={filters} title="Live flights" />
             ) : (
               <p className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
@@ -168,7 +181,9 @@ export function StayPackageView({ stayId }: { stayId: string }) {
                       ? `from ${formatMoney(stay.flightEstimate, stay.currency)}`
                       : stay.flightBudget !== null
                         ? `up to ${formatMoney(stay.flightBudget, stay.currency)}`
-                        : "live prices"}
+                        : WHITE_LABEL_ON
+                          ? "live prices"
+                          : "no price yet"}
                   </span>
                 </div>
                 {flights && (
@@ -176,7 +191,7 @@ export function StayPackageView({ stayId }: { stayId: string }) {
                     href="#live-flights"
                     className="flex min-h-11 w-full items-center justify-center rounded-xl border border-brand-700 px-4 text-sm font-bold text-brand-700 hover:bg-brand-50"
                   >
-                    Book flights · all flight options ↓
+                    {WHITE_LABEL_ON ? "Book flights · all flight options ↓" : "Find flights ↓"}
                   </a>
                 )}
               </div>
@@ -204,7 +219,9 @@ export function StayPackageView({ stayId }: { stayId: string }) {
             <p className="mt-3 text-[11px] leading-snug text-slate-500">
               {stay.flightEstimate !== null
                 ? `“From” uses the cheapest recent fare on this route${stay.flightEstimateNearby ? " (similar dates)" : ""}; the live flights below show today's prices and every booking option.`
-                : "The live flights below show today's prices and every booking option."}
+                : WHITE_LABEL_ON
+                  ? "The live flights below show today's prices and every booking option."
+                  : "No flight price was found for these dates, so the total can't be shown yet."}
             </p>
           </div>
         </aside>

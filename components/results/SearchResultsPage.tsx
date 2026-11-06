@@ -65,6 +65,7 @@ import { RecommendedPackagesSection } from "@/components/results/RecommendedPack
 import { StayPackagesSection } from "@/components/results/StayPackagesSection";
 import type { StayPackage } from "@/types/models/stay-package";
 import { LiveFlightsSection } from "@/features/liveFlights/LiveFlightsSection";
+import { WHITE_LABEL_ON } from "@/components/live/NoFlightPrices";
 import type {
   LiveFlightsFacets,
   LiveFlightsFilters,
@@ -851,7 +852,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                       {(
                         [
                           ["packages", `Recommended Packages (${usesStays ? packageCount : visiblePackages.length})`],
-                          ["flights", flightResults.length === 0 && liveFlightsSearch ? "Live flights" : `Flights (${flightResults.length})`],
+                          ["flights", flightResults.length === 0 && liveFlightsSearch && WHITE_LABEL_ON ? "Live flights" : `Flights (${flightResults.length})`],
                           ["hotels", `Hotels (${hotelResults.length})`],
                         ] as const
                       ).map(([value, label]) => (
@@ -922,7 +923,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
                         : "No packages for this search yet — see the Flights and Hotels tabs."}
                     </p>
                   )}
-                  {view !== "packages" && !(view === "flights" && flightResults.length === 0 && liveFlightsSearch) && (
+                  {view !== "packages" && !(view === "flights" && flightResults.length === 0 && liveFlightsSearch && WHITE_LABEL_ON) && (
                     <ResultsList
                       results={view === "flights" ? flightResults : hotelResults}
                       destination={destination}
@@ -939,7 +940,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
               )}
 
               {/* Milestone 23: removable live-flights engine (features/liveFlights). */}
-              {hasData && !showSkeleton && (
+              {WHITE_LABEL_ON && hasData && !showSkeleton && (
                 <div hidden={view !== "flights" || allResults.some((r) => r.type === "flight")}>
                 <LiveFlightsSection
                   search={liveFlightsSearch}

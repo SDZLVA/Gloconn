@@ -13,6 +13,8 @@ import type { SearchResponseWarning } from "@/types/models/search-response";
 export type PackagesEngineContext = {
   /** ISO country of the visitor (hotel prices can depend on it). */
   guestNationality?: string;
+  /** Milestone 49: hashed visitor id — limits paid live-flight lookups per visitor. */
+  visitor?: string;
 };
 
 export type PackagesEngineResult = {
