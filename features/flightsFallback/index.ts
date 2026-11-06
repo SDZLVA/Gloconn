@@ -21,7 +21,7 @@ const EMPTY_TTL_MS = 60 * 60_000;
 export const VISITOR_LIMIT = 3;
 
 export type FlightsSource = "travelpayouts" | "skyscanner" | "google" | "none";
-export type FallbackResult = { flights: Flight[]; source: FlightsSource; raw?: unknown; why?: string };
+export type FallbackResult = { flights: Flight[]; source: FlightsSource; raw?: unknown; why?: string; trace?: string[] };
 
 /** Hashed visitor id from request headers (never store raw IPs). */
 export function visitorId(headers: Headers): string {
@@ -47,24 +47,29 @@ export async function searchFlightsWithFallback(
   if (!storeConfigured()) return { flights: [], source: "none", why: "no SUPABASE_SERVICE_ROLE_KEY" };
 
   const key = liveKey(search);
-  const cached = await readCache<FallbackResult>(key);
+  // Preview debug skips the saved answer so a fix can be tested at once.
+  const cached = options.debug ? null : await readCache<FallbackResult>(key);
   if (cached) return { flights: cached.flights ?? [], source: cached.source ?? "none" };
   if (!(await claimVisitor(options.visitor, VISITOR_LIMIT))) {
     return { flights: [], source: "none", why: options.visitor ? "visitor limit or store error" : "no visitor id" };
   }
 
+  const trace: string[] = [];
   for (const [source, run] of [
     ["skyscanner", searchSkyscanner],
     ["google", searchGoogle],
   ] as const) {
-    const found = await run(search, destinationId).catch(() => ({ flights: [] as Flight[], raw: null as unknown }));
+    const found = await run(search, destinationId, trace).catch((e: unknown) => {
+      trace.push(`${source} failed: ${(e as Error)?.message ?? e}`);
+      return { flights: [] as Flight[], raw: null as unknown };
+    });
     if (found.flights.length > 0) {
       const result: FallbackResult = { flights: found.flights.slice(0, 30), source };
       await writeCache(key, result, LIVE_TTL_MS);
-      return options.debug ? { ...result, raw: found.raw } : result;
+      return options.debug ? { ...result, raw: found.raw, trace } : result;
     }
   }
-  const none: FallbackResult = { flights: [], source: "none", ...(options.debug ? { why: "providers found nothing" } : {}) };
+  const none: FallbackResult = { flights: [], source: "none" };
   await writeCache(key, none, EMPTY_TTL_MS);
-  return none;
+  return options.debug ? { ...none, why: "providers found nothing", trace } : none;
 }

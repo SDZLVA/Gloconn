@@ -13,6 +13,9 @@ import type { DataFlightsSearch } from "@/features/flightsData/map";
 import type { Flight } from "@/types/models";
 
 const SKY_HOST = "sky-scrapper.p.rapidapi.com";
+
+/** Preview debugging: short notes about each provider call (no keys). */
+export type Trace = string[];
 const TIMEOUT_MS = 12_000;
 const PLACE_TTL_MS = 60 * 24 * 60 * 60_000;
 
@@ -30,36 +33,49 @@ async function getJson(url: string, headers: Record<string, string>): Promise<un
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
     const response = await fetch(url, { headers: { accept: "application/json", ...headers }, signal: controller.signal, cache: "no-store" });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (!response.ok) {
+      const body = await response.text().catch(() => "");
+      throw new Error(`HTTP ${response.status} ${body.slice(0, 200)}`);
+    }
     return await response.json();
   } finally {
     clearTimeout(timer);
   }
 }
 
-async function sky(path: string, params: Record<string, string>): Promise<unknown | null> {
+async function sky(path: string, params: Record<string, string>, trace?: Trace): Promise<unknown | null> {
   const key = process.env.RAPIDAPI_KEY?.trim();
   if (!key) return null;
-  if (!(await claimCall("skyscanner", CAPS.skyscanner.daily, CAPS.skyscanner.monthly))) return null;
-  return getJson(`https://${SKY_HOST}${path}?${new URLSearchParams(params).toString()}`, {
-    "x-rapidapi-key": key,
-    "x-rapidapi-host": SKY_HOST,
-  });
+  if (!(await claimCall("skyscanner", CAPS.skyscanner.daily, CAPS.skyscanner.monthly))) {
+    trace?.push(`sky ${path}: over cap`);
+    return null;
+  }
+  try {
+    const raw = await getJson(`https://${SKY_HOST}${path}?${new URLSearchParams(params).toString()}`, {
+      "x-rapidapi-key": key,
+      "x-rapidapi-host": SKY_HOST,
+    });
+    trace?.push(`sky ${path}: ${JSON.stringify(raw).slice(0, 400)}`);
+    return raw;
+  } catch (error) {
+    trace?.push(`sky ${path}: ${(error as Error).message}`);
+    return null;
+  }
 }
 
-async function skyPlace(iata: string): Promise<{ skyId: string; entityId: string } | null> {
+async function skyPlace(iata: string, trace?: Trace): Promise<{ skyId: string; entityId: string } | null> {
   const cacheKey = `sky-place:${iata.toUpperCase()}`;
   const cached = await readCache<{ skyId: string; entityId: string }>(cacheKey);
   if (cached) return cached;
-  const raw = await sky("/api/v1/flights/searchAirport", { query: iata, locale: "en-US" });
+  const raw = await sky("/api/v1/flights/searchAirport", { query: iata, locale: "en-US" }, trace);
   const place = raw ? pickSkyPlace(raw, iata) : null;
   if (place) await writeCache(cacheKey, place, PLACE_TTL_MS);
   return place;
 }
 
-export async function searchSkyscanner(search: DataFlightsSearch, destinationId = ""): Promise<{ flights: Flight[]; raw: unknown }> {
+export async function searchSkyscanner(search: DataFlightsSearch, destinationId = "", trace?: Trace): Promise<{ flights: Flight[]; raw: unknown }> {
   if (!process.env.RAPIDAPI_KEY?.trim()) return { flights: [], raw: null };
-  const [from, to] = await Promise.all([skyPlace(search.origin), skyPlace(search.destination)]);
+  const [from, to] = await Promise.all([skyPlace(search.origin, trace), skyPlace(search.destination, trace)]);
   if (!from || !to) return { flights: [], raw: null };
   const params: Record<string, string> = {
     originSkyId: from.skyId,
@@ -78,7 +94,7 @@ export async function searchSkyscanner(search: DataFlightsSearch, destinationId 
     countryCode: "GB",
   };
   if (search.returnDate) params.returnDate = search.returnDate;
-  let raw = await sky("/api/v2/flights/searchFlights", params);
+  let raw = await sky("/api/v2/flights/searchFlights", params, trace);
   // The first answer can be "incomplete"; one follow-up call finishes it.
   const ctx = (raw as { data?: { context?: { status?: string; sessionId?: string } } } | null)?.data?.context;
   if (raw && ctx?.status === "incomplete" && ctx.sessionId) {
@@ -87,7 +103,7 @@ export async function searchSkyscanner(search: DataFlightsSearch, destinationId 
       currency: search.currency,
       market: "en-GB",
       countryCode: "GB",
-    }).catch(() => null);
+    }, trace).catch(() => null);
     if (more) raw = more;
   }
   if (!raw) return { flights: [], raw: null };
@@ -95,7 +111,7 @@ export async function searchSkyscanner(search: DataFlightsSearch, destinationId 
   return { flights: mapSkyItineraries(raw, search, { groupPrice: GROUP_PRICE.skyscanner, sourceUrl, destinationId }), raw };
 }
 
-export async function searchGoogle(search: DataFlightsSearch, destinationId = ""): Promise<{ flights: Flight[]; raw: unknown }> {
+export async function searchGoogle(search: DataFlightsSearch, destinationId = "", trace?: Trace): Promise<{ flights: Flight[]; raw: unknown }> {
   const key = process.env.SERPAPI_API_KEY?.trim();
   if (!key) return { flights: [], raw: null };
   if (!(await claimCall("google", CAPS.google.daily, CAPS.google.monthly))) return { flights: [], raw: null };
@@ -113,6 +129,13 @@ export async function searchGoogle(search: DataFlightsSearch, destinationId = ""
     api_key: key,
   });
   if (search.returnDate) params.set("return_date", search.returnDate);
-  const raw = await getJson(`https://serpapi.com/search?${params.toString()}`, {});
+  let raw: unknown;
+  try {
+    raw = await getJson(`https://serpapi.com/search?${params.toString()}`, {});
+    trace?.push(`google: ${JSON.stringify(raw).slice(0, 400)}`);
+  } catch (error) {
+    trace?.push(`google: ${(error as Error).message.replace(key, "[key]")}`);
+    return { flights: [], raw: null };
+  }
   return { flights: mapGoogleFlights(raw, search, { groupPrice: GROUP_PRICE.google, destinationId }), raw };
 }
