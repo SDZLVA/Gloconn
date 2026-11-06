@@ -8,7 +8,7 @@ import "server-only";
  */
 
 import { getAppConfig } from "@/lib/config";
-import { mapDataFlights, type DataFlightsSearch } from "@/features/flightsData/map";
+import { mapDataFlights, mapV3Flights, mergeFlights, type DataFlightsSearch } from "@/features/flightsData/map";
 import type { Flight } from "@/types/models";
 
 const DEFAULT_HOST = "travelpayouts-travelpayouts-flight-data-v1.p.rapidapi.com";
@@ -54,6 +54,29 @@ export async function searchDataFlights(
   if (search.returnDate) params.set("return_date", search.returnDate);
 
   const query = params.toString();
+  // Milestone 48: Travelpayouts v3 "prices for dates" — same cached data, but
+  // up to 30 fares for the exact dates (airlines, times), not only the cheapest.
+  const v3Params = new URLSearchParams({
+    origin: search.origin,
+    destination: search.destination,
+    departure_at: search.departureDate,
+    one_way: search.returnDate ? "false" : "true",
+    currency: search.currency.toLowerCase(),
+    sorting: "price",
+    direct: "false",
+    unique: "false",
+    limit: "30",
+    page: "1",
+  });
+  if (search.returnDate) v3Params.set("return_at", search.returnDate);
+  const v3Promise = fetchJson(`${DIRECT_BASE}/aviasales/v3/prices_for_dates?${v3Params.toString()}`, {
+    "X-Access-Token": token,
+    accept: "application/json",
+  });
+  const v3Flights = async () => {
+    const v3 = await v3Promise;
+    return v3.ok ? mapV3Flights(v3.raw, search, destinationId) : [];
+  };
   // 1) RapidAPI proxy. 2) If RapidAPI answers with an error (its listing has
   // returned 404 for this path), the same Travelpayouts data API directly,
   // with the same token — same provider, same cached prices.
@@ -72,13 +95,18 @@ export async function searchDataFlights(
   for (const attempt of attempts) {
     const result = await fetchJson(attempt.url, attempt.headers);
     if (result.ok) {
-      const flights = mapDataFlights(result.raw, search, destinationId);
+      const flights = mergeFlights(mapDataFlights(result.raw, search, destinationId), await v3Flights());
       cache.set(cacheKey, { at: Date.now(), flights });
       if (cache.size > 300) cache.delete(cache.keys().next().value!);
       return { flights, raw: result.raw };
     }
     lastStatus = result.status;
     details.push(`${new URL(attempt.url).host} ${result.status} ${result.text.slice(0, 200)}`);
+  }
+  const onlyV3 = await v3Flights();
+  if (onlyV3.length > 0) {
+    cache.set(cacheKey, { at: Date.now(), flights: onlyV3 });
+    return { flights: onlyV3, raw: null };
   }
   throw new DataFlightsError(`Flight data ${lastStatus}`, lastStatus, details.join(" | "));
 }
