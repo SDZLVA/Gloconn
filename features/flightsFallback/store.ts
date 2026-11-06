@@ -10,10 +10,14 @@ import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let client: SupabaseClient | null | undefined;
+const PROJECT_URL = "https://cxuvrudogagtfqmjhrrq.supabase.co";
 
 function service(): SupabaseClient | null {
   if (client !== undefined) return client;
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  // NEXT_PUBLIC_SUPABASE_URL is set for Production only in Vercel; the
+  // project address is public (it ships in the browser bundle), so Preview
+  // falls back to it. The secret is SUPABASE_SERVICE_ROLE_KEY.
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || process.env.SUPABASE_URL?.trim() || PROJECT_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
   client = url && key ? createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }) : null;
   return client;
