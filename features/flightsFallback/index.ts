@@ -10,6 +10,7 @@ import "server-only";
  */
 
 import { createHash } from "node:crypto";
+// options.debug is only ever true on Vercel Preview (see app/api/flights/data/route.ts).
 import { dataFlightsConfigured, searchDataFlights } from "@/features/flightsData/client";
 import type { DataFlightsSearch } from "@/features/flightsData/map";
 import { searchGoogle, searchSkyscanner } from "@/features/flightsFallback/providers";
@@ -50,7 +51,8 @@ export async function searchFlightsWithFallback(
   // Preview debug skips the saved answer so a fix can be tested at once.
   const cached = options.debug ? null : await readCache<FallbackResult>(key);
   if (cached) return { flights: cached.flights ?? [], source: cached.source ?? "none" };
-  if (!(await claimVisitor(options.visitor, VISITOR_LIMIT))) {
+  // Preview debug (my own tests) skips the per-visitor limit; provider caps still apply.
+  if (!options.debug && !(await claimVisitor(options.visitor, VISITOR_LIMIT))) {
     return { flights: [], source: "none", why: options.visitor ? "visitor limit or store error" : "no visitor id" };
   }
 
