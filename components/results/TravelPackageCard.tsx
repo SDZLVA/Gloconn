@@ -8,6 +8,7 @@ import { formatPackagePriceBreakdownLabel, formatPackageStopsLabel } from "@/lib
 import { cn } from "@/lib/utils";
 import type { PackageExplanation } from "@/lib/packages/explanations";
 import type { TravelPackage } from "@/types/models/travel-package";
+import type { Flight } from "@/types/models";
 
 type TravelPackageCardProps = {
   package: TravelPackage;
@@ -18,6 +19,8 @@ type TravelPackageCardProps = {
   tripType?: "round-trip" | "one-way" | null;
   /** City shown on the picture tile (e.g. "Berlin"). */
   destinationName?: string;
+  /** Milestone 47: all flights for these dates, handed to the package page. */
+  flightOptions?: readonly Flight[];
 };
 
 /** "2026-11-10 06:55" or "06:55" → "06:55". */
@@ -69,6 +72,7 @@ function TravelPackageCardComponent({
   explanation = null,
   tripType = "round-trip",
   destinationName,
+  flightOptions,
 }: TravelPackageCardProps) {
   const { flight, hotel, totalPrice, currency, nights, id } = travelPackage;
   const from = flight.originAirport ?? originIata ?? "";
@@ -163,9 +167,22 @@ function TravelPackageCardComponent({
 
       <div className="flex flex-row items-center justify-between gap-3 border-t border-slate-100 bg-brand-50/70 p-4 md:flex-col md:items-stretch md:justify-center md:border-l md:border-t-0">
         <div>
+          <p className="text-xs font-semibold text-slate-600">{travelPackage.overBudget ? "Over your budget" : "Total from"}</p>
           <p className="text-2xl font-extrabold text-slate-900">{formatMoney(totalPrice, currency)}</p>
-          <p className="text-xs font-semibold text-slate-600">{travelPackage.overBudget ? "over your budget" : "est. total"}</p>
-          <p className="text-[11px] leading-snug text-slate-500">{formatPackagePriceBreakdownLabel(nights, travelPackage.breakdown)}</p>
+          {travelPackage.breakdown ? (
+            <dl className="mt-1 space-y-0.5 text-xs text-slate-600">
+              <div className="flex justify-between gap-3">
+                <dt>Hotel</dt>
+                <dd className="font-semibold text-slate-800">{formatMoney(travelPackage.breakdown.hotelTotal, currency)}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt>Flight from</dt>
+                <dd className="font-semibold text-slate-800">{formatMoney(travelPackage.breakdown.flightTotal, currency)}</dd>
+              </div>
+            </dl>
+          ) : (
+            <p className="text-[11px] leading-snug text-slate-500">{formatPackagePriceBreakdownLabel(nights, travelPackage.breakdown)}</p>
+          )}
         </div>
         <ViewPackageLink
           package={travelPackage}
@@ -174,6 +191,7 @@ function TravelPackageCardComponent({
           destinationIata={destinationIata}
           getFlightLinks={getFlightLinks}
           tripType={tripType}
+          flightOptions={flightOptions}
           className="w-auto md:w-full"
         />
       </div>

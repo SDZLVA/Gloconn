@@ -9,6 +9,7 @@ import { focusRing } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 import type { Budget } from "@/types/models/budget";
 import type { TravelPackage } from "@/types/models/travel-package";
+import type { Flight } from "@/types/models";
 
 /** Number of packages shown initially before "Show more" is needed. */
 export const PACKAGES_INITIAL_VISIBLE = 5;
@@ -25,6 +26,8 @@ type RecommendedPackagesSectionProps = {
   tripType?: "round-trip" | "one-way" | null;
   /** Milestone 32: city on the package cards' picture tile. */
   destinationName?: string;
+  /** Milestone 47: all flights for these dates (package page flight choice). */
+  flightOptions?: readonly Flight[];
 };
 
 /**
@@ -47,6 +50,7 @@ function RecommendedPackagesSectionComponent({
   budget = null,
   tripType = "round-trip",
   destinationName,
+  flightOptions,
 }: RecommendedPackagesSectionProps) {
   const [showAll, setShowAll] = useState(false);
 
@@ -90,6 +94,7 @@ function RecommendedPackagesSectionComponent({
               explanation={explanations.get(travelPackage.id) ?? null}
               tripType={tripType}
               destinationName={destinationName}
+              flightOptions={flightOptions}
             />
           </li>
         ))}

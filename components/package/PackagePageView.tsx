@@ -6,11 +6,10 @@ import { AirlineLogo } from "@/components/results/AirlineLogo";
 import { PartnerLinks } from "@/components/results/PartnerLinks";
 import { SaveTripButton } from "@/components/trips/SaveTripButton";
 import { formatShortDate } from "@/lib/calendar/dates";
-import { loadPackageView, type PackageViewPayload } from "@/lib/packages/viewPayload";
+import { loadPackageView, type PackageFlightOption, type PackageViewPayload } from "@/lib/packages/viewPayload";
 import {
   formatFlightDurationLabel,
   formatPackageNightsLabel,
-  formatPackagePriceBreakdownLabel,
   formatPackageStopsLabel,
 } from "@/lib/results/packagesUi";
 import { parseSearchRequestFromParams } from "@/lib/search/request";
@@ -39,6 +38,8 @@ const scoreWord = (s: number) => (s >= 9 ? "Superb" : s >= 8.5 ? "Excellent" : s
 export function PackagePageView({ packageId }: { packageId: string }) {
   const [payload, setPayload] = useState<PackageViewPayload | null | "loading">("loading");
   const [copied, setCopied] = useState(false);
+  // Milestone 47: the flight the traveller picked (null = the package's own flight).
+  const [pickedFlightId, setPickedFlightId] = useState<string | null>(null);
   useEffect(() => setPayload(loadPackageView(packageId)), [packageId]);
 
   if (payload === "loading") {
@@ -56,13 +57,26 @@ export function PackagePageView({ packageId }: { packageId: string }) {
     );
   }
 
-  const { package: pkg, explanation, flightLinks, resultsUrl, tripType } = payload;
-  const { flight, hotel } = pkg;
+  const { package: pkg, explanation, resultsUrl, tripType } = payload;
+  const { hotel } = pkg;
+  const options: PackageFlightOption[] =
+    payload.flightOptions && payload.flightOptions.length > 0
+      ? payload.flightOptions
+      : [{ flight: pkg.flight, links: payload.flightLinks }];
+  const picked = options.find((o) => o.flight.id === (pickedFlightId ?? pkg.flight.id)) ?? options[0];
+  const flight = picked.flight;
+  const flightLinks = picked.links.length > 0 || flight.id !== pkg.flight.id ? picked.links : payload.flightLinks;
+  const cheapestFlight = Math.min(...options.map((o) => o.flight.price));
   const query = resultsUrl.split("?")[1] ?? "";
   const search = parseSearchRequestFromParams(new URLSearchParams(query));
   const from = city(search.origin);
   const to = city(search.destination) || "your trip";
   const people = (search.travelers?.adults ?? 1) + (search.travelers?.children ?? 0) + (search.travelers?.infants ?? 0);
+  // Exact totals: flight price per person × travellers (infants fly on a lap) + the hotel for the stay.
+  const flyers = pkg.breakdown?.travelers ?? Math.max(1, people - (search.travelers?.infants ?? 0));
+  const flightTotal = Math.round(flight.price * flyers * 100) / 100;
+  const hotelTotal = pkg.breakdown?.hotelTotal ?? hotel.price;
+  const total = pkg.breakdown ? Math.round((flightTotal + hotelTotal) * 100) / 100 : pkg.totalPrice;
   const dates = [search.departureDate, tripType === "one-way" ? null : search.returnDate]
     .filter((v): v is string => Boolean(v))
     .map(formatShortDate)
@@ -82,7 +96,7 @@ export function PackagePageView({ packageId }: { packageId: string }) {
     { icon: "✈", title: stops, text: duration },
     { icon: "📍", title: hotel.location || to, text: "Hotel area" },
     { icon: "★", title: hotel.stars > 0 ? `${hotel.stars}-star hotel` : "Unrated hotel", text: `${formatPackageNightsLabel(pkg.nights)}` },
-    { icon: "€", title: "Est. total", text: money(pkg.totalPrice, pkg.currency) },
+    { icon: "€", title: "Total from", text: money(total, pkg.currency) },
   ];
 
   async function share() {
@@ -162,6 +176,58 @@ export function PackagePageView({ packageId }: { packageId: string }) {
               </li>
             ))}
           </ul>
+
+          {options.length > 1 && (
+            <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" aria-labelledby="choose-flight">
+              <h2 id="choose-flight" className="text-lg font-bold text-slate-900">Choose your flight</h2>
+              <p className="mt-1 text-sm text-slate-600">Pick a flight and the total updates. Prices are for all {flyers} {flyers === 1 ? "traveler" : "travelers"}.</p>
+              <ul className="mt-3 space-y-2">
+                {options.map((option) => {
+                  const f = option.flight;
+                  const active = f.id === flight.id;
+                  const diff = Math.round((f.price - cheapestFlight) * flyers);
+                  return (
+                    <li key={f.id}>
+                      <button
+                        type="button"
+                        onClick={() => setPickedFlightId(f.id)}
+                        aria-pressed={active}
+                        className={cn(
+                          "flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors",
+                          active ? "border-brand-700 bg-brand-50 ring-1 ring-brand-700" : "border-slate-200 hover:border-slate-300 hover:bg-slate-50",
+                        )}
+                      >
+                        <span
+                          className={cn("flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2", active ? "border-brand-700" : "border-slate-300")}
+                          aria-hidden="true"
+                        >
+                          {active && <span className="h-2.5 w-2.5 rounded-full bg-brand-700" />}
+                        </span>
+                        <AirlineLogo code={f.airlineCode} name={f.airline} className="h-8 w-8" />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-semibold text-slate-900">{f.airline}</span>
+                          <span className="block truncate text-xs text-slate-600">
+                            {[
+                              `Out ${clock(f.departureTime)}`,
+                              tripType === "round-trip" && f.returnDepartureTime ? `back ${clock(f.returnDepartureTime)}` : null,
+                              formatPackageStopsLabel(f.stops),
+                              formatFlightDurationLabel(f.durationMinutes),
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </span>
+                        </span>
+                        <span className="shrink-0 text-right">
+                          <span className="block text-sm font-extrabold text-slate-900">{money(f.price * flyers, pkg.currency)}</span>
+                          <span className="block text-[11px] text-slate-500">{diff > 0 ? `+${money(diff, pkg.currency)}` : "Cheapest"}</span>
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
 
           <div className="grid gap-4 md:grid-cols-2">
             <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -260,23 +326,26 @@ export function PackagePageView({ packageId }: { packageId: string }) {
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-sm font-semibold text-slate-700">Estimated total</p>
-            <p className="mt-1 text-4xl font-extrabold text-slate-900">{money(pkg.totalPrice, pkg.currency)}</p>
-            <p className="text-xs text-slate-500">{formatPackagePriceBreakdownLabel(pkg.nights, pkg.breakdown)}</p>
-            {pkg.breakdown && (
-              <dl className="mt-3 space-y-1 border-t border-slate-100 pt-3 text-sm text-slate-700">
-                <div className="flex justify-between gap-3">
-                  <dt>
-                    Flights ({money(pkg.breakdown.flightPerPerson, pkg.currency)} × {pkg.breakdown.travelers})
-                  </dt>
-                  <dd className="font-semibold">{money(pkg.breakdown.flightTotal, pkg.currency)}</dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt>Hotel ({formatPackageNightsLabel(pkg.nights)})</dt>
-                  <dd className="font-semibold">{money(pkg.breakdown.hotelTotal, pkg.currency)}</dd>
-                </div>
-              </dl>
-            )}
+            <p className="text-sm font-semibold text-slate-700">Total from</p>
+            <p className="mt-1 text-4xl font-extrabold text-slate-900">{money(total, pkg.currency)}</p>
+            <p className="text-xs text-slate-500">
+              {flyers} {flyers === 1 ? "traveler" : "travelers"} · {formatPackageNightsLabel(pkg.nights)}
+            </p>
+            <dl className="mt-3 space-y-1 border-t border-slate-100 pt-3 text-sm text-slate-700">
+              <div className="flex justify-between gap-3">
+                <dt>Hotel ({formatPackageNightsLabel(pkg.nights)})</dt>
+                <dd className="font-semibold">{money(hotelTotal, pkg.currency)}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt>
+                  Flight from ({money(flight.price, pkg.currency)} × {flyers})
+                </dt>
+                <dd className="font-semibold">{money(flightTotal, pkg.currency)}</dd>
+              </div>
+            </dl>
+            <p className="mt-2 text-[11px] leading-snug text-slate-500">
+              Flight prices are recent fares found by other travellers. The final price is confirmed on the booking site.
+            </p>
             <a
               href="#options"
               className="mt-4 flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white shadow-md shadow-brand-700/20 hover:bg-brand-800"

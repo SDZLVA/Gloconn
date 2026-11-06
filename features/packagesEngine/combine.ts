@@ -124,12 +124,15 @@ export function combinePackages(flights: Flight[], hotels: Hotel[], options: Com
   const perHotel = new Map<string, number>();
   const perFlight = new Map<string, number>();
   const limit = overBudget ? OVER_BUDGET_SHOWN : maxPackages;
+  // Milestone 47: with only one or two flights, let each pair with more hotels
+  // (a route with one saved fare still gets a full list of packages).
+  const perFlightCap = Math.max(MAX_PER_FLIGHT, Math.ceil(limit / Math.max(1, flightCandidates.length)));
   const out: TravelPackage[] = [];
   for (const { pair, score } of ranked) {
     if (out.length >= limit) break;
     const h = perHotel.get(pair.hotel.id) ?? 0;
     const f = perFlight.get(pair.flight.id) ?? 0;
-    if (h >= MAX_PER_HOTEL || f >= MAX_PER_FLIGHT) continue;
+    if (h >= MAX_PER_HOTEL || f >= perFlightCap) continue;
     perHotel.set(pair.hotel.id, h + 1);
     perFlight.set(pair.flight.id, f + 1);
     out.push({
