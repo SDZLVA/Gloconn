@@ -2,14 +2,17 @@
  * GET /api/flights/data?origin=&destination=&departureDate=&returnDate=&adults=&children=&infants=&currency=
  *
  * Milestone 45: flights from the Travelpayouts "Flight Data" API (RapidAPI)
- * for the Flights tab. Preview only: &debug=1 returns the raw answer.
+ * for the Flights tab. Milestone 49: when it has no fares, live prices from
+ * Sky Scrapper (Skyscanner) or SerpApi (Google Flights), capped and cached —
+ * see features/flightsFallback. Preview only: &debug=1 returns the raw answer.
  */
 
 import { checkRateLimitCustom, getClientIp } from "@/lib/api/rateLimit";
-import { DataFlightsError, dataFlightsConfigured, searchDataFlights } from "@/features/flightsData/client";
+import { DataFlightsError, dataFlightsConfigured } from "@/features/flightsData/client";
+import { searchFlightsWithFallback, visitorId, type FlightsSource } from "@/features/flightsFallback";
 import type { Flight } from "@/types/models";
 
-type Body = { ok: true; flights: Flight[] } | { ok: false; code: string; message: string };
+type Body = { ok: true; flights: Flight[]; source: FlightsSource } | { ok: false; code: string; message: string };
 
 function json(body: Body | Record<string, unknown>, status = 200, cacheable = false): Response {
   return new Response(JSON.stringify(body), {
@@ -54,10 +57,12 @@ export async function GET(request: Request) {
     currency: /^[A-Z]{3}$/.test(url.searchParams.get("currency") ?? "") ? url.searchParams.get("currency")! : "EUR",
   };
   const debug = process.env.VERCEL_ENV === "preview" && url.searchParams.get("debug") === "1";
+  // Crawlers never spend paid quota.
+  const bot = /bot|crawl|spider|slurp|preview|headless/i.test(request.headers.get("user-agent") ?? "");
   try {
-    const { flights, raw } = await searchDataFlights(search);
-    if (debug) return json({ raw, mapped: flights.slice(0, 3) });
-    return json({ ok: true, flights }, 200, true);
+    const result = await searchFlightsWithFallback(search, { visitor: bot ? "" : visitorId(request.headers), debug });
+    if (debug) return json({ source: result.source, raw: result.raw ?? null, mapped: result.flights.slice(0, 3) });
+    return json({ ok: true, flights: result.flights, source: result.source }, 200, true);
   } catch (error) {
     const status = error instanceof DataFlightsError ? error.status : 0;
     console.error("[flights-data] search failed", status || (error as Error)?.name);

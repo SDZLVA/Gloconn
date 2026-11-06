@@ -1,5 +1,7 @@
 "use client";
 
+import { WHITE_LABEL_ON } from "@/components/live/NoFlightPrices";
+
 import type { LiveFlightsSearch } from "@/features/liveFlights/types";
 import { formatMoney } from "@/lib/money";
 import { saveStayView } from "@/lib/packages/stayViewPayload";
@@ -59,7 +61,7 @@ export function StayPackageCard({ stay, flights, destinationName }: StayPackageC
         </div>
         <p className="truncate text-sm text-slate-500">{hotel.location}</p>
         <p className="text-sm text-slate-700">
-          <span className="font-semibold">✈ Live flights</span>
+          <span className="font-semibold">{WHITE_LABEL_ON ? "✈ Live flights" : "✈ Flights"}</span>
           {stay.flightBudget !== null ? <> up to {formatMoney(stay.flightBudget, stay.currency)} for {people}</> : <> for {people}</>}
           {stay.flightEstimate !== null && (
             <span className="text-slate-500"> · recently from {formatMoney(stay.flightEstimate, stay.currency)}</span>
@@ -87,7 +89,9 @@ export function StayPackageCard({ stay, flights, destinationName }: StayPackageC
               ? "Over your budget with flights"
               : stay.budget !== null
                 ? `+ flights within your ${formatMoney(stay.budget, stay.currency)} budget`
-                : "+ live flights"}
+                : WHITE_LABEL_ON
+                  ? "+ live flights"
+                  : "+ flights (no price found yet)"}
           </p>
         </div>
         <a

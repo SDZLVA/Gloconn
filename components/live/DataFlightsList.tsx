@@ -41,7 +41,11 @@ export function DataFlightsList({ flights, travelers, roundTrip }: { flights: Fl
   }
   return (
     <div className="space-y-4">
-      <p className="text-xs text-slate-500">Recent prices found by other travellers in the last 48 hours. The live price is confirmed on the booking site.</p>
+      <p className="text-xs text-slate-500">
+        {flights[0]?.source === "skyscanner" || flights[0]?.source === "google"
+          ? `Live prices from ${flights[0].source === "google" ? "Google Flights" : "Skyscanner"} when you searched (updated every few hours). The final price is confirmed on the booking site.`
+          : "Recent prices found by other travellers in the last 48 hours. The live price is confirmed on the booking site."}
+      </p>
       {flights.map((flight, index) => {
         const out = when(flight.departureTime);
         const back = when(flight.returnDepartureTime);
@@ -84,6 +88,16 @@ export function DataFlightsList({ flights, travelers, roundTrip }: { flights: Fl
                   className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800"
                 >
                   Book on Aviasales ↗
+                </a>
+              )}
+              {flight.sourceUrl && (
+                <a
+                  href={flight.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className="text-center text-xs font-semibold text-brand-700 hover:text-brand-900"
+                >
+                  See on {flight.source === "google" ? "Google Flights" : "Skyscanner"} ↗
                 </a>
               )}
             </div>

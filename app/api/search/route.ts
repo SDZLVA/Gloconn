@@ -1,3 +1,4 @@
+import { visitorId } from "@/features/flightsFallback";
 /**
  * POST /api/search — runs a validated trip search via the service layer.
  * Body: partial or full SearchRequest JSON.
@@ -58,7 +59,9 @@ export async function POST(request: Request) {
     const body = (await request.json()) as Partial<SearchRequest>;
     // Milestone 40: hotel prices can depend on the visitor's country.
     const country = request.headers.get("x-vercel-ip-country") ?? "";
-    const result = await searchTrips(body, /^[A-Z]{2}$/.test(country) ? { guestNationality: country } : {});
+    const bot = /bot|crawl|spider|slurp|preview|headless/i.test(request.headers.get("user-agent") ?? "");
+    const visitor = bot ? "" : visitorId(request.headers);
+    const result = await searchTrips(body, { ...(/^[A-Z]{2}$/.test(country) ? { guestNationality: country } : {}), visitor });
     return toJsonResponse(result);
   } catch {
     return toErrorJsonResponse(null, "Invalid search request body.");
