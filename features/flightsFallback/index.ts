@@ -36,10 +36,10 @@ const liveKey = (s: DataFlightsSearch) =>
 
 export async function searchFlightsWithFallback(
   search: DataFlightsSearch,
-  options: { visitor: string; destinationId?: string; debug?: boolean },
+  options: { visitor: string; destinationId?: string; debug?: boolean; only?: string },
 ): Promise<FallbackResult> {
   const destinationId = options.destinationId ?? "";
-  if (dataFlightsConfigured()) {
+  if (dataFlightsConfigured() && !(options.debug && options.only)) {
     const saved = await searchDataFlights(search, destinationId)
       .then((r) => r.flights)
       .catch(() => [] as Flight[]);
@@ -62,6 +62,7 @@ export async function searchFlightsWithFallback(
     ["google", searchGoogle],
     ["skyscanner", searchSkyscanner],
   ] as const) {
+    if (options.debug && options.only && options.only !== source) continue;
     const found = await run(search, destinationId, trace).catch((e: unknown) => {
       trace.push(`${source} failed: ${(e as Error)?.message ?? e}`);
       return { flights: [] as Flight[], raw: null as unknown };

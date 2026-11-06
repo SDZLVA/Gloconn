@@ -45,7 +45,8 @@ export const CAPS = {
 } as const;
 
 /** Whether the provider's price is for all travellers together (checked in M49 testing). */
-const GROUP_PRICE = { skyscanner: false, google: false } as const;
+// Google: tested — 2 adults → €224 for a €112 fare, so the price is for the whole group.
+const GROUP_PRICE = { skyscanner: false, google: true } as const;
 
 async function getJson(url: string, headers: Record<string, string>, timeoutMs = TIMEOUT_MS): Promise<unknown> {
   const controller = new AbortController();

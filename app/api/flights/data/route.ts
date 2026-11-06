@@ -60,7 +60,7 @@ export async function GET(request: Request) {
   // Crawlers never spend paid quota.
   const bot = /bot|crawl|spider|slurp|preview|headless/i.test(request.headers.get("user-agent") ?? "");
   try {
-    const result = await searchFlightsWithFallback(search, { visitor: bot ? "" : visitorId(request.headers), debug });
+    const result = await searchFlightsWithFallback(search, { visitor: bot ? "" : visitorId(request.headers), debug, only: debug ? (url.searchParams.get("only") ?? undefined) : undefined });
     if (debug) return json({ source: result.source, why: result.why ?? null, trace: result.trace ?? [], raw: result.raw ?? null, mapped: result.flights.slice(0, 3) });
     return json({ ok: true, flights: result.flights, source: result.source }, 200, true);
   } catch (error) {
