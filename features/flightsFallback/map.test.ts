@@ -32,7 +32,7 @@ test("mapSkyItineraries reads Skyscanner Flights results (per person unless grou
   assert.equal(each[0].returnDurationMinutes, 155);
   assert.equal(each[0].originAirport, "FCO");
   assert.equal(each[0].source, "skyscanner");
-  assert.ok(each[0].sourceUrl?.startsWith("https://www.skyscanner.net/transport/flights/rome/lond/261123/261127/"));
+  assert.ok(each[0].sourceUrl?.startsWith("https://www.skyscanner.net/transport/flights/rome/lond/261123/261127/config/11493-2611230640--30596-0-13771-2611230830%7C13771-"));
   assert.ok(each[0].bookingUrl?.includes("aviasales"));
   assert.equal(mapSkyItineraries(raw, search, { groupPrice: true })[0].price, 77);
 });

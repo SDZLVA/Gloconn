@@ -8,6 +8,12 @@ import { parseSearchRequestFromParams } from "@/lib/search/request";
 import { enrichSearchRequestWithAirports } from "@/lib/services/iataResolution";
 import type { SearchRequest } from "@/types/models/search-request";
 
+/**
+ * Milestone 52: results pages are one per search (endless URL variants), so
+ * they stay out of Google's index — Search Console flagged them as duplicates.
+ */
+export const metadata = { title: "Search results", robots: { index: false, follow: true } };
+
 type SearchResultsRouteProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };

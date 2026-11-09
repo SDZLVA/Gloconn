@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAppConfig } from "@/lib/config";
 
 /** Public pages worth listing for search engines. */
-const PUBLIC_PATHS = ["/", "/login", "/signup", "/privacy", "/terms"] as const;
+const PUBLIC_PATHS = ["/", "/privacy", "/terms"] as const;
 
 /** sitemap.xml — only public, indexable pages. */
 export default function sitemap(): MetadataRoute.Sitemap {

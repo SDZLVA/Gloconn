@@ -42,9 +42,18 @@ export function DataFlightsList({ flights, travelers, roundTrip }: { flights: Fl
   return (
     <div className="space-y-4">
       <p className="text-xs text-slate-500">
-        {flights[0]?.source === "skyscanner" || flights[0]?.source === "google"
-          ? `Live prices from ${flights[0].source === "google" ? "Google Flights" : "Skyscanner"} when you searched (updated every few hours). The final price is confirmed on the booking site.`
-          : "Recent prices found by other travellers in the last 48 hours. The live price is confirmed on the booking site."}
+        {(() => {
+          const live = [...new Set(flights.map((f) => f.source).filter((x) => x === "google" || x === "skyscanner"))].map((x) =>
+            x === "google" ? "Google Flights" : "Skyscanner",
+          );
+          const saved = flights.some((f) => !f.source || f.source === "travelpayouts");
+          const parts = [
+            live.length > 0 ? `live prices from ${live.join(" and ")} (updated every few hours)` : null,
+            saved ? "recent prices found by other travellers" : null,
+          ].filter(Boolean);
+          const text = parts.join(", plus ");
+          return `${text.charAt(0).toUpperCase()}${text.slice(1)}. The final price is confirmed on the booking site.`;
+        })()}
       </p>
       {flights.map((flight, index) => {
         const out = when(flight.departureTime);
@@ -80,25 +89,42 @@ export function DataFlightsList({ flights, travelers, roundTrip }: { flights: Fl
                   {roundTrip ? "return" : "one way"}
                 </p>
               </div>
-              {link && (
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer nofollow"
-                  className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800"
-                >
-                  Book on Aviasales ↗
-                </a>
-              )}
-              {flight.sourceUrl && (
-                <a
-                  href={flight.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer nofollow"
-                  className="text-center text-xs font-semibold text-brand-700 hover:text-brand-900"
-                >
-                  See on {flight.source === "google" ? "Google Flights" : "Skyscanner"} ↗
-                </a>
+              {/* Milestone 52: the primary button opens the exact flight where we can —
+                  Skyscanner's own itinerary page, or the exact Aviasales ticket. */}
+              {flight.source === "skyscanner" && flight.sourceUrl ? (
+                <>
+                  <a
+                    href={flight.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                    className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800"
+                  >
+                    Book on Skyscanner ↗
+                  </a>
+                  {link && (
+                    <a href={link.href} target="_blank" rel="noopener noreferrer nofollow" className="text-center text-xs font-semibold text-brand-700 hover:text-brand-900">
+                      Compare on Aviasales ↗
+                    </a>
+                  )}
+                </>
+              ) : (
+                <>
+                  {link && (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                      className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800"
+                    >
+                      {flight.bookingUrl?.includes("?t=") ? "Book this flight on Aviasales ↗" : "Book on Aviasales ↗"}
+                    </a>
+                  )}
+                  {flight.sourceUrl && (
+                    <a href={flight.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="text-center text-xs font-semibold text-brand-700 hover:text-brand-900">
+                      See on Google Flights ↗
+                    </a>
+                  )}
+                </>
               )}
             </div>
           </article>

@@ -6,7 +6,8 @@ import {
 import { LEGAL_CONTACT_EMAIL, LEGAL_LAST_UPDATED } from "@/lib/legal/constants";
 
 export const metadata = {
-  title: "Terms of Use — Glooconn",
+  alternates: { canonical: "/terms" },
+  title: "Terms of Use",
   description:
     "The rules for using Glooconn, what the service does and does not do, and the limits of our responsibility.",
 };

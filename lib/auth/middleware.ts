@@ -38,7 +38,9 @@ export async function updateSession(
 
   let supabaseResponse = createNext();
 
-  if (!isConfigured) {
+  // Milestone 52: accounts are "coming soon" until NEXT_PUBLIC_ACCOUNTS=on —
+  // no sign-in redirects, so /my-trips shows its coming-soon page.
+  if (!isConfigured || process.env.NEXT_PUBLIC_ACCOUNTS !== "on") {
     return supabaseResponse;
   }
 
