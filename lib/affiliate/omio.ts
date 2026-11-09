@@ -6,9 +6,9 @@
  * opens Rome → Florence with both dates filled in; the traveller clicks Search.
  * The route uses lower-case English city names ("milan", "paris").
  *
- * Commission: the link goes through the Impact tracking link from the Omio
- * programme (NEXT_PUBLIC_OMIO_TRACKING_URL, e.g. https://omio.sjv.io/c/…/…/7385).
- * Without it, the plain Omio link is used (no commission, still works).
+ * Commission: the link goes through Glooconn's Impact tracking link for the
+ * Omio Travel Partner Program (created in Impact → Create a link, 2026-11-09).
+ * NEXT_PUBLIC_OMIO_TRACKING_URL can override it.
  */
 
 export type OmioMode = "trains" | "buses" | "flights";
@@ -50,8 +50,11 @@ export function buildOmioUrl(search: OmioSearch): string | null {
   return `https://www.omio.com/${search.mode}/${from}/${to}?${params.join("&")}`;
 }
 
-/** Wraps an omio.com URL in the Impact tracking link (`?u=` destination), when one is set. */
-export function withOmioTracking(url: string, trackingBase: string | undefined = process.env.NEXT_PUBLIC_OMIO_TRACKING_URL): string {
+/** Impact tracking link: partner 8134530, ad 409973, Omio program 7385 (public, not a secret). */
+export const OMIO_TRACKING_URL = "https://omio.sjv.io/c/8134530/409973/7385";
+
+/** Wraps an omio.com URL in the Impact tracking link (`?u=` destination). */
+export function withOmioTracking(url: string, trackingBase: string | undefined = process.env.NEXT_PUBLIC_OMIO_TRACKING_URL || OMIO_TRACKING_URL): string {
   const base = trackingBase?.trim();
   if (!base || !/^https:\/\/[a-z0-9.-]+\/c\/\d+\/\d+\/\d+\/?$/i.test(base)) return url;
   return `${base.replace(/\/$/, "")}?u=${encodeURIComponent(url)}`;
