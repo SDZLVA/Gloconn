@@ -6,7 +6,7 @@
  * Prices are cached (recent searches by other travellers), per person.
  */
 
-import { buildAviasalesSearchUrl } from "@/lib/affiliate/aviasalesLink";
+import { buildAviasalesSearchUrl, buildAviasalesTicketUrl } from "@/lib/affiliate/aviasalesLink";
 import { airlineDisplayName } from "@/lib/providers/flights/aviasales/airlines";
 import type { Flight } from "@/types/models";
 
@@ -125,6 +125,9 @@ export function mapV3Flights(raw: unknown, search: DataFlightsSearch, destinatio
       infants: search.infants,
     });
     const back = Math.round(asNumber(row.duration_back) ?? 0);
+    // Milestone 52: each v3 fare has its own aviasales.com ticket page
+    // ("/search/ROM2311LON27111?t=…"); open that exact ticket when we can.
+    const ticketUrl = buildAviasalesTicketUrl(asString(row.link) ?? undefined, search);
     flights.push({
       id: `tpd3-${dest}-${stops}-${departureAt.slice(0, 16)}-${airlineCode}${number ?? ""}`.replace(/[^A-Za-z0-9_-]/g, ""),
       destinationId,
@@ -142,7 +145,7 @@ export function mapV3Flights(raw: unknown, search: DataFlightsSearch, destinatio
       originAirport: search.origin,
       destinationAirport: dest,
       ...(returnAt ? { returnDepartureTime: localTime(returnAt), returnStops, ...(back > 0 ? { returnDurationMinutes: back } : {}) } : {}),
-      ...(bookingUrl ? { bookingUrl } : {}),
+      ...(ticketUrl ? { bookingUrl: ticketUrl } : bookingUrl ? { bookingUrl } : {}),
     } as Flight);
   }
   return flights.sort((a, b) => a.price - b.price);
@@ -154,7 +157,9 @@ export function mergeFlights(...lists: Flight[][]): Flight[] {
   for (const flight of lists.flat()) {
     const key = `${flight.airlineCode ?? flight.airline}|${flight.departureTime}|${flight.returnDepartureTime ?? ""}`;
     const seen = best.get(key);
-    if (!seen || flight.price < seen.price) best.set(key, flight);
+    const exact = (f: Flight) => Boolean(f.bookingUrl?.includes("?t="));
+    // The fare with its own ticket page wins (its price is what Aviasales shows); otherwise the cheaper.
+    if (!seen || (exact(flight) && !exact(seen)) || (exact(flight) === exact(seen) && flight.price < seen.price)) best.set(key, flight);
   }
   return [...best.values()].sort((a, b) => a.price - b.price);
 }

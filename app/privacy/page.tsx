@@ -6,7 +6,8 @@ import {
 import { LEGAL_CONTACT_EMAIL, LEGAL_LAST_UPDATED } from "@/lib/legal/constants";
 
 export const metadata = {
-  title: "Privacy Policy — Glooconn",
+  alternates: { canonical: "/privacy" },
+  title: "Privacy Policy",
   description:
     "What personal data Glooconn collects, why, how long it is kept, and the rights you have over it.",
 };

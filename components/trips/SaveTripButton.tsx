@@ -1,5 +1,7 @@
 "use client";
 
+import { ACCOUNTS_ON } from "@/components/ui/ComingSoon";
+
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -31,7 +33,8 @@ export function SaveTripButton({ search }: SaveTripButtonProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  if (!isCompleteSearch(search)) {
+  // Milestone 52: saving trips needs accounts, which are not open yet.
+  if (!ACCOUNTS_ON || !isCompleteSearch(search)) {
     return null;
   }
 

@@ -1,3 +1,4 @@
+import { ACCOUNTS_ON, ComingSoon } from "@/components/ui/ComingSoon";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SavedTripsList } from "@/components/trips/SavedTripsList";
@@ -7,12 +8,16 @@ import { getSavedTripsForUser } from "@/lib/trips/savedTrips";
 import type { SavedTrip } from "@/types/trips";
 
 export const metadata = {
-  title: "My Trips — Glooconn",
+  title: "My Trips",
   description: "View and manage your saved trips.",
 };
 
 /** Protected page listing the user's saved trips. */
 export default async function MyTripsPage() {
+  if (!ACCOUNTS_ON) {
+    return <ComingSoon title="My Trips is coming soon" text="Soon you’ll be able to save trips and come back to them. For now, search and book straight from the results." />;
+  }
+
   const user = await getCurrentUser();
 
   if (!user) {

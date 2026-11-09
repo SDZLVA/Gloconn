@@ -12,7 +12,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 // options.debug is only ever true on Vercel Preview (see app/api/flights/data/route.ts).
 import { dataFlightsConfigured, searchDataFlights } from "@/features/flightsData/client";
-import type { DataFlightsSearch } from "@/features/flightsData/map";
+import { mergeFlights, type DataFlightsSearch } from "@/features/flightsData/map";
 import { searchGoogle, searchSkyscanner } from "@/features/flightsFallback/providers";
 import { claimVisitor, readCache, storeConfigured, writeCache } from "@/features/flightsFallback/store";
 import type { Flight } from "@/types/models";
@@ -35,27 +35,37 @@ export function visitorId(headers: Headers): string {
 const liveKey = (s: DataFlightsSearch) =>
   `flights:v3:${s.origin}:${s.destination}:${s.departureDate}:${s.returnDate ?? "ow"}:${s.adults}-${s.children}-${s.infants}:${s.currency}`;
 
+/** Fewer saved fares than this → also ask the live sources (Milestone 52). */
+export const ENOUGH_SAVED_FARES = 5;
+
 export async function searchFlightsWithFallback(
   search: DataFlightsSearch,
   options: { visitor: string; destinationId?: string; debug?: boolean; only?: string },
 ): Promise<FallbackResult> {
   const destinationId = options.destinationId ?? "";
+  let saved: Flight[] = [];
   if (dataFlightsConfigured() && !(options.debug && options.only)) {
-    const saved = await searchDataFlights(search, destinationId)
-      .then((r) => r.flights)
+    saved = await searchDataFlights(search, destinationId)
+      .then((r) => r.flights.map((f) => ({ ...f, source: "travelpayouts" as const })))
       .catch(() => [] as Flight[]);
-    if (saved.length > 0) return { flights: saved.map((f) => ({ ...f, source: "travelpayouts" as const })), source: "travelpayouts" };
+    if (saved.length >= ENOUGH_SAVED_FARES) return { flights: saved, source: "travelpayouts" };
   }
-  if (!storeConfigured()) return { flights: [], source: "none", why: "no SUPABASE_SERVICE_ROLE_KEY" };
+  // Live answers are added to the saved fares (same flight kept once).
+  const withSaved = (result: FallbackResult): FallbackResult => {
+    if (saved.length === 0) return result;
+    if (result.flights.length === 0) return { ...result, flights: saved, source: "travelpayouts" };
+    return { ...result, flights: mergeFlights(saved, result.flights) };
+  };
+  if (!storeConfigured()) return withSaved({ flights: [], source: "none", why: "no SUPABASE_SERVICE_ROLE_KEY" });
 
   const key = liveKey(search);
   // Preview debug skips the saved answer so a fix can be tested at once.
   const cached = options.debug ? null : await readCache<FallbackResult>(key);
-  if (cached) return { flights: cached.flights ?? [], source: cached.source ?? "none" };
+  if (cached) return withSaved({ flights: cached.flights ?? [], source: cached.source ?? "none" });
   // Preview (only used for testing) skips the per-visitor limit; provider caps still apply.
   const preview = process.env.VERCEL_ENV === "preview";
   if (!options.debug && !preview && !(await claimVisitor(options.visitor, VISITOR_LIMIT))) {
-    return { flights: [], source: "none", why: options.visitor ? "visitor limit or store error" : "no visitor id" };
+    return withSaved({ flights: [], source: "none", why: options.visitor ? "visitor limit or store error" : "no visitor id" });
   }
 
   const trace: string[] = [];
@@ -72,10 +82,10 @@ export async function searchFlightsWithFallback(
     if (found.flights.length > 0) {
       const result: FallbackResult = { flights: found.flights.slice(0, 30), source };
       await writeCache(key, result, LIVE_TTL_MS);
-      return options.debug ? { ...result, raw: found.raw, trace } : result;
+      return withSaved(options.debug ? { ...result, raw: found.raw, trace } : result);
     }
   }
   const none: FallbackResult = { flights: [], source: "none" };
   await writeCache(key, none, EMPTY_TTL_MS);
-  return options.debug ? { ...none, why: "providers found nothing", trace } : none;
+  return withSaved(options.debug ? { ...none, why: "providers found nothing", trace } : none);
 }

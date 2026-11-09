@@ -1,3 +1,4 @@
+import { ACCOUNTS_ON, ComingSoon } from "@/components/ui/ComingSoon";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -6,12 +7,16 @@ import { getCurrentUser } from "@/lib/auth/session";
 import { formatSavedTripDate } from "@/lib/trips/format";
 
 export const metadata = {
-  title: "Profile — Glooconn",
+  title: "Profile",
   description: "View and manage your Glooconn account.",
 };
 
 /** Protected profile page — shows the signed-in user's account details. */
 export default async function ProfilePage() {
+  if (!ACCOUNTS_ON) {
+    return <ComingSoon title="Profiles are coming soon" text="Accounts aren’t open yet. You can search and book without one." />;
+  }
+
   const user = await getCurrentUser();
 
   if (!user) {

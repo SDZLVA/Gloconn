@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/Card";
 import { ViewHotelAction } from "@/components/results/ViewHotelAction";
 import { ResultPlaceholderImage } from "@/components/results/ResultPlaceholderImage";
 import { ResultPrice } from "@/components/results/ResultPrice";
-import { ResultRating } from "@/components/results/ResultRating";
 import { ResultTypeBadge } from "@/components/results/ResultTypeBadge";
 import { SampleDataBadge } from "@/components/results/SampleDataBadge";
 import { SAMPLE_HOTEL_NOTE } from "@/lib/results/sampleData";
@@ -65,7 +64,15 @@ export function HotelResultCard({ result }: HotelResultCardProps) {
               </h3>
               <p className="text-sm text-slate-600">{result.location}</p>
             </div>
-            <ResultRating rating={result.rating} />
+            {/* Milestone 52: guest score out of 10 with a word, like Booking.com and the package cards. */}
+            {result.rating > 0 && (
+              <p className="flex items-center gap-1.5 text-sm" aria-label={`Guest score ${(result.rating <= 5 ? result.rating * 2 : result.rating).toFixed(1)} out of 10`}>
+                <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 font-bold text-emerald-700">
+                  {(result.rating <= 5 ? result.rating * 2 : result.rating).toFixed(1)}
+                </span>
+                <span className="font-semibold text-emerald-700">{guestScoreWord(result.rating <= 5 ? result.rating * 2 : result.rating)}</span>
+              </p>
+            )}
           </div>
 
           {amenitiesSummary && (
@@ -100,4 +107,12 @@ export function HotelResultCard({ result }: HotelResultCardProps) {
       </div>
     </Card>
   );
+}
+
+function guestScoreWord(score: number): string {
+  if (score >= 9) return "Superb";
+  if (score >= 8.5) return "Excellent";
+  if (score >= 8) return "Very good";
+  if (score >= 7) return "Good";
+  return "Pleasant";
 }

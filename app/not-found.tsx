@@ -5,7 +5,7 @@ import { focusRingLoose } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
-  title: "Page not found — Glooconn",
+  title: "Page not found",
 };
 
 /** Branded 404 page — keeps people moving instead of dead-ending. */

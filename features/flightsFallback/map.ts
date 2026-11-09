@@ -55,14 +55,16 @@ function aviasales(search: DataFlightsSearch): string | undefined {
 /** yymmdd for Skyscanner links. */
 const yymmdd = (date: string) => date.slice(2, 4) + date.slice(5, 7) + date.slice(8, 10);
 
-export function skyscannerUrl(originSkyId: string, destinationSkyId: string, search: DataFlightsSearch): string {
+export function skyscannerUrl(originSkyId: string, destinationSkyId: string, search: DataFlightsSearch, itineraryId?: string | null): string {
   const path = [originSkyId, destinationSkyId, yymmdd(search.departureDate), search.returnDate ? yymmdd(search.returnDate) : null]
     .filter(Boolean)
     .map((p) => encodeURIComponent(String(p).toLowerCase()))
     .join("/");
   const q = new URLSearchParams({ adultsv2: String(Math.max(1, search.adults)), cabinclass: "economy" });
   if (search.children > 0) q.set("childrenv2", Array.from({ length: search.children }, () => "8").join("|"));
-  return `https://www.skyscanner.net/transport/flights/${path}/?${q.toString()}`;
+  // Milestone 52: Skyscanner opens one exact itinerary at /config/{outLeg}|{backLeg}.
+  const legs = itineraryId && /^[0-9A-Za-z|,-]{10,300}$/.test(itineraryId) ? `config/${encodeURIComponent(itineraryId)}/` : "";
+  return `https://www.skyscanner.net/transport/flights/${path}/${legs}?${q.toString()}`;
 }
 
 /**
@@ -120,7 +122,7 @@ export function mapSkyItineraries(
         : {}),
       ...(bookingUrl ? { bookingUrl } : {}),
       source: "skyscanner",
-      sourceUrl: skyscannerUrl(fromSky ?? search.origin, toSky ?? search.destination, search),
+      sourceUrl: skyscannerUrl(fromSky ?? search.origin, toSky ?? search.destination, search, asString(item.id)),
     } as Flight);
   }
   return flights.sort((a, b) => a.price - b.price);
