@@ -100,17 +100,7 @@ function HomeSearchHeroInner({ initial }: { initial: HeroState }) {
 
           <div className="mt-8 rounded-3xl bg-white/95 p-4 shadow-2xl shadow-brand-900/15 ring-1 ring-slate-200/60 backdrop-blur sm:mt-12 sm:p-5">
             <SearchModeTabs value={mode} onChange={changeMode} className="mb-4" />
-            {mode === "transport" ? (
-              <div className="rounded-2xl bg-slate-50 px-5 py-6">
-                <p className="text-lg font-bold text-slate-900">Mixed Transport is on its way</p>
-                <p className="mt-1 max-w-2xl text-slate-600">
-                  Buses, trains, flights and taxis in one search — Glooconn will combine them to find the cheapest way to
-                  get there. Until then, use Flights or Packages.
-                </p>
-              </div>
-            ) : (
-              <ModeSearchBar mode={mode} initialForm={initial.initialForm} initialDirectOnly={initial.directOnly} />
-            )}
+            <ModeSearchBar mode={mode} initialForm={initial.initialForm} initialDirectOnly={initial.directOnly} />
           </div>
         </div>
       </section>

@@ -40,9 +40,10 @@ export const SEARCH_MODES: ReadonlyArray<{
   {
     value: "transport",
     label: "Mixed Transport",
-    heading: "Bus, train, flight and taxi — together",
-    description: "The cheapest way from A to B, combining every kind of transport.",
-    available: false,
+    // Milestone 53: trains and buses through Omio (affiliate).
+    heading: "Trains and buses across Europe",
+    description: "Compare trains and buses for your route and dates, and book them on Omio.",
+    available: true,
   },
 ];
 
