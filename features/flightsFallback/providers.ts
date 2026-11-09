@@ -101,7 +101,7 @@ export async function searchSkyscanner(search: DataFlightsSearch, destinationId 
     currency: search.currency,
   };
   if (search.returnDate) params.return_date = search.returnDate;
-  const raw = await sky(search.returnDate ? "/api/v1/roundtrip" : "/api/v1/oneway", params, trace);
+  const raw = await sky(search.returnDate ? "/api/v1/roundtrip" : "/api/v1/search", params, trace);
   if (!raw) return { flights: [], raw: null };
   return { flights: mapSkyItineraries(raw, search, { groupPrice: GROUP_PRICE.skyscanner, destinationId }), raw };
 }
