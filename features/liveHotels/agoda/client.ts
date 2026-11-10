@@ -60,7 +60,7 @@ async function call(path: string, params: Record<string, string>, trace?: AgodaT
 }
 
 async function placeId(label: string, trace?: AgodaTrace): Promise<string | null> {
-  const cacheKey = `agoda:place:v1:${label.toLowerCase()}`;
+  const cacheKey = `agoda:place:v2:${label.toLowerCase()}`;
   const hit = await readCache<{ id: string | null }>(cacheKey);
   if (hit) {
     trace?.push(`place: cache ${hit.id}`);
@@ -71,6 +71,12 @@ async function placeId(label: string, trace?: AgodaTrace): Promise<string | null
   if (raw === null) return null;
   const id = pickAgodaPlace(raw, label);
   trace?.push(`place: live ${id}`);
+  if (!id) {
+    // Unknown answer shape or no match: show it on preview, and don't keep it for long.
+    trace?.push(`place raw: ${JSON.stringify(raw)?.slice(0, 900)}`);
+    await writeCache(cacheKey, { id }, EMPTY_TTL_MS);
+    return null;
+  }
   await writeCache(cacheKey, { id }, PLACE_TTL_MS);
   return id;
 }
