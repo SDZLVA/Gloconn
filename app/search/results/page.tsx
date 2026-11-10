@@ -1,5 +1,6 @@
 import { LiveFlightsResultsPage } from "@/components/live/LiveFlightsResultsPage";
 import { LiveHotelsResultsPage } from "@/components/live/LiveHotelsResultsPage";
+import { TransportResultsPage } from "@/components/live/TransportResultsPage";
 import { SearchResultsPage } from "@/components/results/SearchResultsPage";
 import { getDestinationProvider } from "@/lib/providers/core/registry";
 import { modeFromProductTypes } from "@/lib/search/modes";
@@ -63,6 +64,22 @@ export default async function SearchResultsRoute({
         originCode={(search.originId?.startsWith("airport-") ? request.originIata : request.originCityIata ?? request.originIata) ?? null}
         destinationCode={(search.destinationId?.startsWith("airport-") ? request.destinationIata : request.destinationCityIata ?? request.destinationIata) ?? null}
         initialMaxStops={stops !== null && /^[0-2]$/.test(stops) ? Number(stops) : null}
+      />
+    );
+  }
+
+  // Milestone 54: Mixed Transport — train, bus and flight cards that open Omio's results.
+  if (mode === "transport") {
+    const { request } = await enrichSearchRequestWithAirports(
+      { ...search, origin: search.origin ?? "", destination: search.destination ?? "" } as SearchRequest,
+      getDestinationProvider(),
+    );
+    return (
+      <TransportResultsPage
+        search={search}
+        initialForm={parseSearchParamsToForm(urlParams)}
+        originCode={(request.originCityIata ?? request.originIata) ?? null}
+        destinationCode={(request.destinationCityIata ?? request.destinationIata) ?? null}
       />
     );
   }

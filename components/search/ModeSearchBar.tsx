@@ -11,7 +11,6 @@ import { CURRENCY_OPTIONS, type CurrencyCode } from "@/lib/budget/currencies";
 import { productTypesForMode, type SearchMode } from "@/lib/search/modes";
 import { focusRing } from "@/lib/styles";
 import { cn } from "@/lib/utils";
-import { buildOmioUrl, withOmioTracking, type OmioMode } from "@/lib/affiliate/omio";
 import type { SearchFormState } from "@/types/search-form";
 
 export type BarMode = SearchMode;
@@ -60,7 +59,6 @@ export function ModeSearchBar({
   className,
 }: ModeSearchBarProps) {
   const [directOnly, setDirectOnly] = useState(initialDirectOnly);
-  const [omioMode, setOmioMode] = useState<OmioMode>("trains");
   const { form, errors, actions } = useSearchForm({
     initialForm: { ...initialForm, productTypes: productTypesForMode(mode) },
     resultParams: mode === "flights" && directOnly ? { stops: "0" } : undefined,
@@ -76,20 +74,6 @@ export function ModeSearchBar({
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (mode === "transport") {
-      // Milestone 53: trains and buses open on Omio with the route and dates filled in.
-      const url = buildOmioUrl({
-        from: form.origin,
-        to: form.destination,
-        mode: omioMode,
-        departureDate: form.departureDate,
-        returnDate: form.tripType === "round-trip" ? form.returnDate : null,
-      });
-      if (url) {
-        window.location.assign(withOmioTracking(url));
-        return;
-      }
-    }
     actions.submit();
   }
 
@@ -103,29 +87,7 @@ export function ModeSearchBar({
       className={cn("w-full", className)}
     >
       {mode === "transport" && (
-        <div className="mb-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-slate-700">
-          <div role="radiogroup" aria-label="Travel by" className="flex items-center gap-5">
-            {(
-              [
-                ["trains", "Train"],
-                ["buses", "Bus"],
-              ] as const
-            ).map(([value, label]) => (
-              <label key={value} className="flex cursor-pointer items-center gap-2">
-                <input
-                  type="radio"
-                  name="omio-mode"
-                  value={value}
-                  checked={omioMode === value}
-                  onChange={() => setOmioMode(value)}
-                  className="h-4 w-4 accent-brand-700"
-                />
-                {label}
-              </label>
-            ))}
-          </div>
-          <span className="text-xs text-slate-500">Opens Omio with your route and dates. Glooconn may earn a commission.</span>
-        </div>
+        <p className="mb-3 text-xs text-slate-500">Compare trains, buses and flights for your route. Booking is on Omio; Glooconn may earn a commission.</p>
       )}
       {mode === "flights" && (
         <div className="mb-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-slate-700">

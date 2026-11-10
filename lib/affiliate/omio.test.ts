@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { buildOmioUrl, omioSlug, withOmioTracking } from "@/lib/affiliate/omio";
+import { buildOmioResultsLink, buildOmioUrl, omioSlug, withOmioTracking } from "@/lib/affiliate/omio";
 
 describe("omio links (milestone 53)", () => {
   it("makes city slugs like Omio's route pages", () => {
@@ -29,4 +29,17 @@ describe("omio links (milestone 53)", () => {
     assert.equal(withOmioTracking(url, "javascript:alert(1)"), url);
     assert.equal(withOmioTracking(url, ""), url);
   });
+
+  it("builds Omio's tracked results link (milestone 54)", () => {
+    const link = buildOmioResultsLink({ from: "Rome, Italy", to: "Florence, Italy", departureDate: "2026-11-20", returnDate: "2026-11-23", travelMode: "TRAIN", currency: "EUR" });
+    assert.ok(link?.startsWith("https://omio.sjv.io/c/8134530/4057579/7385?u="));
+    const inner = new URL(decodeURIComponent(link!.split("?u=")[1]));
+    assert.equal(inner.origin + inner.pathname, "https://www.omio.com/links/626fa8a9-f982-43d0-ace9-9a13f6b14612");
+    assert.equal(inner.searchParams.get("departurePosTerm"), "Rome");
+    assert.equal(inner.searchParams.get("arrivalPosTerm"), "Florence");
+    assert.equal(inner.searchParams.get("returnDate"), "2026-11-23");
+    assert.equal(inner.searchParams.get("travelMode"), "TRAIN");
+    assert.equal(buildOmioResultsLink({ from: "Rome", to: "", departureDate: "2026-11-20" }), null);
+  });
 });
+

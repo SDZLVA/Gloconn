@@ -59,3 +59,39 @@ export function withOmioTracking(url: string, trackingBase: string | undefined =
   if (!base || !/^https:\/\/[a-z0-9.-]+\/c\/\d+\/\d+\/\d+\/?$/i.test(base)) return url;
   return `${base.replace(/\/$/, "")}?u=${encodeURIComponent(url)}`;
 }
+
+/**
+ * Milestone 54 — Omio's official tracked redirect link (Omio Affiliate Tools →
+ * "Redirect link", 2026-11-10). It opens Omio's real search results for the
+ * route, dates and travel mode — not just a route page:
+ *   https://omio.sjv.io/c/{partner}/4057579/7385?u=<https://www.omio.com/links/626fa8a9-…?departurePosTerm=Rome&arrivalPosTerm=Florence&departureDate=2026-11-20>
+ * Tested: Rome → Florence 20–23 Nov TRAIN landed on Omio's train results with tracking.
+ */
+export const OMIO_RESULTS_LINK = "https://www.omio.com/links/626fa8a9-f982-43d0-ace9-9a13f6b14612";
+export const OMIO_RESULTS_TRACKING = "https://omio.sjv.io/c/8134530/4057579/7385";
+
+export type OmioTravelMode = "TRAIN" | "BUS" | "FLIGHT" | "FERRY";
+
+export type OmioResultsSearch = {
+  from: string;
+  to: string;
+  departureDate: string;
+  returnDate?: string | null;
+  travelMode?: OmioTravelMode | null;
+  currency?: string | null;
+};
+
+const ISO = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Omio's results for a route and dates, through Glooconn's tracking. Null when a city or date is missing. */
+export function buildOmioResultsLink(search: OmioResultsSearch): string | null {
+  const from = (search.from.split(",")[0] ?? "").trim();
+  const to = (search.to.split(",")[0] ?? "").trim();
+  if (!from || !to || from.toLowerCase() === to.toLowerCase() || !ISO.test(search.departureDate)) return null;
+  const params = new URLSearchParams({ departurePosTerm: from, arrivalPosTerm: to, departureDate: search.departureDate });
+  if (search.returnDate && ISO.test(search.returnDate) && search.returnDate >= search.departureDate) params.set("returnDate", search.returnDate);
+  if (search.travelMode) params.set("travelMode", search.travelMode);
+  if (search.currency && /^[A-Z]{3}$/.test(search.currency)) params.set("currency", search.currency);
+  params.set("locale", "en");
+  return `${OMIO_RESULTS_TRACKING}?u=${encodeURIComponent(`${OMIO_RESULTS_LINK}?${params.toString()}`)}`;
+}

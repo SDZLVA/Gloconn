@@ -38,7 +38,7 @@ export function TripHeader({ mode, search, initialForm, initialDirectOnly, actio
   const parts = [
     dates,
     `${people} ${mode === "hotels" ? (people === 1 ? "guest" : "guests") : people === 1 ? "traveler" : "travelers"}`,
-    mode !== "flights" && t?.rooms ? `${t.rooms} ${t.rooms === 1 ? "room" : "rooms"}` : null,
+    mode !== "flights" && mode !== "transport" && t?.rooms ? `${t.rooms} ${t.rooms === 1 ? "room" : "rooms"}` : null,
     search.budget?.amount ? `${search.budget.currency} 0 – ${search.budget.amount.toLocaleString("en-US")}` : null,
   ].filter(Boolean);
 
