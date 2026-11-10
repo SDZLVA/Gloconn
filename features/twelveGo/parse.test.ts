@@ -3,8 +3,10 @@ import assert from "node:assert/strict";
 import { minutesOf, parseTwelveGoTimetable, pricesOf, twelveGoDateLink } from "@/features/twelveGo/parse";
 
 // Trimmed from the real answer for Bangkok → Chiang Mai (2026-11-10).
-const HTML = `<table class="one2go-timetable"><tbody>
-<tr><td class="one2go-route-name" colspan="2"><a target="_blank" href="https://12go.asia/en/travel/bangkok/chiang-mai?z=17465383&amp;curr=EUR">Bangkok - Chiang Mai</a></td></tr>
+const HTML = `<div class="one2go-route-container">
+<div class="one2go-route-header"><a target="_blank" href="https://12go.asia/en/travel/bangkok/chiang-mai?z=17465383&amp;curr=EUR">Bangkok - Chiang Mai</a>
+<a class="one2go-buy-button" target="_blank" href="https://12go.asia/en/travel/bangkok/chiang-mai?z=17465383&amp;curr=EUR">More info / Tickets</a></div>
+<table class="one2go-timetable"><tbody>
 <tr><td class="one2go-route-name" colspan="2">
   <a target="_blank" href="https://12go.asia/en/avia/bangkok/chiang-mai?z=17465383&amp;curr=EUR">Flight Bangkok - Chiang Mai</a>
   <span class="one2go-route-info"><span class="one2go-route-price"> € 44.29–167.81 </span>
@@ -21,9 +23,12 @@ const HTML = `<table class="one2go-timetable"><tbody>
   <li><span class="one2go-class">2nd Class Sleeper AC</span><span class="one2go-departures">14:32, 18:40</span></li>
 </ul></td></tr>
 <tr><td class="one2go-route-name" colspan="2"><a href="https://evil.example/x">Bus Bangkok - Chiang Mai</a><span class="one2go-route-price">€ 1</span></td></tr>
-<tr><td class="one2go-route-name" colspan="2"><a target="_blank" href="https://12go.asia/en/travel/don-mueang-airport/chiang-mai?z=17465383&amp;curr=EUR">Don Mueang Airport - Chiang Mai</a></td></tr>
+</tbody></table></div>
+<div class="one2go-route-container">
+<div class="one2go-route-header"><a target="_blank" href="https://12go.asia/en/travel/don-mueang-airport/chiang-mai?z=17465383&amp;curr=EUR">Don Mueang Airport - Chiang Mai</a></div>
+<table class="one2go-timetable"><tbody>
 <tr><td class="one2go-route-name" colspan="2"><a href="https://12go.asia/en/avia/don-mueang-airport/chiang-mai?z=17465383&amp;curr=EUR">Flight Don Mueang Airport - Chiang Mai</a><span class="one2go-route-price">€ 36.73–58.28</span><span class="one2go-route-duration">1h 10m – 1h 20m</span></td></tr>
-</tbody></table>`;
+</tbody></table></div>`;
 
 test("parses city pairs, modes, prices, durations, classes and departures", () => {
   const routes = parseTwelveGoTimetable(HTML);

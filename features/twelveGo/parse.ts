@@ -7,7 +7,8 @@
  *     <td class="one2go-route-name"><a href="https://12go.asia/en/bus/bangkok/chiang-mai?z=…&curr=EUR">Bus Bangkok - Chiang Mai</a>
  *       <span class="one2go-route-price">€ 17.37–27.12</span><span class="one2go-route-duration">8h 55m – 17h 21m</span>
  *     <td class="one2go-trips"><ul><li><span class="one2go-class">VIP</span><span class="one2go-departures">16:00, 18:30</span></li>…
- * Route headers like "Bangkok - Chiang Mai" (no mode) start a new city pair.
+ * Each city pair sits in <div class="one2go-route-container"> with a
+ * <div class="one2go-route-header"> ("Bangkok - Chiang Mai") above its table.
  */
 
 export type TwelveGoMode = "train" | "bus" | "avia" | "ferry" | "van" | "charter" | "other";
@@ -70,58 +71,55 @@ function safeLink(href: string): string | null {
 }
 
 export function parseTwelveGoTimetable(html: string): TwelveGoRoute[] {
+  // Each city pair is <div class="one2go-route-container"><div class="one2go-route-header"><a …>Bangkok - Chiang Mai</a>…</div><table>…</table></div>.
+  const blocks = html.split(/class="one2go-route-container"/i);
+  const parts = blocks.length > 1 ? blocks.slice(1) : [html];
   const routes: TwelveGoRoute[] = [];
-  const rows = html.split(/<tr[\s>]/i).slice(1);
-  let current: TwelveGoRoute | null = null;
-  let option: TwelveGoOption | null = null;
-  for (const row of rows) {
-    const nameCell = /class="one2go-route-name"[^>]*>([\s\S]*?)<\/td>/i.exec(row);
-    if (nameCell) {
-      const a = /<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i.exec(nameCell[1]);
-      const title = decode(a ? a[2] : nameCell[1].split("<span")[0]);
-      const link = a ? safeLink(a[1]) : null;
-      const priceText = decode(/class="one2go-route-price"[^>]*>([\s\S]*?)<\/span>/i.exec(nameCell[1])?.[1] ?? "");
-      const durText = decode(/class="one2go-route-duration"[^>]*>([\s\S]*?)<\/span>/i.exec(nameCell[1])?.[1] ?? "");
-      const mode = link ? modeOf(link) : "other";
-      if (mode === "other" && !priceText) {
-        // City-pair header ("Bangkok - Chiang Mai", link to the all-modes page).
-        current = { name: title, link, options: [] };
-        routes.push(current);
+  for (const block of parts) {
+    const header = /class="one2go-route-header"[^>]*>([\s\S]*?)<\/div>/i.exec(block)?.[1] ?? "";
+    const headerLink = /<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i.exec(header);
+    const route: TwelveGoRoute = { name: headerLink ? decode(headerLink[2]) : "", link: headerLink ? safeLink(headerLink[1]) : null, options: [] };
+    let option: TwelveGoOption | null = null;
+    for (const row of block.split(/<tr[\s>]/i).slice(1)) {
+      const nameCell = /class="one2go-route-name"[^>]*>([\s\S]*?)<\/td>/i.exec(row);
+      if (nameCell) {
+        const a = /<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i.exec(nameCell[1]);
+        const link = a ? safeLink(a[1]) : null;
         option = null;
+        if (!a || !link) continue;
+        const title = decode(a[2]);
+        const priceText = decode(/class="one2go-route-price"[^>]*>([\s\S]*?)<\/span>/i.exec(nameCell[1])?.[1] ?? "");
+        const durText = decode(/class="one2go-route-duration"[^>]*>([\s\S]*?)<\/span>/i.exec(nameCell[1])?.[1] ?? "");
+        const [priceMin, priceMax] = pricesOf(priceText);
+        const durations = durText.split(/[–-]/).map((p) => minutesOf(p)).filter((n): n is number => n !== null);
+        option = {
+          mode: modeOf(link),
+          title,
+          link,
+          priceMin,
+          priceMax,
+          durationMin: durations.length ? Math.min(...durations) : null,
+          durationMax: durations.length ? Math.max(...durations) : null,
+          classes: [],
+        };
+        route.options.push(option);
+        if (!route.name) route.name = title.replace(/^(Flight|Bus|Train|Ferry|Van|Taxi|Charter)\s+/i, "");
         continue;
       }
-      if (!current) {
-        current = { name: title, link: null, options: [] };
-        routes.push(current);
-      }
-      if (!link) continue;
-      const [priceMin, priceMax] = pricesOf(priceText);
-      const durations = durText.split(/[–-]/).map((p) => minutesOf(p)).filter((n): n is number => n !== null);
-      option = {
-        mode,
-        title,
-        link,
-        priceMin,
-        priceMax,
-        durationMin: durations.length ? Math.min(...durations) : null,
-        durationMax: durations.length ? Math.max(...durations) : null,
-        classes: [],
-      };
-      current.options.push(option);
-      continue;
-    }
-    if (option && /class="one2go-trips"/i.test(row)) {
-      for (const li of row.split(/<li[\s>]/i).slice(1)) {
-        const name = decode(/class="one2go-class"[^>]*>([\s\S]*?)<\/span>/i.exec(li)?.[1] ?? "");
-        const deps = decode(/class="one2go-departures"[^>]*>([\s\S]*?)<\/span>/i.exec(li)?.[1] ?? "")
-          .split(",")
-          .map((d) => d.trim())
-          .filter((d) => /^\d{1,2}:\d{2}$/.test(d));
-        if (name) option.classes.push({ name, departures: deps });
+      if (option && /class="one2go-trips"/i.test(row)) {
+        for (const li of row.split(/<li[\s>]/i).slice(1)) {
+          const name = decode(/class="one2go-class"[^>]*>([\s\S]*?)<\/span>/i.exec(li)?.[1] ?? "");
+          const deps = decode(/class="one2go-departures"[^>]*>([\s\S]*?)<\/span>/i.exec(li)?.[1] ?? "")
+            .split(",")
+            .map((d) => d.trim())
+            .filter((d) => /^\d{1,2}:\d{2}$/.test(d));
+          if (name) option.classes.push({ name, departures: deps });
+        }
       }
     }
+    if (route.options.length > 0) routes.push(route);
   }
-  return routes.filter((r) => r.options.length > 0);
+  return routes;
 }
 
 /** 12Go page for one mode and date, keeping the affiliate id. */
