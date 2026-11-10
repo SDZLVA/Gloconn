@@ -33,6 +33,7 @@ const decode = (s: string) =>
   s
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/g, " ")
+    .replace(/&ndash;|&#8211;|&mdash;|&#8212;/g, "–")
     .replace(/&amp;/g, "&")
     .replace(/&#0?39;|&apos;/g, "'")
     .replace(/&quot;/g, '"')

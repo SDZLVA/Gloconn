@@ -18,7 +18,7 @@ const HTML = `<div class="one2go-route-container">
 <tr><td class="one2go-route-name" colspan="2">
   <a target="_blank" href="https://12go.asia/en/train/bangkok/chiang-mai?z=17465383&amp;curr=EUR">Train Bangkok - Chiang Mai</a>
   <span class="one2go-route-info"><span class="one2go-route-price"> € 7.42–30.36 </span>
-  <span class="one2go-route-duration"> 10h 10m – 13h 50m </span></span></td></tr>
+  <span class="one2go-route-duration"> 10h 10m &ndash; 13h 50m </span></span></td></tr>
 <tr><td class="one2go-trips" colspan="2"><ul>
   <li><span class="one2go-class">2nd Class Sleeper AC</span><span class="one2go-departures">14:32, 18:40</span></li>
 </ul></td></tr>
@@ -45,6 +45,7 @@ test("parses city pairs, modes, prices, durations, classes and departures", () =
   assert.equal(train.mode, "train");
   assert.equal(train.link, "https://12go.asia/en/train/bangkok/chiang-mai?z=17465383&curr=EUR");
   assert.equal(train.classes[0].name, "2nd Class Sleeper AC");
+  assert.equal(train.durationMax, 830, "&ndash; between durations");
   assert.equal(routes[1].options[0].priceMin, 36.73);
 });
 
