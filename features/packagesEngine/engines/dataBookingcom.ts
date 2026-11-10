@@ -3,7 +3,7 @@ import "server-only";
 /**
  * Milestone 45 — packages engine "travelpayouts-bookingcom" (default):
  *   flights = Travelpayouts "Flight Data" API via RapidAPI (cached prices),
- *   hotels  = Booking.com via RapidAPI (Api Dojo),
+ *   hotels  = Booking.com via RapidAPI (Api Dojo) + Agoda via RapidAPI (M56, capped),
  * combined into exact-total packages by ../combine.ts. When no cached flight
  * exists for the dates, falls back to hotel-led packages whose page shows
  * the live White Label flights (the only place White Label still appears).
@@ -12,7 +12,8 @@ import "server-only";
 import { createNoRecentFlightPricesWarning, createProviderUnavailableWarning } from "@/lib/api/searchMappers";
 import { resolveAviasalesCurrency } from "@/lib/providers/flights/aviasales/provider";
 import { nightsBetween } from "@/features/liveHotels/filters";
-import { rapidApiKey, searchBookingHotels } from "@/features/liveHotels/bookingcom/client";
+import { rapidApiKey } from "@/features/liveHotels/bookingcom/client";
+import { searchHotelsCombined } from "@/features/liveHotels/combined";
 import type { LiveHotel } from "@/features/liveHotels/types";
 import { dataFlightsConfigured } from "@/features/flightsData/client";
 import { searchFlightsWithFallback } from "@/features/flightsFallback";
@@ -29,6 +30,8 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 function bookingLink(hotel: LiveHotel, request: SearchRequest, currency: string): string | undefined {
   if (!hotel.externalUrl) return undefined;
+  // Agoda links (M56) already carry the dates and guests.
+  if (hotel.id.startsWith("ag-")) return hotel.externalUrl;
   try {
     const url = new URL(hotel.externalUrl);
     url.searchParams.set("checkin", request.departureDate);
@@ -96,7 +99,7 @@ export const dataBookingcomEngine: PackagesEngine = {
         : Promise.reject(new Error("flight data not configured"));
     const hotelsPromise: Promise<LiveHotel[]> =
       hasStay && rapidApiKey()
-        ? retryOnce(() => searchBookingHotels({
+        ? retryOnce(() => searchHotelsCombined({
             destination: request.destination ?? "",
             checkin: request.departureDate,
             checkout: request.returnDate!,

@@ -8,7 +8,8 @@
 
 import { checkRateLimitCustom, getClientIp } from "@/lib/api/rateLimit";
 import { nightsBetween } from "@/features/liveHotels/filters";
-import { BookingApiError, rapidApiKey, searchBookingHotels } from "@/features/liveHotels/bookingcom/client";
+import { BookingApiError, rapidApiKey } from "@/features/liveHotels/bookingcom/client";
+import { searchHotelsCombined } from "@/features/liveHotels/combined";
 import type { LiveHotelsResponse, LiveHotelsSearch } from "@/features/liveHotels/types";
 
 const CACHE_MS = 10 * 60_000;
@@ -62,10 +63,14 @@ export async function GET(request: Request) {
   }
 
   try {
-    const { hotels, raw } = await searchBookingHotels(search);
+    const trace: string[] = [];
+    const { hotels, raw, agodaRaw, booking, agoda } = await searchHotelsCombined(search, debug ? { trace, fresh: url.searchParams.get("fresh") === "1" } : {});
     if (debug) {
+      const agodaData = (agodaRaw as { data?: { properties?: unknown[]; citySearch?: { properties?: unknown[] } } } | null)?.data;
+      const agodaList = agodaData?.citySearch?.properties ?? agodaData?.properties ?? [];
+      const agodaFirst = agodaList[0] as { pricing?: unknown; content?: { informationSummary?: unknown; reviews?: { cumulative?: unknown } } } | undefined;
       return new Response(
-        JSON.stringify({ sample: (raw as { result?: unknown[] } | null)?.result?.[0] ?? null, count: (raw as { result?: unknown[] } | null)?.result?.length ?? 0, mapped: hotels.slice(0, 2) }),
+        JSON.stringify({ trace, counts: { booking: booking.length, agoda: agoda.length, merged: hotels.length }, agodaMapped: agoda.slice(0, 3), agodaSample: agodaFirst ? { pricing: agodaFirst.pricing, info: agodaFirst.content?.informationSummary, reviews: agodaFirst.content?.reviews?.cumulative } : null, names: hotels.slice(0, 12).map((h) => `${h.id} ${h.name} ${h.totalPrice}`), sample: (raw as { result?: unknown[] } | null)?.result?.[0] ?? null, count: (raw as { result?: unknown[] } | null)?.result?.length ?? 0, mapped: hotels.slice(0, 2) }),
         { headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } },
       );
     }

@@ -49,6 +49,8 @@ function hotelPageUrl(hotelId: string, search: LiveHotelsSearch, back: string): 
 function externalHotelUrl(url: string, search: LiveHotelsSearch): string {
   try {
     const target = new URL(url);
+    // Agoda links (M56) already carry the dates and guests.
+    if (/(^|\.)agoda\.com$/i.test(target.hostname)) return url;
     target.searchParams.set("checkin", search.checkin);
     target.searchParams.set("checkout", search.checkout);
     target.searchParams.set("group_adults", String(search.adults));
