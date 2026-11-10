@@ -24,12 +24,13 @@ const money = (amount: number, currency: string) => {
     return `${currency} ${Math.round(amount)}`;
   }
 };
-const hours = (minutes: number) => (minutes > 0 ? `${Math.floor(minutes / 60)}h ${String(minutes % 60).padStart(2, "0")}m` : "");
+const hours = (minutes: number) =>
+  minutes <= 0 ? "" : minutes < 60 ? `${minutes}m` : `${Math.floor(minutes / 60)}h ${String(minutes % 60).padStart(2, "0")}m`;
 
-const MODES: { mode: OmioTravelMode; title: string; icon: string; text: string }[] = [
-  { mode: "TRAIN", title: "Train", icon: "🚆", text: "City centre to city centre. Live times and prices on Omio." },
-  { mode: "BUS", title: "Bus", icon: "🚌", text: "Often the cheapest way. Live times and prices on Omio." },
-  { mode: "FLIGHT", title: "Flight", icon: "✈", text: "Fastest for long distances." },
+const MODES: { mode: OmioTravelMode; title: string; plural: string; icon: string; text: string }[] = [
+  { mode: "TRAIN", title: "Train", plural: "trains", icon: "🚆", text: "City centre to city centre. Live times and prices on Omio." },
+  { mode: "BUS", title: "Bus", plural: "buses", icon: "🚌", text: "Often the cheapest way. Live times and prices on Omio." },
+  { mode: "FLIGHT", title: "Flight", plural: "flights", icon: "✈", text: "Fastest for long distances." },
 ];
 
 /**
@@ -151,7 +152,7 @@ export function TransportResultsPage({ search, initialForm, originCode, destinat
                           focusRing,
                         )}
                       >
-                        See {m.title.toLowerCase()}s on Omio ↗
+                        See {m.plural} on Omio ↗
                       </a>
                     )}
                     {m.mode === "FLIGHT" && price && (
