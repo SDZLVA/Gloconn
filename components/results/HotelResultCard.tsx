@@ -14,6 +14,7 @@ import {
   formatHotelStarsLabel,
 } from "@/lib/results/packagesUi";
 import type { HotelResult } from "@/types/results";
+import { hotelSiteName } from "@/features/liveHotels/agoda/map";
 
 type HotelResultCardProps = {
   result: HotelResult;
@@ -97,7 +98,7 @@ export function HotelResultCard({ result }: HotelResultCardProps) {
                 {...(/^https?:\/\//.test(result.detailsUrl) ? { target: "_blank", rel: "noopener noreferrer nofollow" } : {})}
                 className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-800"
               >
-                {/^https?:\/\//.test(result.detailsUrl) ? "See on Booking.com ↗" : "See availability"}
+                {/^https?:\/\//.test(result.detailsUrl) ? `See on ${hotelSiteName(result.detailsUrl)} ↗` : "See availability"}
               </Link>
             ) : (
               <ViewHotelAction hotel={result} />

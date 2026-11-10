@@ -3,6 +3,7 @@ import { formatMoney } from "@/lib/money";
 import { ratingLabel } from "@/features/liveHotels/filters";
 import type { LiveHotel } from "@/features/liveHotels/types";
 import { cn } from "@/lib/utils";
+import { hotelSiteName } from "@/features/liveHotels/agoda/map";
 
 type LiveHotelCardProps = {
   hotel: LiveHotel;
@@ -88,7 +89,7 @@ export function LiveHotelCard({ hotel, nights, guestsLabel, bookingUrl, onShowOn
                 {...externalProps}
                 className="mt-2 inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white shadow-sm hover:bg-brand-800"
               >
-                {external ? "See on Booking.com ↗" : "See availability ›"}
+                {external ? `See on ${hotelSiteName(bookingUrl)} ↗` : "See availability ›"}
               </Link>
             ) : (
               <p className="mt-2 rounded-lg bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">Online booking coming soon</p>
