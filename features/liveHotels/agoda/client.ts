@@ -10,7 +10,7 @@ import "server-only";
  * store → no call, and the page simply shows Booking.com only.
  */
 
-import { mapAgodaProperties, pickAgodaPlace } from "@/features/liveHotels/agoda/map";
+import { agodaLookupFailed, agodaSearchedCity, knownAgodaPlace, mapAgodaProperties, pickAgodaPlace, sameCity } from "@/features/liveHotels/agoda/map";
 import { nightsBetween } from "@/features/liveHotels/filters";
 import { rapidApiKey } from "@/features/liveHotels/bookingcom/client";
 import type { LiveHotel, LiveHotelsSearch } from "@/features/liveHotels/types";
@@ -59,25 +59,37 @@ async function call(path: string, params: Record<string, string>, trace?: AgodaT
   }
 }
 
+const LOOKUP_DOWN_KEY = "agoda:lookup-down:v1";
+const LOOKUP_DOWN_TTL_MS = 24 * 60 * 60_000;
+
 async function placeId(label: string, trace?: AgodaTrace): Promise<string | null> {
-  const cacheKey = `agoda:place:v2:${label.toLowerCase()}`;
+  const cacheKey = `agoda:place:v3:${label.toLowerCase()}`;
   const hit = await readCache<{ id: string | null }>(cacheKey);
   if (hit) {
     trace?.push(`place: cache ${hit.id}`);
     return hit.id;
   }
+  const known = knownAgodaPlace(label);
+  if (known) {
+    trace?.push(`place: built-in ${known}`);
+    return known;
+  }
+  // The lookup was broken on Agoda's side on 2026-11-10: when it fails, don't ask again for a day.
+  if (await readCache<{ down: true }>(LOOKUP_DOWN_KEY)) {
+    trace?.push("place: lookup marked down — skipped");
+    return null;
+  }
   const city = label.split(",")[0]?.trim() || label;
   const raw = await call("/hotels/auto-complete", { query: city, language: "en-us" }, trace);
   if (raw === null) return null;
-  const id = pickAgodaPlace(raw, label);
-  trace?.push(`place: live ${id}`);
-  if (!id) {
-    // Unknown answer shape or no match: show it on preview, and don't keep it for long.
-    trace?.push(`place raw: ${JSON.stringify(raw)?.slice(0, 900)}`);
-    await writeCache(cacheKey, { id }, EMPTY_TTL_MS);
+  if (agodaLookupFailed(raw)) {
+    trace?.push(`place: lookup failed ${JSON.stringify(raw)?.slice(0, 300)}`);
+    await writeCache(LOOKUP_DOWN_KEY, { down: true }, LOOKUP_DOWN_TTL_MS);
     return null;
   }
-  await writeCache(cacheKey, { id }, PLACE_TTL_MS);
+  const id = pickAgodaPlace(raw, label);
+  trace?.push(`place: live ${id}`);
+  await writeCache(cacheKey, { id }, id ? PLACE_TTL_MS : EMPTY_TTL_MS);
   return id;
 }
 
@@ -120,6 +132,13 @@ export async function searchAgodaHotels(
     if (search.children > 0) params.childAges = Array.from({ length: search.children }, () => "8").join(",");
     const raw = await call("/hotels/search-overnight", params, trace);
     if (raw === null) return { hotels: [], raw: null };
+    // A built-in or looked-up id must be the city that was asked for; if not, forget it.
+    const searched = agodaSearchedCity(raw);
+    if (!sameCity(searched, search.destination)) {
+      trace?.push(`search: city mismatch (${searched}) — dropped`);
+      await writeCache(`agoda:place:v3:${search.destination.toLowerCase()}`, { id: null }, PLACE_TTL_MS);
+      return { hotels: [], raw };
+    }
     const nights = nightsBetween(search.checkin, search.checkout);
     const hotels = await inSearchCurrency(mapAgodaProperties(raw, search, nights), search.currency);
     trace?.push(`search: live ${hotels.length}`);

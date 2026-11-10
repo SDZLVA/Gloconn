@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { agodaHotelUrl, hotelNameKey, hotelSiteName, mapAgodaProperties, mergeHotels, pickAgodaPlace } from "@/features/liveHotels/agoda/map";
+import { agodaLookupFailed, agodaSearchedCity, knownAgodaPlace, sameCity, agodaHotelUrl, hotelNameKey, hotelSiteName, mapAgodaProperties, mergeHotels, pickAgodaPlace } from "@/features/liveHotels/agoda/map";
 import type { LiveHotel } from "@/features/liveHotels/types";
 
 const search = { checkin: "2026-12-10", checkout: "2026-12-13", adults: 2, children: 0, rooms: 1, currency: "EUR" };
@@ -94,4 +94,20 @@ test("hotelNameKey, hotelSiteName and agodaHotelUrl", () => {
   assert.equal(hotelSiteName("https://www.booking.com/hotel/fr/x.html"), "Booking.com");
   assert.equal(hotelSiteName(null), "Booking.com");
   assert.match(agodaHotelUrl("7", { ...search, children: 1 }, 0), /los=1&adults=2&children=1/);
+});
+
+test("live answer shape (data.citySearch), city check and built-in ids", () => {
+  const raw = { data: { citySearch: { searchResult: { searchInfo: { objectInfo: { cityName: "Paris", cityEnglishName: "Paris" } } }, properties: [property()] } } };
+  assert.equal(mapAgodaProperties(raw, search, 3).length, 1);
+  assert.equal(agodaSearchedCity(raw), "Paris");
+  assert.equal(sameCity("Paris", "Paris, France"), true);
+  assert.equal(sameCity("New York (NY)", "New York, United States"), true);
+  assert.equal(sameCity("Ho Chi Minh City", "Ho Chi Minh, Vietnam"), true);
+  assert.equal(sameCity("Barcelona", "Paris, France"), false);
+  assert.equal(sameCity(null, "Paris"), false);
+  assert.equal(knownAgodaPlace("Paris, France"), "1_15470");
+  assert.equal(knownAgodaPlace("Ho Chi Minh City, Vietnam"), "1_13170");
+  assert.equal(knownAgodaPlace("Smallville"), null);
+  assert.equal(agodaLookupFailed({ places: null, errors: [{ code: 403 }], resultStatus: { isSuccess: false } }), true);
+  assert.equal(agodaLookupFailed({ data: [{ id: "1_1" }] }), false);
 });

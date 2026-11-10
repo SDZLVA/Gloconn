@@ -66,7 +66,8 @@ export async function GET(request: Request) {
     const trace: string[] = [];
     const { hotels, raw, agodaRaw, booking, agoda } = await searchHotelsCombined(search, debug ? { trace, fresh: url.searchParams.get("fresh") === "1" } : {});
     if (debug) {
-      const agodaList = (agodaRaw as { data?: { properties?: unknown[] } } | null)?.data?.properties ?? [];
+      const agodaData = (agodaRaw as { data?: { properties?: unknown[]; citySearch?: { properties?: unknown[] } } } | null)?.data;
+      const agodaList = agodaData?.citySearch?.properties ?? agodaData?.properties ?? [];
       const agodaFirst = agodaList[0] as { pricing?: unknown; content?: { informationSummary?: unknown; reviews?: { cumulative?: unknown } } } | undefined;
       return new Response(
         JSON.stringify({ trace, counts: { booking: booking.length, agoda: agoda.length, merged: hotels.length }, agodaMapped: agoda.slice(0, 3), agodaSample: agodaFirst ? { pricing: agodaFirst.pricing, info: agodaFirst.content?.informationSummary, reviews: agodaFirst.content?.reviews?.cumulative } : null, names: hotels.slice(0, 12).map((h) => `${h.id} ${h.name} ${h.totalPrice}`), sample: (raw as { result?: unknown[] } | null)?.result?.[0] ?? null, count: (raw as { result?: unknown[] } | null)?.result?.length ?? 0, mapped: hotels.slice(0, 2) }),

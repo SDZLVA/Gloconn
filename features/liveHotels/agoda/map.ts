@@ -89,11 +89,76 @@ function stayPrice(pricing: Json, nights: number, rooms: number): { amount: numb
   return null;
 }
 
+/** The live answer nests the result in data.citySearch; the documented example has it in data. */
+function agodaResult(raw: unknown): Json {
+  const data = isObject(raw) ? obj(raw.data) : {};
+  return isObject(data.citySearch) ? data.citySearch : data;
+}
+
+/** The city Agoda actually searched ("Paris"), to check a city id. */
+export function agodaSearchedCity(raw: unknown): string | null {
+  const info = obj(obj(obj(agodaResult(raw).searchResult).searchInfo).objectInfo);
+  return asString(info.cityEnglishName) ?? asString(info.cityName);
+}
+
+/** Whether Agoda's city is the one asked for ("Bangkok" ~ "Bangkok, Thailand"). */
+export function sameCity(agodaCity: string | null, label: string): boolean {
+  const key = (v: string) => fold(v).replace(/\(.*?\)/g, " ").replace(/[^a-z0-9]+/g, " ").replace(/\bcity\b/g, " ").replace(/\s+/g, " ").trim();
+  const a = agodaCity ? key(agodaCity) : "";
+  const b = key(label.split(",")[0] ?? "");
+  return Boolean(a && b) && (a === b || a.startsWith(`${b} `) || b.startsWith(`${a} `));
+}
+
+/**
+ * Agoda city ids for popular cities. The API's own city lookup
+ * (/hotels/auto-complete) was answering "api key invalid" on 2026-11-10, so
+ * these let the search work without it. Every id is checked against the city
+ * name in the search answer (sameCity) before any hotel is shown.
+ */
+const AGODA_CITY_IDS: Record<string, number> = {
+  paris: 15470,
+  "new york": 318,
+  delhi: 17993,
+  "new delhi": 17993,
+  bangkok: 9395,
+  london: 233,
+  tokyo: 5085,
+  singapore: 4064,
+  "hong kong": 16808,
+  "kuala lumpur": 14524,
+  seoul: 14690,
+  phuket: 16056,
+  dubai: 2994,
+  rome: 16594,
+  osaka: 9590,
+  taipei: 4951,
+  hanoi: 2758,
+  "ho chi minh": 13170,
+  "chiang mai": 7401,
+  pattaya: 8584,
+  amsterdam: 13868,
+  istanbul: 14932,
+  sydney: 14370,
+};
+
+/** Built-in city id ("1_15470") for a label like "Paris, France"; null = not in the list. */
+export function knownAgodaPlace(label: string): string | null {
+  const city = fold(label.split(",")[0] ?? "").replace(/\bcity\b/g, " ").replace(/\s+/g, " ").trim();
+  const id = AGODA_CITY_IDS[city];
+  return id ? `1_${id}` : null;
+}
+
+/** True when the lookup answered with an error body instead of places. */
+export function agodaLookupFailed(raw: unknown): boolean {
+  const body = obj(raw);
+  const inner = isObject(body.data) ? body.data : body;
+  return asArray(inner.errors).length > 0 || obj(inner.resultStatus).isSuccess === false;
+}
+
 /** /hotels/search-overnight → LiveHotel[]. */
 export function mapAgodaProperties(raw: unknown, search: Omit<LiveHotelsSearch, "destination">, nights: number): LiveHotel[] {
-  const data = isObject(raw) ? obj(raw.data) : {};
   const hotels: LiveHotel[] = [];
-  for (const entry of asArray(data.properties)) {
+  for (const entry of asArray(agodaResult(raw).properties)) {
     if (!isObject(entry)) continue;
     const content = obj(entry.content);
     const info = obj(content.informationSummary);
