@@ -50,6 +50,8 @@ export function TransportResultsPage({ search, initialForm, originCode, destinat
 
   const link = (mode: OmioTravelMode | null) => buildOmioResultsLink({ from, to, departureDate, returnDate, travelMode: mode, currency });
 
+  // Milestone 55b: 12Go first; Omio stays below as the alternative (or first when 12Go has nothing).
+  const [hasTwelveGo, setHasTwelveGo] = useState(false);
   const [flight, setFlight] = useState<{ status: "loading" | "done"; cheapest: Flight | null }>({ status: "loading", cheapest: null });
   const flightQuery = useMemo(() => {
     if (!originCode || !destinationCode || !departureDate) return null;
@@ -111,10 +113,15 @@ export function TransportResultsPage({ search, initialForm, originCode, destinat
         </p>
       ) : (
         <>
-          <TwelveGoOptions from={from} to={to} date={departureDate} currency={currency} />
-          <p className="pt-2 text-sm text-slate-600">
-            Or compare live times and prices from {from.split(",")[0]} to {to.split(",")[0]} on Omio, where you book.
-          </p>
+          <TwelveGoOptions from={from} to={to} date={departureDate} returnDate={returnDate} currency={currency} onLoaded={setHasTwelveGo} />
+          <div className={hasTwelveGo ? "border-t border-slate-200 pt-6" : ""}>
+            <h2 className="text-lg font-bold text-slate-900">{hasTwelveGo ? "Prefer Omio?" : `Ways to travel from ${from.split(",")[0]} to ${to.split(",")[0]}`}</h2>
+            <p className="text-sm text-slate-600">
+              {hasTwelveGo
+                ? "Compare the same trip on Omio — live times and prices, and you book there."
+                : "Pick one to see live times and prices on Omio, where you book."}
+            </p>
+          </div>
           <ul className="grid gap-4 md:grid-cols-3">
             {MODES.map((m) => {
               const href = link(m.mode);

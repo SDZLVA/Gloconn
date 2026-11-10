@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { twelveGoDateLink, type TwelveGoMode, type TwelveGoOption, type TwelveGoRoute } from "@/features/twelveGo/parse";
+import { buildOmioResultsLink, type OmioTravelMode } from "@/lib/affiliate/omio";
 import { focusRing } from "@/lib/styles";
 import { cn } from "@/lib/utils";
 
@@ -25,12 +26,30 @@ function priceText(o: TwelveGoOption, currency: string) {
 
 type Picked = { option: number; className: string; time: string | null };
 
+/** The same kind of transport on Omio (Milestone 55b: 12Go first, Omio as the alternative). */
+const OMIO_MODE: Partial<Record<TwelveGoMode, OmioTravelMode>> = { train: "TRAIN", bus: "BUS", van: "BUS", avia: "FLIGHT", ferry: "FERRY" };
+
 /**
  * Milestone 55 — trains, buses, ferries, vans and flights from 12Go's partner
  * timetable. The traveller picks a way to travel, a class and a departure time
  * here; the last step opens 12Go for that route and date to book.
  */
-export function TwelveGoOptions({ from, to, date, currency }: { from: string; to: string; date: string; currency: string }) {
+export function TwelveGoOptions({
+  from,
+  to,
+  date,
+  returnDate = null,
+  currency,
+  onLoaded,
+}: {
+  from: string;
+  to: string;
+  date: string;
+  returnDate?: string | null;
+  currency: string;
+  /** Tells the page whether 12Go had results (Omio is shown first when not). */
+  onLoaded?: (hasResults: boolean) => void;
+}) {
   const [state, setState] = useState<{ status: "loading" | "done"; route: TwelveGoRoute | null }>({ status: "loading", route: null });
   const [picked, setPicked] = useState<Picked | null>(null);
   const [open, setOpen] = useState<number | null>(null);
@@ -47,10 +66,12 @@ export function TwelveGoOptions({ from, to, date, currency }: { from: string; to
         if (cancelled) return;
         const routes = body.ok && Array.isArray(body.routes) ? body.routes : [];
         setState({ status: "done", route: routes[0] ?? null });
+        onLoaded?.(Boolean(routes[0]));
       });
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [from, to, currency]);
 
   if (state.status === "loading") {
@@ -153,6 +174,14 @@ export function TwelveGoOptions({ from, to, date, currency }: { from: string; to
           >
             Continue to 12Go to book ↗
           </a>
+          {OMIO_MODE[chosen.mode] && (() => {
+            const omio = buildOmioResultsLink({ from, to, departureDate: date, returnDate, travelMode: OMIO_MODE[chosen.mode], currency });
+            return omio ? (
+              <a href={omio} target="_blank" rel="noopener noreferrer nofollow sponsored" className="text-center text-xs font-semibold text-brand-700 hover:text-brand-900 sm:text-right">
+                or check {NAME[chosen.mode].toLowerCase()}s on Omio ↗
+              </a>
+            ) : null;
+          })()}
         </div>
       )}
       <p className="text-xs text-slate-500">Powered by 12Go. Glooconn may earn a commission.</p>
