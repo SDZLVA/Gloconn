@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { TripHeader } from "@/components/results/TripHeader";
+import { TwelveGoOptions } from "@/components/live/TwelveGoOptions";
 import { buildOmioResultsLink, type OmioTravelMode } from "@/lib/affiliate/omio";
 import { focusRing } from "@/lib/styles";
 import { cn } from "@/lib/utils";
@@ -110,8 +111,9 @@ export function TransportResultsPage({ search, initialForm, originCode, destinat
         </p>
       ) : (
         <>
-          <p className="text-sm text-slate-600">
-            Ways to travel from {from.split(",")[0]} to {to.split(",")[0]}. Pick one to see live times and prices on Omio, where you book.
+          <TwelveGoOptions from={from} to={to} date={departureDate} currency={currency} />
+          <p className="pt-2 text-sm text-slate-600">
+            Or compare live times and prices from {from.split(",")[0]} to {to.split(",")[0]} on Omio, where you book.
           </p>
           <ul className="grid gap-4 md:grid-cols-3">
             {MODES.map((m) => {
