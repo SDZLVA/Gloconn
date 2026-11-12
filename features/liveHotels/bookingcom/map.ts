@@ -4,6 +4,7 @@
  */
 
 import type { LiveHotel } from "@/features/liveHotels/types";
+import { propertyKindOf } from "@/features/liveHotels/propertyKind";
 
 type Json = Record<string, unknown>;
 const isObject = (v: unknown): v is Json => typeof v === "object" && v !== null && !Array.isArray(v);
@@ -74,6 +75,8 @@ export function mapBookingProperties(raw: unknown, currency: string): LiveHotel[
       refundable: asNumber(entry.is_free_cancellable) === 1,
       offerId: null,
       externalUrl: url ? (url.startsWith("http") ? url : `https://www.booking.com${url}`) : null,
+      propertyType: propertyKindOf(asString(entry.accommodation_type_name)),
+      distanceKm: asNumber(entry.distance_to_cc),
     });
   }
   return hotels;

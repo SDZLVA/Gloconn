@@ -61,7 +61,9 @@ export async function POST(request: Request) {
     const country = request.headers.get("x-vercel-ip-country") ?? "";
     const bot = /bot|crawl|spider|slurp|preview|headless/i.test(request.headers.get("user-agent") ?? "");
     const visitor = bot ? "" : visitorId(request.headers);
-    const result = await searchTrips(body, { ...(/^[A-Z]{2}$/.test(country) ? { guestNationality: country } : {}), visitor });
+    // Milestone 57: ?phase=quick → fast first answer (see PackagesEngineContext.quick).
+    const quick = new URL(request.url).searchParams.get("phase") === "quick";
+    const result = await searchTrips(body, { ...(/^[A-Z]{2}$/.test(country) ? { guestNationality: country } : {}), visitor, ...(quick ? { quick } : {}) });
     return toJsonResponse(result);
   } catch {
     return toErrorJsonResponse(null, "Invalid search request body.");

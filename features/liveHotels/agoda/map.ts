@@ -5,6 +5,7 @@
  */
 
 import type { LiveHotel, LiveHotelsSearch } from "@/features/liveHotels/types";
+import { distanceKm, propertyKindOf } from "@/features/liveHotels/propertyKind";
 
 type Json = Record<string, unknown>;
 const isObject = (v: unknown): v is Json => typeof v === "object" && v !== null && !Array.isArray(v);
@@ -158,6 +159,9 @@ export function agodaLookupFailed(raw: unknown): boolean {
 /** /hotels/search-overnight → LiveHotel[]. */
 export function mapAgodaProperties(raw: unknown, search: Omit<LiveHotelsSearch, "destination">, nights: number): LiveHotel[] {
   const hotels: LiveHotel[] = [];
+  const centre = obj(obj(obj(agodaResult(raw).searchResult).searchInfo).objectInfo);
+  const centreLat = asNumber(centre.centerLatitude);
+  const centreLon = asNumber(centre.centerLongitude);
   for (const entry of asArray(agodaResult(raw).properties)) {
     if (!isObject(entry)) continue;
     const content = obj(entry.content);
@@ -191,6 +195,11 @@ export function mapAgodaProperties(raw: unknown, search: Omit<LiveHotelsSearch, 
       refundable: cancellation.startsWith("freecancel"),
       offerId: null,
       externalUrl: agodaHotelUrl(id, search, nights),
+      propertyType: propertyKindOf(asString(info.propertyType) ?? asString(obj(info.accommodation).accommodationName)),
+      distanceKm:
+        centreLat !== null && centreLon !== null && asNumber(geo.latitude) !== null && asNumber(geo.longitude) !== null
+          ? Math.round(distanceKm(centreLat, centreLon, asNumber(geo.latitude)!, asNumber(geo.longitude)!) * 100) / 100
+          : null,
     });
   }
   return hotels;

@@ -97,6 +97,12 @@ export type SearchResponse = {
   stayPackages?: StayPackage[];
 
   /**
+   * Milestone 57: a quick first answer (saved fares, Booking.com). The page
+   * shows it and asks again (without ?phase=quick) for the full answer.
+   */
+  partial?: boolean;
+
+  /**
    * Total count of provider domain results (hotels, flights, buses, trains,
    * restaurants, attractions). Does not include derived `packages`.
    */

@@ -109,7 +109,7 @@ export async function searchAgodaHotels(
   try {
     const id = await placeId(search.destination, trace);
     if (!id) return { hotels: [], raw: null };
-    const cacheKey = `agoda:v1:${id}:${search.checkin}:${search.checkout}:${search.adults}:${search.children}:${search.rooms}:${search.currency}`;
+    const cacheKey = `agoda:v2:${id}:${search.checkin}:${search.checkout}:${search.adults}:${search.children}:${search.rooms}:${search.currency}`;
     if (!options.fresh) {
       const hit = await readCache<{ hotels: LiveHotel[] }>(cacheKey);
       if (hit) {

@@ -15,6 +15,11 @@ export type PackagesEngineContext = {
   guestNationality?: string;
   /** Milestone 49: hashed visitor id — limits paid live-flight lookups per visitor. */
   visitor?: string;
+  /**
+   * Milestone 57: quick first answer — free/fast sources only (saved fares,
+   * Booking.com). The page then asks again without it for the full answer.
+   */
+  quick?: boolean;
 };
 
 export type PackagesEngineResult = {
@@ -24,6 +29,8 @@ export type PackagesEngineResult = {
   /** Milestone 40b: hotel-led packages (flights are the live White Label results). */
   stayPackages?: StayPackage[];
   warnings: SearchResponseWarning[];
+  /** Milestone 57: a quick answer that a full search can still improve. */
+  partial?: boolean;
 };
 
 export type PackagesEngine = {

@@ -18,6 +18,7 @@ import {
 } from "@/features/liveFlights/types";
 import type { SearchRequest } from "@/types/models/search-request";
 import type { SearchFormState } from "@/types/search-form";
+import { LoadingMoreNote } from "@/components/live/LoadingMoreNote";
 
 type LiveFlightsResultsPageProps = {
   search: Partial<SearchRequest>;
@@ -75,7 +76,8 @@ export function LiveFlightsResultsPage({
   // (default — Travelpayouts Flight Data via RapidAPI) or "whitelabel" (live box).
   // With the data engine, the live box only appears when no recent prices exist.
   const flightsEngine = process.env.NEXT_PUBLIC_FLIGHTS_ENGINE || "travelpayouts-rapidapi";
-  const [data, setData] = useState<{ status: "idle" | "loading" | "done"; flights: Flight[] }>({ status: "idle", flights: [] });
+  // Milestone 57: "more" = the first (free, fast) prices are shown and live prices are still loading.
+  const [data, setData] = useState<{ status: "idle" | "loading" | "more" | "done"; flights: Flight[] }>({ status: "idle", flights: [] });
   useEffect(() => {
     if (flightsEngine === "whitelabel" || !liveSearch) return;
     let cancelled = false;
@@ -90,22 +92,37 @@ export function LiveFlightsResultsPage({
       infants: String(liveSearch.infants),
       currency: liveSearch.currency,
     });
-    fetch(`/api/flights/data?${params.toString()}`)
-      .then((r) => r.json() as Promise<{ ok?: boolean; flights?: Flight[] }>)
-      .catch(() => ({ ok: false, flights: [] as Flight[] }))
-      .then((body) => {
+    type Answer = { ok?: boolean; flights?: Flight[]; more?: boolean };
+    const load = (phase: "quick" | "full") =>
+      fetch(`/api/flights/data?${params.toString()}${phase === "quick" ? "&phase=quick" : ""}`)
+        .then((r) => r.json() as Promise<Answer>)
+        .catch((): Answer => ({ ok: false, flights: [] }));
+    const show = (flights: Flight[], status: "more" | "done") => {
+      setData({ status, flights });
+      if (flights.length > 0) setFacets({ airlines: [...new Set(flights.map((f) => f.airline))], bridged: true, searching: false });
+    };
+    // Milestone 57: saved fares first (≈1 s), then the live prices; the list re-sorts itself.
+    void load("quick").then((quick) => {
+      if (cancelled) return;
+      const first = quick.ok && Array.isArray(quick.flights) ? quick.flights : [];
+      if (!quick.ok || !quick.more) {
+        if (quick.ok) return show(first, "done");
+      } else if (first.length > 0) {
+        show(first, "more");
+      }
+      void load("full").then((full) => {
         if (cancelled) return;
-        const flights = body.ok && Array.isArray(body.flights) ? body.flights : [];
-        setData({ status: "done", flights });
-        if (flights.length > 0) setFacets({ airlines: [...new Set(flights.map((f) => f.airline))], bridged: true, searching: false });
+        const flights = full.ok && Array.isArray(full.flights) && full.flights.length > 0 ? full.flights : first;
+        show(flights, "done");
       });
+    });
     return () => {
       cancelled = true;
     };
   }, [flightsEngine, liveSearch]);
   const groupSize = (travelers?.adults ?? 1) + (travelers?.children ?? 0);
   // Milestone 49: without White Label, the data list (or its empty state) always shows.
-  const useData = flightsEngine !== "whitelabel" && (data.status === "loading" || data.flights.length > 0 || !WHITE_LABEL_ON);
+  const useData = flightsEngine !== "whitelabel" && (data.status === "loading" || data.status === "more" || data.flights.length > 0 || !WHITE_LABEL_ON);
   const shownFlights = useMemo(() => filterDataFlights(data.flights, filters, Math.max(1, groupSize)), [data.flights, filters, groupSize]);
 
 
@@ -173,7 +190,10 @@ export function LiveFlightsResultsPage({
                   infants={liveSearch.infants}
                 />
               ) : (
-                <DataFlightsList flights={shownFlights} travelers={Math.max(1, groupSize)} roundTrip={Boolean(liveSearch.returnDate)} />
+                <>
+                  {data.status === "more" && <LoadingMoreNote text="Finding more live prices…" />}
+                  <DataFlightsList flights={shownFlights} travelers={Math.max(1, groupSize)} roundTrip={Boolean(liveSearch.returnDate)} />
+                </>
               )
             ) : (
               <LiveFlightsSection

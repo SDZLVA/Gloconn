@@ -10,6 +10,7 @@ import type {
 } from "@/types/results";
 import { DEFAULT_RESULTS_FILTERS, RESULT_TYPE_LABELS } from "@/types/results";
 import { MVP_RESULT_TYPES } from "@/lib/results/mvpUi";
+import { PROPERTY_KINDS } from "@/features/liveHotels/propertyKind";
 
 /** Sprint 14.2 MVP — hotel + flight only (bus/train filters hidden). */
 const FILTERABLE_TYPES = MVP_RESULT_TYPES;
@@ -200,6 +201,27 @@ export function ResultsFilterSidebar({
             </FilterSection>
           )}
         </>
+      )}
+
+      {showHotelStars && PROPERTY_KINDS.some((k) => (facets.propertyTypes?.[k.kind] ?? 0) > 0) && (
+        <FilterSection title="Property type">
+          <FilterList>
+            {PROPERTY_KINDS.filter((k) => (facets.propertyTypes?.[k.kind] ?? 0) > 0 || filters.propertyTypes?.includes(k.kind)).map(({ kind, label }) => {
+              const chosen = filters.propertyTypes ?? [];
+              return (
+                <FilterCheck
+                  key={kind}
+                  label={label}
+                  count={facets.propertyTypes?.[kind] ?? 0}
+                  checked={chosen.includes(kind)}
+                  onChange={(on) =>
+                    onFiltersChange({ ...filters, propertyTypes: on ? [...chosen, kind] : chosen.filter((t) => t !== kind) })
+                  }
+                />
+              );
+            })}
+          </FilterList>
+        </FilterSection>
       )}
 
       {showHotelStars && (

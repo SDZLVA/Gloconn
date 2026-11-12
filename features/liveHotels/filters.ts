@@ -13,10 +13,16 @@ export function filterHotels(hotels: LiveHotel[], filters: LiveHotelsFilters, ni
     if (filters.stars.length > 0 && !filters.stars.includes(hotel.stars)) return false;
     if (filters.minRating > 0 && (hotel.rating ?? 0) < filters.minRating) return false;
     if (filters.refundableOnly && !hotel.refundable) return false;
+    if (filters.types?.length && !filters.types.includes(hotel.propertyType ?? "other")) return false;
     return true;
   });
   if (filters.sort === "price") return [...kept].sort((a, b) => a.totalPrice - b.totalPrice);
   if (filters.sort === "rating") return [...kept].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+  if (filters.sort === "distance") {
+    // Unknown distance goes last.
+    const d = (h: LiveHotel) => (typeof h.distanceKm === "number" ? h.distanceKm : Infinity);
+    return [...kept].sort((a, b) => d(a) - d(b) || a.totalPrice - b.totalPrice);
+  }
   if (filters.sort === "stars") return [...kept].sort((a, b) => b.stars - a.stars || a.totalPrice - b.totalPrice);
   return kept; // LiteAPI's own "top picks" order
 }

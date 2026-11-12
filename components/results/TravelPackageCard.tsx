@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import type { PackageExplanation } from "@/lib/packages/explanations";
 import type { TravelPackage } from "@/types/models/travel-package";
 import type { Flight } from "@/types/models";
+import { distanceLabel } from "@/features/liveHotels/propertyKind";
 
 type TravelPackageCardProps = {
   package: TravelPackage;
@@ -155,6 +156,7 @@ function TravelPackageCardComponent({
               </p>
             )}
             <p className="truncate text-xs text-slate-500">{hotel.location}</p>
+            {distanceLabel(hotel.distanceKm) && <p className="truncate text-xs font-medium text-slate-700">📍 {distanceLabel(hotel.distanceKm)}</p>}
             {explanation?.reason?.trim() && <p className="text-xs font-medium text-brand-700">{explanation.reason.trim()}</p>}
           </div>
         </div>

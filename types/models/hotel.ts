@@ -72,4 +72,13 @@ export type Hotel = {
 
   /** Milestone 40: number of guest reviews. */
   reviewCount?: number | null;
+
+  /** Milestone 58: hotel, hostel, apartment… (features/liveHotels/propertyKind). */
+  propertyType?: PropertyKind;
+
+  /** Milestone 58: straight-line distance from the city centre in km. */
+  distanceKm?: number | null;
 };
+
+/** Milestone 58: kind of stay, for the "Property type" filter. */
+export type PropertyKind = "hotel" | "hostel" | "apartment" | "guesthouse" | "other";

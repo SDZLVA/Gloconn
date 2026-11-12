@@ -40,6 +40,7 @@ export function TwelveGoOptions({
   date,
   returnDate = null,
   currency,
+  maxPrice = null,
   onLoaded,
 }: {
   from: string;
@@ -47,6 +48,8 @@ export function TwelveGoOptions({
   date: string;
   returnDate?: string | null;
   currency: string;
+  /** Milestone 58: the search budget = max ticket price per person (null = any). */
+  maxPrice?: number | null;
   /** Tells the page whether 12Go had results (Omio is shown first when not). */
   onLoaded?: (hasResults: boolean) => void;
 }) {
@@ -85,7 +88,12 @@ export function TwelveGoOptions({
   }
   const route = state.route;
   if (!route) return null;
-  const options = [...route.options].sort((a, b) => (a.priceMin ?? Infinity) - (b.priceMin ?? Infinity));
+  // Milestone 58: options within the budget first; the rest stay visible but marked.
+  const overBudget = (o: TwelveGoOption) => maxPrice !== null && o.priceMin !== null && o.priceMin > maxPrice;
+  const options = [...route.options].sort(
+    (a, b) => Number(overBudget(a)) - Number(overBudget(b)) || (a.priceMin ?? Infinity) - (b.priceMin ?? Infinity),
+  );
+  const withinBudget = options.filter((o) => !overBudget(o)).length;
   const chosen = picked ? options[picked.option] : null;
 
   return (
@@ -97,6 +105,13 @@ export function TwelveGoOptions({
         <p className="text-sm text-slate-600">
           Timetable and price ranges from 12Go. Pick a way to travel and a departure — the exact price for your date is confirmed on 12Go.
         </p>
+        {maxPrice !== null && (
+          <p className="mt-1 text-sm font-semibold text-slate-800">
+            {withinBudget === 0
+              ? `Nothing on this route starts under your ${money(maxPrice, currency)} budget per person — the closest options are below.`
+              : `${withinBudget} of ${options.length} ${options.length === 1 ? "way" : "ways"} to travel start within your ${money(maxPrice, currency)} budget per person.`}
+          </p>
+        )}
       </div>
       <ul className="space-y-3">
         {options.map((o, i) => {
@@ -122,6 +137,7 @@ export function TwelveGoOptions({
                 </span>
                 <span className="shrink-0 text-right">
                   <span className="block text-lg font-extrabold text-slate-900">{priceText(o, currency)}</span>
+                  {overBudget(o) && <span className="block text-xs font-semibold text-amber-700">Above your budget</span>}
                   <span className="block text-xs font-semibold text-brand-700">{isOpen ? "Hide times ▴" : "Choose a time ▾"}</span>
                 </span>
               </button>

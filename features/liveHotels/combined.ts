@@ -14,14 +14,16 @@ import type { LiveHotel, LiveHotelsSearch } from "@/features/liveHotels/types";
 
 export async function searchHotelsCombined(
   search: LiveHotelsSearch,
-  options: { trace?: AgodaTrace; fresh?: boolean } = {},
+  /** Milestone 57: "booking" or "agoda" asks one site only (the page loads them side by side). */
+  options: { trace?: AgodaTrace; fresh?: boolean; part?: "booking" | "agoda" } = {},
 ): Promise<{ hotels: LiveHotel[]; raw: unknown; agodaRaw: unknown; booking: LiveHotel[]; agoda: LiveHotel[] }> {
+  const skip = Promise.resolve({ hotels: [] as LiveHotel[], raw: null as unknown });
   const [bookingSettled, agodaResult] = await Promise.all([
-    searchBookingHotels(search).then(
+    (options.part === "agoda" ? skip : searchBookingHotels(search, { fresh: options.fresh })).then(
       (value) => ({ ok: true as const, value }),
       (error: unknown) => ({ ok: false as const, error }),
     ),
-    searchAgodaHotels(search, options),
+    options.part === "booking" ? skip : searchAgodaHotels(search, options),
   ]);
   // Booking.com failed and Agoda has nothing → report the Booking.com error as before.
   if (!bookingSettled.ok && agodaResult.hotels.length === 0) throw bookingSettled.error;

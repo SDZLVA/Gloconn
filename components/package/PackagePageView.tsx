@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AirlineLogo } from "@/components/results/AirlineLogo";
-import { PartnerLinks } from "@/components/results/PartnerLinks";
 import { SaveTripButton } from "@/components/trips/SaveTripButton";
 import { formatShortDate } from "@/lib/calendar/dates";
 import { loadPackageView, type PackageFlightOption, type PackageViewPayload } from "@/lib/packages/viewPayload";
@@ -14,6 +13,7 @@ import {
 } from "@/lib/results/packagesUi";
 import { parseSearchRequestFromParams } from "@/lib/search/request";
 import { cn } from "@/lib/utils";
+import { distanceLabel } from "@/features/liveHotels/propertyKind";
 
 const clock = (value?: string) => {
   const m = /(\d{1,2}):(\d{2})/.exec(value ?? "");
@@ -31,7 +31,7 @@ const scoreWord = (s: number) => (s >= 9 ? "Superb" : s >= 8.5 ? "Excellent" : s
 
 /**
  * Milestone 33 — package page from the redesign: back link, badge, title,
- * pictures, "Estimated total" with "Continue to options", "Why this
+ * pictures, "Total from" with "Continue to booking" (M58: opens /packages/{id}/book), "Why this
  * package?", quick facts, flight details, hotel details and the booking
  * options (flight partners; live hotels for the same stay).
  */
@@ -65,7 +65,6 @@ export function PackagePageView({ packageId }: { packageId: string }) {
       : [{ flight: pkg.flight, links: payload.flightLinks }];
   const picked = options.find((o) => o.flight.id === (pickedFlightId ?? pkg.flight.id)) ?? options[0];
   const flight = picked.flight;
-  const flightLinks = picked.links.length > 0 || flight.id !== pkg.flight.id ? picked.links : payload.flightLinks;
   const cheapestFlight = Math.min(...options.map((o) => o.flight.price));
   const query = resultsUrl.split("?")[1] ?? "";
   const search = parseSearchRequestFromParams(new URLSearchParams(query));
@@ -86,15 +85,13 @@ export function PackagePageView({ packageId }: { packageId: string }) {
   const destCode = flight.destinationAirport ?? payload.destinationIata ?? "";
   const stops = formatPackageStopsLabel(flight.stops);
   const duration = formatFlightDurationLabel(flight.durationMinutes);
-  const hotelsQuery = new URLSearchParams(query);
-  hotelsQuery.set("productTypes", "hotels");
   const why =
     explanation?.reason?.trim() ||
     [stops, hotel.stars > 0 ? `${hotel.stars}★ hotel` : null, score ? `${scoreWord(score).toLowerCase()} reviews` : null].filter(Boolean).join(" · ");
 
   const facts = [
     { icon: "✈", title: stops, text: duration },
-    { icon: "📍", title: hotel.location || to, text: "Hotel area" },
+    { icon: "📍", title: hotel.location || to, text: distanceLabel(hotel.distanceKm) ?? "Hotel area" },
     { icon: "★", title: hotel.stars > 0 ? `${hotel.stars}-star hotel` : "Unrated hotel", text: `${formatPackageNightsLabel(pkg.nights)}` },
     { icon: "€", title: "Total from", text: money(total, pkg.currency) },
   ];
@@ -279,49 +276,6 @@ export function PackagePageView({ packageId }: { packageId: string }) {
             </section>
           </div>
 
-          <section id="options" className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900">Your options</h2>
-            <div className="mt-4 grid gap-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <p className="text-sm font-bold text-slate-800">1. Book the flight</p>
-                {flightLinks.length > 0 ? (
-                  <PartnerLinks links={flightLinks} context="package" />
-                ) : (
-                  <p className="text-sm text-slate-600">Search this route on the Flights tab for live prices.</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-bold text-slate-800">2. {hotel.detailsUrl ? "Book the hotel" : "Choose your stay"}</p>
-                {hotel.detailsUrl ? (
-                  <>
-                    <p className="text-sm text-slate-600">
-                      {hotel.name} · {money(pkg.breakdown?.hotelTotal ?? hotel.price, pkg.currency)} for the stay
-                    </p>
-                    <Link
-                      href={hotel.detailsUrl}
-                      {...(/^https?:\/\//.test(hotel.detailsUrl) ? { target: "_blank", rel: "noopener noreferrer nofollow" } : {})}
-                      className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800"
-                    >
-                      See this hotel &amp; book
-                    </Link>
-                    <Link href={`/search/results?${hotelsQuery.toString()}`} className="block text-sm font-semibold text-brand-700 hover:text-brand-900">
-                      Or see other hotels in {to}
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-sm text-slate-600">See live hotel prices in {to} for the same dates.</p>
-                    <Link
-                      href={`/search/results?${hotelsQuery.toString()}`}
-                      className="inline-flex min-h-11 items-center justify-center rounded-xl border border-brand-700 px-4 text-sm font-bold text-brand-700 hover:bg-brand-50"
-                    >
-                      See live hotels
-                    </Link>
-                  </>
-                )}
-              </div>
-            </div>
-          </section>
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
@@ -349,12 +303,13 @@ export function PackagePageView({ packageId }: { packageId: string }) {
                 : "Flight prices are recent fares found by other travellers."}{" "}
               The final price is confirmed on the booking site.
             </p>
-            <a
-              href="#options"
+            <Link
+              href={`/packages/${encodeURIComponent(pkg.id)}/book?flight=${encodeURIComponent(flight.id)}`}
               className="mt-4 flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white shadow-md shadow-brand-700/20 hover:bg-brand-800"
             >
-              Continue to options
-            </a>
+              Continue to booking
+            </Link>
+            <p className="mt-2 text-center text-[11px] text-slate-500">You&apos;ll book directly with our partner sites.</p>
           </div>
           {why && (
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5">

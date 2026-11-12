@@ -87,7 +87,7 @@ export function ModeSearchBar({
       className={cn("w-full", className)}
     >
       {mode === "transport" && (
-        <p className="mb-3 text-xs text-slate-500">Compare trains, buses and flights for your route. Booking is on Omio; Glooconn may earn a commission.</p>
+        <p className="mb-3 text-xs text-slate-500">Compare trains, buses, ferries and flights for your route. You book on 12Go or Omio.</p>
       )}
       {mode === "flights" && (
         <div className="mb-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-slate-700">
@@ -204,16 +204,15 @@ export function ModeSearchBar({
         </div>
         )}
 
-        {mode !== "transport" && (
+        {/* Milestone 58: the budget works on every tab (Mixed Transport: max price per person). */}
         <BarBudgetField
           value={form.budget}
           currency={form.budgetCurrency}
           onChange={(value) => actions.updateField("budget", value)}
           onCurrencyChange={(value) => actions.updateField("budgetCurrency", value)}
           error={errors.budget}
-          label={mode === "hotels" ? "Budget for the stay" : mode === "flights" ? "Max price" : "Total budget"}
+          label={mode === "hotels" ? "Budget for the stay" : mode === "flights" ? "Max price" : mode === "transport" ? "Max price per person" : "Total budget"}
         />
-        )}
 
         <button
           type="submit"
