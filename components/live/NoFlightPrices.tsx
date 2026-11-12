@@ -12,18 +12,29 @@ type Props = {
   adults: number;
   kids: number;
   infants: number;
+  /** Milestone 59: a live-price limit was reached — say so instead of "no prices found". */
+  limited?: boolean;
 };
 
 /**
  * Milestone 49 — shown instead of the White Label box when no source has a
  * price for these dates: a plain message and the same search on Aviasales.
  */
-export function NoFlightPrices({ kids, ...rest }: Props) {
+export function NoFlightPrices({ kids, limited = false, ...rest }: Props) {
   const url = buildAviasalesSearchUrl({ ...rest, children: kids });
   return (
     <div className="space-y-3 rounded-2xl border border-slate-200 bg-white px-5 py-6 text-sm text-slate-700">
-      <p className="font-semibold text-slate-900">No flight prices found for these dates yet.</p>
-      <p>Try a day earlier or later, or see today&apos;s prices for these exact dates on Aviasales.</p>
+      {limited ? (
+        <>
+          <p className="font-semibold text-slate-900">Live flight prices are busy right now.</p>
+          <p>We couldn&apos;t check live prices for this search. Try again in a few hours, or see today&apos;s prices for these exact dates on Aviasales.</p>
+        </>
+      ) : (
+        <>
+          <p className="font-semibold text-slate-900">No flight prices found for these dates yet.</p>
+          <p>Try a day earlier or later, or see today&apos;s prices for these exact dates on Aviasales.</p>
+        </>
+      )}
       {url && (
         <a
           href={`${AVIASALES_OUT_PATH}?u=${encodeURIComponent(url)}`}

@@ -31,6 +31,12 @@ export type FallbackResult = {
   trace?: string[];
   /** Milestone 57 (quick mode): a full search could still add live prices. */
   more?: boolean;
+  /**
+   * Milestone 59: no live prices because a limit was reached (this visitor's
+   * daily lookups, or the providers' daily/monthly allowance) — not because
+   * no flights exist. The page says so instead of "no flights found".
+   */
+  limited?: boolean;
 };
 
 /** Hashed visitor id from request headers (never store raw IPs). */
@@ -79,10 +85,11 @@ export async function searchFlightsWithFallback(
   // Preview (only used for testing) skips the per-visitor limit; provider caps still apply.
   const preview = process.env.VERCEL_ENV === "preview";
   if (!options.debug && !preview && !(await claimVisitor(options.visitor, VISITOR_LIMIT))) {
-    return withSaved({ flights: [], source: "none", why: options.visitor ? "visitor limit or store error" : "no visitor id" });
+    return withSaved({ flights: [], source: "none", why: options.visitor ? "visitor limit or store error" : "no visitor id", limited: true });
   }
 
   const trace: string[] = [];
+  let capped = false;
   for (const [source, run] of [
     // Google answers in ~3 s; Skyscanner takes ~25 s, so it goes second.
     ["google", searchGoogle],
@@ -91,15 +98,17 @@ export async function searchFlightsWithFallback(
     if (options.debug && options.only && options.only !== source) continue;
     const found = await run(search, destinationId, trace).catch((e: unknown) => {
       trace.push(`${source} failed: ${(e as Error)?.message ?? e}`);
-      return { flights: [] as Flight[], raw: null as unknown };
+      return { flights: [] as Flight[], raw: null as unknown, capped: false };
     });
+    if (found.capped) capped = true;
     if (found.flights.length > 0) {
       const result: FallbackResult = { flights: found.flights.slice(0, 30), source };
       await writeCache(key, result, LIVE_TTL_MS);
       return withSaved(options.debug ? { ...result, raw: found.raw, trace } : result);
     }
   }
-  const none: FallbackResult = { flights: [], source: "none" };
-  await writeCache(key, none, EMPTY_TTL_MS);
-  return withSaved(options.debug ? { ...none, why: "providers found nothing", trace } : none);
+  // A provider over its allowance didn't really search: say so, and don't keep the empty answer.
+  const none: FallbackResult = { flights: [], source: "none", ...(capped ? { limited: true } : {}) };
+  if (!capped) await writeCache(key, none, EMPTY_TTL_MS);
+  return withSaved(options.debug ? { ...none, why: capped ? "provider allowance used up" : "providers found nothing", trace } : none);
 }

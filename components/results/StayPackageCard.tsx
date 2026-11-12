@@ -91,7 +91,9 @@ export function StayPackageCard({ stay, flights, destinationName }: StayPackageC
                 ? `+ flights within your ${formatMoney(stay.budget, stay.currency)} budget`
                 : WHITE_LABEL_ON
                   ? "+ live flights"
-                  : "+ flights (no price found yet)"}
+                  : stay.flightsLimited
+                    ? "+ flights (live prices busy, try later)"
+                    : "+ flights (no price found yet)"}
           </p>
         </div>
         <a

@@ -64,13 +64,10 @@ async function getJson(url: string, headers: Record<string, string>, timeoutMs =
   }
 }
 
+/** The caller has already taken one unit of quota (claimCall). */
 async function sky(path: string, params: Record<string, string>, trace?: Trace): Promise<unknown | null> {
   const key = process.env.RAPIDAPI_KEY?.trim();
   if (!key) return null;
-  if (!(await claimCall("skyscanner", CAPS.skyscanner.daily, CAPS.skyscanner.monthly))) {
-    trace?.push(`sky ${path}: over cap`);
-    return null;
-  }
   try {
     const raw = await getJson(
       `https://${SKY_HOST}${path}?${new URLSearchParams(params).toString()}`,
@@ -85,8 +82,15 @@ async function sky(path: string, params: Record<string, string>, trace?: Trace):
   }
 }
 
-export async function searchSkyscanner(search: DataFlightsSearch, destinationId = "", trace?: Trace): Promise<{ flights: Flight[]; raw: unknown }> {
+/** capped (Milestone 59): the daily/monthly allowance was used up, so nothing was asked. */
+export type ProviderAnswer = { flights: Flight[]; raw: unknown; capped?: boolean };
+
+export async function searchSkyscanner(search: DataFlightsSearch, destinationId = "", trace?: Trace): Promise<ProviderAnswer> {
   if (!process.env.RAPIDAPI_KEY?.trim()) return { flights: [], raw: null };
+  if (!(await claimCall("skyscanner", CAPS.skyscanner.daily, CAPS.skyscanner.monthly))) {
+    trace?.push("skyscanner: over cap");
+    return { flights: [], raw: null, capped: true };
+  }
   // City codes work directly (ROM → "Rome (Any)"): one call per search.
   const params: Record<string, string> = {
     origin: search.origin,
@@ -106,10 +110,13 @@ export async function searchSkyscanner(search: DataFlightsSearch, destinationId 
   return { flights: mapSkyItineraries(raw, search, { groupPrice: GROUP_PRICE.skyscanner, destinationId }), raw };
 }
 
-export async function searchGoogle(search: DataFlightsSearch, destinationId = "", trace?: Trace): Promise<{ flights: Flight[]; raw: unknown }> {
+export async function searchGoogle(search: DataFlightsSearch, destinationId = "", trace?: Trace): Promise<ProviderAnswer> {
   const key = process.env.SERPAPI_API_KEY?.trim();
   if (!key) return { flights: [], raw: null };
-  if (!(await claimCall("google", CAPS.google.daily, CAPS.google.monthly))) return { flights: [], raw: null };
+  if (!(await claimCall("google", CAPS.google.daily, CAPS.google.monthly))) {
+    trace?.push("google: over cap");
+    return { flights: [], raw: null, capped: true };
+  }
   const params = new URLSearchParams({
     engine: "google_flights",
     departure_id: await googleIds(search.origin),

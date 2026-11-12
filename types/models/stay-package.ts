@@ -9,6 +9,8 @@ import type { Hotel } from "@/types/models/hotel";
  */
 export type StayPackage = {
   id: string;
+  /** Milestone 59: no flight price because a live-price limit was reached (not because none exist). */
+  flightsLimited?: boolean;
   hotel: Hotel;
   /** Hotel price for all rooms and nights. */
   hotelTotal: number;
