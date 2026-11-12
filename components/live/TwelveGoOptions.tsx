@@ -108,8 +108,8 @@ export function TwelveGoOptions({
         {maxPrice !== null && (
           <p className="mt-1 text-sm font-semibold text-slate-800">
             {withinBudget === 0
-              ? `Nothing on this route starts under your ${money(maxPrice, currency)} budget per person — the closest options are below.`
-              : `${withinBudget} of ${options.length} ${options.length === 1 ? "way" : "ways"} to travel start within your ${money(maxPrice, currency)} budget per person.`}
+              ? `Nothing on this route starts under your ${money(Math.round(maxPrice), currency).replace(/\.00$/, "")} budget per person — the closest options are below.`
+              : `${withinBudget} of ${options.length} ${options.length === 1 ? "way" : "ways"} to travel start within your ${money(Math.round(maxPrice), currency).replace(/\.00$/, "")} budget per person.`}
           </p>
         )}
       </div>
