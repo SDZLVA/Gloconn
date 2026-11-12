@@ -4,6 +4,7 @@ import { ratingLabel } from "@/features/liveHotels/filters";
 import type { LiveHotel } from "@/features/liveHotels/types";
 import { cn } from "@/lib/utils";
 import { hotelSiteName } from "@/features/liveHotels/agoda/map";
+import { distanceLabel } from "@/features/liveHotels/propertyKind";
 
 type LiveHotelCardProps = {
   hotel: LiveHotel;
@@ -53,6 +54,7 @@ export function LiveHotelCard({ hotel, nights, guestsLabel, bookingUrl, onShowOn
             )}
           </h3>
           {hotel.address && <p className="text-sm text-slate-600">{hotel.address}</p>}
+          {distanceLabel(hotel.distanceKm) && <p className="text-sm font-medium text-slate-700">📍 {distanceLabel(hotel.distanceKm)}</p>}
           {onShowOnMap && hotel.latitude !== null && (
             <button type="button" onClick={onShowOnMap} className="text-sm font-semibold text-brand-700 underline underline-offset-2 hover:text-brand-900">
               Show on map

@@ -66,6 +66,8 @@ function toHotel(hotel: LiveHotel, request: SearchRequest, nights: number, curre
     providerPropertyRef: hotel.id,
     photo: hotel.photo,
     detailsUrl: bookingLink(hotel, request, currency),
+    ...(hotel.propertyType ? { propertyType: hotel.propertyType } : {}),
+    ...(typeof hotel.distanceKm === "number" ? { distanceKm: hotel.distanceKm } : {}),
   };
 }
 

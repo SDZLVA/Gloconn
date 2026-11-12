@@ -3,6 +3,8 @@
  * another hotel source can replace LiteAPI behind the same shape.
  */
 
+import type { PropertyKind } from "@/types/models/hotel";
+
 export type LiveHotel = {
   id: string;
   name: string;
@@ -24,6 +26,10 @@ export type LiveHotel = {
   offerId: string | null;
   /** Milestone 44: the hotel on another site (Booking.com engine); opened in a new tab. */
   externalUrl?: string | null;
+  /** Milestone 58: hotel, hostel, apartment… */
+  propertyType?: PropertyKind;
+  /** Milestone 58: distance from the city centre (km). */
+  distanceKm?: number | null;
 };
 
 export type LiveHotelsSearch = {
@@ -48,7 +54,9 @@ export type LiveHotelsFilters = {
   /** Minimum guest score (0–10); 0 = any. */
   minRating: number;
   refundableOnly: boolean;
-  sort: "recommended" | "price" | "rating" | "stars";
+  /** Milestone 58: kinds of stay to keep; empty = any. */
+  types: PropertyKind[];
+  sort: "recommended" | "price" | "rating" | "stars" | "distance";
 };
 
 export const DEFAULT_HOTEL_FILTERS: LiveHotelsFilters = {
@@ -56,5 +64,6 @@ export const DEFAULT_HOTEL_FILTERS: LiveHotelsFilters = {
   stars: [],
   minRating: 0,
   refundableOnly: false,
+  types: [],
   sort: "recommended",
 };

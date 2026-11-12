@@ -42,6 +42,8 @@ const MODES: { mode: OmioTravelMode; title: string; plural: string; icon: string
  */
 export function TransportResultsPage({ search, initialForm, originCode, destinationCode }: Props) {
   const currency = search.budget?.currency ?? "EUR";
+  // Milestone 58: the bar's budget = max ticket price per person.
+  const maxPrice = search.budget?.amount && search.budget.amount > 0 ? search.budget.amount : null;
   const from = search.origin ?? "";
   const to = search.destination ?? "";
   const departureDate = search.departureDate ?? "";
@@ -113,7 +115,7 @@ export function TransportResultsPage({ search, initialForm, originCode, destinat
         </p>
       ) : (
         <>
-          <TwelveGoOptions from={from} to={to} date={departureDate} returnDate={returnDate} currency={currency} onLoaded={setHasTwelveGo} />
+          <TwelveGoOptions from={from} to={to} date={departureDate} returnDate={returnDate} currency={currency} maxPrice={maxPrice} onLoaded={setHasTwelveGo} />
           <div className={hasTwelveGo ? "border-t border-slate-200 pt-6" : ""}>
             <h2 className="text-lg font-bold text-slate-900">{hasTwelveGo ? "Prefer Omio?" : `Ways to travel from ${from.split(",")[0]} to ${to.split(",")[0]}`}</h2>
             <p className="text-sm text-slate-600">
@@ -144,6 +146,9 @@ export function TransportResultsPage({ search, initialForm, originCode, destinat
                           From <span className="text-xl font-extrabold text-slate-900">{money(price.price * travelers, price.currency)}</span>
                           {travelers > 1 ? ` for ${travelers}` : ""}
                           {price.durationMinutes ? ` · ${hours(price.durationMinutes)}` : ""} · {price.airline}
+                          {maxPrice !== null && price.price > maxPrice && (
+                            <span className="mt-1 block text-xs font-semibold text-amber-700">Above your {money(maxPrice, currency)} budget per person</span>
+                          )}
                         </>
                       ) : (
                         "No flight price found for these dates."

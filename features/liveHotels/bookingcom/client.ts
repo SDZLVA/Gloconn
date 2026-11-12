@@ -69,7 +69,7 @@ async function destination(cityLabel: string): Promise<{ destId: string; destTyp
  */
 const SEARCH_TTL_MS = 15 * 60_000;
 const searchKey = (s: LiveHotelsSearch) =>
-  `booking:v1:${s.destination.toLowerCase()}:${s.checkin}:${s.checkout}:${s.adults}-${s.children}-${s.rooms}:${s.currency}`;
+  `booking:v2:${s.destination.toLowerCase()}:${s.checkin}:${s.checkout}:${s.adults}-${s.children}-${s.rooms}:${s.currency}`;
 
 export async function searchBookingHotels(
   search: Omit<LiveHotelsSearch, "destination"> & { destination: string },

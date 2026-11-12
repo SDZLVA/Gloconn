@@ -1,3 +1,4 @@
+import type { PropertyKind } from "@/types/models/hotel";
 import type {
   ResultsFilterFacets,
   ResultsFilters,
@@ -18,6 +19,7 @@ export function collectFilterFacets(
   const cabins: string[] = [];
   const operators: string[] = [];
   const amenities: string[] = [];
+  const propertyTypes: Partial<Record<PropertyKind, number>> = {};
   let maxStopsInResults = 0;
 
   for (const result of results) {
@@ -34,6 +36,11 @@ export function collectFilterFacets(
     if (result.type === "hotel" || result.type === "bus") {
       amenities.push(...result.amenities);
     }
+
+    if (result.type === "hotel") {
+      const kind = result.propertyType ?? "other";
+      propertyTypes[kind] = (propertyTypes[kind] ?? 0) + 1;
+    }
   }
 
   return {
@@ -42,6 +49,7 @@ export function collectFilterFacets(
     operators: uniqueSorted(operators),
     amenities: uniqueSorted(amenities),
     maxStopsInResults,
+    propertyTypes,
   };
 }
 
@@ -120,6 +128,15 @@ export function filterResults(
       return false;
     }
 
+    // Hotel-only: kind of stay (Milestone 58)
+    if (
+      result.type === "hotel" &&
+      filters.propertyTypes?.length &&
+      !filters.propertyTypes.includes(result.propertyType ?? "other")
+    ) {
+      return false;
+    }
+
     // Hotel + bus: amenities (must include all selected)
     if (
       (result.type === "hotel" || result.type === "bus") &&
@@ -164,6 +181,7 @@ export function countActiveFilters(
   if (filters.operators.length > 0) count += 1;
   if (filters.minStars > defaults.minStars) count += 1;
   if (filters.amenities.length > 0) count += 1;
+  if (filters.propertyTypes?.length) count += 1;
 
   return count;
 }

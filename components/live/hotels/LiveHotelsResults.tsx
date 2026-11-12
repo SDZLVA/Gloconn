@@ -8,6 +8,7 @@ import { HotelsTileMap } from "@/components/live/hotels/HotelsTileMap";
 import { LiveHotelCard } from "@/components/live/hotels/LiveHotelCard";
 import { filterHotels } from "@/features/liveHotels/filters";
 import { mergeHotels } from "@/features/liveHotels/agoda/map";
+import type { PropertyKind } from "@/features/liveHotels/propertyKind";
 import { LoadingMoreNote } from "@/components/live/LoadingMoreNote";
 import { DEFAULT_HOTEL_FILTERS, type LiveHotelsFilters, type LiveHotelsResponse, type LiveHotelsSearch } from "@/features/liveHotels/types";
 
@@ -25,6 +26,7 @@ const HOTEL_SORT_OPTIONS = [
   { value: "price", label: "Price (lowest first)" },
   { value: "rating", label: "Review score" },
   { value: "stars", label: "Stars" },
+  { value: "distance", label: "Distance from centre" },
 ] as const;
 
 /** more (Milestone 57): the first site's hotels are shown, the other site is still loading. */
@@ -147,6 +149,14 @@ export function LiveHotelsResults({ search, stayBudget, cityName, endpoint = "/a
   const data = state.status === "done" && state.data.ok ? state.data : null;
   const loadingMore = state.status === "done" && Boolean(state.more);
   const shown = useMemo(() => (data ? filterHotels(data.hotels, filters, data.nights) : []), [data, filters]);
+  const typeCounts = useMemo(() => {
+    const counts: Partial<Record<PropertyKind, number>> = {};
+    for (const hotel of data?.hotels ?? []) {
+      const kind = hotel.propertyType ?? "other";
+      counts[kind] = (counts[kind] ?? 0) + 1;
+    }
+    return counts;
+  }, [data]);
   const starCounts = useMemo(() => {
     const counts: Record<number, number> = {};
     for (const hotel of data?.hotels ?? []) counts[hotel.stars] = (counts[hotel.stars] ?? 0) + 1;
@@ -216,7 +226,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName, endpoint = "/a
             </button>
           </div>
         </div>
-        <HotelsFilterCard filters={filters} onChange={(next) => { setFilters(next); setFiltersSheetOpen(false); refresh(listTop.current); }} currency={search.currency} starCounts={starCounts} />
+        <HotelsFilterCard filters={filters} onChange={(next) => { setFilters(next); setFiltersSheetOpen(false); refresh(listTop.current); }} currency={search.currency} starCounts={starCounts} typeCounts={typeCounts} />
       </FiltersAside>
 
       <section ref={listTop} className="min-w-0 scroll-mt-24 space-y-4" aria-labelledby="hotels-count">
@@ -235,6 +245,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName, endpoint = "/a
               <option value="price">Price (lowest first)</option>
               <option value="rating">Review score</option>
               <option value="stars">Stars</option>
+              <option value="distance">Distance from centre</option>
             </select>
           </label>
         </div>

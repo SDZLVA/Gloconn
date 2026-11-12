@@ -4,6 +4,7 @@
  */
 
 import type { Bus, Flight, Hotel, Train } from "@/types/models";
+import type { PropertyKind } from "@/types/models/hotel";
 
 export type ResultType = "hotel" | "flight" | "bus" | "train";
 
@@ -64,6 +65,9 @@ export type ResultsFilters = {
    * Applies to hotels and buses (shared `amenities` field). Empty = any.
    */
   amenities: string[];
+
+  /** Milestone 58: kinds of stay to keep (hotel, hostel…). Empty/missing = any. Hotels only. */
+  propertyTypes?: PropertyKind[];
 };
 
 export const DEFAULT_RESULTS_FILTERS: ResultsFilters = {
@@ -102,6 +106,8 @@ export type ResultsFilterFacets = {
   operators: string[];
   amenities: string[];
   maxStopsInResults: number;
+  /** Milestone 58: kinds of stay in the results, with counts. */
+  propertyTypes?: Partial<Record<PropertyKind, number>>;
 };
 
 /** Hotel result with UI discriminator — extends shared Hotel model. */
