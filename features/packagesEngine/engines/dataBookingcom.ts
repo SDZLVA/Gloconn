@@ -87,6 +87,7 @@ export const dataBookingcomEngine: PackagesEngine = {
     // Milestone 57: quick = saved fares + Booking.com only; partial tells the page to ask again.
     const quick = Boolean(context?.quick);
     let flightsMore = false;
+    let flightsLimited = false;
     const flightsPromise: Promise<Flight[]> =
       dataFlightsConfigured() && origin && destination
         ? retryOnce(() => searchFlightsWithFallback(
@@ -103,6 +104,7 @@ export const dataBookingcomEngine: PackagesEngine = {
             { visitor: context?.visitor ?? "", destinationId: request.destinationId ?? "", quick },
           )).then((r) => {
             flightsMore = Boolean(r.more);
+            flightsLimited = Boolean(r.limited);
             return r.flights;
           })
         : Promise.reject(new Error("flight data not configured"));
@@ -147,7 +149,9 @@ export const dataBookingcomEngine: PackagesEngine = {
       return { flights, hotels, packages, warnings, partial };
     }
     // No cached flights for these dates: hotel-led packages with live flights on their page.
-    const stayPackages = buildStayPackages(hotels, { budget, flightEstimate: null, travelers, rooms, nights });
+    const stayPackages = buildStayPackages(hotels, { budget, flightEstimate: null, travelers, rooms, nights }).map((stay) =>
+      flightsLimited ? { ...stay, flightsLimited: true } : stay,
+    );
     return { flights, hotels, packages: [], stayPackages, warnings, partial };
   },
 };

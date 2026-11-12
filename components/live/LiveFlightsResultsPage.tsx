@@ -77,7 +77,7 @@ export function LiveFlightsResultsPage({
   // With the data engine, the live box only appears when no recent prices exist.
   const flightsEngine = process.env.NEXT_PUBLIC_FLIGHTS_ENGINE || "travelpayouts-rapidapi";
   // Milestone 57: "more" = the first (free, fast) prices are shown and live prices are still loading.
-  const [data, setData] = useState<{ status: "idle" | "loading" | "more" | "done"; flights: Flight[] }>({ status: "idle", flights: [] });
+  const [data, setData] = useState<{ status: "idle" | "loading" | "more" | "done"; flights: Flight[]; limited?: boolean }>({ status: "idle", flights: [] });
   useEffect(() => {
     if (flightsEngine === "whitelabel" || !liveSearch) return;
     let cancelled = false;
@@ -92,13 +92,13 @@ export function LiveFlightsResultsPage({
       infants: String(liveSearch.infants),
       currency: liveSearch.currency,
     });
-    type Answer = { ok?: boolean; flights?: Flight[]; more?: boolean };
+    type Answer = { ok?: boolean; flights?: Flight[]; more?: boolean; limited?: boolean };
     const load = (phase: "quick" | "full") =>
       fetch(`/api/flights/data?${params.toString()}${phase === "quick" ? "&phase=quick" : ""}`)
         .then((r) => r.json() as Promise<Answer>)
         .catch((): Answer => ({ ok: false, flights: [] }));
-    const show = (flights: Flight[], status: "more" | "done") => {
-      setData({ status, flights });
+    const show = (flights: Flight[], status: "more" | "done", limited = false) => {
+      setData({ status, flights, limited });
       if (flights.length > 0) setFacets({ airlines: [...new Set(flights.map((f) => f.airline))], bridged: true, searching: false });
     };
     // Milestone 57: saved fares first (≈1 s), then the live prices; the list re-sorts itself.
@@ -113,7 +113,7 @@ export function LiveFlightsResultsPage({
       void load("full").then((full) => {
         if (cancelled) return;
         const flights = full.ok && Array.isArray(full.flights) && full.flights.length > 0 ? full.flights : first;
-        show(flights, "done");
+        show(flights, "done", Boolean(full.ok && full.limited));
       });
     });
     return () => {
@@ -188,6 +188,7 @@ export function LiveFlightsResultsPage({
                   adults={liveSearch.adults}
                   kids={liveSearch.children}
                   infants={liveSearch.infants}
+                  limited={Boolean(data.limited)}
                 />
               ) : (
                 <>

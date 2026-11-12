@@ -112,7 +112,9 @@ export function StayPackageView({ stayId }: { stayId: string }) {
             <div>
               <p className="text-xs font-bold uppercase tracking-wide text-slate-500">2 · Your flights</p>
               <p className="text-sm text-slate-600">
-                {!WHITE_LABEL_ON
+                {!WHITE_LABEL_ON && stay.flightsLimited
+                  ? `Live flight prices are busy right now. Compare today's prices for ${people} on Aviasales, or try again in a few hours.`
+                  : !WHITE_LABEL_ON
                   ? `No flight price was found for these dates yet. Compare today's prices for ${people} on Aviasales.`
                   : stay.flightBudget !== null
                   ? `Live prices, showing only flights up to ${formatMoney(stay.flightBudget, stay.currency)} for ${people} — what's left of your budget after the hotel.`
@@ -128,6 +130,7 @@ export function StayPackageView({ stayId }: { stayId: string }) {
                 adults={flights.adults}
                 kids={flights.children}
                 infants={flights.infants}
+                limited={Boolean(stay.flightsLimited)}
               />
             ) : flights ? (
               <LiveFlightsSection search={flights} filters={filters} title="Live flights" />

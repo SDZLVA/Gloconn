@@ -12,7 +12,7 @@ import { DataFlightsError, dataFlightsConfigured } from "@/features/flightsData/
 import { searchFlightsWithFallback, visitorId, type FlightsSource } from "@/features/flightsFallback";
 import type { Flight } from "@/types/models";
 
-type Body = { ok: true; flights: Flight[]; source: FlightsSource; more?: boolean } | { ok: false; code: string; message: string };
+type Body = { ok: true; flights: Flight[]; source: FlightsSource; more?: boolean; limited?: boolean } | { ok: false; code: string; message: string };
 
 function json(body: Body | Record<string, unknown>, status = 200, cacheable = false): Response {
   return new Response(JSON.stringify(body), {
@@ -66,7 +66,7 @@ export async function GET(request: Request) {
     if (debug) return json({ source: result.source, why: result.why ?? null, trace: result.trace ?? [], raw: result.raw ?? null, mapped: result.flights.slice(0, 3) });
     // An empty answer can be one visitor's limit — never let the CDN share it.
     if (quick) return json({ ok: true, flights: result.flights, source: result.source, more: Boolean(result.more) }, 200, result.flights.length > 0 && !result.more);
-    return json({ ok: true, flights: result.flights, source: result.source }, 200, result.flights.length > 0);
+    return json({ ok: true, flights: result.flights, source: result.source, ...(result.limited ? { limited: true } : {}) }, 200, result.flights.length > 0);
   } catch (error) {
     const status = error instanceof DataFlightsError ? error.status : 0;
     console.error("[flights-data] search failed", status || (error as Error)?.name);
