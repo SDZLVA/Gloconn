@@ -137,6 +137,16 @@ export function PackageBookingView({ packageId, flightId }: { packageId: string;
                 <p className="text-sm text-slate-600">This fare can be booked from the flights list.</p>
               )}
             </div>
+            {flight.sourceUrl && (flight.source === "google" || flight.source === "skyscanner") && (
+              <a
+                href={flight.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="mt-3 inline-flex min-h-11 items-center justify-center rounded-xl border border-brand-700 px-4 text-sm font-bold text-brand-700 hover:bg-brand-50"
+              >
+                {flight.source === "google" ? "See this flight on Google Flights ↗" : "Book this flight on Skyscanner ↗"}
+              </a>
+            )}
             <Link href={`/search/results?${flightsQuery.toString()}`} className="mt-3 block text-sm font-semibold text-brand-700 hover:text-brand-900">
               Compare all flights for these dates →
             </Link>
