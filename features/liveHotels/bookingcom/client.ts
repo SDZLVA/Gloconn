@@ -12,6 +12,7 @@ import { mapBookingProperties, pickDestination } from "@/features/liveHotels/boo
 import type { LiveHotel, LiveHotelsSearch } from "@/features/liveHotels/types";
 import { convertAmount } from "@/features/fx/ecb";
 import { eurRates } from "@/features/fx/rates";
+import { readCache, writeCache } from "@/features/flightsFallback/store";
 
 const HOST = "apidojo-booking-v1.p.rapidapi.com";
 const TIMEOUT_MS = 10_000;
@@ -62,7 +63,29 @@ async function destination(cityLabel: string): Promise<{ destId: string; destTyp
   return dest;
 }
 
+/**
+ * Milestone 57: a search is kept 15 minutes in Supabase (api_cache), so the
+ * quick + full package searches and the Hotels tab share one Booking.com call.
+ */
+const SEARCH_TTL_MS = 15 * 60_000;
+const searchKey = (s: LiveHotelsSearch) =>
+  `booking:v1:${s.destination.toLowerCase()}:${s.checkin}:${s.checkout}:${s.adults}-${s.children}-${s.rooms}:${s.currency}`;
+
 export async function searchBookingHotels(
+  search: Omit<LiveHotelsSearch, "destination"> & { destination: string },
+  options: { fresh?: boolean } = {},
+): Promise<{ hotels: LiveHotel[]; raw: unknown }> {
+  const key = searchKey(search);
+  if (!options.fresh) {
+    const hit = await readCache<{ hotels: LiveHotel[] }>(key);
+    if (hit && Array.isArray(hit.hotels) && hit.hotels.length > 0) return { hotels: hit.hotels, raw: null };
+  }
+  const found = await searchBookingHotelsLive(search);
+  if (found.hotels.length > 0) await writeCache(key, { hotels: found.hotels }, SEARCH_TTL_MS);
+  return found;
+}
+
+async function searchBookingHotelsLive(
   search: Omit<LiveHotelsSearch, "destination"> & { destination: string },
 ): Promise<{ hotels: LiveHotel[]; raw: unknown }> {
   const dest = await destination(search.destination);

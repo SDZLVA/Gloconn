@@ -113,6 +113,7 @@ type BuildSearchResponseInput = {
   warnings?: SearchResponseWarning[];
   searchedAt?: string;
   route?: SearchResponse["route"];
+  partial?: boolean;
 };
 
 /** Assembles the canonical SearchResponse from domain arrays + optional warnings. */
@@ -147,6 +148,7 @@ export function buildSearchResponse(
     searchedAt: input.searchedAt ?? new Date().toISOString(),
     warnings,
     ...(input.route ? { route: input.route } : {}),
+    ...(input.partial ? { partial: true } : {}),
   };
 }
 

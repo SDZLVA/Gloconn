@@ -7,6 +7,8 @@ import { HotelsFilterCard } from "@/components/live/hotels/HotelsFilterCard";
 import { HotelsTileMap } from "@/components/live/hotels/HotelsTileMap";
 import { LiveHotelCard } from "@/components/live/hotels/LiveHotelCard";
 import { filterHotels } from "@/features/liveHotels/filters";
+import { mergeHotels } from "@/features/liveHotels/agoda/map";
+import { LoadingMoreNote } from "@/components/live/LoadingMoreNote";
 import { DEFAULT_HOTEL_FILTERS, type LiveHotelsFilters, type LiveHotelsResponse, type LiveHotelsSearch } from "@/features/liveHotels/types";
 
 type LiveHotelsResultsProps = {
@@ -25,7 +27,8 @@ const HOTEL_SORT_OPTIONS = [
   { value: "stars", label: "Stars" },
 ] as const;
 
-type State = { status: "loading" } | { status: "done"; data: LiveHotelsResponse };
+/** more (Milestone 57): the first site's hotels are shown, the other site is still loading. */
+type State = { status: "loading" } | { status: "done"; data: LiveHotelsResponse; more?: boolean };
 
 /**
  * Milestone 33: "See availability" opens Glooconn's own hotel page
@@ -96,22 +99,53 @@ export function LiveHotelsResults({ search, stayBudget, cityName, endpoint = "/a
   useEffect(() => {
     let cancelled = false;
     setState({ status: "loading" });
-    fetch(`${endpoint}?${query}`)
-      .then((response) => response.json() as Promise<LiveHotelsResponse>)
-      .catch((): LiveHotelsResponse => ({ ok: false, code: "PROVIDER_ERROR", message: "Live hotel prices are unavailable right now." }))
-      .then((data) => {
-        if (cancelled) return;
-        setState({ status: "done", data });
-        if (data.ok && stayBudget && stayBudget > 0) {
-          setFilters((current) => ({ ...current, maxPerNight: Math.max(1, Math.floor(stayBudget / data.nights)) }));
+    const get = (part?: "booking" | "agoda") =>
+      fetch(`${endpoint}?${query}${part ? `&part=${part}` : ""}`)
+        .then((response) => response.json() as Promise<LiveHotelsResponse>)
+        .catch((): LiveHotelsResponse => ({ ok: false, code: "PROVIDER_ERROR", message: "Live hotel prices are unavailable right now." }));
+    let budgetSet = false;
+    const apply = (data: LiveHotelsResponse, more: boolean) => {
+      if (cancelled) return;
+      setState({ status: "done", data, more });
+      if (!budgetSet && data.ok && stayBudget && stayBudget > 0) {
+        budgetSet = true;
+        setFilters((current) => ({ ...current, maxPerNight: Math.max(1, Math.floor(stayBudget / data.nights)) }));
+      }
+    };
+    if (endpoint !== "/api/hotels/bookingcom") {
+      void get().then((data) => apply(data, false));
+    } else {
+      // Milestone 57: Booking.com (~2 s) and Agoda (~12 s) load side by side.
+      // The first one with hotels shows at once; when both are in, they are
+      // merged (cheaper price wins) and the list re-sorts by the chosen sort.
+      let booking: LiveHotelsResponse | null = null;
+      let agoda: LiveHotelsResponse | null = null;
+      const settle = () => {
+        if (booking && agoda) {
+          if (booking.ok && agoda.ok) apply({ ...booking, hotels: mergeHotels(booking.hotels, agoda.hotels) }, false);
+          else if (!booking.ok && agoda.ok && agoda.hotels.length > 0) apply(agoda, false);
+          else apply(booking, false);
+          return;
         }
+        const first = booking ?? agoda;
+        if (first?.ok && first.hotels.length > 0) apply(first, true);
+      };
+      void get("booking").then((data) => {
+        booking = data;
+        settle();
       });
+      void get("agoda").then((data) => {
+        agoda = data;
+        settle();
+      });
+    }
     return () => {
       cancelled = true;
     };
   }, [query, stayBudget, endpoint]);
 
   const data = state.status === "done" && state.data.ok ? state.data : null;
+  const loadingMore = state.status === "done" && Boolean(state.more);
   const shown = useMemo(() => (data ? filterHotels(data.hotels, filters, data.nights) : []), [data, filters]);
   const starCounts = useMemo(() => {
     const counts: Record<number, number> = {};
@@ -217,7 +251,9 @@ export function LiveHotelsResults({ search, stayBudget, cityName, endpoint = "/a
             </div>
           ))}
 
-        {data && !refreshing && shown.length === 0 && (
+        {loadingMore && !refreshing && <LoadingMoreNote text="Adding more hotels and prices…" />}
+
+        {data && !refreshing && !loadingMore && shown.length === 0 && (
           <div className="rounded-2xl border border-slate-200 bg-white px-5 py-6 text-sm text-slate-700">
             {data.hotels.length === 0
               ? "No live availability for these dates. Try other dates or a nearby city."

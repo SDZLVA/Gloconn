@@ -160,6 +160,7 @@ async function searchAllDomains(
       stayPackages: result.stayPackages,
       warnings: result.warnings,
       route: resolvedRoute(request),
+      partial: result.partial,
     });
   }
 

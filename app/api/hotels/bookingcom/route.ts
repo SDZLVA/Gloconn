@@ -52,19 +52,22 @@ export async function GET(request: Request) {
   // Preview deployments only: show one raw LiteAPI item to check the field mapping.
   const debug = process.env.VERCEL_ENV === "preview" && url.searchParams.get("debug") === "1";
 
-  const key = JSON.stringify(search);
+  // Milestone 57: &part=booking|agoda — one site per request, so the page can show the fast one first.
+  const partParam = url.searchParams.get("part");
+  const part = partParam === "booking" || partParam === "agoda" ? partParam : undefined;
+  const key = JSON.stringify({ ...search, part: part ?? "all" });
   const hit = debug ? undefined : cache.get(key);
   if (hit && Date.now() - hit.at < CACHE_MS) return json(hit.body, 200, true);
 
   const ip = getClientIp(request);
-  const rate = checkRateLimitCustom(`hotels-bk:${ip}`, 10, 60);
+  const rate = checkRateLimitCustom(`hotels-bk:${ip}`, 20, 60);
   if (!rate.allowed) {
     return json({ ok: false, code: "RATE_LIMITED", message: "Too many searches. Please wait a minute." }, 429);
   }
 
   try {
     const trace: string[] = [];
-    const { hotels, raw, agodaRaw, booking, agoda } = await searchHotelsCombined(search, debug ? { trace, fresh: url.searchParams.get("fresh") === "1" } : {});
+    const { hotels, raw, agodaRaw, booking, agoda } = await searchHotelsCombined(search, debug ? { trace, fresh: url.searchParams.get("fresh") === "1", part } : { part });
     if (debug) {
       const agodaData = (agodaRaw as { data?: { properties?: unknown[]; citySearch?: { properties?: unknown[] } } } | null)?.data;
       const agodaList = agodaData?.citySearch?.properties ?? agodaData?.properties ?? [];

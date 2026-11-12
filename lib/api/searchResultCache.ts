@@ -38,7 +38,10 @@ export function setCachedSearchResult(
 }
 
 export function clearCachedSearchResult(search: Partial<SearchRequest>): void {
-  searchResultCache.delete(buildSearchCacheKey(search));
+  const key = buildSearchCacheKey(search);
+  searchResultCache.delete(key);
+  // Milestone 57: the quick first answer is cached under its own key.
+  searchResultCache.delete(`${key}|quick`);
 }
 
 /** Test / manual reset helper. */
@@ -54,9 +57,9 @@ export function clearSearchResultCache(): void {
 export async function withSearchResultCache(
   search: Partial<SearchRequest>,
   fetcher: () => Promise<ServiceResult<SearchResponse>>,
-  options: { bypassCache?: boolean } = {},
+  options: { bypassCache?: boolean; keySuffix?: string } = {},
 ): Promise<ServiceResult<SearchResponse>> {
-  const key = buildSearchCacheKey(search);
+  const key = buildSearchCacheKey(search) + (options.keySuffix ?? "");
 
   if (!options.bypassCache) {
     const cached = searchResultCache.get(key);

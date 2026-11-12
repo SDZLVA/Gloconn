@@ -23,7 +23,15 @@ const EMPTY_TTL_MS = 60 * 60_000;
 export const VISITOR_LIMIT = 6;
 
 export type FlightsSource = "travelpayouts" | "skyscanner" | "google" | "none";
-export type FallbackResult = { flights: Flight[]; source: FlightsSource; raw?: unknown; why?: string; trace?: string[] };
+export type FallbackResult = {
+  flights: Flight[];
+  source: FlightsSource;
+  raw?: unknown;
+  why?: string;
+  trace?: string[];
+  /** Milestone 57 (quick mode): a full search could still add live prices. */
+  more?: boolean;
+};
 
 /** Hashed visitor id from request headers (never store raw IPs). */
 export function visitorId(headers: Headers): string {
@@ -40,7 +48,12 @@ export const ENOUGH_SAVED_FARES = 5;
 
 export async function searchFlightsWithFallback(
   search: DataFlightsSearch,
-  options: { visitor: string; destinationId?: string; debug?: boolean; only?: string },
+  /**
+   * quick (Milestone 57): free sources only — saved fares and the saved live
+   * answer, never Google/Skyscanner. `more` says whether a full search could
+   * add live prices, so the page can show these first and then ask again.
+   */
+  options: { visitor: string; destinationId?: string; debug?: boolean; only?: string; quick?: boolean },
 ): Promise<FallbackResult> {
   const destinationId = options.destinationId ?? "";
   let saved: Flight[] = [];
@@ -62,6 +75,7 @@ export async function searchFlightsWithFallback(
   // Preview debug skips the saved answer so a fix can be tested at once.
   const cached = options.debug ? null : await readCache<FallbackResult>(key);
   if (cached) return withSaved({ flights: cached.flights ?? [], source: cached.source ?? "none" });
+  if (options.quick) return { ...withSaved({ flights: [], source: "none" }), more: true };
   // Preview (only used for testing) skips the per-visitor limit; provider caps still apply.
   const preview = process.env.VERCEL_ENV === "preview";
   if (!options.debug && !preview && !(await claimVisitor(options.visitor, VISITOR_LIMIT))) {

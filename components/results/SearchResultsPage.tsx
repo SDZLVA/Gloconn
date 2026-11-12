@@ -78,6 +78,7 @@ import { TripHeader } from "@/components/results/TripHeader";
 import { SaveTripButton } from "@/components/trips/SaveTripButton";
 import { ResultsList } from "@/components/results/ResultsList";
 import { ResultsLoadingSkeleton } from "@/components/results/ResultsLoadingSkeleton";
+import { LoadingMoreNote } from "@/components/live/LoadingMoreNote";
 import { ResultsWarningsBanner } from "@/components/results/ResultsWarningsBanner";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -199,10 +200,34 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   );
   const budgetAmount = activeSearch.budget?.amount ?? null;
 
+  // Milestone 57: a quick first answer (saved fares + Booking.com, ~2 s),
+  // then — if it says `partial` — the full answer (live flights, Agoda)
+  // replaces it. Sort and filters are applied on render, so the new list is
+  // re-sorted automatically.
   const resultsState = useServiceQuery(
-    () => postSearchTrips(activeSearch),
+    () => postSearchTrips(activeSearch, { phase: "quick" }),
     [searchKey, retryCount],
   );
+  const fullKey = `${searchKey}#${retryCount}`;
+  const [fullResult, setFullResult] = useState<{ key: string; data: SearchResponse | null } | null>(null);
+  const quickData = resultsState.status === "success" ? resultsState.data : null;
+  useEffect(() => {
+    if (!quickData?.partial) return;
+    let cancelled = false;
+    setFullResult({ key: fullKey, data: null });
+    void postSearchTrips(activeSearch, { phase: "full" }).then((result) => {
+      if (cancelled) return;
+      // A failed full search keeps the quick answer on screen.
+      setFullResult({ key: fullKey, data: result.success ? result.data : quickData });
+    });
+    return () => {
+      cancelled = true;
+    };
+    // activeSearch changes together with fullKey.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quickData, fullKey]);
+  const fullData = fullResult?.key === fullKey ? fullResult.data : null;
+  const loadingMore = Boolean(quickData?.partial) && !fullData;
 
   // Track last good data + finish chip-loading transitions.
   useEffect(() => {
@@ -241,7 +266,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     chipSearch.status === "error" &&
     lastGoodData
       ? lastGoodData
-      : resultsState.data;
+      : (fullData ?? resultsState.data);
 
   const allResults = useMemo(() => {
     if (!displayData) {
@@ -611,7 +636,10 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
     resultsState.status === "loading" || resultsState.status === "idle";
   // Chip search: always show the skeleton (keep strip); initial load: skeleton until first data.
   const showSkeleton =
-    isChipSearchLoading || (isLoading && !hasData && chipSearch.status !== "error");
+    isChipSearchLoading ||
+    (isLoading && !hasData && chipSearch.status !== "error") ||
+    // Milestone 57: quick answer was empty — keep the skeleton until the full one.
+    (loadingMore && allResults.length === 0 && stayPackages.length === 0);
   const hasError =
     resultsState.status === "error" &&
     resultsState.error &&
@@ -624,6 +652,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
   const hasNoResults =
     (resultsState.status === "success" || chipSearch.status === "error") &&
     !isChipSearchLoading &&
+    !loadingMore &&
     allResults.length === 0;
   const showResultsChrome = showSkeleton || hasSuccess || hasData;
 
@@ -822,6 +851,7 @@ export function SearchResultsPage({ search }: SearchResultsPageProps) {
 
             <div className="min-w-0 space-y-4">
               {showSkeleton && <ResultsLoadingSkeleton />}
+              {loadingMore && !showSkeleton && <LoadingMoreNote text="Finding more flights, hotels and packages…" />}
 
               {hasNoResults && (
                 <ResultsEmptyState

@@ -12,7 +12,8 @@ import "server-only";
 import { createNoRecentFlightPricesWarning, createProviderUnavailableWarning } from "@/lib/api/searchMappers";
 import { resolveAviasalesCurrency } from "@/lib/providers/flights/aviasales/provider";
 import { nightsBetween } from "@/features/liveHotels/filters";
-import { rapidApiKey } from "@/features/liveHotels/bookingcom/client";
+import { rapidApiKey, searchBookingHotels } from "@/features/liveHotels/bookingcom/client";
+import { agodaConfigured } from "@/features/liveHotels/agoda/client";
 import { searchHotelsCombined } from "@/features/liveHotels/combined";
 import type { LiveHotel } from "@/features/liveHotels/types";
 import { dataFlightsConfigured } from "@/features/flightsData/client";
@@ -81,6 +82,9 @@ export const dataBookingcomEngine: PackagesEngine = {
     const origin = (request.originCityIata ?? request.originIata ?? "").toUpperCase();
     const destination = (request.destinationCityIata ?? request.destinationIata ?? "").toUpperCase();
 
+    // Milestone 57: quick = saved fares + Booking.com only; partial tells the page to ask again.
+    const quick = Boolean(context?.quick);
+    let flightsMore = false;
     const flightsPromise: Promise<Flight[]> =
       dataFlightsConfigured() && origin && destination
         ? retryOnce(() => searchFlightsWithFallback(
@@ -94,12 +98,15 @@ export const dataBookingcomEngine: PackagesEngine = {
               infants: request.travelers.infants,
               currency,
             },
-            { visitor: context?.visitor ?? "", destinationId: request.destinationId ?? "" },
-          )).then((r) => r.flights)
+            { visitor: context?.visitor ?? "", destinationId: request.destinationId ?? "", quick },
+          )).then((r) => {
+            flightsMore = Boolean(r.more);
+            return r.flights;
+          })
         : Promise.reject(new Error("flight data not configured"));
     const hotelsPromise: Promise<LiveHotel[]> =
       hasStay && rapidApiKey()
-        ? retryOnce(() => searchHotelsCombined({
+        ? retryOnce(() => (quick ? searchBookingHotels : searchHotelsCombined)({
             destination: request.destination ?? "",
             checkin: request.departureDate,
             checkout: request.returnDate!,
@@ -114,7 +121,8 @@ export const dataBookingcomEngine: PackagesEngine = {
     let flights: Flight[] = [];
     if (flightsSettled.status === "fulfilled") flights = flightsSettled.value;
     else warnings.push(createProviderUnavailableWarning("flights"));
-    if (flightsSettled.status === "fulfilled" && flights.length === 0) warnings.push(createNoRecentFlightPricesWarning());
+    const partial = quick && (flightsMore || (hasStay && agodaConfigured()));
+    if (flightsSettled.status === "fulfilled" && flights.length === 0 && !(quick && flightsMore)) warnings.push(createNoRecentFlightPricesWarning());
 
     const nights = hasStay ? nightsBetween(request.departureDate, request.returnDate!) : 0;
     let hotels: Hotel[] = [];
@@ -123,7 +131,7 @@ export const dataBookingcomEngine: PackagesEngine = {
 
     const budget = request.budget && request.budget.amount > 0 && request.budget.currency === currency ? request.budget.amount : null;
     const rooms = Math.max(1, request.travelers.rooms);
-    if (!hasStay) return { flights, hotels, packages: [], warnings };
+    if (!hasStay) return { flights, hotels, packages: [], warnings, partial };
 
     if (flights.length > 0) {
       const packages = combinePackages(flights, hotels, { budget, travelers, rooms, nights });
@@ -134,10 +142,10 @@ export const dataBookingcomEngine: PackagesEngine = {
           message: "No package fits your budget for these dates. These are the cheapest options — try other dates or a higher budget.",
         });
       }
-      return { flights, hotels, packages, warnings };
+      return { flights, hotels, packages, warnings, partial };
     }
     // No cached flights for these dates: hotel-led packages with live flights on their page.
     const stayPackages = buildStayPackages(hotels, { budget, flightEstimate: null, travelers, rooms, nights });
-    return { flights, hotels, packages: [], stayPackages, warnings };
+    return { flights, hotels, packages: [], stayPackages, warnings, partial };
   },
 };

@@ -12,7 +12,7 @@ import { DataFlightsError, dataFlightsConfigured } from "@/features/flightsData/
 import { searchFlightsWithFallback, visitorId, type FlightsSource } from "@/features/flightsFallback";
 import type { Flight } from "@/types/models";
 
-type Body = { ok: true; flights: Flight[]; source: FlightsSource } | { ok: false; code: string; message: string };
+type Body = { ok: true; flights: Flight[]; source: FlightsSource; more?: boolean } | { ok: false; code: string; message: string };
 
 function json(body: Body | Record<string, unknown>, status = 200, cacheable = false): Response {
   return new Response(JSON.stringify(body), {
@@ -59,10 +59,13 @@ export async function GET(request: Request) {
   const debug = process.env.VERCEL_ENV === "preview" && url.searchParams.get("debug") === "1";
   // Crawlers never spend paid quota.
   const bot = /bot|crawl|spider|slurp|preview|headless/i.test(request.headers.get("user-agent") ?? "");
+  // Milestone 57: &phase=quick → free sources only (fast); the page then asks again without it.
+  const quick = url.searchParams.get("phase") === "quick";
   try {
-    const result = await searchFlightsWithFallback(search, { visitor: bot ? "" : visitorId(request.headers), debug, only: debug ? (url.searchParams.get("only") ?? undefined) : undefined });
+    const result = await searchFlightsWithFallback(search, { visitor: bot ? "" : visitorId(request.headers), debug, quick, only: debug ? (url.searchParams.get("only") ?? undefined) : undefined });
     if (debug) return json({ source: result.source, why: result.why ?? null, trace: result.trace ?? [], raw: result.raw ?? null, mapped: result.flights.slice(0, 3) });
     // An empty answer can be one visitor's limit — never let the CDN share it.
+    if (quick) return json({ ok: true, flights: result.flights, source: result.source, more: Boolean(result.more) }, 200, result.flights.length > 0 && !result.more);
     return json({ ok: true, flights: result.flights, source: result.source }, 200, result.flights.length > 0);
   } catch (error) {
     const status = error instanceof DataFlightsError ? error.status : 0;

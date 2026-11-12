@@ -27,9 +27,10 @@ function isApiResponse<T>(value: unknown): value is ApiResponse<T> {
 
 async function fetchSearchTrips(
   search: Partial<SearchRequest>,
+  phase: "quick" | "full" = "full",
 ): Promise<ServiceResult<SearchResponse>> {
   try {
-    const response = await fetch(SEARCH_API_PATH, {
+    const response = await fetch(phase === "quick" ? `${SEARCH_API_PATH}?phase=quick` : SEARCH_API_PATH, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(search),
@@ -65,6 +66,11 @@ export type PostSearchTripsOptions = {
    * (used by "Try again" so the user always gets a fresh network call).
    */
   bypassCache?: boolean;
+  /**
+   * Milestone 57: "quick" = fast first answer (saved fares, Booking.com);
+   * when it comes back with `partial: true`, ask again with "full".
+   */
+  phase?: "quick" | "full";
 };
 
 /**
@@ -79,9 +85,10 @@ export async function postSearchTrips(
   search: Partial<SearchRequest>,
   options: PostSearchTripsOptions = {},
 ): Promise<ServiceResult<SearchResponse>> {
+  const phase = options.phase ?? "full";
   return withSearchResultCache(
     search,
-    () => fetchSearchTrips(search),
-    { bypassCache: options.bypassCache },
+    () => fetchSearchTrips(search, phase),
+    { bypassCache: options.bypassCache, keySuffix: phase === "quick" ? "|quick" : "" },
   );
 }
