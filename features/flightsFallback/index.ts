@@ -10,6 +10,8 @@ import "server-only";
  */
 
 import { createHash } from "node:crypto";
+
+import { clientIpFromHeaders } from "@/lib/api/rateLimit";
 // options.debug is only ever true on Vercel Preview (see app/api/flights/data/route.ts).
 import { dataFlightsConfigured, searchDataFlights } from "@/features/flightsData/client";
 import { mergeFlights, type DataFlightsSearch } from "@/features/flightsData/map";
@@ -41,8 +43,10 @@ export type FallbackResult = {
 
 /** Hashed visitor id from request headers (never store raw IPs). */
 export function visitorId(headers: Headers): string {
-  const ip = (headers.get("x-forwarded-for") ?? "").split(",")[0]?.trim() || headers.get("x-real-ip") || "";
-  if (!ip) return "";
+  // M60: trusted-header order (spoofing the first x-forwarded-for entry let
+  // one attacker mint unlimited "visitors" and burn the paid-API quotas).
+  const ip = clientIpFromHeaders(headers);
+  if (!ip || ip === "unknown") return "";
   return createHash("sha256").update(`glooconn:${ip}`).digest("hex").slice(0, 32);
 }
 

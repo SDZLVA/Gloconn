@@ -29,9 +29,23 @@ function makeRequest(headers: Record<string, string> = {}): Request {
 // ---------------------------------------------------------------------------
 
 describe("getClientIp", () => {
-  it("returns the first IP from x-forwarded-for", () => {
+  it("prefers x-vercel-forwarded-for (set by Vercel, unspoofable)", () => {
+    const req = makeRequest({
+      "x-vercel-forwarded-for": "9.9.9.9",
+      "x-real-ip": "10.0.0.1",
+      "x-forwarded-for": "1.2.3.4, 5.6.7.8",
+    });
+    assert.equal(getClientIp(req), "9.9.9.9");
+  });
+
+  it("prefers x-real-ip over x-forwarded-for", () => {
+    const req = makeRequest({ "x-real-ip": "10.0.0.1", "x-forwarded-for": "1.2.3.4, 5.6.7.8" });
+    assert.equal(getClientIp(req), "10.0.0.1");
+  });
+
+  it("takes the LAST x-forwarded-for entry (first entries are client-spoofable)", () => {
     const req = makeRequest({ "x-forwarded-for": "1.2.3.4, 5.6.7.8" });
-    assert.equal(getClientIp(req), "1.2.3.4");
+    assert.equal(getClientIp(req), "5.6.7.8");
   });
 
   it("falls back to x-real-ip when x-forwarded-for is absent", () => {
@@ -161,7 +175,7 @@ describe("checkRateLimit — IP isolation", () => {
 describe("getClientIp — IPv6", () => {
   it("accepts a full IPv6 address from x-forwarded-for", () => {
     const req = makeRequest({
-      "x-forwarded-for": "2001:db8::1, 10.0.0.1",
+      "x-forwarded-for": "10.0.0.1, 2001:db8::1",
     });
     assert.equal(getClientIp(req), "2001:db8::1");
   });
@@ -212,12 +226,13 @@ describe("getClientIp — missing/ambiguous headers", () => {
     assert.equal(ip, "unknown");
   });
 
-  it("uses only the first IP in a comma-separated XFF chain", () => {
-    // Verifies we always read the leftmost (client) address, not the rightmost (proxy).
+  it("uses only the LAST IP in a comma-separated XFF chain (M60)", () => {
+    // The leftmost entries are client-supplied and spoofable; the rightmost
+    // was appended by the closest trusted proxy.
     const req = makeRequest({
       "x-forwarded-for": "5.5.5.5, 10.0.0.1, 172.16.0.1",
     });
-    assert.equal(getClientIp(req), "5.5.5.5");
+    assert.equal(getClientIp(req), "172.16.0.1");
   });
 
   it("all headerless requests share the 'unknown' bucket and are rate-limited together", () => {

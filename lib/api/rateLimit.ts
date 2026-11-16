@@ -137,26 +137,43 @@ export function checkExploreDatesRateLimit(ip: string): RateLimitResult {
 }
 
 /**
- * Extracts the best available client IP from a Next.js Route Handler Request.
+ * Extracts the client IP from request headers (M60 security hardening).
  *
  * Checks (in order):
- *  1. x-forwarded-for  (reverse proxy / CDN — first IP in the list)
- *  2. x-real-ip        (some proxies)
- *  3. Falls back to "unknown" — treated as one shared bucket, not blocked.
+ *  1. x-vercel-forwarded-for — set by Vercel's edge; cannot be spoofed by
+ *     the client (Vercel overwrites any incoming value).
+ *  2. x-real-ip              — also overwritten by Vercel; set by most proxies.
+ *  3. x-forwarded-for        — LAST entry. The first entries are copied from
+ *     whatever the client sent, so taking the first lets an attacker rotate
+ *     fake IPs to bypass per-IP rate limits and burn per-visitor paid-API
+ *     quotas. The last entry is the one appended by the closest proxy.
+ *  4. Falls back to "unknown" — treated as one shared bucket, not blocked.
  *
  * Never throws. Returns a trimmed, lowercase string.
  */
-export function getClientIp(request: Request): string {
-  const xff = request.headers.get("x-forwarded-for");
-  if (xff) {
-    const first = xff.split(",")[0];
-    if (first) return first.trim().toLowerCase();
+export function clientIpFromHeaders(headers: Headers): string {
+  const vff = headers.get("x-vercel-forwarded-for");
+  if (vff) {
+    const first = vff.split(",")[0];
+    if (first?.trim()) return first.trim().toLowerCase();
   }
 
-  const xri = request.headers.get("x-real-ip");
-  if (xri) return xri.trim().toLowerCase();
+  const xri = headers.get("x-real-ip");
+  if (xri?.trim()) return xri.trim().toLowerCase();
+
+  const xff = headers.get("x-forwarded-for");
+  if (xff) {
+    const parts = xff.split(",");
+    const last = parts[parts.length - 1];
+    if (last?.trim()) return last.trim().toLowerCase();
+  }
 
   return "unknown";
+}
+
+/** Request wrapper around clientIpFromHeaders. */
+export function getClientIp(request: Request): string {
+  return clientIpFromHeaders(request.headers);
 }
 
 /**
