@@ -118,6 +118,8 @@ describe("buildExactAviasalesLink", () => {
 
   it("is absent when the flight has no ticket page", () => {
     assert.equal(buildExactAviasalesLink({ ...EASYJET, bookingUrl: undefined }), null);
+    // Milestone 61: a route search (Google/Skyscanner fares) is not "exact".
+    assert.equal(buildExactAviasalesLink({ ...EASYJET, bookingUrl: "https://www.aviasales.com/search/LON1512AMS18121" })?.exact, false);
   });
 });
 

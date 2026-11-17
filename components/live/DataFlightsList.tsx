@@ -91,7 +91,7 @@ export function DataFlightsList({ flights, travelers, roundTrip }: { flights: Fl
               </div>
               {/* Milestone 52: the primary button opens the exact flight where we can —
                   Skyscanner's own itinerary page, or the exact Aviasales ticket. */}
-              {flight.source === "skyscanner" && flight.sourceUrl ? (
+              {(flight.source === "skyscanner" || (flight.source === "google" && flight.sourceExact)) && flight.sourceUrl ? (
                 <>
                   <a
                     href={flight.sourceUrl}
@@ -99,7 +99,7 @@ export function DataFlightsList({ flights, travelers, roundTrip }: { flights: Fl
                     rel="noopener noreferrer nofollow"
                     className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800"
                   >
-                    Book on Skyscanner ↗
+                    {flight.source === "google" ? "Book this flight on Google Flights ↗" : "Book on Skyscanner ↗"}
                   </a>
                   {link && (
                     <a href={link.href} target="_blank" rel="noopener noreferrer nofollow" className="text-center text-xs font-semibold text-brand-700 hover:text-brand-900">

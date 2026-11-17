@@ -155,7 +155,9 @@ export function buildExactAviasalesLink(flight: Flight): FlightPartnerLink | nul
     // Attribution is added on the server; the copy says "may earn".
     tagged: true,
     partnerName: "Aviasales",
-    exact: true,
+    // Milestone 61: only a ticket link (?t=…) opens the exact flights; prices
+    // from Google/Skyscanner only have an Aviasales route search.
+    exact: /[?&]t=/.test(flight.bookingUrl),
   };
 }
 

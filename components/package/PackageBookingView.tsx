@@ -74,6 +74,7 @@ export function PackageBookingView({ packageId, flightId }: { packageId: string;
   hotelsQuery.set("productTypes", "hotels");
   const external = Boolean(hotel.detailsUrl && /^https?:\/\//.test(hotel.detailsUrl));
   const distance = distanceLabel(hotel.distanceKm);
+  const sourceFirst = Boolean(flight.sourceUrl) && (flight.source === "skyscanner" || (flight.source === "google" && flight.sourceExact));
 
   return (
     <div className="space-y-6">
@@ -130,21 +131,41 @@ export function PackageBookingView({ packageId, flightId }: { packageId: string;
                 </span>
               </p>
             </div>
+            {/* Milestone 61: when the price came from Google or Skyscanner, their link opens
+                this exact flight, so it is the main button; Aviasales is only a route search. */}
+            {sourceFirst && flight.sourceUrl && (
+              <div className="mt-4 space-y-1.5">
+                <a
+                  href={flight.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-800"
+                >
+                  {flight.source === "google" ? "Book this flight on Google Flights ↗" : "Book this flight on Skyscanner ↗"}
+                </a>
+                <p className="text-xs text-slate-500">
+                  {flight.source === "google" && tripType === "round-trip"
+                    ? "Opens Google Flights with this outbound flight already selected — then pick your return flight there."
+                    : "Opens this exact flight, where you choose where to book."}
+                </p>
+              </div>
+            )}
             <div className="mt-4">
+              {sourceFirst && <p className="mb-2 text-sm font-semibold text-slate-800">Or compare prices</p>}
               {flightLinks.length > 0 ? (
                 <PartnerLinks links={flightLinks} context="package" />
               ) : (
-                <p className="text-sm text-slate-600">This fare can be booked from the flights list.</p>
+                !sourceFirst && <p className="text-sm text-slate-600">This fare can be booked from the flights list.</p>
               )}
             </div>
-            {flight.sourceUrl && (flight.source === "google" || flight.source === "skyscanner") && (
+            {!sourceFirst && flight.sourceUrl && (flight.source === "google" || flight.source === "skyscanner") && (
               <a
                 href={flight.sourceUrl}
                 target="_blank"
                 rel="noopener noreferrer nofollow"
                 className="mt-3 inline-flex min-h-11 items-center justify-center rounded-xl border border-brand-700 px-4 text-sm font-bold text-brand-700 hover:bg-brand-50"
               >
-                {flight.source === "google" ? "See this flight on Google Flights ↗" : "Book this flight on Skyscanner ↗"}
+                {flight.source === "google" ? "See this route on Google Flights ↗" : "Book this flight on Skyscanner ↗"}
               </a>
             )}
             <Link href={`/search/results?${flightsQuery.toString()}`} className="mt-3 block text-sm font-semibold text-brand-700 hover:text-brand-900">
