@@ -4,6 +4,11 @@
  * the page <head> need. Newest first.
  */
 
+import type { PhotoKey } from "@/lib/blog/photos";
+
+/** Milestone 64: a card on the home page "Travel ideas" (a city inside a post). */
+export type BlogHighlight = { title: string; anchor: string; photo: PhotoKey };
+
 export type BlogPostMeta = {
   slug: string;
   title: string;
@@ -13,6 +18,10 @@ export type BlogPostMeta = {
   updated?: string;
   readMinutes: number;
   tags: string[];
+  /** Milestone 64: card photo (home page + blog index). */
+  photo: PhotoKey;
+  /** Milestone 64: extra home-page cards that open a section of the post. */
+  highlights?: BlogHighlight[];
 };
 
 export const BLOG_POSTS: readonly BlogPostMeta[] = [
@@ -24,6 +33,14 @@ export const BLOG_POSTS: readonly BlogPostMeta[] = [
     published: "2026-11-18",
     readMinutes: 7,
     tags: ["Milan", "Weekend trips", "Winter", "Budget travel"],
+    photo: "milan",
+    highlights: [
+      { title: "Budapest: thermal baths in the snow", anchor: "budapest", photo: "budapest" },
+      { title: "Kraków: the budget champion", anchor: "krakow", photo: "krakow" },
+      { title: "Lisbon: winter sunshine", anchor: "lisbon", photo: "lisbon" },
+      { title: "Seville: orange trees in January", anchor: "seville", photo: "seville" },
+      { title: "Athens: the Acropolis without crowds", anchor: "athens", photo: "athens" },
+    ],
   },
 ];
 
