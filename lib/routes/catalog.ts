@@ -17,6 +17,14 @@ export const ROUTE_CITIES = {
   LIS: { code: "LIS", name: "Lisbon", country: "Portugal", slug: "lisbon" },
   AMS: { code: "AMS", name: "Amsterdam", country: "Netherlands", slug: "amsterdam" },
   ATH: { code: "ATH", name: "Athens", country: "Greece", slug: "athens" },
+  // Milestone 63: winter city breaks from Milan (blog).
+  BUD: { code: "BUD", name: "Budapest", country: "Hungary", slug: "budapest" },
+  KRK: { code: "KRK", name: "Kraków", country: "Poland", slug: "krakow" },
+  PRG: { code: "PRG", name: "Prague", country: "Czech Republic", slug: "prague" },
+  VIE: { code: "VIE", name: "Vienna", country: "Austria", slug: "vienna" },
+  OPO: { code: "OPO", name: "Porto", country: "Portugal", slug: "porto" },
+  VLC: { code: "VLC", name: "Valencia", country: "Spain", slug: "valencia" },
+  SVQ: { code: "SVQ", name: "Seville", country: "Spain", slug: "seville" },
   IST: { code: "IST", name: "Istanbul", country: "Turkey", slug: "istanbul" },
   DXB: { code: "DXB", name: "Dubai", country: "United Arab Emirates", slug: "dubai" },
   CMB: { code: "CMB", name: "Colombo", country: "Sri Lanka", slug: "colombo" },
@@ -32,6 +40,7 @@ const PAIRS: [CityCode, CityCode][] = [
   // From Milan
   ["MIL", "CMB"], ["MIL", "LON"], ["MIL", "PAR"], ["MIL", "BCN"], ["MIL", "AMS"], ["MIL", "MAD"], ["MIL", "LIS"],
   ["MIL", "ATH"], ["MIL", "IST"], ["MIL", "DXB"], ["MIL", "BKK"], ["MIL", "MLE"], ["MIL", "NYC"], ["MIL", "TYO"],
+  ["MIL", "BUD"], ["MIL", "KRK"], ["MIL", "PRG"], ["MIL", "VIE"], ["MIL", "OPO"], ["MIL", "VLC"], ["MIL", "SVQ"],
   // From Rome
   ["ROM", "CMB"], ["ROM", "LON"], ["ROM", "PAR"], ["ROM", "BCN"], ["ROM", "AMS"], ["ROM", "MAD"], ["ROM", "LIS"],
   ["ROM", "ATH"], ["ROM", "IST"], ["ROM", "DXB"], ["ROM", "BKK"], ["ROM", "NYC"],

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAppConfig } from "@/lib/config";
 import { FLIGHT_ROUTES } from "@/lib/routes/catalog";
+import { BLOG_POSTS } from "@/lib/blog/posts";
 
 /** Public pages worth listing for search engines. */
 const PUBLIC_PATHS = ["/", "/privacy", "/terms"] as const;
@@ -20,6 +21,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
   pages.push({ url: `${siteUrl}/flights`, lastModified, changeFrequency: "weekly", priority: 0.8 });
   for (const route of FLIGHT_ROUTES) {
     pages.push({ url: `${siteUrl}/flights/${route.slug}`, lastModified, changeFrequency: "daily", priority: 0.7 });
+  }
+  // Milestone 63: the blog.
+  pages.push({ url: `${siteUrl}/blog`, lastModified, changeFrequency: "weekly", priority: 0.8 });
+  for (const post of BLOG_POSTS) {
+    pages.push({ url: `${siteUrl}/blog/${post.slug}`, lastModified: new Date(`${post.updated ?? post.published}T00:00:00Z`), changeFrequency: "weekly", priority: 0.7 });
   }
   return pages;
 }
