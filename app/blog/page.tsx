@@ -22,7 +22,7 @@ export default function BlogIndex() {
           return (
             <li key={post.slug}>
               <Link href={`/blog/${post.slug}`} className="block overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm hover:border-brand-700">
-                {Hero && <Hero />}
+                {Hero && <Hero credit={false} />}
                 <div className="p-5 sm:p-6">
                   <p className="text-xs font-bold uppercase tracking-widest text-brand-700">{post.tags.slice(0, 2).join(" · ")}</p>
                   <h2 className="mt-1 text-2xl font-extrabold text-slate-900">{post.title}</h2>

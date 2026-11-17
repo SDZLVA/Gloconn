@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { AthensArt, BudapestArt, KrakowArt, LisbonArt, SevilleArt } from "@/components/blog/art/CityArt";
+import { PHOTOS, Photo, type BlogPhoto } from "@/components/blog/Photo";
 import { RouteDeal } from "@/components/blog/RouteDeal";
 import { winterMonths } from "@/lib/blog/dates";
 
 /**
  * Milestone 63 — blog post: 5 cheap weekend trips from Milan this winter.
- * 63b: simpler, cleaner layout — one card per city with an illustration.
+ * 63b: simpler, cleaner layout — one card per city. 63c: real Unsplash photos.
  * Prices come from RouteDeal (live, refreshed every 12 h); the text avoids
  * facts that go out of date (exact prices, opening dates).
  */
@@ -16,7 +16,7 @@ type City = {
   name: string;
   tagline: string;
   flight: string;
-  Art: (p: { className?: string }) => React.ReactNode;
+  photo: BlogPhoto;
   intro: string;
   points: string[];
 };
@@ -28,7 +28,7 @@ const CITIES: City[] = [
     name: "Budapest",
     tagline: "Thermal baths in the snow",
     flight: "about 1 h 30 min",
-    Art: BudapestArt,
+    photo: PHOTOS.budapest,
     intro: "Sitting in a steaming outdoor thermal pool while it's freezing around you is a weekend you remember.",
     points: [
       "Széchenyi or Gellért baths — go early, before the crowds.",
@@ -42,7 +42,7 @@ const CITIES: City[] = [
     name: "Kraków",
     tagline: "The budget champion",
     flight: "about 1 h 45 min",
-    Art: KrakowArt,
+    photo: PHOTOS.krakow,
     intro: "Often the cheapest city break once you land, with a compact old town you can see in a weekend.",
     points: [
       "The Main Market Square and its Christmas market in December.",
@@ -56,7 +56,7 @@ const CITIES: City[] = [
     name: "Lisbon",
     tagline: "Winter sunshine",
     flight: "about 2 h 45 min",
-    Art: LisbonArt,
+    photo: PHOTOS.lisbon,
     intro: "Swap Milan's grey winter for mild, often sunny days that can feel like spring.",
     points: [
       "Ride the yellow tram 28 through Alfama and stop at the viewpoints.",
@@ -70,7 +70,7 @@ const CITIES: City[] = [
     name: "Seville",
     tagline: "Orange trees in January",
     flight: "about 2 h 30 min",
-    Art: SevilleArt,
+    photo: PHOTOS.seville,
     intro: "One of the warmest cities in Europe in winter — tapas outside in January is hard to beat.",
     points: [
       "Book a time slot for the Real Alcázar palace and gardens.",
@@ -84,7 +84,7 @@ const CITIES: City[] = [
     name: "Athens",
     tagline: "The Acropolis without the crowds",
     flight: "about 2 h 15 min",
-    Art: AthensArt,
+    photo: PHOTOS.athens,
     intro: "Mild, bright days, shorter queues and a city that feels more local than in summer.",
     points: [
       "The Acropolis early in the morning, then the Acropolis Museum.",
@@ -124,7 +124,7 @@ export function CheapWeekendTripsFromMilanWinter({ today }: { today: string }) {
 
       {CITIES.map((c, i) => (
         <section key={c.id} id={c.id} aria-labelledby={`${c.id}-title`} className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-          <c.Art />
+          <Photo photo={c.photo} />
           <div className="p-5 sm:p-7">
             <p className="text-xs font-bold uppercase tracking-widest text-brand-700">
               {i + 1} · {c.tagline}

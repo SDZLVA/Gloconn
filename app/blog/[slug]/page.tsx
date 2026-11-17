@@ -42,7 +42,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <header className="mt-3">
         {Hero && (
           <div className="mb-6 overflow-hidden rounded-3xl shadow-sm">
-            <Hero />
+            <Hero priority />
           </div>
         )}
         <h1 className="text-3xl font-extrabold tracking-tight text-brand-900 sm:text-5xl">{post.title}</h1>
