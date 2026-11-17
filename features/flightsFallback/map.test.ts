@@ -65,7 +65,18 @@ test("mapGoogleFlights reads best and other flights for the exact date", () => {
   assert.equal(flights[0].price, 60);
   assert.equal(flights[0].stops, 1);
   assert.equal(flights[1].airlineCode, "W4");
-  assert.equal(flights[1].sourceUrl, "https://www.google.com/travel/flights?x");
+  // Milestone 61: the link opens this exact flight on Google, not the route search.
+  assert.ok(flights[1].sourceUrl?.startsWith("https://www.google.com/travel/flights?hl=en&gl=us&curr="));
+  assert.equal(flights[1].sourceExact, true);
+  assert.equal(flights[0].sourceExact, true);
+  // Without a flight number the route search is kept.
+  const noNumber = mapGoogleFlights(
+    { ...raw, other_flights: [], best_flights: [{ ...raw.best_flights[0], flights: [{ ...raw.best_flights[0].flights[0], flight_number: undefined }] }] },
+    search,
+    { groupPrice: true },
+  );
+  assert.equal(noNumber[0].sourceUrl, "https://www.google.com/travel/flights?x");
+  assert.equal(noNumber[0].sourceExact, undefined);
 });
 
 test("skyscannerUrl builds the dated search link", () => {

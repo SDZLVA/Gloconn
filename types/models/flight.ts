@@ -101,6 +101,8 @@ export type Flight = {
    */
   source?: "travelpayouts" | "skyscanner" | "google";
   sourceUrl?: string;
+  /** Milestone 61: sourceUrl opens this exact flight (Google: outbound selected), not a route search. */
+  sourceExact?: boolean;
 
   /**
    * Milestone 21: full leg details when the source provides them. The flat

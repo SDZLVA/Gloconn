@@ -9,6 +9,7 @@
 import { buildAviasalesSearchUrl } from "@/lib/affiliate/aviasalesLink";
 import { airlineDisplayName } from "@/lib/providers/flights/aviasales/airlines";
 import type { DataFlightsSearch } from "@/features/flightsData/map";
+import { googleExactFlightUrl, splitFlightNumber, type GoogleSegment } from "@/features/flightsFallback/googleLink";
 import type { Flight } from "@/types/models";
 
 type Json = Record<string, unknown>;
@@ -136,7 +137,7 @@ export function mapGoogleFlights(
 ): Flight[] {
   if (!isObject(raw)) return [];
   const meta = isObject(raw.search_metadata) ? raw.search_metadata : null;
-  const sourceUrl = asString(meta?.google_flights_url) ?? undefined;
+  const searchUrl = asString(meta?.google_flights_url) ?? undefined;
   const options = [...list(raw.best_flights), ...list(raw.other_flights)].filter(isObject);
   const flights: Flight[] = [];
   for (const option of options) {
@@ -153,6 +154,20 @@ export function mapGoogleFlights(
     const airlineCode = iataCode(number?.split(" ")[0]) ?? "";
     const airline = asString(first.airline) ?? airlineDisplayName(airlineCode) ?? "Airline";
     const bookingUrl = aviasales(search);
+    // Milestone 61: open this exact flight on Google (outbound selected), not the route search.
+    const googleSegments: GoogleSegment[] = [];
+    for (const seg of segments) {
+      const d = isObject(seg.departure_airport) ? seg.departure_airport : null;
+      const a = isObject(seg.arrival_airport) ? seg.arrival_airport : null;
+      const fn = splitFlightNumber(asString(seg.flight_number));
+      const date = asString(d?.time)?.slice(0, 10);
+      const from = asString(d?.id);
+      const to = asString(a?.id);
+      if (!fn || !date || !from || !to) break;
+      googleSegments.push({ from, date, to, ...fn });
+    }
+    const exactUrl = googleSegments.length === segments.length ? googleExactFlightUrl(search, googleSegments) : null;
+    const sourceUrl = exactUrl ?? searchUrl;
     flights.push({
       id: `ggl-${airlineCode}${(number ?? "").replace(/\s+/g, "")}-${departure}`.replace(/[^A-Za-z0-9_-]/g, ""),
       destinationId: opts.destinationId ?? "",
@@ -171,6 +186,7 @@ export function mapGoogleFlights(
       ...(bookingUrl ? { bookingUrl } : {}),
       source: "google",
       ...(sourceUrl ? { sourceUrl } : {}),
+      ...(exactUrl ? { sourceExact: true } : {}),
     } as Flight);
   }
   return flights.sort((a, b) => a.price - b.price);
