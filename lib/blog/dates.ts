@@ -12,13 +12,19 @@ export function winterMonths(today: string): string[] {
   return all.filter((m) => m >= today.slice(0, 7));
 }
 
-/** First Friday → Sunday weekend in a month that starts after today; null if none left. */
+/** Christmas and New Year weekends are the most expensive of the winter — skip them. */
+const holiday = (date: string) => {
+  const md = date.slice(5);
+  return md >= "12-18" || md <= "01-06";
+};
+
+/** First Friday → Sunday weekend in a month that starts after today (not over Christmas/New Year); null if none left. */
 export function weekendIn(month: string, today: string): { departureDate: string; returnDate: string } | null {
   for (let day = 1; day <= 31; day++) {
     const date = `${month}-${String(day).padStart(2, "0")}`;
     const t = Date.parse(`${date}T00:00:00Z`);
     if (Number.isNaN(t) || new Date(t).toISOString().slice(0, 7) !== month) break;
-    if (date <= today) continue;
+    if (date <= today || holiday(date)) continue;
     if (new Date(t).getUTCDay() === 5) return { departureDate: date, returnDate: addDays(date, 2) };
   }
   return null;
