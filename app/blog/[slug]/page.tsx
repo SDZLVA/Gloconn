@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { POST_BODIES } from "@/components/blog/registry";
+import { POSTS } from "@/components/blog/registry";
 import { BLOG_POSTS, findPost, postDate } from "@/lib/blog/posts";
 
 /** Milestone 63 — one blog post. Price boxes inside refresh every 12 hours. */
@@ -28,8 +28,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = findPost(slug);
-  const Body = post ? POST_BODIES[post.slug] : undefined;
-  if (!post || !Body) notFound();
+  const entry = post ? POSTS[post.slug] : undefined;
+  if (!post || !entry) notFound();
+  const { Body, Hero } = entry;
   const today = new Date().toISOString().slice(0, 10);
   return (
     <article className="mx-auto max-w-3xl">
@@ -39,12 +40,17 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </Link>
       </nav>
       <header className="mt-3">
-        <h1 className="text-3xl font-extrabold tracking-tight text-brand-900 sm:text-4xl">{post.title}</h1>
-        <p className="mt-2 text-sm text-slate-500">
+        {Hero && (
+          <div className="mb-6 overflow-hidden rounded-3xl shadow-sm">
+            <Hero />
+          </div>
+        )}
+        <h1 className="text-3xl font-extrabold tracking-tight text-brand-900 sm:text-5xl">{post.title}</h1>
+        <p className="mt-3 text-sm text-slate-500">
           By the Glooconn team · {postDate(post.updated ?? post.published)} · {post.readMinutes} min read
         </p>
       </header>
-      <div className="mt-6">
+      <div className="mt-8">
         <Body today={today} />
       </div>
     </article>
