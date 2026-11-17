@@ -16,6 +16,12 @@ import {
 } from "@/lib/search";
 import { parseSearchParamsToForm } from "@/lib/search/params";
 
+/** Always-future ISO date (M60: the original hard-coded 2026-11-12 passed). */
+function daysAhead(n: number): string {
+  const d = new Date(Date.now() + n * 86_400_000);
+  return d.toISOString().slice(0, 10);
+}
+
 describe("Sprint 17.7 — traveler default", () => {
   it("initial default adults is 1", () => {
     assert.equal(INITIAL_PASSENGERS.adults, 1);
@@ -36,8 +42,8 @@ describe("Sprint 17.7 — traveler default", () => {
       originId: "milan",
       destination: "Paris, France",
       destinationId: "paris",
-      departureDate: "2026-11-12",
-      returnDate: "2026-11-15",
+      departureDate: daysAhead(30),
+      returnDate: daysAhead(33),
       travelers: { adults: 3, children: 0, infants: 0, rooms: 1 },
     };
     const built = validateAndBuildSearchRequest(form);
@@ -54,8 +60,8 @@ describe("Sprint 17.7 — traveler default", () => {
       originId: "milan",
       destination: "Tokyo, Japan",
       destinationId: "tokyo",
-      departureDate: "2026-11-12",
-      returnDate: "2026-11-15",
+      departureDate: daysAhead(30),
+      returnDate: daysAhead(33),
       travelers: { adults: 2, children: 1, infants: 0, rooms: 1 },
     };
     const built = validateAndBuildSearchRequest(form);

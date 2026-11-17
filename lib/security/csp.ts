@@ -13,6 +13,9 @@ const isDev = process.env.NODE_ENV === "development";
 
 /** Additional security response headers applied to all navigations. */
 export const SECURITY_HEADERS: Readonly<Record<string, string>> = {
+  // M60: HSTS — Vercel sets this too; kept here so the guarantee survives a
+  // platform change. No includeSubDomains: book./mixedtransport. are partner-run.
+  "Strict-Transport-Security": "max-age=63072000",
   "X-Frame-Options": "DENY",
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",
