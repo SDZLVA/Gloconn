@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAppConfig } from "@/lib/config";
+import { FLIGHT_ROUTES } from "@/lib/routes/catalog";
 
 /** Public pages worth listing for search engines. */
 const PUBLIC_PATHS = ["/", "/privacy", "/terms"] as const;
@@ -9,10 +10,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const { siteUrl } = getAppConfig().app;
   const lastModified = new Date();
 
-  return PUBLIC_PATHS.map((path) => ({
+  const pages: MetadataRoute.Sitemap = PUBLIC_PATHS.map((path) => ({
     url: `${siteUrl}${path === "/" ? "" : path}`,
     lastModified,
     changeFrequency: path === "/" ? "weekly" : "yearly",
     priority: path === "/" ? 1 : 0.5,
   }));
+  // Milestone 62: route pages (prices refresh every 12 h).
+  pages.push({ url: `${siteUrl}/flights`, lastModified, changeFrequency: "weekly", priority: 0.8 });
+  for (const route of FLIGHT_ROUTES) {
+    pages.push({ url: `${siteUrl}/flights/${route.slug}`, lastModified, changeFrequency: "daily", priority: 0.7 });
+  }
+  return pages;
 }
