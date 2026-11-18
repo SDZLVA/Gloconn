@@ -27,6 +27,8 @@ export const PHOTOS = {
   lisbon: { id: "photo-1590941761838-60179f0ed248", alt: "A yellow tram 28 in Lisbon", by: "Paulo Evangelista", page: `${U}2N0PVuB0byQ` },
   seville: { id: "photo-1605086944102-56c678d51c9a", alt: "Seville Cathedral and the Giralda tower at night", by: "Tom Podmore", page: `${U}2cEdlKdGEq4` },
   athens: { id: "photo-1603565816030-6b389eeb23cb", alt: "The Acropolis of Athens at golden hour", by: "Constantinos Kollias", page: `${U}yqBvJJ8jGBQ` },
+  strasbourg: { id: "photo-1580112613591-a4be59e156a5", alt: "The lit-up Christkindelsmärik sign over the Christmas market in Strasbourg at night", by: "Alexis Brandner", page: `${U}OHMRoA40xAI` },
+  strasbourgCathedral: { id: "photo-1601743859611-b8adb4d31cbe", alt: "Strasbourg Cathedral rising above the old-town streets", by: "Clément PIERSON", page: `${U}kPFM7vU3YA0` },
 } satisfies Record<string, BlogPhoto>;
 
 export type PhotoKey = keyof typeof PHOTOS;
