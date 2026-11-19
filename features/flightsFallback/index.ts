@@ -72,8 +72,9 @@ export async function searchFlightsWithFallback(
   const destinationId = options.destinationId ?? "";
   // DUFFEL BRANCH: flights come only from Duffel (bookable on Glooconn) —
   // Travelpayouts, Google and Skyscanner are not used in this copy of the site.
-  if (DUFFEL_ONLY) {
-    if (!duffelConfigured()) return { flights: [], source: "none", why: "no DUFFEL_ACCESS_TOKEN" };
+  // Only where a Duffel token is set (Preview today). Production has none, so
+  // it keeps the normal chain (Travelpayouts → saved → Google → Skyscanner).
+  if (DUFFEL_ONLY && duffelConfigured()) {
     // The quick first answer has nothing (Duffel takes ~5–20 s); the page then asks for the full one.
     if (options.quick) return { flights: [], source: "none", more: true };
     const trace: string[] = [];
