@@ -21,9 +21,17 @@ export async function searchHotelsCombined(
 ): Promise<{ hotels: LiveHotel[]; raw: unknown; agodaRaw: unknown; booking: LiveHotel[]; agoda: LiveHotel[] }> {
   // Duffel branch: hotels only from Duffel Stays (bookable on Glooconn).
   // The page asks "booking" and "agoda" side by side; Duffel answers the first.
+  // Until Duffel switches Stays on for the account (it answers with an error),
+  // fall back to Booking.com + Agoda so hotels and packages keep working.
   if (staysActive()) {
-    const hotels = options.part === "agoda" ? [] : await searchDuffelStays(search);
-    return { hotels, raw: null, agodaRaw: null, booking: hotels, agoda: [] };
+    const duffelHotels = await searchDuffelStays(search).catch((error: unknown) => {
+      console.error("[duffel-stays] search failed", (error as { status?: number })?.status ?? 0, (error as Error)?.message);
+      return null;
+    });
+    if (duffelHotels) {
+      const hotels = options.part === "agoda" ? [] : duffelHotels;
+      return { hotels, raw: null, agodaRaw: null, booking: hotels, agoda: [] };
+    }
   }
   const skip = Promise.resolve({ hotels: [] as LiveHotel[], raw: null as unknown });
   const [bookingSettled, agodaResult] = await Promise.all([

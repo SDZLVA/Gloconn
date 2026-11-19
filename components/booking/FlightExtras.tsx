@@ -112,6 +112,15 @@ function SeatPicker({ maps, travellers, currency, picks, onChange }: { maps: Sea
     if (pick) takenBy.set(pick.designator, t.id);
   }
   const initials = (id: string) => String(travellers.findIndex((t) => t.id === id) + 1);
+  // Seat letters per block across the whole cabin, so a row with a missing
+  // seat (e.g. no "B") keeps the others in their columns.
+  const columns: string[][] = [];
+  for (const row of map.rows)
+    row.sections.forEach((section, si) => {
+      const set = new Set(columns[si] ?? []);
+      for (const el of section) if (el.kind === "seat") set.add(el.seat.designator.replace(/^\d+/, ""));
+      columns[si] = [...set].sort();
+    });
 
   function choose(designator: string, serviceId: string) {
     const key = `${map.segmentId}:${who}`;
@@ -169,8 +178,9 @@ function SeatPicker({ maps, travellers, currency, picks, onChange }: { maps: Sea
               <span className="w-6 text-right text-[11px] font-semibold text-slate-400">{row.number}</span>
               {row.sections.map((section, si) => (
                 <div key={si} className={cn("flex gap-1", si > 0 && "ml-4")}>
-                  {section.map((el, ei) => {
-                    if (el.kind !== "seat") return <span key={ei} className="h-8 w-8" aria-hidden="true" />;
+                  {(columns[si] ?? []).map((letter) => {
+                    const el = section.find((x) => x.kind === "seat" && x.seat.designator.replace(/^\d+/, "") === letter);
+                    if (!el || el.kind !== "seat") return <span key={letter} className="h-8 w-8" aria-hidden="true" />;
                     const seat = el.seat;
                     const price = seat.prices.find((p) => p.passengerId === who);
                     const owner = takenBy.get(seat.designator);
@@ -178,7 +188,7 @@ function SeatPicker({ maps, travellers, currency, picks, onChange }: { maps: Sea
                     const blocked = !price || (owner !== undefined && !mine);
                     return (
                       <button
-                        key={ei}
+                        key={letter}
                         type="button"
                         disabled={blocked}
                         onClick={() => price && choose(seat.designator, price.serviceId)}

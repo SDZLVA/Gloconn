@@ -111,7 +111,7 @@ export const dataBookingcomEngine: PackagesEngine = {
         : Promise.reject(new Error("flight data not configured"));
     const hotelsPromise: Promise<LiveHotel[]> =
       hasStay && (rapidApiKey() || staysActive())
-        ? retryOnce(() => (quick && !staysActive() ? searchBookingHotels : searchHotelsCombined)({
+        ? retryOnce(() => (quick && !staysActive() ? searchBookingHotels : (q: Parameters<typeof searchHotelsCombined>[0]) => searchHotelsCombined(q, quick ? { part: "booking" } : {}))({
             destination: request.destination ?? "",
             checkin: request.departureDate,
             checkout: request.returnDate!,
