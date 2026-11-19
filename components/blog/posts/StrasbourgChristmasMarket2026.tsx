@@ -36,6 +36,21 @@ const MARKETS = [
   "The OFF Market",
 ];
 
+const EVENT = [
+  "The market is called the Christkindelsmärik, Alsatian for \"market of the Christ Child\". The city says it began in 1570.",
+  "It was for a long time the only Christmas market in France, and is one of the oldest in Europe.",
+  "Today it is spread over several squares of the old town: the original market on Place Broglie, stalls around the cathedral, Little France and Place Kléber.",
+  "The centrepiece is the Grand Sapin, a giant fir on Place Kléber. Two Kiwanis club members had the idea for it in 1994.",
+];
+
+const SPECIAL = [
+  { title: "White mulled wine", text: "Vin chaud is usually red at Christmas markets. In Strasbourg, look for the white version made with Alsace wine, citrus and spices." },
+  { title: "Tarte flambée", text: "A very thin flatbread with crème fraîche, onions and bacon pieces (lardons). Also called flammekueche. Watch it being baked to order." },
+  { title: "Bredele", text: "Small Alsatian Christmas biscuits in many shapes. The Bas-Rhin bakers' federation has run a big bredele chalet on Place du Marché-aux-Poissons." },
+  { title: "Pain d'épices", text: "Alsatian gingerbread: soft, honey-sweet and spiced. Mireille Oster's shop in Little France is a name food writers often mention." },
+  { title: "Choucroute and bretzels", text: "Choucroute garnie (sauerkraut with sausages and pork) is the regional staple, usually served in a winstub. Bretzels are sold at the stalls." },
+];
+
 const GOOD_TO_KNOW = [
   { icon: "🕑", title: "Opening day starts at 14:00", text: "Friday 27 November opens in the afternoon; after that the chalets run from 11:30." },
   { icon: "🌙", title: "Late nights until 22:00", text: "Fridays 11 and 18 December and Saturdays 12 and 19 December stay open an hour longer." },
@@ -57,6 +72,19 @@ function ButtonLink({ href, children, external = false, primary = false }: { hre
     <Link href={href} className={cls}>
       {children}
     </Link>
+  );
+}
+
+function Bullets({ items }: { items: string[] }) {
+  return (
+    <ul className="mt-3 space-y-2">
+      {items.map((p) => (
+        <li key={p} className="flex gap-2 text-slate-700">
+          <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-700" />
+          <span>{p}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -98,6 +126,35 @@ export function StrasbourgChristmasMarket2026({ today }: { today: string }) {
           </a>
           . Hours and chalet count from regional press — check the official site before you go.
         </p>
+      </section>
+
+      <section aria-labelledby="event-title" className="space-y-1">
+        <h2 id="event-title" className="text-2xl font-extrabold text-slate-900">
+          About the event
+        </h2>
+        <Bullets items={EVENT} />
+        <p className="mt-2 text-xs text-slate-500">
+          History from the city&apos;s pages on{" "}
+          <a href="https://noel.strasbourg.eu/en/our-history" target="_blank" rel="noopener noreferrer" className="underline">
+            noel.strasbourg.eu
+          </a>
+          .
+        </p>
+      </section>
+
+      <section aria-labelledby="special-title" className="space-y-4">
+        <h2 id="special-title" className="text-2xl font-extrabold text-slate-900">
+          What makes it special
+        </h2>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {SPECIAL.map((s) => (
+            <li key={s.title} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="font-bold text-slate-900">{s.title}</p>
+              <p className="mt-1 text-sm text-slate-600">{s.text}</p>
+            </li>
+          ))}
+        </ul>
+        <p className="text-xs text-slate-500">Food and drink notes are from several travel and food guides; stalls change every year.</p>
       </section>
 
       <section id="getting-there" aria-labelledby="getting-there-title" className="scroll-mt-24 space-y-4">
