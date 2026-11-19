@@ -163,6 +163,17 @@ export function DestinationAutocomplete({
       );
       const worldCities = world.filter((p) => p.kind === "city" && !shownCodes.has(p.iata));
       const worldAirports = world.filter((p) => p.kind === "airport" && !shownCodes.has(p.iata));
+      if (worldKind === "all" && worldCities.length + worldAirports.length > 0) {
+        // Duffel branch: keep the server's order — each city, then its airports.
+        searchSections.push({
+          id: "world-places",
+          heading: "Cities and airports",
+          options: world
+            .filter((p) => !shownCodes.has(p.iata))
+            .map((p) => ({ id: p.id, label: p.label, description: p.description })),
+        });
+        return searchSections;
+      }
       if (worldCities.length > 0) {
         searchSections.push({
           id: "world-cities",
@@ -207,7 +218,7 @@ export function DestinationAutocomplete({
     }
 
     return idleSections;
-  }, [isSearching, debouncedQuery, recentDestinations, recentIds, world]);
+  }, [isSearching, debouncedQuery, recentDestinations, recentIds, world, worldKind]);
 
   function handleSelect(option: { id: string; label: string }) {
     const picked = world.find((p) => p.id === option.id);

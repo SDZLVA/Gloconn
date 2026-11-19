@@ -42,7 +42,7 @@ export function normalizePlaceText(value: string): string {
   return value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 }
 
-type Index = { places: WorldPlace[]; byId: Map<string, WorldPlace> };
+type Index = { places: WorldPlace[]; byId: Map<string, WorldPlace>; airportsByCity?: Map<string, WorldPlace[]> };
 let index: { at: number; value: Index } | null = null;
 let loading: Promise<Index> | null = null;
 
@@ -112,7 +112,15 @@ export function buildWorldIndex(cities: RawCity[], airports: RawAirport[], count
       key: normalizePlaceText(`${name} ${cityName} ${a.code}`),
     });
   }
-  return { places, byId: new Map(places.map((p) => [p.id, p])) };
+  const airportsByCity = new Map<string, WorldPlace[]>();
+  for (const p of places) {
+    if (p.kind !== "airport") continue;
+    const list = airportsByCity.get(p.cityIata) ?? [];
+    list.push(p);
+    airportsByCity.set(p.cityIata, list);
+  }
+  for (const list of airportsByCity.values()) list.sort((a, b) => b.weight - a.weight || a.name.localeCompare(b.name));
+  return { places, byId: new Map(places.map((p) => [p.id, p])), airportsByCity };
 }
 
 export async function getWorldIndex(): Promise<Index> {
@@ -150,7 +158,23 @@ export function searchWorld(idx: Index, query: string, kinds: WorldPlaceKind[], 
     scored.push({ place, score: score + Math.min(place.weight, 10) + (place.kind === "city" ? 5 : 0) });
   }
   scored.sort((a, b) => b.score - a.score || a.place.name.length - b.place.name.length);
-  return scored.slice(0, limit).map((s) => s.place);
+  if (!kinds.includes("airport") || !idx.airportsByCity) return scored.slice(0, limit).map((s) => s.place);
+  // Duffel branch: like the big flight sites — each matching city is followed
+  // by its own airports ("Milan" → all airports, then MXP, LIN, BGY).
+  const out: WorldPlace[] = [];
+  const seen = new Set<string>();
+  const add = (p: WorldPlace) => {
+    if (out.length < limit && !seen.has(p.id)) {
+      seen.add(p.id);
+      out.push(p);
+    }
+  };
+  for (const { place } of scored) {
+    if (out.length >= limit) break;
+    add(place);
+    if (place.kind === "city") for (const a of (idx.airportsByCity.get(place.iata) ?? []).slice(0, 4)) add(a);
+  }
+  return out;
 }
 
 export function isWorldPlaceId(id: string | undefined | null): boolean {

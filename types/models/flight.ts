@@ -21,6 +21,12 @@ export type FlightLeg = {
   durationMinutes: number;
   /** Origin, stopover airports…, destination (IATA). At least two. */
   airports: string[];
+  /** Duffel branch: time on the ground at each stopover (minutes), in order. */
+  layovers?: { airport: string; minutes: number }[];
+  /** Duffel branch: flight numbers, e.g. ["BA563", "BA2490"]. */
+  flightNumbers?: string[];
+  /** Duffel branch: the airline's fare name, e.g. "Basic", "Light". */
+  fareBrand?: string;
 };
 
 /**
@@ -102,6 +108,14 @@ export type Flight = {
   source?: "travelpayouts" | "skyscanner" | "google" | "duffel";
   /** Duffel: the offer to book on Glooconn (/book/flight/{offerId}); offers expire after a few minutes. */
   offerId?: string;
+  /** Duffel: bags included per traveller (null/omitted = unknown). */
+  checkedBags?: number | null;
+  carryOnBags?: number | null;
+  /** Duffel: fare rules before departure (fees may apply). */
+  refundable?: boolean | null;
+  changeable?: boolean | null;
+  /** Duffel: estimated CO2 for the whole trip and all travellers, kg. */
+  co2Kg?: number | null;
   sourceUrl?: string;
   /** Milestone 61: sourceUrl opens this exact flight (Google: outbound selected), not a route search. */
   sourceExact?: boolean;

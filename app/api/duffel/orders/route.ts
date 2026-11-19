@@ -1,11 +1,13 @@
 /**
  * POST /api/duffel/orders — Duffel branch: book a flight offer on Glooconn.
- * Body: { offerId, passengers: [{ id, title, gender, givenName, familyName, bornOn }], email, phone }.
+ * Body: { offerId, passengers: [{ id, title, gender, givenName, familyName, bornOn }], email, phone, services?: [{ id, quantity }] }.
+ * Extras (bags, seats) are re-priced from the airline's current offer and seat map.
  * Only works with a TEST token for now (no customer payment flow yet).
  */
 
 import { checkRateLimitCustom, getClientIp } from "@/lib/api/rateLimit";
-import { DuffelError, bookingEnabled, createOrder, getOffer, type BookingPassenger } from "@/features/duffel/client";
+import { DuffelError, bookingEnabled, createOrder, getOffer, getSeatMaps, type BookingPassenger } from "@/features/duffel/client";
+import { priceExtras, type ServicePick } from "@/features/duffel/extras";
 import { EMAIL, PHONE, passengerProblems, type PassengerInput } from "@/features/duffel/validate";
 
 const json = (body: unknown, status = 200) =>
@@ -18,7 +20,7 @@ export async function POST(request: Request) {
   const length = Number(request.headers.get("content-length") ?? 0);
   if (length > 20_000) return json({ ok: false, message: "Request too large." }, 400);
 
-  let body: { offerId?: unknown; passengers?: unknown; email?: unknown; phone?: unknown };
+  let body: { offerId?: unknown; passengers?: unknown; email?: unknown; phone?: unknown; services?: unknown };
   try {
     body = (await request.json()) as typeof body;
   } catch {
@@ -52,8 +54,15 @@ export async function POST(request: Request) {
       if (problems.length > 0) return json({ ok: false, message: problems[0] }, 400);
       passengers.push(input as BookingPassenger);
     }
-    const order = await createOrder(offer, passengers, { email, phone });
-    return json({ ok: true, bookingReference: order.bookingReference, total: offer.total, currency: offer.currency });
+    const picks: ServicePick[] = (Array.isArray(body.services) ? body.services.slice(0, 60) : []).map((x) => ({
+      id: typeof (x as ServicePick)?.id === "string" ? (x as ServicePick).id : "",
+      quantity: Number((x as ServicePick)?.quantity),
+    }));
+    const wantsSeats = picks.some((p) => p.quantity > 0 && !offer.bags.some((b) => b.id === p.id));
+    const priced = priceExtras(picks, offer, wantsSeats ? await getSeatMaps(offer) : []);
+    if (!priced.ok) return json({ ok: false, message: priced.message }, 400);
+    const order = await createOrder(offer, passengers, { email, phone }, { services: priced.services, total: priced.total });
+    return json({ ok: true, bookingReference: order.bookingReference, total: priced.total, currency: offer.currency });
   } catch (error) {
     const status = error instanceof DuffelError ? error.status : 0;
     console.error("[duffel] order failed", status, (error as Error)?.message);

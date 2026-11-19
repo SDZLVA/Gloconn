@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { FlightExtras, type BagPicks, type SeatPicks } from "@/components/booking/FlightExtras";
+import { priceExtras, type ServicePick } from "@/features/duffel/extras";
+import type { BagOption, SeatMap } from "@/features/duffel/map";
 import { EMAIL, PHONE, passengerProblems, type PassengerInput } from "@/features/duffel/validate";
 import { formatMoney } from "@/lib/money";
 
@@ -12,10 +15,39 @@ const label = "block text-sm font-semibold text-slate-800";
 const TYPE_LABEL = { adult: "Adult", child: "Child (2–17)", infant: "Infant (under 2)" } as const;
 
 /** Duffel branch — traveller details and "Book now" (test bookings only for now). */
-export function FlightBookingForm({ offerId, passengers, total, currency, testMode }: { offerId: string; passengers: Pax[]; total: number; currency: string; testMode: boolean }) {
+export function FlightBookingForm({
+  offerId,
+  passengers,
+  total,
+  currency,
+  testMode,
+  bags = [],
+  seatMaps = [],
+}: {
+  offerId: string;
+  passengers: Pax[];
+  total: number;
+  currency: string;
+  testMode: boolean;
+  bags?: BagOption[];
+  seatMaps?: SeatMap[];
+}) {
   const [list, setList] = useState<PassengerInput[]>(passengers.map((p) => ({ id: p.id, title: "", gender: "", givenName: "", familyName: "", bornOn: "" })));
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [bagPicks, setBagPicks] = useState<BagPicks>({});
+  const [seatPicks, setSeatPicks] = useState<SeatPicks>({});
+  const picks: ServicePick[] = [
+    ...Object.entries(bagPicks).filter(([, q]) => q > 0).map(([id, quantity]) => ({ id, quantity })),
+    ...Object.values(seatPicks).map((s) => ({ id: s.serviceId, quantity: 1 })),
+  ];
+  const priced = priceExtras(picks, { total, currency, bags }, seatMaps);
+  const toPay = priced.ok ? priced.total : total;
+  const travellers = list.map((p, i) => ({
+    id: p.id,
+    type: passengers[i].type,
+    name: [p.givenName.trim(), p.familyName.trim()].filter(Boolean).join(" ") || `Traveller ${i + 1}`,
+  }));
   const [state, setState] = useState<{ status: "idle" | "sending" } | { status: "error"; message: string } | { status: "done"; ref: string }>({ status: "idle" });
 
   const set = (i: number, patch: Partial<PassengerInput>) => setList((all) => all.map((p, j) => (j === i ? { ...p, ...patch } : p)));
@@ -30,11 +62,12 @@ export function FlightBookingForm({ offerId, passengers, total, currency, testMo
     if (!EMAIL.test(email.trim())) return setState({ status: "error", message: "Enter a valid email address." });
     const cleanPhone = phone.replace(/[\s()-]/g, "");
     if (!PHONE.test(cleanPhone)) return setState({ status: "error", message: "Enter the phone number with the country code, e.g. +39 340 123 4567." });
+    if (!priced.ok) return setState({ status: "error", message: priced.message });
     setState({ status: "sending" });
     const response = await fetch("/api/duffel/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ offerId, passengers: list, email: email.trim(), phone: cleanPhone }),
+      body: JSON.stringify({ offerId, passengers: list, email: email.trim(), phone: cleanPhone, services: priced.services }),
     }).catch(() => null);
     const body = (await response?.json().catch(() => null)) as { ok?: boolean; message?: string; bookingReference?: string } | null;
     if (body?.ok && body.bookingReference) setState({ status: "done", ref: body.bookingReference });
@@ -99,6 +132,17 @@ export function FlightBookingForm({ offerId, passengers, total, currency, testMo
         </fieldset>
       ))}
 
+      <FlightExtras
+        bags={bags}
+        seatMaps={seatMaps}
+        travellers={travellers}
+        currency={currency}
+        bagPicks={bagPicks}
+        seatPicks={seatPicks}
+        onBags={setBagPicks}
+        onSeats={setSeatPicks}
+      />
+
       <fieldset className="rounded-2xl border border-slate-200 bg-white p-5">
         <legend className="px-1 text-sm font-bold text-slate-900">Contact details</legend>
         <div className="mt-1 grid gap-3 sm:grid-cols-2">
@@ -113,6 +157,26 @@ export function FlightBookingForm({ offerId, passengers, total, currency, testMo
         </div>
       </fieldset>
 
+      <section aria-label="Price summary" className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm">
+        <dl className="space-y-1.5">
+          <div className="flex justify-between gap-3">
+            <dt className="text-slate-700">Flights (all travellers)</dt>
+            <dd className="font-semibold text-slate-900">{formatMoney(total, currency)}</dd>
+          </div>
+          {priced.ok &&
+            priced.lines.map((line, i) => (
+              <div key={i} className="flex justify-between gap-3">
+                <dt className="text-slate-700">{line.label}</dt>
+                <dd className="font-semibold text-slate-900">{line.amount === 0 ? "Free" : formatMoney(line.amount, currency)}</dd>
+              </div>
+            ))}
+          <div className="flex justify-between gap-3 border-t border-slate-200 pt-2 text-base">
+            <dt className="font-bold text-slate-900">Total</dt>
+            <dd className="font-extrabold text-slate-900">{formatMoney(toPay, currency)}</dd>
+          </div>
+        </dl>
+      </section>
+
       {state.status === "error" && (
         <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">
           {state.message}
@@ -124,7 +188,7 @@ export function FlightBookingForm({ offerId, passengers, total, currency, testMo
         disabled={state.status === "sending"}
         className="flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-700 px-5 text-base font-bold text-white shadow-md shadow-brand-700/20 hover:bg-brand-800 disabled:opacity-60"
       >
-        {state.status === "sending" ? "Booking with the airline…" : `${testMode ? "Make test booking" : "Book now"} · ${formatMoney(total, currency)}`}
+        {state.status === "sending" ? "Booking with the airline…" : `${testMode ? "Make test booking" : "Book now"} · ${formatMoney(toPay, currency)}`}
       </button>
     </form>
   );

@@ -11,7 +11,8 @@ import type { DataFlightsSearch } from "@/features/flightsData/map";
 import { convertAmount } from "@/features/fx/ecb";
 import { eurRates } from "@/features/fx/rates";
 import { readCache, writeCache } from "@/features/flightsFallback/store";
-import { duffelErrorMessage, mapDuffelOffers, offerRequestBody, summarizeOffer, type OfferSummary } from "@/features/duffel/map";
+import { duffelErrorMessage, mapDuffelOffers, mapSeatMaps, offerRequestBody, summarizeOffer, type OfferSummary, type SeatMap } from "@/features/duffel/map";
+import type { ServicePick } from "@/features/duffel/extras";
 import type { Flight } from "@/types/models";
 
 const BASE = "https://api.duffel.com";
@@ -68,7 +69,7 @@ async function duffel(path: string, init: { method?: string; body?: unknown; tim
 
 /** Flights for a search (live from airlines through Duffel), prices in the search currency. Cached 10 minutes. */
 export async function searchDuffelFlights(search: DataFlightsSearch, destinationId = ""): Promise<Flight[]> {
-  const key = `duffel:v1:${duffelMode()}:${search.origin}:${search.destination}:${search.departureDate}:${search.returnDate ?? "ow"}:${search.adults}-${search.children}-${search.infants}:${search.currency}`;
+  const key = `duffel:v2:${duffelMode()}:${search.origin}:${search.destination}:${search.departureDate}:${search.returnDate ?? "ow"}:${search.adults}-${search.children}-${search.infants}:${search.currency}`;
   const hit = await readCache<{ flights: Flight[] }>(key);
   if (hit && Array.isArray(hit.flights)) return hit.flights;
   const raw = await duffel("/air/offer_requests?return_offers=true&supplier_timeout=20000", { method: "POST", body: offerRequestBody(search), timeoutMs: 40_000 });
@@ -92,10 +93,19 @@ async function inCurrency(flights: Flight[], currency: string): Promise<Flight[]
 export async function getOffer(offerId: string): Promise<OfferSummary | null> {
   if (!/^off_[A-Za-z0-9]+$/.test(offerId)) return null;
   try {
-    return summarizeOffer(await duffel(`/air/offers/${offerId}`));
+    return summarizeOffer(await duffel(`/air/offers/${offerId}?return_available_services=true`));
   } catch (error) {
     if (error instanceof DuffelError && (error.status === 404 || error.status === 422)) return null;
     throw error;
+  }
+}
+
+/** Seat maps for the offer's flights ([] when the airline doesn't sell seats through Duffel). */
+export async function getSeatMaps(offer: OfferSummary): Promise<SeatMap[]> {
+  try {
+    return mapSeatMaps(await duffel(`/air/seat_maps?offer_id=${encodeURIComponent(offer.id)}`, { timeoutMs: 15_000 }), offer);
+  } catch {
+    return [];
   }
 }
 
@@ -113,6 +123,7 @@ export async function createOrder(
   offer: OfferSummary,
   passengers: BookingPassenger[],
   contact: { email: string; phone: string },
+  extras: { services: ServicePick[]; total: number } = { services: [], total: offer.total },
 ): Promise<{ orderId: string; bookingReference: string }> {
   const adults = offer.passengers.filter((p) => p.type === "adult").map((p) => p.id);
   const infants = offer.passengers.filter((p) => p.type === "infant").map((p) => p.id);
@@ -132,7 +143,9 @@ export async function createOrder(
         // Each infant travels on an adult's lap.
         ...(adults.indexOf(p.id) >= 0 && infants[adults.indexOf(p.id)] ? { infant_passenger_id: infants[adults.indexOf(p.id)] } : {}),
       })),
-      payments: [{ type: "balance", amount: offer.total.toFixed(2), currency: offer.currency }],
+      ...(extras.services.length > 0 ? { services: extras.services } : {}),
+      // The payment must equal the offer plus every extra.
+      payments: [{ type: "balance", amount: extras.total.toFixed(2), currency: offer.currency }],
     },
   };
   const raw = (await duffel("/air/orders", { method: "POST", body, timeoutMs: 60_000 })) as { data?: { id?: string; booking_reference?: string } };
