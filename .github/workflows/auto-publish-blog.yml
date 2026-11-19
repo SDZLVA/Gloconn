@@ -1,0 +1,64 @@
+name: Auto-publish blog
+
+# When CI passes on a pushed "milestone-*" branch whose ONLY changes are blog
+# files, open a PR and merge it (merge commit, same as before). Any other kind
+# of change is left alone for a human. Needs (Settings > Actions > General):
+# "Read and write permissions" + "Allow GitHub Actions to create and approve
+# pull requests". NOTE: workflow_run only runs from the default branch (main).
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-publish-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      startsWith(github.event.workflow_run.head_branch, 'milestone-')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open PR and merge when only blog files changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+
+          # 1. Still the newest commit on the branch? (a newer push has its own CI run)
+          tip=$(gh api "repos/$REPO/git/ref/heads/$BRANCH" --jq .object.sha)
+          if [ "$tip" != "$SHA" ]; then echo "Branch moved on; skipping."; exit 0; fi
+
+          # 2. What does the branch change compared with main?
+          cmp=$(gh api "repos/$REPO/compare/main...$SHA")
+          ahead=$(jq -r .ahead_by <<<"$cmp")
+          files=$(jq -r '.files[].filename' <<<"$cmp")
+          echo "ahead_by=$ahead"; echo "$files"
+          if [ "$ahead" -lt 1 ] || [ "$ahead" -gt 3 ]; then echo "Nothing to publish or too many commits; skipping."; exit 0; fi
+          if [ -z "$files" ]; then echo "No files changed; skipping."; exit 0; fi
+
+          # 3. Blog-only allowlist (anything else = human review)
+          allowed='^(components/blog/posts/[A-Za-z0-9_]+\.tsx|components/blog/registry\.tsx|lib/blog/posts\.ts|lib/blog/photos\.ts)$'
+          bad=$(grep -vE "$allowed" <<<"$files" || true)
+          if [ -n "$bad" ]; then echo "Not blog-only, leaving for a human:"; echo "$bad"; exit 0; fi
+
+          # 4. PR (reuse an open one) and merge exactly this commit
+          pr=$(gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -z "$pr" ]; then
+            title=$(jq -r '.commits[-1].commit.message | split("\n")[0]' <<<"$cmp")
+            pr=$(gh pr create --repo "$REPO" --base main --head "$BRANCH" --title "$title" \
+              --body "Automatic blog publish: CI is green and only blog files changed." | grep -oE '[0-9]+$')
+          fi
+          gh pr merge "$pr" --repo "$REPO" --merge --match-head-commit "$SHA"
+          echo "Merged PR #$pr"
