@@ -39,7 +39,7 @@ export const BLOG_POSTS: readonly BlogPostMeta[] = [
     slug: "strasbourg-christmas-market-2026",
     title: "Strasbourg Christmas market 2026: dates, how to get there from Milan and where to stay",
     description:
-      "The Strasbourg Christmas market runs 27 November to 24 December 2026. Opening hours, late nights, how to get there from Milan by flight, train or bus, and where to stay, with live prices.",
+      "Strasbourg Christmas market: 27 Nov to 24 Dec 2026. Opening hours, how to get there from Milan by flight, train or bus, and where to stay, with live prices.",
     published: "2026-11-18",
     readMinutes: 4,
     tags: ["Christmas markets", "Strasbourg", "Milan", "Winter"],
