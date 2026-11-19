@@ -133,6 +133,17 @@ export function PackageBookingView({ packageId, flightId }: { packageId: string;
             </div>
             {/* Milestone 61: when the price came from Google or Skyscanner, their link opens
                 this exact flight, so it is the main button; Aviasales is only a route search. */}
+            {flight.source === "duffel" && flight.offerId && (
+              <div className="mt-4 space-y-1.5">
+                <Link
+                  href={`/book/flight/${encodeURIComponent(flight.offerId)}`}
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-800"
+                >
+                  Book this flight on Glooconn
+                </Link>
+                <p className="text-xs text-slate-500">Book and pay here — we check the price with the airline again first.</p>
+              </div>
+            )}
             {sourceFirst && flight.sourceUrl && (
               <div className="mt-4 space-y-1.5">
                 <a
@@ -150,6 +161,7 @@ export function PackageBookingView({ packageId, flightId }: { packageId: string;
                 </p>
               </div>
             )}
+            {flight.source !== "duffel" && (
             <div className="mt-4">
               {sourceFirst && <p className="mb-2 text-sm font-semibold text-slate-800">Or compare prices</p>}
               {flightLinks.length > 0 ? (
@@ -158,6 +170,7 @@ export function PackageBookingView({ packageId, flightId }: { packageId: string;
                 !sourceFirst && <p className="text-sm text-slate-600">This fare can be booked from the flights list.</p>
               )}
             </div>
+            )}
             {!sourceFirst && flight.sourceUrl && (flight.source === "google" || flight.source === "skyscanner") && (
               <a
                 href={flight.sourceUrl}

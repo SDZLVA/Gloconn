@@ -42,7 +42,7 @@ export function DataFlightsList({ flights, travelers, roundTrip }: { flights: Fl
   return (
     <div className="space-y-4">
       <p className="text-xs text-slate-500">
-        {(() => {
+        {flights.some((f) => f.source === "duffel") ? "Live prices straight from the airlines. Book here on Glooconn — the price is checked again before you pay." : (() => {
           const live = [...new Set(flights.map((f) => f.source).filter((x) => x === "google" || x === "skyscanner"))].map((x) =>
             x === "google" ? "Google Flights" : "Skyscanner",
           );
@@ -91,7 +91,15 @@ export function DataFlightsList({ flights, travelers, roundTrip }: { flights: Fl
               </div>
               {/* Milestone 52: the primary button opens the exact flight where we can —
                   Skyscanner's own itinerary page, or the exact Aviasales ticket. */}
-              {(flight.source === "skyscanner" || (flight.source === "google" && flight.sourceExact)) && flight.sourceUrl ? (
+              {/* Duffel branch: book on Glooconn. */}
+              {flight.source === "duffel" && flight.offerId ? (
+                <a
+                  href={`/book/flight/${encodeURIComponent(flight.offerId)}`}
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-4 text-sm font-bold text-white hover:bg-brand-800"
+                >
+                  Book on Glooconn
+                </a>
+              ) : (flight.source === "skyscanner" || (flight.source === "google" && flight.sourceExact)) && flight.sourceUrl ? (
                 <>
                   <a
                     href={flight.sourceUrl}

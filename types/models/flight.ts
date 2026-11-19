@@ -99,7 +99,9 @@ export type Flight = {
    * Milestone 49: where the price came from (travelpayouts = saved fares;
    * skyscanner / google = live at search time) and a link to that source.
    */
-  source?: "travelpayouts" | "skyscanner" | "google";
+  source?: "travelpayouts" | "skyscanner" | "google" | "duffel";
+  /** Duffel: the offer to book on Glooconn (/book/flight/{offerId}); offers expire after a few minutes. */
+  offerId?: string;
   sourceUrl?: string;
   /** Milestone 61: sourceUrl opens this exact flight (Google: outbound selected), not a route search. */
   sourceExact?: boolean;
