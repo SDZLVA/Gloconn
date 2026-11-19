@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { FlightBookingForm } from "@/components/booking/FlightBookingForm";
 import { bookingEnabled, duffelConfigured, duffelMode, getOffer } from "@/features/duffel/client";
+import { convertAmount } from "@/features/fx/ecb";
+import { eurRates } from "@/features/fx/rates";
 import { formatMoney } from "@/lib/money";
 
 /** Duffel branch — book a flight on Glooconn: the offer at today's price + traveller details. */
@@ -34,6 +36,9 @@ export default async function BookFlightPage({ params }: { params: Promise<{ off
   if (offer === undefined) return <Message title="We couldn't reach the airline" text="Please try again in a moment." />;
   if (!offer) return <Message title="This price has expired" text="Airline prices change quickly. Search again to see today's flights and prices." />;
   const testMode = duffelMode() === "test";
+  // Airlines charge in their own currency; show euros next to it (the search list shows euros).
+  const rates = offer.currency !== "EUR" ? await eurRates() : null;
+  const inEuro = rates ? convertAmount(offer.total, offer.currency, "EUR", rates) : null;
   const counts = { adult: 0, child: 0, infant: 0 };
   for (const p of offer.passengers) counts[p.type] += 1;
 
@@ -86,6 +91,7 @@ export default async function BookFlightPage({ params }: { params: Promise<{ off
           <div className="text-right">
             <p className="text-xs text-slate-500">Total for all travellers</p>
             <p className="text-3xl font-extrabold text-slate-900">{formatMoney(offer.total, offer.currency)}</p>
+            {inEuro !== null && <p className="text-xs text-slate-500">about {formatMoney(inEuro, "EUR")} · charged in {offer.currency}</p>}
           </div>
         </div>
       </section>
