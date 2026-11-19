@@ -16,10 +16,10 @@ export async function GET(request: Request) {
   if (!rate.allowed) return Response.json({ places: [] }, { status: 429 });
   try {
     const idx = await getWorldIndex();
-    const places: PlaceSuggestion[] = searchWorld(idx, q, [...kinds], 8).map((p) => ({
+    const places: PlaceSuggestion[] = searchWorld(idx, q, [...kinds], kinds.length > 1 ? 12 : 8).map((p) => ({
       id: p.id,
       label: p.kind === "city" ? p.label : p.label,
-      description: p.kind === "city" ? `City · ${p.iata}` : `Airport · ${p.cityName}`,
+      description: p.kind === "city" ? `City · all airports · ${p.iata}` : `Airport in ${p.cityName} · ${p.iata}`,
       kind: p.kind,
       name: p.kind === "city" ? p.cityName : p.name,
       country: p.country,

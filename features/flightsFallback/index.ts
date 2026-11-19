@@ -17,6 +17,7 @@ import { dataFlightsConfigured, searchDataFlights } from "@/features/flightsData
 import { mergeFlights, type DataFlightsSearch } from "@/features/flightsData/map";
 import { searchGoogle, searchSkyscanner } from "@/features/flightsFallback/providers";
 import { claimVisitor, readCache, storeConfigured, writeCache } from "@/features/flightsFallback/store";
+import { duffelConfigured, searchDuffelFlights } from "@/features/duffel/client";
 import type { Flight } from "@/types/models";
 
 const LIVE_TTL_MS = 6 * 60 * 60_000;
@@ -24,7 +25,7 @@ const EMPTY_TTL_MS = 60 * 60_000;
 // One search can ask twice (Packages + Flights tab); 6 ≈ 3–6 searches a day.
 export const VISITOR_LIMIT = 6;
 
-export type FlightsSource = "travelpayouts" | "skyscanner" | "google" | "none";
+export type FlightsSource = "travelpayouts" | "skyscanner" | "google" | "duffel" | "none";
 export type FallbackResult = {
   flights: Flight[];
   source: FlightsSource;
@@ -56,6 +57,9 @@ const liveKey = (s: DataFlightsSearch) =>
 /** Fewer saved fares than this → also ask the live sources (Milestone 52). */
 export const ENOUGH_SAVED_FARES = 5;
 
+/** Duffel branch switch: true = Duffel is the only flight source. */
+const DUFFEL_ONLY = true;
+
 export async function searchFlightsWithFallback(
   search: DataFlightsSearch,
   /**
@@ -66,6 +70,19 @@ export async function searchFlightsWithFallback(
   options: { visitor: string; destinationId?: string; debug?: boolean; only?: string; quick?: boolean },
 ): Promise<FallbackResult> {
   const destinationId = options.destinationId ?? "";
+  // DUFFEL BRANCH: flights come only from Duffel (bookable on Glooconn) —
+  // Travelpayouts, Google and Skyscanner are not used in this copy of the site.
+  if (DUFFEL_ONLY) {
+    if (!duffelConfigured()) return { flights: [], source: "none", why: "no DUFFEL_ACCESS_TOKEN" };
+    // The quick first answer has nothing (Duffel takes ~5–20 s); the page then asks for the full one.
+    if (options.quick) return { flights: [], source: "none", more: true };
+    const trace: string[] = [];
+    const flights = await searchDuffelFlights(search, destinationId).catch((e: unknown) => {
+      trace.push(`duffel failed: ${(e as Error)?.message ?? e}`);
+      return [] as Flight[];
+    });
+    return { flights, source: flights.length > 0 ? "duffel" : "none", ...(options.debug ? { trace } : {}) };
+  }
   let saved: Flight[] = [];
   if (dataFlightsConfigured() && !(options.debug && options.only)) {
     saved = await searchDataFlights(search, destinationId)

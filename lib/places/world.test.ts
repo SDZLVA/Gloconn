@@ -44,3 +44,9 @@ test("world places become Glooconn destinations", () => {
   const d = worldPlaceToDestination(idx.byId.get("airport-ORY")!);
   assert.deepEqual([d.iataCode, d.cityIataCode, d.country], ["ORY", "PAR", "France"]);
 });
+
+test("with airports: each city is followed by its own airports", () => {
+  const ids = searchWorld(idx, "paris", ["city", "airport"]).map((p) => p.id);
+  assert.deepEqual(ids.slice(0, 3), ["city-PAR", "airport-CDG", "airport-ORY"]);
+  assert.equal(new Set(ids).size, ids.length);
+});
