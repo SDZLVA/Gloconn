@@ -218,3 +218,18 @@ export async function findWorldDestinationByLabel(label: string): Promise<Destin
     return null;
   }
 }
+
+/** Duffel branch: centre of a city from its search-box label ("Paris, France"), for map-based hotel search. */
+export async function findCityCentreByLabel(label: string): Promise<{ latitude: number; longitude: number } | null> {
+  const [first, ...rest] = label.split(",").map((s) => s.trim());
+  if (!first) return null;
+  try {
+    const idx = await getWorldIndex();
+    const country = normalizePlaceText(rest.join(" "));
+    const matches = searchWorld(idx, first, ["city"], 10).filter((p) => normalizePlaceText(p.cityName) === normalizePlaceText(first));
+    const match = matches.find((p) => !country || normalizePlaceText(p.country) === country) ?? matches[0];
+    return match && match.latitude !== null && match.longitude !== null ? { latitude: match.latitude, longitude: match.longitude } : null;
+  } catch {
+    return null;
+  }
+}

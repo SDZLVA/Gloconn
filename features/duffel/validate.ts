@@ -2,7 +2,7 @@
 
 export type PassengerInput = { id: string; title: string; gender: string; givenName: string; familyName: string; bornOn: string };
 
-const NAME = /^[\p{L}][\p{L} '\-.]{0,39}$/u;
+export const NAME = /^[\p{L}][\p{L} '\-.]{0,39}$/u;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 export const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 export const PHONE = /^\+[1-9]\d{6,14}$/;

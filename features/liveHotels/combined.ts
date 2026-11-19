@@ -11,12 +11,20 @@ import { searchAgodaHotels, type AgodaTrace } from "@/features/liveHotels/agoda/
 import { mergeHotels } from "@/features/liveHotels/agoda/map";
 import { searchBookingHotels } from "@/features/liveHotels/bookingcom/client";
 import type { LiveHotel, LiveHotelsSearch } from "@/features/liveHotels/types";
+import { staysActive } from "@/features/duffel/client";
+import { searchDuffelStays } from "@/features/duffel/staysClient";
 
 export async function searchHotelsCombined(
   search: LiveHotelsSearch,
   /** Milestone 57: "booking" or "agoda" asks one site only (the page loads them side by side). */
   options: { trace?: AgodaTrace; fresh?: boolean; part?: "booking" | "agoda" } = {},
 ): Promise<{ hotels: LiveHotel[]; raw: unknown; agodaRaw: unknown; booking: LiveHotel[]; agoda: LiveHotel[] }> {
+  // Duffel branch: hotels only from Duffel Stays (bookable on Glooconn).
+  // The page asks "booking" and "agoda" side by side; Duffel answers the first.
+  if (staysActive()) {
+    const hotels = options.part === "agoda" ? [] : await searchDuffelStays(search);
+    return { hotels, raw: null, agodaRaw: null, booking: hotels, agoda: [] };
+  }
   const skip = Promise.resolve({ hotels: [] as LiveHotel[], raw: null as unknown });
   const [bookingSettled, agodaResult] = await Promise.all([
     (options.part === "agoda" ? skip : searchBookingHotels(search, { fresh: options.fresh })).then(

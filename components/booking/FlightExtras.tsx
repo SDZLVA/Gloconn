@@ -61,6 +61,7 @@ export function FlightExtras({
                           <p className="font-semibold text-slate-900">
                             {b.kind === "checked" ? "Checked bag" : "Cabin bag"}
                             {b.maxWeightKg ? ` · up to ${b.maxWeightKg} kg` : ""}
+                            {b.maxSize ? ` · max ${b.maxSize}` : ""}
                           </p>
                           <p className="text-xs text-slate-500">
                             {b.covers} · {formatMoney(b.amount, b.currency)} each{b.maxQuantity > 1 ? ` · max ${b.maxQuantity}` : ""}

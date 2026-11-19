@@ -111,6 +111,15 @@ export default async function BookFlightPage({ params }: { params: Promise<{ off
             {offer.carryOnBags !== null && <li>{offer.carryOnBags > 0 ? `✓ ${offer.carryOnBags} cabin bag included` : "Small personal item only"}</li>}
             {offer.refundable !== null && <li>{offer.refundable ? "✓ Refundable (fees may apply)" : "Non-refundable"}</li>}
             {offer.changeable !== null && <li>{offer.changeable ? "✓ Changes allowed (fees may apply)" : "No changes allowed"}</li>}
+            <li>
+              {offer.baggageRulesUrl ? (
+                <a href={offer.baggageRulesUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-brand-700 hover:text-brand-900">
+                  Bag size &amp; weight limits: {offer.airline} rules ↗
+                </a>
+              ) : (
+                <span className="text-slate-500">Bag size &amp; weight limits: see {offer.airline}&apos;s website</span>
+              )}
+            </li>
             {offer.co2Kg !== null && <li className="text-slate-500">About {Math.round(offer.co2Kg)} kg CO₂ for this trip</li>}
           </ul>
           <div className="text-right">

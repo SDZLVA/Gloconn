@@ -33,6 +33,12 @@ export function duffelMode(): "test" | "live" | null {
   return t.startsWith("duffel_test_") ? "test" : "live";
 }
 
+/** Duffel branch: hotels come only from Duffel Stays (booked on Glooconn). */
+const DUFFEL_STAYS_ONLY = true;
+export function staysActive(): boolean {
+  return DUFFEL_STAYS_ONLY && duffelConfigured();
+}
+
 /** Only test bookings for now (no customer payment flow yet). */
 export function bookingEnabled(): boolean {
   return duffelMode() === "test";
@@ -47,7 +53,7 @@ export class DuffelError extends Error {
   }
 }
 
-async function duffel(path: string, init: { method?: string; body?: unknown; timeoutMs?: number } = {}): Promise<unknown> {
+export async function duffel(path: string, init: { method?: string; body?: unknown; timeoutMs?: number } = {}): Promise<unknown> {
   const t = token();
   if (!t) throw new DuffelError("Duffel is not configured", 503);
   const response = await fetch(`${BASE}${path}`, {
@@ -78,14 +84,14 @@ export async function searchDuffelFlights(search: DataFlightsSearch, destination
   return flights;
 }
 
-async function inCurrency(flights: Flight[], currency: string): Promise<Flight[]> {
+export async function inCurrency<T extends { price: number; currency: string }>(items: T[], currency: string): Promise<T[]> {
   const target = currency.toUpperCase();
-  if (flights.every((f) => f.currency.toUpperCase() === target)) return flights;
+  if (items.every((f) => f.currency.toUpperCase() === target)) return items;
   const rates = await eurRates();
-  if (!rates) return flights;
-  return flights.map((f) => {
+  if (!rates) return items;
+  return items.map((f) => {
     const price = convertAmount(f.price, f.currency, target, rates);
-    return price === null ? f : { ...f, price: Math.round(price * 100) / 100, currency: target as Flight["currency"] };
+    return price === null ? f : ({ ...f, price: Math.round(price * 100) / 100, currency: target } as T);
   });
 }
 

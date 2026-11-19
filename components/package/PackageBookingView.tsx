@@ -131,6 +131,26 @@ export function PackageBookingView({ packageId, flightId }: { packageId: string;
                 </span>
               </p>
             </div>
+            {/* Duffel branch: what bags the fare includes (size and weight limits are on the flight booking page). */}
+            {(flight.carryOnBags != null || flight.checkedBags != null) && (
+              <ul className="mt-2 flex flex-wrap gap-1.5 text-xs font-semibold">
+                {flight.carryOnBags != null && (
+                  <li className={flight.carryOnBags > 0 ? "rounded-full bg-emerald-50 px-2.5 py-0.5 text-emerald-800" : "rounded-full bg-slate-100 px-2.5 py-0.5 text-slate-700"}>
+                    {flight.carryOnBags > 0 ? `✓ ${flight.carryOnBags} cabin bag` : "Personal item only"}
+                  </li>
+                )}
+                {flight.checkedBags != null && (
+                  <li className={flight.checkedBags > 0 ? "rounded-full bg-emerald-50 px-2.5 py-0.5 text-emerald-800" : "rounded-full bg-slate-100 px-2.5 py-0.5 text-slate-700"}>
+                    {flight.checkedBags > 0 ? `✓ ${flight.checkedBags} checked bag` : "No checked bag (add one when booking)"}
+                  </li>
+                )}
+                {flight.outboundLeg?.layovers?.length ? (
+                  <li className="rounded-full bg-amber-50 px-2.5 py-0.5 text-amber-900">
+                    Stop: {flight.outboundLeg.layovers.map((l) => `${l.airport} ${Math.floor(l.minutes / 60)}h${l.minutes % 60 ? ` ${l.minutes % 60}m` : ""}`).join(", ")}
+                  </li>
+                ) : null}
+              </ul>
+            )}
             {/* Milestone 61: when the price came from Google or Skyscanner, their link opens
                 this exact flight, so it is the main button; Aviasales is only a route search. */}
             {flight.source === "duffel" && flight.offerId && (
@@ -213,7 +233,11 @@ export function PackageBookingView({ packageId, flightId }: { packageId: string;
                   {...(external ? { target: "_blank", rel: "noopener noreferrer nofollow" } : {})}
                   className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-700 px-5 text-sm font-bold text-white hover:bg-brand-800"
                 >
-                  {external ? `Book this hotel on ${hotelSiteName(hotel.detailsUrl)} ↗` : "See this hotel & book"}
+                  {external
+                    ? `Book this hotel on ${hotelSiteName(hotel.detailsUrl)} ↗`
+                    : hotel.detailsUrl.startsWith("/book/stay/")
+                      ? "Choose your room & book on Glooconn"
+                      : "See this hotel & book"}
                 </Link>
               )}
               <Link

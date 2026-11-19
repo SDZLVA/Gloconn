@@ -14,6 +14,8 @@ export function filterHotels(hotels: LiveHotel[], filters: LiveHotelsFilters, ni
     if (filters.minRating > 0 && (hotel.rating ?? 0) < filters.minRating) return false;
     if (filters.refundableOnly && !hotel.refundable) return false;
     if (filters.types?.length && !filters.types.includes(hotel.propertyType ?? "other")) return false;
+    if (filters.amenities?.length && !filters.amenities.every((a) => hotel.amenities?.includes(a))) return false;
+    if (filters.maxDistanceKm && (typeof hotel.distanceKm !== "number" || hotel.distanceKm > filters.maxDistanceKm)) return false;
     return true;
   });
   if (filters.sort === "price") return [...kept].sort((a, b) => a.totalPrice - b.totalPrice);

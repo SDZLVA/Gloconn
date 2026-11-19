@@ -15,6 +15,7 @@ import { nightsBetween } from "@/features/liveHotels/filters";
 import { rapidApiKey, searchBookingHotels } from "@/features/liveHotels/bookingcom/client";
 import { agodaConfigured } from "@/features/liveHotels/agoda/client";
 import { searchHotelsCombined } from "@/features/liveHotels/combined";
+import { staysActive } from "@/features/duffel/client";
 import type { LiveHotel } from "@/features/liveHotels/types";
 import { dataFlightsConfigured } from "@/features/flightsData/client";
 import { searchFlightsWithFallback } from "@/features/flightsFallback";
@@ -109,8 +110,8 @@ export const dataBookingcomEngine: PackagesEngine = {
           })
         : Promise.reject(new Error("flight data not configured"));
     const hotelsPromise: Promise<LiveHotel[]> =
-      hasStay && rapidApiKey()
-        ? retryOnce(() => (quick ? searchBookingHotels : searchHotelsCombined)({
+      hasStay && (rapidApiKey() || staysActive())
+        ? retryOnce(() => (quick && !staysActive() ? searchBookingHotels : searchHotelsCombined)({
             destination: request.destination ?? "",
             checkin: request.departureDate,
             checkout: request.returnDate!,
@@ -125,7 +126,7 @@ export const dataBookingcomEngine: PackagesEngine = {
     let flights: Flight[] = [];
     if (flightsSettled.status === "fulfilled") flights = flightsSettled.value;
     else warnings.push(createProviderUnavailableWarning("flights"));
-    const partial = quick && (flightsMore || (hasStay && agodaConfigured()));
+    const partial = quick && (flightsMore || (hasStay && agodaConfigured() && !staysActive()));
     if (flightsSettled.status === "fulfilled" && flights.length === 0 && !(quick && flightsMore)) warnings.push(createNoRecentFlightPricesWarning());
 
     const nights = hasStay ? nightsBetween(request.departureDate, request.returnDate!) : 0;

@@ -10,6 +10,7 @@ import { checkRateLimitCustom, getClientIp } from "@/lib/api/rateLimit";
 import { nightsBetween } from "@/features/liveHotels/filters";
 import { BookingApiError, rapidApiKey } from "@/features/liveHotels/bookingcom/client";
 import { searchHotelsCombined } from "@/features/liveHotels/combined";
+import { staysActive } from "@/features/duffel/client";
 import type { LiveHotelsResponse, LiveHotelsSearch } from "@/features/liveHotels/types";
 
 const CACHE_MS = 10 * 60_000;
@@ -45,7 +46,7 @@ export async function GET(request: Request) {
   if (!search.destination || !ISO_DATE.test(search.checkin) || !ISO_DATE.test(search.checkout) || search.checkout <= search.checkin) {
     return json({ ok: false, code: "BAD_REQUEST", message: "Choose a destination and check-in / check-out dates." }, 400);
   }
-  if (!rapidApiKey()) {
+  if (!rapidApiKey() && !staysActive()) {
     return json({ ok: false, code: "NOT_CONFIGURED", message: "Live hotel prices are not switched on yet." }, 503);
   }
 

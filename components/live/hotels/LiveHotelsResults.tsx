@@ -157,6 +157,12 @@ export function LiveHotelsResults({ search, stayBudget, cityName, endpoint = "/a
     }
     return counts;
   }, [data]);
+  const amenityCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const hotel of data?.hotels ?? []) for (const a of hotel.amenities ?? []) counts[a] = (counts[a] ?? 0) + 1;
+    return counts;
+  }, [data]);
+  const hasDistance = useMemo(() => (data?.hotels ?? []).some((h) => typeof h.distanceKm === "number"), [data]);
   const starCounts = useMemo(() => {
     const counts: Record<number, number> = {};
     for (const hotel of data?.hotels ?? []) counts[hotel.stars] = (counts[hotel.stars] ?? 0) + 1;
@@ -226,7 +232,7 @@ export function LiveHotelsResults({ search, stayBudget, cityName, endpoint = "/a
             </button>
           </div>
         </div>
-        <HotelsFilterCard filters={filters} onChange={(next) => { setFilters(next); setFiltersSheetOpen(false); refresh(listTop.current); }} currency={search.currency} starCounts={starCounts} typeCounts={typeCounts} />
+        <HotelsFilterCard filters={filters} onChange={(next) => { setFilters(next); setFiltersSheetOpen(false); refresh(listTop.current); }} currency={search.currency} starCounts={starCounts} typeCounts={typeCounts} amenityCounts={amenityCounts} hasDistance={hasDistance} />
       </FiltersAside>
 
       <section ref={listTop} className="min-w-0 scroll-mt-24 space-y-4" aria-labelledby="hotels-count">

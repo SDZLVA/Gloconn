@@ -30,6 +30,10 @@ export type LiveHotel = {
   propertyType?: PropertyKind;
   /** Milestone 58: distance from the city centre (km). */
   distanceKm?: number | null;
+  /** Duffel branch: amenity codes (wifi, parking, pool…). */
+  amenities?: string[];
+  /** Duffel branch: hotel chain name. */
+  chain?: string;
 };
 
 export type LiveHotelsSearch = {
@@ -56,6 +60,10 @@ export type LiveHotelsFilters = {
   refundableOnly: boolean;
   /** Milestone 58: kinds of stay to keep; empty = any. */
   types: PropertyKind[];
+  /** Duffel branch: amenity codes every hotel must have; empty = any. */
+  amenities?: string[];
+  /** Duffel branch: max distance from the centre (km); null = any. */
+  maxDistanceKm?: number | null;
   sort: "recommended" | "price" | "rating" | "stars" | "distance";
 };
 
@@ -65,5 +73,7 @@ export const DEFAULT_HOTEL_FILTERS: LiveHotelsFilters = {
   minRating: 0,
   refundableOnly: false,
   types: [],
+  amenities: [],
+  maxDistanceKm: null,
   sort: "recommended",
 };

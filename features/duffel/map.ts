@@ -218,6 +218,8 @@ export type BagOption = {
   passengerId: string;
   kind: "checked" | "carry_on";
   maxWeightKg: number | null;
+  /** Largest allowed size, e.g. "90 × 75 × 43 cm" (null = not stated). */
+  maxSize: string | null;
   maxQuantity: number;
   amount: number;
   currency: string;
@@ -241,7 +243,15 @@ export type OfferSummary = {
   changeable: boolean | null;
   co2Kg: number | null;
   bags: BagOption[];
+  /** The airline's own page with bag sizes and weights (included bags carry no size in the API). */
+  baggageRulesUrl: string | null;
 };
+
+/** "90 × 75 × 43 cm" from Duffel's maximum_length/height/depth_cm. */
+export function bagSize(meta: Json): string | null {
+  const sides = [num(meta.maximum_length_cm), num(meta.maximum_height_cm), num(meta.maximum_depth_cm)].filter((n): n is number => n !== null && n > 0);
+  return sides.length > 0 ? `${sides.join(" × ")} cm` : null;
+}
 
 function bagOptions(offer: Json, sliceSegments: string[][]): BagOption[] {
   const out: BagOption[] = [];
@@ -259,7 +269,7 @@ function bagOptions(offer: Json, sliceSegments: string[][]): BagOption[] {
     const covers = sliceSegments.length > 1 && touched.every(Boolean) ? "Whole trip" : touched[1] && !touched[0] ? "Return" : sliceSegments.length > 1 ? "Outbound" : "Whole trip";
     // Normally one traveller per service; a shared one is shown once ("*").
     for (const passengerId of passengers.length === 1 ? passengers : ["*"]) {
-      out.push({ id, passengerId, kind, maxWeightKg: num(meta.maximum_weight_kg), maxQuantity: Math.max(1, Math.min(9, num(s.maximum_quantity) ?? 1)), amount, currency, covers });
+      out.push({ id, passengerId, kind, maxWeightKg: num(meta.maximum_weight_kg), maxSize: bagSize(meta), maxQuantity: Math.max(1, Math.min(9, num(s.maximum_quantity) ?? 1)), amount, currency, covers });
     }
   }
   return out;
@@ -300,6 +310,10 @@ export function summarizeOffer(raw: unknown): OfferSummary | null {
     ...fareRules(offer),
     co2Kg: num(offer.total_emissions_kg),
     bags: bagOptions(offer, rawSlices.map((s) => list(s.segments).map((g) => str(g.id) ?? ""))),
+    baggageRulesUrl: (() => {
+      const url = str(obj(list(rawSlices[0]?.segments)[0]?.marketing_carrier).conditions_of_carriage_url);
+      return url && /^https:\/\//.test(url) ? url : null;
+    })(),
   };
 }
 
