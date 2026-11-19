@@ -26,6 +26,16 @@ export type BlogPostMeta = {
 
 export const BLOG_POSTS: readonly BlogPostMeta[] = [
   {
+    slug: "prague-christmas-markets-2026",
+    title: "Prague Christmas markets 2026: dates, what to eat and how to get there",
+    description:
+      "Prague's big Christmas markets open 28 November 2026 and run to 6 January 2027. Dates, hours, what to eat and drink, how to get there from Milan, London and Paris, where to stay.",
+    published: "2026-11-19",
+    readMinutes: 5,
+    tags: ["Christmas markets", "Prague", "Winter", "City break"],
+    photo: "prague",
+  },
+  {
     slug: "strasbourg-christmas-market-2026",
     title: "Strasbourg Christmas market 2026: dates, how to get there from Milan and where to stay",
     description:
