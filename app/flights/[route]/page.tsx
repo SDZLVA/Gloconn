@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { RouteSearchBox } from "@/components/routes/RouteSearchBox";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { getAppConfig } from "@/lib/config";
+import { breadcrumbJsonLd, faqJsonLd } from "@/lib/seo/jsonld";
 import { monthlyPrices } from "@/features/routePrices/client";
 import { monthLabel, searchDatesFor, type MonthPrice } from "@/features/routePrices/parse";
 import { formatMoney } from "@/lib/money";
@@ -40,7 +43,7 @@ export async function generateMetadata({ params }: { params: Promise<{ route: st
   };
 }
 
-function Faq({ route, months }: { route: FlightRoute; months: MonthPrice[] }) {
+function faqItems(route: FlightRoute, months: MonthPrice[]): { q: string; a: string }[] {
   const from = route.from.name;
   const to = route.to.name;
   const cheapest = months.length > 0 ? months.reduce((a, b) => (b.price < a.price ? b : a)) : null;
@@ -66,6 +69,12 @@ function Faq({ route, months }: { route: FlightRoute; months: MonthPrice[] }) {
       a: `Yes. Glooconn combines flights and hotels into packages within your budget. You then book each part directly on our partner sites.`,
     },
   ];
+  return items;
+}
+
+function Faq({ route, items }: { route: FlightRoute; items: { q: string; a: string }[] }) {
+  const from = route.from.name;
+  const to = route.to.name;
   return (
     <section aria-labelledby="faq" className="space-y-3">
       <h2 id="faq" className="text-xl font-bold text-slate-900">
@@ -92,9 +101,21 @@ export default async function FlightRoutePage({ params }: { params: Promise<{ ro
   const cheapest = months.length > 0 ? months.reduce((a, b) => (b.price < a.price ? b : a)) : null;
   const tripDates = cheapest ? searchDatesFor(cheapest, now) : searchDatesFor({ month: now.slice(0, 7), departureDate: null, returnDate: null }, now);
   const related = relatedRoutes(route);
+  const faq = faqItems(route, months);
+  const { siteUrl } = getAppConfig().app;
 
   return (
     <div className="space-y-8">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd(siteUrl, [
+            { name: "Home", path: "/" },
+            { name: "Flight routes", path: "/flights" },
+            { name: `${route.from.name} to ${route.to.name}`, path: `/flights/${route.slug}` },
+          ]),
+          faqJsonLd(faq),
+        ]}
+      />
       <nav aria-label="Breadcrumb" className="text-sm text-slate-500">
         <Link href="/flights" className="font-semibold text-brand-700 hover:text-brand-900">
           Flight routes
@@ -187,7 +208,7 @@ export default async function FlightRoutePage({ params }: { params: Promise<{ ro
         </div>
       </section>
 
-      <Faq route={route} months={months} />
+      <Faq route={route} items={faq} />
 
       {related.length > 0 && (
         <section aria-labelledby="related" className="space-y-3">

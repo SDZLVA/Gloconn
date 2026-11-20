@@ -1,5 +1,8 @@
 import { HomeSearchHero } from "@/components/home/HomeSearchHero";
 import { TravelIdeas } from "@/components/home/TravelIdeas";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { getAppConfig } from "@/lib/config";
+import { websiteJsonLd } from "@/lib/seo/jsonld";
 
 /** Milestone 52: one canonical home page (?mode=… and other variants point here). */
 export const metadata = { alternates: { canonical: "/" } };
@@ -12,6 +15,8 @@ export const metadata = { alternates: { canonical: "/" } };
 export default function Home() {
   return (
     <>
+      {/* Milestone 72: Organization + WebSite structured data (name and logo in search results). */}
+      <JsonLd data={websiteJsonLd(getAppConfig().app.siteUrl)} />
       <HomeSearchHero />
       {/* Milestone 64: blog posts as photo cards. */}
       <TravelIdeas />
