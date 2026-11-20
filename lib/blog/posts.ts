@@ -26,6 +26,16 @@ export type BlogPostMeta = {
 
 export const BLOG_POSTS: readonly BlogPostMeta[] = [
   {
+    slug: "vienna-christmas-markets-2026",
+    title: "Vienna Christmas markets 2026: dates, hours and how to get there from Milan",
+    description:
+      "Vienna's Christmas markets are open now: Rathausplatz to 26 Dec, Schönbrunn to 6 Jan. Hours, what to try, how to get there from Milan by flight, train or bus, and where to stay.",
+    published: "2026-11-20",
+    readMinutes: 4,
+    tags: ["Christmas markets", "Vienna", "Milan", "Winter"],
+    photo: "viennaChristkindlmarkt",
+  },
+  {
     slug: "prague-christmas-markets-2026",
     title: "Prague Christmas markets 2026: dates, what to eat and how to get there",
     description:
