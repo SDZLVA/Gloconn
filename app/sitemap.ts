@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAppConfig } from "@/lib/config";
 import { CITY_GUIDES } from "@/lib/cityGuides/data";
+import { DESTINATIONS } from "@/lib/destinations/data";
 import { LISTED_ROUTES } from "@/lib/routes/catalog";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 
@@ -26,6 +27,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Milestone 74: content-first city pages.
   for (const guide of CITY_GUIDES) {
     pages.push({ url: `${siteUrl}/flights-from/${guide.slug}`, lastModified: new Date(`${guide.checked}T00:00:00Z`), changeFrequency: "monthly", priority: 0.7 });
+  }
+  // Milestone 75: destination pages.
+  for (const d of DESTINATIONS) {
+    pages.push({ url: `${siteUrl}/destinations/${d.slug}`, lastModified: new Date(`${d.checked}T00:00:00Z`), changeFrequency: "monthly", priority: 0.7 });
   }
   // Milestone 63: the blog.
   pages.push({ url: `${siteUrl}/blog`, lastModified, changeFrequency: "weekly", priority: 0.8 });
