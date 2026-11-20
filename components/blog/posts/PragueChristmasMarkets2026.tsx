@@ -20,6 +20,7 @@ const route = (from: FlightRoute["from"]): FlightRoute => ({ slug: `${from.slug}
 const MILAN_ROUTE = route(ROUTE_CITIES.MIL);
 const LONDON_ROUTE = route(ROUTE_CITIES.LON);
 const PARIS_ROUTE = route(ROUTE_CITIES.PAR);
+const AMSTERDAM_ROUTE = route(ROUTE_CITIES.AMS);
 
 const FACTS = [
   { label: "Main markets open", value: "28 Nov 2026" },
@@ -95,9 +96,10 @@ export function PragueChristmasMarkets2026({ today }: { today: string }) {
     : null;
 
   const flightCards = [
-    { city: "Milan", r: MILAN_ROUTE, note: "Compare flights from Milan to Prague." },
     { city: "London", r: LONDON_ROUTE, note: "Compare flights from London to Prague." },
     { city: "Paris", r: PARIS_ROUTE, note: "Compare flights from Paris to Prague." },
+    { city: "Amsterdam", r: AMSTERDAM_ROUTE, note: "Compare flights from Amsterdam to Prague." },
+    { city: "Milan", r: MILAN_ROUTE, note: "Compare flights from Milan to Prague." },
   ];
   const trains = ["Vienna", "Berlin", "Munich"];
 
@@ -156,7 +158,7 @@ export function PragueChristmasMarkets2026({ today }: { today: string }) {
           Getting there
         </h2>
         {when && <p className="text-sm text-slate-500">Buttons are set for the weekend of {when} — change the dates on the next page.</p>}
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {flightCards.map((c) => (
             <div key={c.city} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5">
               <p className="text-xs font-bold uppercase tracking-widest text-brand-700">✈ From {c.city}</p>
@@ -210,7 +212,7 @@ export function PragueChristmasMarkets2026({ today }: { today: string }) {
             ]}
           />
           <div className="mt-5 flex flex-wrap gap-2">
-            <ButtonLink href={search(MILAN_ROUTE, "hotels")} primary>
+            <ButtonLink href={search(LONDON_ROUTE, "hotels")} primary>
               Compare Prague hotels
             </ButtonLink>
             {bookingUrl && (
@@ -253,8 +255,8 @@ export function PragueChristmasMarkets2026({ today }: { today: string }) {
 
       <section className="rounded-3xl bg-brand-900 p-6 text-white sm:p-8">
         <h2 className="text-2xl font-extrabold">Flight + hotel in one search</h2>
-        <p className="mt-2 text-brand-100">Glooconn shows packages for Milan → Prague within your budget. You book each part directly with our partners.</p>
-        <Link href={search(MILAN_ROUTE)} className="mt-4 inline-flex min-h-11 items-center rounded-xl bg-white px-5 text-sm font-bold text-brand-900 hover:bg-brand-50">
+        <p className="mt-2 text-brand-100">Glooconn shows flight + hotel packages for Prague within your budget. Change your home city on the next page. You book each part directly with our partners.</p>
+        <Link href={search(LONDON_ROUTE)} className="mt-4 inline-flex min-h-11 items-center rounded-xl bg-white px-5 text-sm font-bold text-brand-900 hover:bg-brand-50">
           {when ? `Plan ${when}` : "Plan your trip"}
         </Link>
       </section>
