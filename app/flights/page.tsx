@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LISTED_ROUTES, type FlightRoute } from "@/lib/routes/catalog";
+import { CITY_GUIDES } from "@/lib/cityGuides/data";
+import { LISTED_ROUTES, ROUTE_CITIES, type FlightRoute } from "@/lib/routes/catalog";
 
 export const metadata = {
   title: "Popular flight routes",
@@ -19,6 +20,24 @@ export default function FlightRoutesIndex() {
           See the cheapest month to fly on each route, then turn it into a complete trip with a hotel, within your budget.
         </p>
       </header>
+      <section aria-labelledby="guides" className="space-y-3">
+        <h2 id="guides" className="text-xl font-bold text-slate-900">
+          City flight guides
+        </h2>
+        <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {CITY_GUIDES.map((g) => (
+            <li key={g.slug}>
+              <Link
+                href={`/flights-from/${g.slug}`}
+                className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-800 hover:border-brand-700 hover:text-brand-700"
+              >
+                Flights from {ROUTE_CITIES[g.cityCode].name}: airports and when to fly
+                <span aria-hidden="true">›</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
       {[...groups.entries()].map(([city, routes]) => (
         <section key={city} aria-labelledby={`from-${city}`} className="space-y-3">
           <h2 id={`from-${city}`} className="text-xl font-bold text-slate-900">

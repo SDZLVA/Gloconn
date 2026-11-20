@@ -43,7 +43,7 @@ export const ROUTE_CITIES = {
   YTO: { code: "YTO", name: "Toronto", country: "Canada", slug: "toronto" },
 } as const satisfies Record<string, RouteCity>;
 
-type CityCode = keyof typeof ROUTE_CITIES;
+export type CityCode = keyof typeof ROUTE_CITIES;
 
 const PAIRS: [CityCode, CityCode][] = [
   // From Milan
