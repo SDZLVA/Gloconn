@@ -32,6 +32,15 @@ export const ROUTE_CITIES = {
   BKK: { code: "BKK", name: "Bangkok", country: "Thailand", slug: "bangkok" },
   TYO: { code: "TYO", name: "Tokyo", country: "Japan", slug: "tokyo" },
   NYC: { code: "NYC", name: "New York", country: "United States", slug: "new-york" },
+  // Milestone 73: global origins and destinations (the site is worldwide, not only Europe).
+  SIN: { code: "SIN", name: "Singapore", country: "Singapore", slug: "singapore" },
+  DEL: { code: "DEL", name: "Delhi", country: "India", slug: "delhi" },
+  BOM: { code: "BOM", name: "Mumbai", country: "India", slug: "mumbai" },
+  DOH: { code: "DOH", name: "Doha", country: "Qatar", slug: "doha" },
+  KUL: { code: "KUL", name: "Kuala Lumpur", country: "Malaysia", slug: "kuala-lumpur" },
+  SYD: { code: "SYD", name: "Sydney", country: "Australia", slug: "sydney" },
+  LAX: { code: "LAX", name: "Los Angeles", country: "United States", slug: "los-angeles" },
+  YTO: { code: "YTO", name: "Toronto", country: "Canada", slug: "toronto" },
 } as const satisfies Record<string, RouteCity>;
 
 type CityCode = keyof typeof ROUTE_CITIES;
@@ -49,6 +58,26 @@ const PAIRS: [CityCode, CityCode][] = [
   ["LON", "DXB"], ["LON", "BKK"], ["LON", "NYC"],
   // From Colombo
   ["CMB", "MIL"], ["CMB", "ROM"], ["CMB", "LON"], ["CMB", "DXB"], ["CMB", "BKK"], ["CMB", "MLE"],
+  // Milestone 73 — worldwide. Routes with no recent prices are marked noindex by the page itself.
+  // From New York
+  ["NYC", "LON"], ["NYC", "PAR"], ["NYC", "ROM"], ["NYC", "MIL"], ["NYC", "MAD"], ["NYC", "LAX"], ["NYC", "DXB"], ["NYC", "DEL"],
+  // From Dubai
+  ["DXB", "LON"], ["DXB", "DEL"], ["DXB", "BOM"], ["DXB", "BKK"], ["DXB", "CMB"], ["DXB", "MLE"], ["DXB", "IST"], ["DXB", "PAR"],
+  // From Singapore
+  ["SIN", "BKK"], ["SIN", "TYO"], ["SIN", "SYD"], ["SIN", "LON"], ["SIN", "KUL"], ["SIN", "DEL"],
+  // From Delhi and Mumbai
+  ["DEL", "LON"], ["DEL", "DXB"], ["DEL", "BKK"], ["DEL", "SIN"], ["DEL", "NYC"],
+  ["BOM", "DXB"], ["BOM", "LON"], ["BOM", "SIN"], ["BOM", "BKK"],
+  // From Bangkok, Kuala Lumpur, Doha
+  ["BKK", "TYO"], ["BKK", "SIN"], ["BKK", "LON"], ["BKK", "DXB"],
+  ["KUL", "SIN"], ["KUL", "BKK"], ["KUL", "TYO"],
+  ["DOH", "LON"], ["DOH", "CMB"], ["DOH", "BKK"],
+  // From Sydney, Los Angeles, Toronto
+  ["SYD", "SIN"], ["SYD", "LON"], ["SYD", "TYO"], ["SYD", "LAX"],
+  ["LAX", "NYC"], ["LAX", "LON"], ["LAX", "TYO"],
+  ["YTO", "LON"], ["YTO", "NYC"], ["YTO", "PAR"],
+  // More Europe
+  ["PAR", "LON"], ["PAR", "NYC"], ["PAR", "BCN"], ["PAR", "ROM"], ["LON", "MAD"], ["LON", "IST"], ["LON", "ATH"], ["AMS", "LON"], ["AMS", "BCN"],
 ];
 
 export type FlightRoute = { slug: string; from: RouteCity; to: RouteCity };

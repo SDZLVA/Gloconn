@@ -3,7 +3,7 @@ import { FLIGHT_ROUTES, type FlightRoute } from "@/lib/routes/catalog";
 
 export const metadata = {
   title: "Popular flight routes",
-  description: "Cheap flights on popular routes from Milan, Rome, London and Colombo — prices by month, and complete trips with hotels on Glooconn.",
+  description: "Cheap flights on popular routes from cities around the world — Milan, London, New York, Dubai, Singapore and more. Prices by month, and complete trips with hotels on Glooconn.",
   alternates: { canonical: "/flights" },
 };
 
