@@ -1,16 +1,16 @@
 import Link from "next/link";
-import { FLIGHT_ROUTES, type FlightRoute } from "@/lib/routes/catalog";
+import { LISTED_ROUTES, type FlightRoute } from "@/lib/routes/catalog";
 
 export const metadata = {
   title: "Popular flight routes",
-  description: "Cheap flights on popular routes from Milan, Rome, London and Colombo — prices by month, and complete trips with hotels on Glooconn.",
+  description: "Cheap flights on popular routes from cities around the world — Milan, London, New York, Dubai, Singapore and more. Prices by month, and complete trips with hotels on Glooconn.",
   alternates: { canonical: "/flights" },
 };
 
 /** Milestone 62 — index of the route pages, grouped by departure city. */
 export default function FlightRoutesIndex() {
   const groups = new Map<string, FlightRoute[]>();
-  for (const route of FLIGHT_ROUTES) groups.set(route.from.name, [...(groups.get(route.from.name) ?? []), route]);
+  for (const route of LISTED_ROUTES) groups.set(route.from.name, [...(groups.get(route.from.name) ?? []), route]);
   return (
     <div className="space-y-8">
       <header className="space-y-2">

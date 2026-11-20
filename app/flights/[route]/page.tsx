@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { RouteSearchBox } from "@/components/routes/RouteSearchBox";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { BLOG_POSTS } from "@/lib/blog/posts";
+import { relatedPostsForRoute } from "@/lib/blog/related";
 import { getAppConfig } from "@/lib/config";
 import { breadcrumbJsonLd, faqJsonLd } from "@/lib/seo/jsonld";
 import { monthlyPrices } from "@/features/routePrices/client";
@@ -40,6 +42,8 @@ export async function generateMetadata({ params }: { params: Promise<{ route: st
     title,
     description: `Compare flight prices from ${route.from.name} to ${route.to.name} by month${cheapest ? ` — round trips from ${euro(cheapest)}` : ""}. Find the cheapest month, then add a hotel and plan the whole trip within your budget on Glooconn.`,
     alternates: { canonical: `/flights/${route.slug}` },
+    // A page with no price data is thin: keep it out of search results until prices exist.
+    ...(months.length === 0 ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
@@ -102,6 +106,7 @@ export default async function FlightRoutePage({ params }: { params: Promise<{ ro
   const tripDates = cheapest ? searchDatesFor(cheapest, now) : searchDatesFor({ month: now.slice(0, 7), departureDate: null, returnDate: null }, now);
   const related = relatedRoutes(route);
   const faq = faqItems(route, months);
+  const guides = relatedPostsForRoute(route, BLOG_POSTS);
   const { siteUrl } = getAppConfig().app;
 
   return (
@@ -209,6 +214,23 @@ export default async function FlightRoutePage({ params }: { params: Promise<{ ro
       </section>
 
       <Faq route={route} items={faq} />
+
+      {guides.length > 0 && (
+        <section aria-labelledby="guides" className="space-y-3">
+          <h2 id="guides" className="text-xl font-bold text-slate-900">
+            Travel guides for {route.to.name}
+          </h2>
+          <ul className="space-y-2">
+            {guides.map((p) => (
+              <li key={p.slug}>
+                <Link href={`/blog/${p.slug}`} className="font-semibold text-brand-700 hover:text-brand-900">
+                  {p.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {related.length > 0 && (
         <section aria-labelledby="related" className="space-y-3">

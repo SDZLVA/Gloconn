@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { FLIGHT_ROUTES, findRoute, relatedRoutes, routeSearchUrl } from "@/lib/routes/catalog";
+import { FLIGHT_ROUTES, LISTED_ROUTES, UNPRICED_ROUTE_SLUGS, findRoute, relatedRoutes, routeSearchUrl } from "@/lib/routes/catalog";
 
 test("route slugs are unique and readable", () => {
   const slugs = FLIGHT_ROUTES.map((r) => r.slug);
@@ -29,4 +29,11 @@ test("routeSearchUrl builds the results link", () => {
   const hotels = new URL(routeSearchUrl(route, { departureDate: "2026-12-10", returnDate: "2026-12-30" }, "hotels"), "https://x").searchParams;
   assert.equal(hotels.get("origin"), null);
   assert.equal(hotels.get("destination"), "Colombo, Sri Lanka");
+});
+
+test("listed routes exclude the unpriced ones, and every unpriced slug is a real route", () => {
+  assert.ok(UNPRICED_ROUTE_SLUGS.size > 0);
+  for (const s of UNPRICED_ROUTE_SLUGS) assert.ok(findRoute(s), `unknown slug ${s}`);
+  assert.equal(LISTED_ROUTES.length, FLIGHT_ROUTES.length - UNPRICED_ROUTE_SLUGS.size);
+  assert.ok(LISTED_ROUTES.every((r) => !UNPRICED_ROUTE_SLUGS.has(r.slug)));
 });

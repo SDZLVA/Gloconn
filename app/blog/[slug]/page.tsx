@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { POSTS } from "@/components/blog/registry";
+import { PostLinks } from "@/components/blog/PostLinks";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { PHOTOS, photoUrl } from "@/lib/blog/photos";
 import { BLOG_POSTS, findPost, postDate } from "@/lib/blog/posts";
@@ -80,6 +81,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <div className="mt-8">
         <Body today={today} />
       </div>
+      <PostLinks post={post} />
     </article>
   );
 }
