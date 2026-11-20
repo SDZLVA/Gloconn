@@ -33,6 +33,14 @@ export const PHOTOS = {
   pragueRoofs: { id: "photo-1766471674279-af0cd91b264a", alt: "Snow-covered red rooftops of Prague seen from above", by: "Carnet de Voyage d'Alex", page: `${U}mgEtt0EW2aM` },
   viennaChristkindlmarkt: { id: "photo-1761273075373-283827884bb5", alt: "The lit-up Wiener Christkindlmarkt arch in front of Vienna City Hall at night", by: "Jeffrey Zhang", page: `${U}ZocPJYse3tI` },
   viennaRathaus: { id: "photo-1761273075344-bd6150f90f7b", alt: "Vienna City Hall (Rathaus) lit up at night above the Christmas market", by: "Jeffrey Zhang", page: `${U}uz57Ep3Fbsg` },
+  // Milestone 75 — home "Hot destinations" and /destinations pages (checked 2026-11-20).
+  dubai: { id: "photo-1512453979798-5ea266f8880c", alt: "The Burj Khalifa and skyscrapers above a highway interchange in Dubai", by: "David Rodrigo", page: `${U}Fr6zexbmjmc` },
+  bangkok: { id: "photo-1563492065599-3520f775eeed", alt: "Orange-roofed temples in Bangkok", by: "Alejandro Cartagena", page: `${U}B64B6-kAWlw` },
+  maldives: { id: "photo-1573843981267-be1999ff37cd", alt: "Aerial view of a resort island and water villas in the Maldives", by: "Rayyu Maldives", page: `${U}xPsFXsbXJRg` },
+  tokyo: { id: "photo-1513407030348-c983a97b98d8", alt: "Tokyo Tower lit up at dusk above the city skyline", by: "Louie Martinez", page: `${U}IocJwyqRv3M` },
+  lisbonTram: { id: "photo-1585208798174-6cedd86e019a", alt: "A yellow tram on a street lined with historic buildings in Lisbon", by: "Aayush Gupta", page: `${U}ljhCEaHYWJ8` },
+  newYork: { id: "photo-1496588152823-86ff7695e68f", alt: "Panoramic view of the Brooklyn Bridge in New York", by: "Luca Bravo", page: `${U}_QdFx92MO2U` },
+  istanbul: { id: "photo-1527838832700-5059252407fa", alt: "Domes and minarets of Istanbul", by: "Fatih Yürür", page: `${U}kNSREmtaGOE` },
 } satisfies Record<string, BlogPhoto>;
 
 export type PhotoKey = keyof typeof PHOTOS;
