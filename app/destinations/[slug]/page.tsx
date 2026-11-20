@@ -50,7 +50,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
   const hotelsRoute: FlightRoute = { slug: `${city.slug}`, from: city, to: city };
 
   return (
-    <article className="mx-auto max-w-3xl space-y-8">
+    <article className="mx-auto max-w-5xl space-y-8">
       <JsonLd
         data={[
           breadcrumbJsonLd(siteUrl, [
@@ -60,14 +60,14 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
           faqJsonLd(d.faq),
         ]}
       />
-      <nav aria-label="Breadcrumb" className="text-sm text-slate-500">
+      <nav aria-label="Breadcrumb" className="max-w-3xl text-sm text-slate-500">
         <Link href="/" className="font-semibold text-brand-700 hover:text-brand-900">
           Home
         </Link>{" "}
         › {d.name}
       </nav>
 
-      <header className="space-y-3">
+      <header className="max-w-3xl space-y-3">
         <h1 className="text-3xl font-extrabold tracking-tight text-brand-900 sm:text-4xl">{d.title}</h1>
         <figure>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -94,7 +94,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         ))}
       </header>
 
-      <section aria-labelledby="attractions" className="space-y-3">
+      <section aria-labelledby="attractions" className="max-w-3xl space-y-3">
         <h2 id="attractions" className="text-xl font-bold text-slate-900">
           Top things to see in {d.name}
         </h2>
@@ -108,7 +108,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         </ul>
       </section>
 
-      <section aria-labelledby="when" className="space-y-2">
+      <section aria-labelledby="when" className="max-w-3xl space-y-2">
         <h2 id="when" className="text-xl font-bold text-slate-900">
           Best time to visit {d.name}
         </h2>
@@ -140,7 +140,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         </p>
       </section>
 
-      <section aria-labelledby="tips" className="rounded-2xl border border-brand-100 bg-brand-50 p-5">
+      <section aria-labelledby="tips" className="max-w-3xl rounded-2xl border border-brand-100 bg-brand-50 p-5">
         <h2 id="tips" className="text-lg font-bold text-brand-900">
           Quick checklist
         </h2>
@@ -151,7 +151,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         </ul>
       </section>
 
-      <section aria-labelledby="faq" className="space-y-3">
+      <section aria-labelledby="faq" className="max-w-3xl space-y-3">
         <h2 id="faq" className="text-xl font-bold text-slate-900">
           Questions about visiting {d.name}
         </h2>
@@ -165,7 +165,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         </dl>
       </section>
 
-      <p className="text-xs text-slate-500">Information checked {d.checked}. Seasons, opening hours and prices change, so confirm before you book.</p>
+      <p className="max-w-3xl text-xs text-slate-500">Information checked {d.checked}. Seasons, opening hours and prices change, so confirm before you book.</p>
     </article>
   );
 }
