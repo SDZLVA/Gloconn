@@ -31,6 +31,8 @@ export const PHOTOS = {
   strasbourgCathedral: { id: "photo-1601743859611-b8adb4d31cbe", alt: "Strasbourg Cathedral rising above the old-town streets", by: "Clément PIERSON", page: `${U}kPFM7vU3YA0` },
   prague: { id: "photo-1766470656764-08092ac99094", alt: "The lit Christmas tree and the Old Town Hall clock tower over the Christmas market stalls in Prague at night", by: "Carnet de Voyage d'Alex", page: `${U}1H7d0m1v5lA` },
   pragueRoofs: { id: "photo-1766471674279-af0cd91b264a", alt: "Snow-covered red rooftops of Prague seen from above", by: "Carnet de Voyage d'Alex", page: `${U}mgEtt0EW2aM` },
+  viennaChristkindlmarkt: { id: "photo-1761273075373-283827884bb5", alt: "The lit-up Wiener Christkindlmarkt arch in front of Vienna City Hall at night", by: "Jeffrey Zhang", page: `${U}ZocPJYse3tI` },
+  viennaRathaus: { id: "photo-1761273075344-bd6150f90f7b", alt: "Vienna City Hall (Rathaus) lit up at night above the Christmas market", by: "Jeffrey Zhang", page: `${U}uz57Ep3Fbsg` },
 } satisfies Record<string, BlogPhoto>;
 
 export type PhotoKey = keyof typeof PHOTOS;
