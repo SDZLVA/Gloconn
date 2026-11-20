@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAppConfig } from "@/lib/config";
-import { FLIGHT_ROUTES } from "@/lib/routes/catalog";
+import { LISTED_ROUTES } from "@/lib/routes/catalog";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 
 /** Public pages worth listing for search engines. */
@@ -19,7 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
   // Milestone 62: route pages (prices refresh every 12 h).
   pages.push({ url: `${siteUrl}/flights`, lastModified, changeFrequency: "weekly", priority: 0.8 });
-  for (const route of FLIGHT_ROUTES) {
+  for (const route of LISTED_ROUTES) {
     pages.push({ url: `${siteUrl}/flights/${route.slug}`, lastModified, changeFrequency: "daily", priority: 0.7 });
   }
   // Milestone 63: the blog.

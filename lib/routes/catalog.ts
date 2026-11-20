@@ -88,14 +88,35 @@ export const FLIGHT_ROUTES: readonly FlightRoute[] = PAIRS.map(([a, b]) => ({
   to: ROUTE_CITIES[b],
 }));
 
+/**
+ * Routes where Travelpayouts' free price cache had nothing on 2026-11-20 (checked on the M73
+ * preview). The page still exists and turns indexable by itself once prices appear, but
+ * it is kept out of the sitemap, the /flights index and "related" links so search engines
+ * are not shown empty pages. Re-check now and then and remove slugs that gained data.
+ */
+export const UNPRICED_ROUTE_SLUGS: ReadonlySet<string> = new Set([
+  "colombo-to-rome", "singapore-to-london", "dubai-to-delhi", "dubai-to-istanbul", "singapore-to-sydney", "dubai-to-paris",
+  "dubai-to-colombo", "dubai-to-london", "dubai-to-bangkok", "dubai-to-mumbai", "singapore-to-bangkok", "singapore-to-tokyo",
+  "dubai-to-male", "mumbai-to-dubai", "delhi-to-dubai", "mumbai-to-singapore", "mumbai-to-london", "singapore-to-delhi",
+  "delhi-to-new-york", "mumbai-to-bangkok", "bangkok-to-tokyo", "delhi-to-bangkok", "delhi-to-london", "delhi-to-singapore",
+  "singapore-to-kuala-lumpur", "bangkok-to-singapore", "bangkok-to-dubai", "kuala-lumpur-to-bangkok", "kuala-lumpur-to-tokyo",
+  "doha-to-london", "sydney-to-tokyo", "sydney-to-singapore", "kuala-lumpur-to-singapore", "doha-to-colombo", "bangkok-to-london",
+  "sydney-to-london", "doha-to-bangkok", "amsterdam-to-london", "paris-to-rome", "toronto-to-london", "los-angeles-to-london",
+  "paris-to-barcelona", "sydney-to-los-angeles", "toronto-to-paris", "paris-to-new-york", "paris-to-london", "los-angeles-to-tokyo",
+  "toronto-to-new-york", "los-angeles-to-new-york", "amsterdam-to-barcelona",
+]);
+
+/** Routes that are listed publicly (sitemap, index, related links). */
+export const LISTED_ROUTES: readonly FlightRoute[] = FLIGHT_ROUTES.filter((r) => !UNPRICED_ROUTE_SLUGS.has(r.slug));
+
 export function findRoute(slug: string): FlightRoute | null {
   return FLIGHT_ROUTES.find((r) => r.slug === slug) ?? null;
 }
 
 /** Other routes from the same city, and the way back if we have it. */
 export function relatedRoutes(route: FlightRoute, max = 8): FlightRoute[] {
-  const back = FLIGHT_ROUTES.find((r) => r.from.code === route.to.code && r.to.code === route.from.code);
-  const same = FLIGHT_ROUTES.filter((r) => r.from.code === route.from.code && r.slug !== route.slug);
+  const back = LISTED_ROUTES.find((r) => r.from.code === route.to.code && r.to.code === route.from.code);
+  const same = LISTED_ROUTES.filter((r) => r.from.code === route.from.code && r.slug !== route.slug);
   return [...(back ? [back] : []), ...same].slice(0, max);
 }
 

@@ -6,7 +6,7 @@
  */
 
 import type { BlogPostMeta } from "@/lib/blog/posts";
-import { FLIGHT_ROUTES, type FlightRoute } from "@/lib/routes/catalog";
+import { LISTED_ROUTES, type FlightRoute } from "@/lib/routes/catalog";
 
 export function postMentionsCity(post: BlogPostMeta, city: { name: string; slug: string }): boolean {
   return post.tags.includes(city.name) || (post.highlights ?? []).some((h) => h.anchor === city.slug);
@@ -14,7 +14,7 @@ export function postMentionsCity(post: BlogPostMeta, city: { name: string; slug:
 
 /** Route pages that end in a city this post is about (several origins per city, spread so one origin does not fill the list). */
 export function relatedRoutesForPost(post: BlogPostMeta, max = 6): FlightRoute[] {
-  const matches = FLIGHT_ROUTES.filter((r) => postMentionsCity(post, r.to));
+  const matches = LISTED_ROUTES.filter((r) => postMentionsCity(post, r.to));
   const perOrigin = new Map<string, number>();
   const picked: FlightRoute[] = [];
   // Pass 1: at most 2 per origin; pass 2: fill the rest.
