@@ -14,14 +14,18 @@ import { ROUTE_CITIES, routeSearchUrl, type FlightRoute } from "@/lib/routes/cat
  * written in the text: every price comes from the live search the buttons open.
  */
 
-const ROUTE: FlightRoute = { slug: "milan-to-vienna", from: ROUTE_CITIES.MIL, to: ROUTE_CITIES.VIE };
+const route = (from: FlightRoute["from"]): FlightRoute => ({ slug: `${from.slug}-to-vienna`, from, to: ROUTE_CITIES.VIE });
+const LONDON_ROUTE = route(ROUTE_CITIES.LON);
+const PARIS_ROUTE = route(ROUTE_CITIES.PAR);
+const ISTANBUL_ROUTE = route(ROUTE_CITIES.IST);
+const MILAN_ROUTE = route(ROUTE_CITIES.MIL);
 
 const FACTS = [
   { label: "Main market", value: "Rathausplatz, 13 Nov – 26 Dec" },
   { label: "Official markets", value: "15 in the city" },
   { label: "Rathausplatz hours", value: "10:00 – 22:00" },
   { label: "Longest season", value: "Schönbrunn, to 6 Jan 2027" },
-  { label: "Milan → Vienna flight", value: "about 1 h 30" },
+  { label: "Budapest → Vienna train", value: "about 2 h 30" },
   { label: "Entry", value: "Walking in is not ticketed*" },
 ];
 
@@ -74,11 +78,21 @@ export function ViennaChristmasMarkets2026({ today }: { today: string }) {
   const dates = weekend ? { departureDate: weekend.departureDate, returnDate: weekend.returnDate } : null;
   const when = weekend ? `${Number(weekend.departureDate.slice(8))}–${Number(weekend.returnDate.slice(8))} ${weekend.departureDate.slice(5, 7) === "12" ? "December" : "November"}` : null;
 
-  const packagesUrl = dates ? routeSearchUrl(ROUTE, dates) : "/?mode=packages";
-  const flightsUrl = dates ? routeSearchUrl(ROUTE, dates, "flights") : "/?mode=flights";
-  const hotelsUrl = dates ? routeSearchUrl(ROUTE, dates, "hotels") : "/?mode=hotels";
-  const trainUrl = dates ? buildOmioResultsLink({ from: "Milan", to: "Vienna", ...dates, travelMode: "TRAIN" }) : null;
-  const busUrl = dates ? buildOmioResultsLink({ from: "Milan", to: "Vienna", ...dates, travelMode: "BUS" }) : null;
+  const search = (r: FlightRoute, mode?: "flights" | "hotels") => (dates ? (mode ? routeSearchUrl(r, dates, mode) : routeSearchUrl(r, dates)) : `/?mode=${mode ?? "packages"}`);
+  const trainFrom = (city: string) => (dates ? buildOmioResultsLink({ from: city, to: "Vienna", ...dates, travelMode: "TRAIN" }) : null);
+  const packagesUrl = search(LONDON_ROUTE);
+  const hotelsUrl = search(LONDON_ROUTE, "hotels");
+  const flightCards = [
+    { city: "London", r: LONDON_ROUTE, note: "Compare flights from London to Vienna." },
+    { city: "Paris", r: PARIS_ROUTE, note: "Compare flights from Paris to Vienna." },
+    { city: "Istanbul", r: ISTANBUL_ROUTE, note: "Compare flights from Istanbul to Vienna." },
+    { city: "Milan", r: MILAN_ROUTE, note: "Omio shows about 9 direct flights a day from Milan, about 1 h 30." },
+  ];
+  const trains = [
+    { city: "Budapest", time: "about 2 h 30" },
+    { city: "Munich", time: "about 3 h 55" },
+    { city: "Prague", time: "about 4 h 15" },
+  ];
   const bookingUrl = dates
     ? buildBookingSearchUrl({ destination: "Vienna, Austria", ...dates, travelers: { adults: 2, children: 0, infants: 0, rooms: 1 } })
     : null;
@@ -87,7 +101,7 @@ export function ViennaChristmasMarkets2026({ today }: { today: string }) {
     <div className="space-y-10">
       <p className="text-lg leading-relaxed text-slate-700">
         Vienna&apos;s Christmas markets are open <strong>right now</strong>, and the last big ones open today, 20 November. The main market on Rathausplatz runs to{" "}
-        <strong>26 December</strong>. From Milan there is no direct train, but there are direct flights. Here are the facts, with live prices.
+        <strong>26 December</strong>. Budapest, Munich and Prague all have direct trains, and flights run from across Europe. Here are the facts, with live prices.
       </p>
 
       <section aria-label="Quick facts">
@@ -168,58 +182,34 @@ export function ViennaChristmasMarkets2026({ today }: { today: string }) {
 
       <section id="getting-there" aria-labelledby="getting-there-title" className="scroll-mt-24 space-y-4">
         <h2 id="getting-there-title" className="text-2xl font-extrabold text-slate-900">
-          Getting there from Milan
+          Getting there
         </h2>
         {when && <p className="text-sm text-slate-500">Buttons below are set for the weekend of {when}. Change the dates on the next page.</p>}
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5">
-            <p className="text-xs font-bold uppercase tracking-widest text-brand-700">✈ Flight</p>
-            <p className="mt-1 text-lg font-extrabold text-slate-900">About 1 h 30 min</p>
-            <ul className="mt-2 flex-1 space-y-1 text-sm text-slate-700">
-              <li>• Omio shows about 9 direct flights a day from Milan.</li>
-              <li>• Malpensa and Bergamo both have direct flights.</li>
-            </ul>
-            <div className="mt-4">
-              <ButtonLink href={flightsUrl} primary>
-                Compare flights
-              </ButtonLink>
-            </div>
-          </div>
-          <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5">
-            <p className="text-xs font-bold uppercase tracking-widest text-brand-700">🚆 Train</p>
-            <p className="mt-1 text-lg font-extrabold text-slate-900">9 h+, with changes</p>
-            <ul className="mt-2 flex-1 space-y-1 text-sm text-slate-700">
-              <li>• No direct train. Omio lists the fastest at about 9 h.</li>
-              <li>• Most trains run Milano Centrale → Wien Hbf.</li>
-            </ul>
-            <div className="mt-4">
-              {trainUrl ? (
-                <ButtonLink href={trainUrl} external primary>
-                  Train tickets on Omio
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {flightCards.map((c) => (
+            <div key={c.city} className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5">
+              <p className="text-xs font-bold uppercase tracking-widest text-brand-700">✈ From {c.city}</p>
+              <p className="mt-2 flex-1 text-sm text-slate-700">{c.note}</p>
+              <div className="mt-4">
+                <ButtonLink href={search(c.r, "flights")} primary>
+                  Compare flights
                 </ButtonLink>
-              ) : (
-                <ButtonLink href="/?mode=transport" primary>
-                  Mixed transport
-                </ButtonLink>
-              )}
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5">
-            <p className="text-xs font-bold uppercase tracking-widest text-brand-700">🚌 Bus</p>
-            <p className="mt-1 text-lg font-extrabold text-slate-900">Overnight, about 11 h 35</p>
-            <ul className="mt-2 flex-1 space-y-1 text-sm text-slate-700">
-              <li>• Omio lists 2 direct FlixBus buses a day.</li>
-              <li>• Slowest, but you sleep on the way.</li>
-            </ul>
-            <div className="mt-4">
-              {busUrl ? (
-                <ButtonLink href={busUrl} external>
-                  Bus tickets on Omio
+          ))}
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-700">🚆 Direct trains from nearby cities</p>
+          <p className="mt-1 text-sm text-slate-700">Average times from Omio. From Milan there is no direct train (about 9 h with changes).</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {trains.map((t) => {
+              const url = trainFrom(t.city);
+              return url ? (
+                <ButtonLink key={t.city} href={url} external>
+                  {t.city} → Vienna, {t.time}
                 </ButtonLink>
-              ) : (
-                <ButtonLink href="/?mode=transport">Mixed transport</ButtonLink>
-              )}
-            </div>
+              ) : null;
+            })}
           </div>
         </div>
       </section>
@@ -279,7 +269,7 @@ export function ViennaChristmasMarkets2026({ today }: { today: string }) {
       <section className="rounded-3xl bg-brand-900 p-6 text-white sm:p-8">
         <h2 className="text-2xl font-extrabold">Flight + hotel in one search</h2>
         <p className="mt-2 text-brand-100">
-          Glooconn shows packages for Milan → Vienna within your budget. You book each part directly with our partners.
+          Glooconn shows flight + hotel packages for Vienna within your budget. Change your home city on the next page. You book each part directly with our partners.
         </p>
         <Link href={packagesUrl} className="mt-4 inline-flex min-h-11 items-center rounded-xl bg-white px-5 text-sm font-bold text-brand-900 hover:bg-brand-50">
           {when ? `Plan ${when}` : "Plan your trip"}

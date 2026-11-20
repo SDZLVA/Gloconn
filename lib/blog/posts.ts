@@ -27,19 +27,19 @@ export type BlogPostMeta = {
 export const BLOG_POSTS: readonly BlogPostMeta[] = [
   {
     slug: "vienna-christmas-markets-2026",
-    title: "Vienna Christmas markets 2026: dates, hours and how to get there from Milan",
+    title: "Vienna Christmas markets 2026: dates, hours and how to get there",
     description:
-      "Vienna's Christmas markets are open now: Rathausplatz to 26 Dec, Schönbrunn to 6 Jan. Hours, what to try, how to get there from Milan by flight, train or bus, and where to stay.",
+      "Vienna's Christmas markets are open now: Rathausplatz to 26 Dec, Schönbrunn to 6 Jan. Hours, what to try, how to get there by flight or train, where to stay.",
     published: "2026-11-20",
     readMinutes: 4,
-    tags: ["Christmas markets", "Vienna", "Milan", "Winter"],
+    tags: ["Christmas markets", "Vienna", "Winter", "City break"],
     photo: "viennaChristkindlmarkt",
   },
   {
     slug: "prague-christmas-markets-2026",
     title: "Prague Christmas markets 2026: dates, what to eat and how to get there",
     description:
-      "Prague's big Christmas markets open 28 November 2026 and run to 6 January 2027. Dates, hours, what to eat and drink, how to get there from Milan, London and Paris, where to stay.",
+      "Prague's big Christmas markets run 28 Nov 2026 to 6 Jan 2027. Dates, hours, what to eat and drink, how to get there from London, Paris and more, where to stay.",
     published: "2026-11-19",
     readMinutes: 5,
     tags: ["Christmas markets", "Prague", "Winter", "City break"],
@@ -47,12 +47,12 @@ export const BLOG_POSTS: readonly BlogPostMeta[] = [
   },
   {
     slug: "strasbourg-christmas-market-2026",
-    title: "Strasbourg Christmas market 2026: dates, how to get there from Milan and where to stay",
+    title: "Strasbourg Christmas market 2026: dates, how to get there and where to stay",
     description:
-      "Strasbourg Christmas market: 27 Nov to 24 Dec 2026. Opening hours, how to get there from Milan by flight, train or bus, and where to stay, with live prices.",
+      "Strasbourg Christmas market: 27 Nov to 24 Dec 2026. Opening hours, how to get there by train from Paris or by flight, and where to stay, with live prices.",
     published: "2026-11-18",
     readMinutes: 4,
-    tags: ["Christmas markets", "Strasbourg", "Milan", "Winter"],
+    tags: ["Christmas markets", "Strasbourg", "Winter", "City break"],
     photo: "strasbourg",
   },
   {
