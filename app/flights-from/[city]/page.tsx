@@ -49,7 +49,7 @@ export default async function CityGuidePage({ params }: { params: Promise<{ city
   });
 
   return (
-    <article className="mx-auto max-w-5xl space-y-8">
+    <article className="mx-auto w-full space-y-8">
       <JsonLd
         data={[
           breadcrumbJsonLd(siteUrl, [

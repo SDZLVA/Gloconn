@@ -50,7 +50,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
   const hotelsRoute: FlightRoute = { slug: `${city.slug}`, from: city, to: city };
 
   return (
-    <article className="mx-auto max-w-5xl space-y-8">
+    <article className="mx-auto w-full space-y-8">
       <JsonLd
         data={[
           breadcrumbJsonLd(siteUrl, [
