@@ -49,7 +49,7 @@ export default async function CityGuidePage({ params }: { params: Promise<{ city
   });
 
   return (
-    <article className="mx-auto max-w-3xl space-y-8">
+    <article className="mx-auto w-full space-y-8">
       <JsonLd
         data={[
           breadcrumbJsonLd(siteUrl, [
@@ -60,14 +60,14 @@ export default async function CityGuidePage({ params }: { params: Promise<{ city
           faqJsonLd(guide.faq),
         ]}
       />
-      <nav aria-label="Breadcrumb" className="text-sm text-slate-500">
+      <nav aria-label="Breadcrumb" className="max-w-3xl text-sm text-slate-500">
         <Link href="/flights" className="font-semibold text-brand-700 hover:text-brand-900">
           Flight routes
         </Link>{" "}
         › Flights from {from.name}
       </nav>
 
-      <header className="space-y-3">
+      <header className="max-w-3xl space-y-3">
         <h1 className="text-3xl font-extrabold tracking-tight text-brand-900 sm:text-4xl">{guide.title}</h1>
         {guide.intro.map((p) => (
           <p key={p} className="text-slate-600">
@@ -79,7 +79,7 @@ export default async function CityGuidePage({ params }: { params: Promise<{ city
       <RouteSearchBox origin={cityLabel(from)} originId={`city-${from.code}`} destination="" destinationId="" />
 
       {guide.sections.map((s) => (
-        <section key={s.heading} className="space-y-2">
+        <section key={s.heading} className="max-w-3xl space-y-2">
           <h2 className="text-xl font-bold text-slate-900">{s.heading}</h2>
           {s.paragraphs.map((p) => (
             <p key={p} className="leading-relaxed text-slate-700">
@@ -89,7 +89,7 @@ export default async function CityGuidePage({ params }: { params: Promise<{ city
         </section>
       ))}
 
-      <section aria-labelledby="tips" className="rounded-2xl border border-brand-100 bg-brand-50 p-5">
+      <section aria-labelledby="tips" className="max-w-3xl rounded-2xl border border-brand-100 bg-brand-50 p-5">
         <h2 id="tips" className="text-lg font-bold text-brand-900">
           Quick checklist
         </h2>
@@ -100,7 +100,7 @@ export default async function CityGuidePage({ params }: { params: Promise<{ city
         </ul>
       </section>
 
-      <section aria-labelledby="where" className="space-y-3">
+      <section aria-labelledby="where" className="max-w-3xl space-y-3">
         <h2 id="where" className="text-xl font-bold text-slate-900">
           Popular flights from {from.name}
         </h2>
@@ -121,7 +121,7 @@ export default async function CityGuidePage({ params }: { params: Promise<{ city
         <p className="text-xs text-slate-500">Each link searches live prices for a trip about six weeks from today. Change the dates in the search bar.</p>
       </section>
 
-      <section aria-labelledby="faq" className="space-y-3">
+      <section aria-labelledby="faq" className="max-w-3xl space-y-3">
         <h2 id="faq" className="text-xl font-bold text-slate-900">
           Questions about flights from {from.name}
         </h2>
@@ -135,7 +135,7 @@ export default async function CityGuidePage({ params }: { params: Promise<{ city
         </dl>
       </section>
 
-      <p className="text-xs text-slate-500">Information checked {guide.checked}. Airlines, terminals and prices change, so confirm on your booking.</p>
+      <p className="max-w-3xl text-xs text-slate-500">Information checked {guide.checked}. Airlines, terminals and prices change, so confirm on your booking.</p>
     </article>
   );
 }
