@@ -43,6 +43,12 @@ type ModeSearchBarProps = {
   initialForm?: Partial<SearchFormState>;
   /** Flights: "Direct flights only" starts ticked (URL had stops=0). */
   initialDirectOnly?: boolean;
+  /**
+   * "row" (default): all fields in one row on wide screens (home page).
+   * "wrap": fields in two rows with a full-width Search button, for narrow columns
+   * (destination and city pages), so nothing is squeezed or cut off.
+   */
+  layout?: "row" | "wrap";
   className?: string;
 };
 
@@ -56,8 +62,10 @@ export function ModeSearchBar({
   mode,
   initialForm,
   initialDirectOnly = false,
+  layout = "row",
   className,
 }: ModeSearchBarProps) {
+  const wrap = layout === "wrap";
   const [directOnly, setDirectOnly] = useState(initialDirectOnly);
   const { form, errors, actions } = useSearchForm({
     initialForm: { ...initialForm, productTypes: productTypesForMode(mode) },
@@ -123,10 +131,10 @@ export function ModeSearchBar({
         </div>
       )}
 
-      <div className="flex flex-col gap-2 lg:flex-row lg:items-stretch">
+      <div className={wrap ? "relative grid grid-cols-1 gap-2 sm:grid-cols-12" : "flex flex-col gap-2 lg:flex-row lg:items-stretch"}>
         {showOrigin && (
           <>
-            <div className={cn(CELL, CELL_ICON, "lg:flex-[1.25]")}>
+            <div className={cn(CELL, CELL_ICON, "lg:flex-[1.25]", wrap && "sm:col-span-6")}>
               <OriginAutocomplete
                 worldKind={mode === "flights" || mode === "packages" ? "all" : "cities"}
                 placeholder="Leaving from"
@@ -144,6 +152,7 @@ export function ModeSearchBar({
               title="Swap"
               className={cn(
                 "flex h-10 items-center justify-center self-center rounded-full border border-slate-200 bg-white text-brand-700 motion-safe:transition-colors hover:bg-brand-50 lg:h-10 lg:w-10 lg:shrink-0",
+                wrap && "sm:absolute sm:left-1/2 sm:top-[1.875rem] sm:z-10 sm:h-10 sm:w-10 sm:-translate-x-1/2 sm:-translate-y-1/2",
                 focusRing,
               )}
             >
@@ -154,7 +163,7 @@ export function ModeSearchBar({
           </>
         )}
 
-        <div className={cn(CELL, CELL_ICON, showOrigin ? "lg:flex-[1.25]" : "lg:flex-[1.6]")}>
+        <div className={cn(CELL, CELL_ICON, showOrigin ? "lg:flex-[1.25]" : "lg:flex-[1.6]", wrap && (showOrigin ? "sm:col-span-6" : "sm:col-span-12"))}>
           <DestinationAutocomplete
             worldKind={mode === "flights" ? "all" : "cities"}
             label={mode === "hotels" ? "Destination" : "To"}
@@ -167,7 +176,7 @@ export function ModeSearchBar({
           />
         </div>
 
-        <div className={cn(CELL, CELL_DATE, "lg:flex-[1.3]")}>
+        <div className={cn(CELL, CELL_DATE, "lg:flex-[1.3]", wrap && "sm:col-span-5")}>
           <TravelDatesSelector
             tripType={form.tripType}
             departureDate={form.departureDate}
@@ -181,7 +190,7 @@ export function ModeSearchBar({
         </div>
 
         {mode !== "transport" && (
-        <div className={cn(CELL, CELL_PLAIN, "lg:flex-[1.2]")}>
+        <div className={cn(CELL, CELL_PLAIN, "lg:flex-[1.2]", wrap && "sm:col-span-4")}>
           {mode === "flights" ? (
             <TravelersSelector
               value={form.travelers}
@@ -211,6 +220,7 @@ export function ModeSearchBar({
           onChange={(value) => actions.updateField("budget", value)}
           onCurrencyChange={(value) => actions.updateField("budgetCurrency", value)}
           error={errors.budget}
+          className={wrap ? "sm:col-span-3" : undefined}
           label={mode === "hotels" ? "Budget for the stay" : mode === "flights" ? "Max price" : mode === "transport" ? "Max price per person" : "Total budget"}
         />
 
@@ -218,6 +228,7 @@ export function ModeSearchBar({
           type="submit"
           className={cn(
             "inline-flex min-h-[3.75rem] items-center justify-center gap-2 rounded-xl bg-brand-700 px-8 text-base font-bold text-white shadow-lg shadow-brand-700/25 motion-safe:transition-colors hover:bg-brand-800 lg:shrink-0",
+            wrap && "sm:col-span-12",
             focusRing,
           )}
         >
@@ -238,13 +249,14 @@ type BarBudgetFieldProps = {
   onCurrencyChange: (currency: CurrencyCode) => void;
   error?: string;
   label: string;
+  className?: string;
 };
 
 /** Budget cell: currency + whole-number amount, styled like the other cells. */
-function BarBudgetField({ value, currency, onChange, onCurrencyChange, error, label }: BarBudgetFieldProps) {
+function BarBudgetField({ value, currency, onChange, onCurrencyChange, error, label, className }: BarBudgetFieldProps) {
   const id = useId();
   return (
-    <div className="relative min-w-0 lg:flex-[0.95]">
+    <div className={cn("relative min-w-0 lg:flex-[0.95]", className)}>
       <div
         className={cn(
           "relative flex min-h-[3.75rem] items-end gap-1.5 rounded-xl border border-slate-200 bg-white px-4 pb-[0.45rem] pt-6",
