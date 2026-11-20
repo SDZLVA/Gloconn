@@ -11,6 +11,7 @@
  */
 
 import type { CityCode } from "@/lib/routes/catalog";
+import { MORE_GUIDES } from "@/lib/cityGuides/data-more";
 import type { FaqItem } from "@/lib/seo/jsonld";
 
 export type GuideSection = { heading: string; paragraphs: string[] };
@@ -31,7 +32,7 @@ export type CityGuide = {
   checked: string;
 };
 
-export const CITY_GUIDES: readonly CityGuide[] = [
+const BASE_GUIDES: readonly CityGuide[] = [
   {
     slug: "dubai",
     cityCode: "DXB",
@@ -209,6 +210,9 @@ export const CITY_GUIDES: readonly CityGuide[] = [
     checked: "2026-11-20",
   },
 ];
+
+/** Milestone 76: eight more guides live in data-more.ts. */
+export const CITY_GUIDES: readonly CityGuide[] = [...BASE_GUIDES, ...MORE_GUIDES];
 
 export function findGuide(slug: string): CityGuide | null {
   return CITY_GUIDES.find((g) => g.slug === slug) ?? null;
