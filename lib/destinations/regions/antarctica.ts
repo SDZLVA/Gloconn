@@ -1,0 +1,225 @@
+import type { Destination } from "@/lib/destinations/types";
+
+/**
+ * Antarctica destinations. Researched on 2026-11-22 (IAATO, Oceanwide Expeditions, UK Antarctic
+ * Heritage Trust, British Antarctic Territory, Swoop Antarctica, Scott Dunn, TourRadar and
+ * others), written in our own words. There are no scheduled passenger flights to Antarctica, so
+ * the flight and hotel search on each page is for the gateway city, Ushuaia (USH).
+ */
+
+const GATEWAY_NOTE =
+  "There are no scheduled passenger flights to Antarctica. Trips are cruises (or fly-cruise packages), and most leave from Ushuaia in Argentina, so the search on this page is for getting to Ushuaia.";
+
+export const ANTARCTICA: Destination[] = [
+  {
+    slug: "antarctic-peninsula",
+    region: "antarctica",
+    rank: 1,
+    added: "2026-11-22",
+    cityCode: "USH",
+    gatewayNote: GATEWAY_NOTE,
+    name: "Antarctic Peninsula",
+    country: "Antarctica",
+    photo: "antarctic-peninsula",
+    tagline: "Ice, penguins and whales, open to visitors from November to March",
+    bestMonths: [11, 12, 1, 2, 3],
+    title: "Antarctic Peninsula travel guide: what to see, when to go and how to get there",
+    description: "Plan a trip to the Antarctic Peninsula: what you see, the best months (roughly November to March) and how to get to Ushuaia, the main gateway. No flights.",
+    intro: [
+      "The Antarctic Peninsula is the long arm of land that points toward South America. It is the part of Antarctica most visitors see, because it is the closest. The coast has glaciers, icebergs, steep mountains and big penguin colonies.",
+      "You cannot fly there on a normal airline. Most people join an expedition cruise from Ushuaia, which crosses the Drake Passage in roughly two days each way. Some operators sell fly-cruise trips that fly from Punta Arenas in Chile to King George Island and skip one crossing. Choose an operator that belongs to IAATO, the industry group that sets visitor rules.",
+    ],
+    attractions: [
+      { name: "Zodiac cruises among icebergs", text: "Small inflatable boats take you close to glaciers and floating ice. It is the best way to see the size and colour of the ice." },
+      { name: "Penguin colonies", text: "Gentoo, chinstrap and Adelie penguins nest along the coast. Visitors must stay at least 5 metres away from birds on land, and let the penguins pass first." },
+      { name: "Whale watching", text: "Humpback and minke whales feed in the channels in the later part of the season. Many ships also see seals on the ice." },
+      { name: "Paradise Bay and Port Lockroy", text: "Two of the most visited stops on the Peninsula. One is known for its glaciers, the other for its old British base and post office." },
+      { name: "Kayaking and camping", text: "Some operators offer paddling or a night on the snow for an extra fee. Places are limited, so ask when you book." },
+    ],
+    bestTime: [
+      "Visitors come only in the Antarctic summer, roughly November to March. In winter the sea freezes and the days are very short, so ships do not go.",
+      "Sources agree on the broad pattern. November is the coldest and snowiest part of the season, penguins are starting to nest, and the ice looks its most dramatic. December and January have almost endless daylight and the chicks hatch, mostly from late December. February and March are usually the best for whales, and the penguin chicks are growing fast. Exact dates change from year to year.",
+    ],
+    tips: [
+      "Book early. Cabins on good ships fill many months ahead, so a year in advance is common advice.",
+      "Check that the operator is an IAATO member and ask what is included, such as boots, jackets and landings.",
+      "Plan to arrive in Ushuaia a day or two early. Bad weather or a missed flight should not make you miss the ship.",
+      "The Drake Passage can be rough. Bring seasickness advice from your doctor.",
+    ],
+    faq: [
+      { q: "Can I fly to Antarctica?", a: "Not on a scheduled airline. There are fly-cruise packages that fly from Punta Arenas in Chile to King George Island, then continue by ship. Most visitors sail from Ushuaia." },
+      { q: "When is the Antarctic season?", a: "Roughly November to March. Some operators start in late October, and the season ends in March." },
+      { q: "How long does the Drake Passage take?", a: "About two days each way by ship, according to operators. A fly-cruise avoids one or both crossings." },
+      { q: "Which month is best?", a: "It depends on what you want. November is for ice and snow, December and January for penguin chicks and long days, February and March for whales." },
+    ],
+    checked: "2026-11-22",
+  },
+  {
+    slug: "deception-island",
+    region: "antarctica",
+    rank: 2,
+    added: "2026-11-22",
+    cityCode: "USH",
+    gatewayNote: GATEWAY_NOTE,
+    name: "Deception Island & South Shetlands",
+    country: "Antarctica",
+    photo: "deception-island",
+    tagline: "A flooded volcano you can sail into, plus the islands next to the Peninsula",
+    bestMonths: [11, 12, 1, 2, 3],
+    title: "Deception Island & South Shetlands travel guide: what to see, when to go and how to get there",
+    description: "Deception Island and the South Shetlands: a volcano you can sail into, whaling ruins and penguins. Best months, and how to get to Ushuaia, the main gateway.",
+    intro: [
+      "The South Shetland Islands lie north of the Antarctic Peninsula, so they are usually the first Antarctic land a cruise reaches. Deception Island is the best known. It is a ring-shaped island, the flooded crater of an active volcano.",
+      "Ships can often enter the crater through a narrow gap called Neptune's Bellows. Inside, you can land at old whaling ruins or walk on black volcanic beaches. There are no scheduled flights to the islands. Most trips sail from Ushuaia, and some fly-cruise trips land on King George Island, in the same island group.",
+    ],
+    attractions: [
+      { name: "Sailing into the caldera", text: "Entering through Neptune's Bellows is a highlight. The crater is about 15 km across, and weather decides whether a ship can go in." },
+      { name: "Whalers Bay", text: "A beach with the rusting remains of a whaling station and a later British base. Walk around the site, but the old buildings are closed to visitors." },
+      { name: "Warm volcanic beaches", text: "Heat from the volcano warms the water and sand in places. Some trips offer a quick swim here, a popular polar plunge." },
+      { name: "Telefon Bay hike", text: "A walk up volcanic ash to the edge of a crater from an eruption in the 1960s. Guides tell you how close you can go." },
+      { name: "Chinstrap penguins at Baily Head", text: "A very large chinstrap colony lives on the outer side of the island. Landings there are often not possible because of waves and surf, so treat it as a bonus." },
+    ],
+    bestTime: [
+      "Like the rest of Antarctica, the visitor season is roughly November to March. Deception Island is usually visited on cruises of the Peninsula and South Shetlands in those months, but exact stops depend on weather and ice.",
+      "Early in the season, snow still covers the slopes, which suits photos of the penguin colonies. Later in the season there is more bare ground, chicks are bigger, and whales are more likely. Landings cannot be promised in advance, so be ready for a change of plan.",
+    ],
+    tips: [
+      "Ask the operator whether Deception Island is on the planned route. It is common, but not on every trip.",
+      "Pack a swimsuit if you want to try the polar plunge, and a towel that dries fast.",
+      "Wind and swell decide landings. Keep your plans flexible.",
+      "Do not enter the old whaling buildings. They are unsafe and protected.",
+    ],
+    faq: [
+      { q: "Is Deception Island a volcano?", a: "Yes. It is the flooded crater of an active volcano. Operators say the last eruptions were around 1969 to 1970." },
+      { q: "Can I swim at Deception Island?", a: "Some trips offer a short plunge on the beach, where the water is warmer near volcanic heat. It is still very cold, so go in only with a guide." },
+      { q: "When can I visit?", a: "During the Antarctic summer, roughly November to March, on cruises that include the South Shetland Islands." },
+    ],
+    checked: "2026-11-22",
+  },
+  {
+    slug: "paradise-bay",
+    region: "antarctica",
+    rank: 3,
+    added: "2026-11-22",
+    cityCode: "USH",
+    gatewayNote: GATEWAY_NOTE,
+    name: "Paradise Bay",
+    country: "Antarctica",
+    photo: "paradise-bay",
+    tagline: "Glaciers, still water and floating ice on the Peninsula coast",
+    bestMonths: [11, 12, 1, 2],
+    title: "Paradise Bay travel guide: what to see, when to go and how to get there",
+    description: "Paradise Bay in Antarctica: glaciers, zodiac cruises, whales and polar stations. Best months to go, and how to get to Ushuaia, the main gateway. No flights.",
+    intro: [
+      "Paradise Bay, also called Paradise Harbour, is a sheltered bay on the Antarctic Peninsula, just north of the Lemaire Channel. Glaciers come down to the water, and icebergs drift along the shore. On a calm day the water is like a mirror.",
+      "It is a stop on many Peninsula cruises, but no airline flies there. Trips usually sail from Ushuaia. The main way to see the bay is by Zodiac, and some trips add a landing or sports such as kayaking.",
+    ],
+    attractions: [
+      { name: "Zodiac cruise by the glaciers", text: "A slow boat ride along the ice cliffs is the main activity. You may also see whales, gentoo penguins and crabeater seals." },
+      { name: "Almirante Brown station", text: "An Argentine research station, partly rebuilt as a summer base after a fire in 1984. Visitors can sometimes land nearby for a short climb and a wide view." },
+      { name: "Gonzalez Videla station", text: "A Chilean station at Waterboat Point on the northern edge of the bay. A small hut there, partly made from an upturned boat, is a historic monument." },
+      { name: "Kayaking in the bay", text: "On trips that offer it, paddlers move among the ice at water level. It usually costs extra and has limited places." },
+      { name: "Camping on the snow", text: "Some operators let a small group spend a night ashore in Paradise Harbour. It is optional and weather dependent." },
+    ],
+    bestTime: [
+      "Paradise Bay is visited in the normal Antarctic season, roughly November to March. Trips listed for it by operators mostly run from late November to February.",
+      "In November and early December there is more snow and ice. In January and February the days are warmer, the water is more open, and whales are more often seen. Weather and ice decide each visit, so nothing is certain.",
+    ],
+    tips: [
+      "Bring a good camera with a long lens and keep it dry in the Zodiac.",
+      "If you want kayaking or camping, ask when you book. Spaces are small.",
+      "Wear waterproof trousers for Zodiac rides. Spray and cold wind are common.",
+      "Stay at least 5 metres from penguins on shore.",
+    ],
+    faq: [
+      { q: "Where is Paradise Bay?", a: "On the western side of the Antarctic Peninsula, just north of the Lemaire Channel." },
+      { q: "Can I fly to Paradise Bay?", a: "No. You reach it by ship, usually from Ushuaia. Fly-cruise packages land further north and then continue by ship." },
+      { q: "What is there to do?", a: "Mainly a Zodiac cruise among glaciers and ice. Some trips offer kayaking, camping or a landing at a research station." },
+    ],
+    checked: "2026-11-22",
+  },
+  {
+    slug: "port-lockroy",
+    region: "antarctica",
+    rank: 4,
+    added: "2026-11-22",
+    cityCode: "USH",
+    gatewayNote: GATEWAY_NOTE,
+    name: "Port Lockroy",
+    country: "Antarctica",
+    photo: "port-lockroy",
+    tagline: "A historic British base with a post office and penguin neighbours",
+    bestMonths: [11, 12, 1, 2, 3],
+    title: "Port Lockroy travel guide: what to see, when to go and how to get there",
+    description: "Port Lockroy in Antarctica: a historic base, a museum, the most southerly post office and gentoo penguins. When to go and how to get to Ushuaia, the gateway.",
+    intro: [
+      "Port Lockroy is on Goudier Island, off the western side of the Antarctic Peninsula. It started as a British base in 1944, was staffed until 1962, and was restored in 1996. Today it is a museum, a shop and a post office, run by the UK Antarctic Heritage Trust.",
+      "Gentoo penguins nest around the building, and the island is shared: part for penguins, part for visitors. There are no flights to Port Lockroy. It is a common stop on Peninsula cruises that sail from Ushuaia.",
+    ],
+    attractions: [
+      { name: "Bransfield House museum", text: "The main building shows how scientists lived and worked in early Antarctic bases. It is small, so only a limited number of visitors go in at a time." },
+      { name: "The Penguin Post Office", text: "It is described as the most southerly post office in the world. You can post cards from here. Staff handle roughly 70,000 cards a year." },
+      { name: "Gentoo penguin colony", text: "More than a thousand gentoo penguins live around the site. Keep to the marked visitor area and let them pass." },
+      { name: "Shop", text: "Money from the shop goes to looking after this and other historic sites in Antarctica." },
+      { name: "Jougla Point", text: "Operators often combine Port Lockroy with a landing or Zodiac cruise nearby, to avoid queues for the building." },
+    ],
+    bestTime: [
+      "The site is open when the Antarctic summer team is there, roughly November to March. Some of the first chicks hatch by late December.",
+      "For penguin chicks, aim for January and February. In November the penguins are nesting and there is more snow. Check with your operator, because the 2026/27 season includes major repairs to Bransfield House, which may affect what visitors can see.",
+    ],
+    tips: [
+      "Bring a few postcards and the addresses written down. Ask the operator about stamps and payment.",
+      "Expect a short queue for the museum and post office.",
+      "Stick to the visitor side of the island and keep 5 metres from penguins.",
+      "Ask whether the building is open to visitors on your trip this season.",
+    ],
+    faq: [
+      { q: "Is Port Lockroy a real post office?", a: "Yes. It is run by the UK Antarctic Heritage Trust as a working post office, and visitors can send cards from it." },
+      { q: "How many visitors does it get?", a: "Up to about 18,000 visitors in a season, according to the UK Antarctic Heritage Trust." },
+      { q: "Can I stay there?", a: "No. Only the small staff team lives there. Visitors come ashore from a ship for a short visit." },
+    ],
+    checked: "2026-11-22",
+  },
+  {
+    slug: "weddell-sea",
+    region: "antarctica",
+    rank: 5,
+    added: "2026-11-22",
+    cityCode: "USH",
+    gatewayNote: GATEWAY_NOTE,
+    name: "Weddell Sea",
+    country: "Antarctica",
+    photo: "weddell-sea",
+    tagline: "Giant tabular icebergs and a chance of emperor penguins",
+    bestMonths: [11, 12, 1, 2, 3],
+    title: "Weddell Sea travel guide: what to see, when to go and how to get there",
+    description: "The Weddell Sea in Antarctica: huge flat icebergs, Adelie penguins and a chance of emperor penguins. When to go, and how to get to Ushuaia, the main gateway.",
+    intro: [
+      "The Weddell Sea is on the eastern side of the Antarctic Peninsula. It is colder and icier than the western side, and fewer ships go there. The sea is known for huge flat-topped icebergs and for emperor penguins, which are hard to see elsewhere on a normal cruise.",
+      "There are no flights there. Most Weddell Sea voyages sail from Ushuaia, and a few start with a flight from Punta Arenas. These trips are usually longer than a classic Peninsula cruise, and ice can change the plan at any time.",
+    ],
+    attractions: [
+      { name: "Emperor penguins at Snow Hill Island", text: "A colony of roughly 4,000 breeding pairs lives south of Snow Hill Island. Reaching it is never guaranteed, and some operators use a helicopter followed by a walk over the ice." },
+      { name: "Tabular icebergs", text: "These huge flat icebergs break off ice shelves. Sailing between them is one of the main reasons to choose the Weddell Sea." },
+      { name: "Paulet Island Adelie penguins", text: "One of the biggest Adelie penguin colonies, estimated at around 100,000 pairs. It is also tied to the same early Swedish expedition, whose relief party spent a winter here." },
+      { name: "Snow Hill history", text: "A Swedish expedition was stranded on Snow Hill Island in 1902 and lived there through the winter." },
+      { name: "Whales and seals", text: "Orca, humpback and minke whales, and leopard, crabeater and Weddell seals, may be seen on these voyages." },
+    ],
+    bestTime: [
+      "Trips that aim for the emperor penguins at Snow Hill run only in November and early December, when the ice is still thick enough for the penguins and for helicopters. Even then, operators say success is far from certain, so treat it as a chance.",
+      "Most other Weddell Sea cruises run roughly from January to March, when the ice breaks up enough for ships. You then see icebergs and Adelie penguins, but emperors are not expected. Ships on Peninsula trips may also visit the Weddell side if the ice allows, but this cannot be promised.",
+    ],
+    tips: [
+      "Ask how many days are set aside for ice, and whether the ship carries helicopters.",
+      "Decide first what matters most. Emperor penguins need an early-season trip and a flexible attitude.",
+      "Expect a longer and often more expensive trip than a classic Peninsula cruise.",
+      "Arrive in Ushuaia a day or two early, in case of delays.",
+    ],
+    faq: [
+      { q: "Can I see emperor penguins in Antarctica?", a: "Sometimes. Special Weddell Sea trips in November and early December aim for the Snow Hill colony, but ice and weather may stop the landing." },
+      { q: "When do Weddell Sea cruises run?", a: "Emperor trips run in November and early December. Most others run roughly January to March." },
+      { q: "Where do Weddell Sea trips start?", a: "Most from Ushuaia. A few start with a flight from Punta Arenas in Chile." },
+    ],
+    checked: "2026-11-22",
+  },
+];
