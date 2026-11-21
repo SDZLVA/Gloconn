@@ -1,4 +1,7 @@
 import { PHOTOS, Photo } from "@/components/blog/Photo";
+import { TromsoPolarNight2026 } from "@/components/blog/posts/TromsoPolarNight2026";
+import { BudapestChristmasMarkets2026 } from "@/components/blog/posts/BudapestChristmasMarkets2026";
+import { TenerifeWinterSun2026 } from "@/components/blog/posts/TenerifeWinterSun2026";
 import { CheapWeekendTripsFromMilanWinter } from "@/components/blog/posts/CheapWeekendTripsFromMilanWinter";
 import { PragueChristmasMarkets2026 } from "@/components/blog/posts/PragueChristmasMarkets2026";
 import { ViennaChristmasMarkets2026 } from "@/components/blog/posts/ViennaChristmasMarkets2026";
@@ -9,6 +12,18 @@ export const POSTS: Record<
   string,
   { Body: (props: { today: string }) => React.ReactNode; Hero?: (props: { priority?: boolean; credit?: boolean }) => React.ReactNode }
 > = {
+  "tenerife-winter-sun-2026": {
+    Body: TenerifeWinterSun2026,
+    Hero: (props) => <Photo photo={PHOTOS.tenerifeCoast} {...props} />,
+  },
+  "budapest-christmas-markets-2026": {
+    Body: BudapestChristmasMarkets2026,
+    Hero: (props) => <Photo photo={PHOTOS.budapestBasilica} {...props} />,
+  },
+  "tromso-polar-night-northern-lights-2026": {
+    Body: TromsoPolarNight2026,
+    Hero: (props) => <Photo photo={PHOTOS.tromsoAurora} {...props} />,
+  },
   "vienna-christmas-markets-2026": {
     Body: ViennaChristmasMarkets2026,
     Hero: (props) => <Photo photo={PHOTOS.viennaChristkindlmarkt} {...props} />,

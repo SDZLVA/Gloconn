@@ -26,6 +26,36 @@ export type BlogPostMeta = {
 
 export const BLOG_POSTS: readonly BlogPostMeta[] = [
   {
+    slug: "tenerife-winter-sun-2026",
+    title: "Tenerife in winter 2026: weather, what to eat and how to get there",
+    description:
+      "Tenerife stays around 20 °C in winter. What the weather is really like, what to eat, hikes and how to fly there from London, Amsterdam, Frankfurt and Dublin.",
+    published: "2026-11-21",
+    readMinutes: 5,
+    tags: ["Winter sun", "Tenerife", "Canary Islands", "Beach"],
+    photo: "tenerifeCoast",
+  },
+  {
+    slug: "budapest-christmas-markets-2026",
+    title: "Budapest Christmas markets 2026: dates, what to eat and how to get there",
+    description:
+      "Budapest's Christmas markets run to 31 Dec (Vörösmarty tér) and 1 Jan (Basilica). Dates, hours, chimney cake, how to get there from London, Paris and more.",
+    published: "2026-11-21",
+    readMinutes: 5,
+    tags: ["Christmas markets", "Budapest", "Winter", "City break"],
+    photo: "budapestBasilica",
+  },
+  {
+    slug: "tromso-polar-night-northern-lights-2026",
+    title: "Tromsø polar night 2026: northern lights, what to do and how to get there",
+    description:
+      "Tromsø's polar night runs about 27 Nov to 15 Jan. Northern lights season, what to do and eat, and how to get there from London, Paris and more.",
+    published: "2026-11-21",
+    readMinutes: 5,
+    tags: ["Northern lights", "Tromsø", "Winter", "Arctic"],
+    photo: "tromsoAurora",
+  },
+  {
     slug: "vienna-christmas-markets-2026",
     title: "Vienna Christmas markets 2026: dates, hours and how to get there",
     description:
