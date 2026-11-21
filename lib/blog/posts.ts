@@ -26,6 +26,16 @@ export type BlogPostMeta = {
 
 export const BLOG_POSTS: readonly BlogPostMeta[] = [
   {
+    slug: "dolomites-ski-season-2026-world-cup",
+    title: "Dolomites ski season 2026/27: opening dates, World Cup and how to get there",
+    description:
+      "Dolomiti Superski opens 28 Nov, with Val Gardena and Alta Badia on 4 Dec. World Cup races 18–21 Dec. How to get there from London, Amsterdam and Paris.",
+    published: "2026-11-21",
+    readMinutes: 6,
+    tags: ["Skiing", "Dolomites", "Italy", "Winter"],
+    photo: "dolomitesRoccaPietore",
+  },
+  {
     slug: "tenerife-winter-sun-2026",
     title: "Tenerife in winter 2026: weather, what to eat and how to get there",
     description:
