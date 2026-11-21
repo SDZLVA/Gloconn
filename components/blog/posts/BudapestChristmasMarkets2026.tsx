@@ -134,7 +134,7 @@ export function BudapestChristmasMarkets2026({ today }: { today: string }) {
       </section>
 
       <section id="about-the-event" aria-labelledby="about-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <Photo photo={PHOTOS.budapestBasilica} />
+        <Photo photo={PHOTOS.budapest} />
         <div className="p-5 sm:p-7">
           <p className="text-xs font-bold uppercase tracking-widest text-brand-700">About the event</p>
           <h2 id="about-title" className="mt-1 text-2xl font-extrabold text-slate-900">
@@ -216,7 +216,7 @@ export function BudapestChristmasMarkets2026({ today }: { today: string }) {
       </section>
 
       <section id="where-to-stay" aria-labelledby="stay-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <Photo photo={PHOTOS.budapest} />
+        <Photo photo={PHOTOS.budapestBastion} />
         <div className="p-5 sm:p-7">
           <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Where to stay</p>
           <h2 id="stay-title" className="mt-1 text-2xl font-extrabold text-slate-900">

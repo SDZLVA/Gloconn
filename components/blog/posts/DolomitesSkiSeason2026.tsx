@@ -137,7 +137,7 @@ export function DolomitesSkiSeason2026({ today }: { today: string }) {
       </section>
 
       <section id="about-the-event" aria-labelledby="about-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <Photo photo={PHOTOS.dolomitesRoccaPietore} />
+        <Photo photo={PHOTOS.dolomitesVillnoess} />
         <div className="p-5 sm:p-7">
           <p className="text-xs font-bold uppercase tracking-widest text-brand-700">About the season</p>
           <h2 id="about-title" className="mt-1 text-2xl font-extrabold text-slate-900">
@@ -219,7 +219,7 @@ export function DolomitesSkiSeason2026({ today }: { today: string }) {
       </section>
 
       <section id="where-to-stay" aria-labelledby="stay-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <Photo photo={PHOTOS.dolomitesVillnoess} />
+        <Photo photo={PHOTOS.dolomitesSanMartino} />
         <div className="p-5 sm:p-7">
           <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Where to stay</p>
           <h2 id="stay-title" className="mt-1 text-2xl font-extrabold text-slate-900">

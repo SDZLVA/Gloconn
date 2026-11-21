@@ -52,6 +52,11 @@ export const PHOTOS = {
   // Blog buffer post dolomites-ski-season-2026-world-cup (checked 2026-11-21: Free to use under the Unsplash License).
   dolomitesRoccaPietore: { id: "photo-1683962935404-4f7e420a677b", alt: "Snow-covered peaks of the Dolomites near Rocca Pietore, Italy", by: "NIR HIMI", page: `${U}Z_xaMPfCGpE` },
   dolomitesVillnoess: { id: "photo-1604598879256-c5d52ab56b8e", alt: "Winter sunrise over a forest and the Zanser Alm in Villnöss, South Tyrol", by: "Daniel Seßler", page: `${U}QdIJeoMCPwI` },
+  // Third photo for each buffer post, so no post repeats a photo (checked 2026-11-21: Free to use under the Unsplash License).
+  tromsoTown: { id: "photo-1639471196942-4f209e0d5f5e", alt: "Tromsø at night with snow-covered mountains behind the town", by: "Dana Andreea Gheorghe", page: `${U}wGSW5Rw_aWY` },
+  budapestBastion: { id: "photo-1636636608747-d1eb57d0ba3d", alt: "Fisherman's Bastion and the church in Budapest lit up at night", by: "Michelangelo Azzariti", page: `${U}Lhc5iNjW6uM` },
+  tenerifeBenijo: { id: "photo-1579090814807-60808035e1cb", alt: "A coastal road above Benijo beach on Tenerife", by: "Maria Lupan", page: `${U}OkuM6V9m9l0` },
+  dolomitesSanMartino: { id: "photo-1614093643263-7ebf3d099724", alt: "Snow-covered pine trees and mountains near San Martino di Castrozza in the Dolomites", by: "Cristina Gottardi", page: `${U}Tr55sj841Fg` },
 } satisfies Record<string, BlogPhoto>;
 
 export type PhotoKey = keyof typeof PHOTOS;
