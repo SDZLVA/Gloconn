@@ -2,6 +2,7 @@ import { PHOTOS, Photo } from "@/components/blog/Photo";
 import { TromsoPolarNight2026 } from "@/components/blog/posts/TromsoPolarNight2026";
 import { BudapestChristmasMarkets2026 } from "@/components/blog/posts/BudapestChristmasMarkets2026";
 import { TenerifeWinterSun2026 } from "@/components/blog/posts/TenerifeWinterSun2026";
+import { DolomitesSkiSeason2026 } from "@/components/blog/posts/DolomitesSkiSeason2026";
 import { CheapWeekendTripsFromMilanWinter } from "@/components/blog/posts/CheapWeekendTripsFromMilanWinter";
 import { PragueChristmasMarkets2026 } from "@/components/blog/posts/PragueChristmasMarkets2026";
 import { ViennaChristmasMarkets2026 } from "@/components/blog/posts/ViennaChristmasMarkets2026";
@@ -12,6 +13,10 @@ export const POSTS: Record<
   string,
   { Body: (props: { today: string }) => React.ReactNode; Hero?: (props: { priority?: boolean; credit?: boolean }) => React.ReactNode }
 > = {
+  "dolomites-ski-season-2026-world-cup": {
+    Body: DolomitesSkiSeason2026,
+    Hero: (props) => <Photo photo={PHOTOS.dolomitesRoccaPietore} {...props} />,
+  },
   "tenerife-winter-sun-2026": {
     Body: TenerifeWinterSun2026,
     Hero: (props) => <Photo photo={PHOTOS.tenerifeCoast} {...props} />,

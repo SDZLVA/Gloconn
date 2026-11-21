@@ -49,6 +49,9 @@ export const PHOTOS = {
   // Blog buffer post tenerife-winter-sun-2026 (checked 2026-11-21: Free to use under the Unsplash License).
   tenerifeCoast: { id: "photo-1691397553539-c7c573138747", alt: "Green mountains meeting the blue Atlantic on the coast of Tenerife", by: "Hendrik Cornelissen", page: `${U}kWwtIQi6JgA` },
   tenerifeGigantes: { id: "photo-1768857081884-2a68e19a336c", alt: "Aerial view of the marina at Los Gigantes cliffs, Tenerife", by: "Kamil Molendys", page: `${U}AmLI0ZOH7I0` },
+  // Blog buffer post dolomites-ski-season-2026-world-cup (checked 2026-11-21: Free to use under the Unsplash License).
+  dolomitesRoccaPietore: { id: "photo-1683962935404-4f7e420a677b", alt: "Snow-covered peaks of the Dolomites near Rocca Pietore, Italy", by: "NIR HIMI", page: `${U}Z_xaMPfCGpE` },
+  dolomitesVillnoess: { id: "photo-1604598879256-c5d52ab56b8e", alt: "Winter sunrise over a forest and the Zanser Alm in Villnöss, South Tyrol", by: "Daniel Seßler", page: `${U}QdIJeoMCPwI` },
 } satisfies Record<string, BlogPhoto>;
 
 export type PhotoKey = keyof typeof PHOTOS;
