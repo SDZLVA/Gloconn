@@ -26,6 +26,16 @@ export type BlogPostMeta = {
 
 export const BLOG_POSTS: readonly BlogPostMeta[] = [
   {
+    slug: "tenerife-winter-sun-2026",
+    title: "Tenerife in winter 2026: weather, what to eat and how to get there",
+    description:
+      "Tenerife stays around 20 °C in winter. What the weather is really like, what to eat, hikes and how to fly there from London, Amsterdam, Frankfurt and Dublin.",
+    published: "2026-11-21",
+    readMinutes: 5,
+    tags: ["Winter sun", "Tenerife", "Canary Islands", "Beach"],
+    photo: "tenerifeCoast",
+  },
+  {
     slug: "budapest-christmas-markets-2026",
     title: "Budapest Christmas markets 2026: dates, what to eat and how to get there",
     description:
