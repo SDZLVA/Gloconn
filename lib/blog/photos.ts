@@ -44,6 +44,8 @@ export const PHOTOS = {
   // Blog buffer post tromso-polar-night-northern-lights-2026 (checked 2026-11-21: Free to use under the Unsplash License).
   tromsoAurora: { id: "photo-1443926818681-717d074a57af", alt: "Green northern lights over the night sky near Tromsø, Norway", by: "Marcelo Quinan", page: `${U}R3pUGn5YiTg` },
   tromsoCity: { id: "photo-1677033730887-4c53a95c3dd9", alt: "Aerial view of Tromsø lit up at night under snow", by: "Tianxiang Ji", page: `${U}JdyG_JWu8S8` },
+  // Blog buffer post budapest-christmas-markets-2026 (checked 2026-11-21: Free to use under the Unsplash License).
+  budapestBasilica: { id: "photo-1512116701772-032c2c803cf4", alt: "St. Stephen's Basilica in Budapest framed by an arch, with Christmas market huts in front", by: "Liam McKay", page: `${U}szFEMeoKp-g` },
 } satisfies Record<string, BlogPhoto>;
 
 export type PhotoKey = keyof typeof PHOTOS;
