@@ -41,6 +41,9 @@ export const PHOTOS = {
   lisbonTram: { id: "photo-1585208798174-6cedd86e019a", alt: "A yellow tram on a street lined with historic buildings in Lisbon", by: "Aayush Gupta", page: `${U}ljhCEaHYWJ8` },
   newYork: { id: "photo-1496588152823-86ff7695e68f", alt: "Panoramic view of the Brooklyn Bridge in New York", by: "Luca Bravo", page: `${U}_QdFx92MO2U` },
   istanbul: { id: "photo-1527838832700-5059252407fa", alt: "Domes and minarets of Istanbul", by: "Fatih Yürür", page: `${U}kNSREmtaGOE` },
+  // Blog buffer post tromso-polar-night-northern-lights-2026 (checked 2026-11-21: Free to use under the Unsplash License).
+  tromsoAurora: { id: "photo-1443926818681-717d074a57af", alt: "Green northern lights over the night sky near Tromsø, Norway", by: "Marcelo Quinan", page: `${U}R3pUGn5YiTg` },
+  tromsoCity: { id: "photo-1677033730887-4c53a95c3dd9", alt: "Aerial view of Tromsø lit up at night under snow", by: "Tianxiang Ji", page: `${U}JdyG_JWu8S8` },
 } satisfies Record<string, BlogPhoto>;
 
 export type PhotoKey = keyof typeof PHOTOS;
