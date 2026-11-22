@@ -8,41 +8,25 @@
  * Re-check `checked` and the facts about once a year.
  */
 
-import type { PhotoKey } from "@/lib/blog/photos";
-import type { CityCode } from "@/lib/routes/catalog";
-import type { FaqItem } from "@/lib/seo/jsonld";
+import type { Destination, RegionId } from "@/lib/destinations/types";
+import { AFRICA } from "@/lib/destinations/regions/africa";
+import { ANTARCTICA } from "@/lib/destinations/regions/antarctica";
+import { ASIA_NEW } from "@/lib/destinations/regions/asia";
+import { EUROPE_NEW } from "@/lib/destinations/regions/europe";
+import { NORTH_AMERICA } from "@/lib/destinations/regions/northAmerica";
+import { OCEANIA } from "@/lib/destinations/regions/oceania";
+import { SOUTH_AMERICA } from "@/lib/destinations/regions/southAmerica";
 
-export type Attraction = { name: string; text: string };
-
-export type Destination = {
-  slug: string;
-  cityCode: CityCode;
-  /** Name shown on cards and in headings. */
-  name: string;
-  country: string;
-  photo: PhotoKey;
-  /** One line on the home card. */
-  tagline: string;
-  /** Months (1–12) when the place is at its best — drives the monthly order on the home page. */
-  bestMonths: readonly number[];
-  title: string;
-  /** ≤160 characters. */
-  description: string;
-  intro: string[];
-  attractions: Attraction[];
-  /** "When to go" paragraphs. */
-  bestTime: string[];
-  tips: string[];
-  faq: FaqItem[];
-  /** YYYY-MM-DD */
-  checked: string;
-};
+export type { Attraction, Destination, RegionId } from "@/lib/destinations/types";
 
 const CHECKED = "2026-11-20";
 
-export const DESTINATIONS: readonly Destination[] = [
+const EXISTING: readonly Destination[] = [
   {
     slug: "dubai",
+    region: "asia",
+    rank: 3,
+    added: "2026-11-20",
     cityCode: "DXB",
     name: "Dubai",
     country: "United Arab Emirates",
@@ -81,6 +65,9 @@ export const DESTINATIONS: readonly Destination[] = [
   },
   {
     slug: "bangkok",
+    region: "asia",
+    rank: 1,
+    added: "2026-11-20",
     cityCode: "BKK",
     name: "Bangkok",
     country: "Thailand",
@@ -119,6 +106,9 @@ export const DESTINATIONS: readonly Destination[] = [
   },
   {
     slug: "maldives",
+    region: "asia",
+    rank: 4,
+    added: "2026-11-20",
     cityCode: "MLE",
     name: "Maldives",
     country: "Maldives",
@@ -157,6 +147,9 @@ export const DESTINATIONS: readonly Destination[] = [
   },
   {
     slug: "tokyo",
+    region: "asia",
+    rank: 2,
+    added: "2026-11-20",
     cityCode: "TYO",
     name: "Tokyo",
     country: "Japan",
@@ -195,6 +188,9 @@ export const DESTINATIONS: readonly Destination[] = [
   },
   {
     slug: "lisbon",
+    region: "europe",
+    rank: 6,
+    added: "2026-11-20",
     cityCode: "LIS",
     name: "Lisbon",
     country: "Portugal",
@@ -233,6 +229,9 @@ export const DESTINATIONS: readonly Destination[] = [
   },
   {
     slug: "new-york",
+    region: "north-america",
+    rank: 1,
+    added: "2026-11-20",
     cityCode: "NYC",
     name: "New York",
     country: "United States",
@@ -271,6 +270,9 @@ export const DESTINATIONS: readonly Destination[] = [
   },
   {
     slug: "istanbul",
+    region: "europe",
+    rank: 5,
+    added: "2026-11-20",
     cityCode: "IST",
     name: "Istanbul",
     country: "Türkiye",
@@ -308,6 +310,9 @@ export const DESTINATIONS: readonly Destination[] = [
   },
   {
     slug: "athens",
+    region: "europe",
+    rank: 7,
+    added: "2026-11-20",
     cityCode: "ATH",
     name: "Athens",
     country: "Greece",
@@ -346,9 +351,29 @@ export const DESTINATIONS: readonly Destination[] = [
   },
 ];
 
+/** Every destination page. To add one: put it in its region file under lib/destinations/regions/. */
+export const DESTINATIONS: readonly Destination[] = [
+  ...EXISTING,
+  ...ASIA_NEW,
+  ...EUROPE_NEW,
+  ...NORTH_AMERICA,
+  ...SOUTH_AMERICA,
+  ...AFRICA,
+  ...OCEANIA,
+  ...ANTARCTICA,
+];
+
 export function findDestination(slug: string): Destination | null {
   return DESTINATIONS.find((d) => d.slug === slug) ?? null;
 }
+
+/** Destinations of one region, best-ranked first. */
+export function destinationsInRegion(region: RegionId): Destination[] {
+  return DESTINATIONS.filter((d) => d.region === region).sort((a, b) => a.rank - b.rank);
+}
+
+/** The 5 best-ranked per region are the "Top 5"; the rest are shown as "More in <region>". */
+export const TOP_PER_REGION = 5;
 
 /**
  * The destinations to show on the home page for a given month (1–12): those at their best

@@ -41,6 +41,26 @@ export const ROUTE_CITIES = {
   SYD: { code: "SYD", name: "Sydney", country: "Australia", slug: "sydney" },
   LAX: { code: "LAX", name: "Los Angeles", country: "United States", slug: "los-angeles" },
   YTO: { code: "YTO", name: "Toronto", country: "Canada", slug: "toronto" },
+  // Milestone 78: destinations hub (7 regions). Codes are metro/city IATA codes.
+  DPS: { code: "DPS", name: "Bali", country: "Indonesia", slug: "bali" },
+  CUN: { code: "CUN", name: "Cancún", country: "Mexico", slug: "cancun" },
+  MEX: { code: "MEX", name: "Mexico City", country: "Mexico", slug: "mexico-city" },
+  LAS: { code: "LAS", name: "Las Vegas", country: "United States", slug: "las-vegas" },
+  RIO: { code: "RIO", name: "Rio de Janeiro", country: "Brazil", slug: "rio-de-janeiro" },
+  BUE: { code: "BUE", name: "Buenos Aires", country: "Argentina", slug: "buenos-aires" },
+  CUZ: { code: "CUZ", name: "Cusco", country: "Peru", slug: "cusco" },
+  CTG: { code: "CTG", name: "Cartagena", country: "Colombia", slug: "cartagena" },
+  SCL: { code: "SCL", name: "Santiago", country: "Chile", slug: "santiago" },
+  RAK: { code: "RAK", name: "Marrakech", country: "Morocco", slug: "marrakech" },
+  CPT: { code: "CPT", name: "Cape Town", country: "South Africa", slug: "cape-town" },
+  CAI: { code: "CAI", name: "Cairo", country: "Egypt", slug: "cairo" },
+  ZNZ: { code: "ZNZ", name: "Zanzibar", country: "Tanzania", slug: "zanzibar" },
+  NBO: { code: "NBO", name: "Nairobi", country: "Kenya", slug: "nairobi" },
+  MEL: { code: "MEL", name: "Melbourne", country: "Australia", slug: "melbourne" },
+  AKL: { code: "AKL", name: "Auckland", country: "New Zealand", slug: "auckland" },
+  ZQN: { code: "ZQN", name: "Queenstown", country: "New Zealand", slug: "queenstown" },
+  NAN: { code: "NAN", name: "Nadi", country: "Fiji", slug: "nadi" },
+  USH: { code: "USH", name: "Ushuaia", country: "Argentina", slug: "ushuaia" },
 } as const satisfies Record<string, RouteCity>;
 
 export type CityCode = keyof typeof ROUTE_CITIES;

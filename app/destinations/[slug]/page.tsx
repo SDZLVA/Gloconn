@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { DestinationSearch } from "@/components/destinations/DestinationSearch";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { addDays } from "@/features/routePrices/parse";
-import { PHOTOS, photoUrl } from "@/lib/blog/photos";
+import { photoUrl } from "@/lib/blog/photos";
+import { destinationPhoto } from "@/lib/destinations/photos";
 import { getAppConfig } from "@/lib/config";
 import { DESTINATIONS, findDestination } from "@/lib/destinations/data";
 import { LISTED_ROUTES, ROUTE_CITIES, cityLabel, routeSearchUrl, type FlightRoute } from "@/lib/routes/catalog";
@@ -26,14 +27,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const d = findDestination(slug);
   if (!d) return {};
-  const photo = PHOTOS[d.photo];
-  const image = photoUrl(photo.id, 1200, 630);
+  const photo = destinationPhoto(d.photo);
+  const image = photo ? photoUrl(photo.id, 1200, 630) : null;
   return {
     title: d.title,
     description: d.description,
     alternates: { canonical: `/destinations/${d.slug}` },
-    openGraph: { type: "article", title: d.title, description: d.description, url: `/destinations/${d.slug}`, images: [{ url: image, width: 1200, height: 630, alt: photo.alt }] },
-    twitter: { card: "summary_large_image", title: d.title, description: d.description, images: [image] },
+    openGraph: { type: "article", title: d.title, description: d.description, url: `/destinations/${d.slug}`, ...(image && photo ? { images: [{ url: image, width: 1200, height: 630, alt: photo.alt }] } : {}) },
+    twitter: { card: image ? "summary_large_image" : "summary", title: d.title, description: d.description, ...(image ? { images: [image] } : {}) },
   };
 }
 
@@ -42,7 +43,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
   const d = findDestination(slug);
   if (!d) notFound();
   const city = ROUTE_CITIES[d.cityCode];
-  const photo = PHOTOS[d.photo];
+  const photo = destinationPhoto(d.photo);
   const { siteUrl } = getAppConfig().app;
   const today = new Date().toISOString().slice(0, 10);
   const dates = { departureDate: addDays(today, 45), returnDate: addDays(today, 52) };
@@ -55,6 +56,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         data={[
           breadcrumbJsonLd(siteUrl, [
             { name: "Home", path: "/" },
+            { name: "Destinations", path: "/destinations" },
             { name: `${d.name} travel guide`, path: `/destinations/${d.slug}` },
           ]),
           faqJsonLd(d.faq),
@@ -64,11 +66,16 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         <Link href="/" className="font-semibold text-brand-700 hover:text-brand-900">
           Home
         </Link>{" "}
+        ›{" "}
+        <Link href="/destinations" className="font-semibold text-brand-700 hover:text-brand-900">
+          Destinations
+        </Link>{" "}
         › {d.name}
       </nav>
 
       <header className="space-y-3">
         <h1 className="text-3xl font-extrabold tracking-tight text-brand-900 sm:text-4xl">{d.title}</h1>
+        {photo && (
         <figure>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -87,6 +94,8 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
             on Unsplash
           </figcaption>
         </figure>
+        )}
+        {d.gatewayNote && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">{d.gatewayNote}</p>}
         {d.intro.map((p) => (
           <p key={p} className="text-slate-600">
             {p}

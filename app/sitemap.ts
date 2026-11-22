@@ -28,7 +28,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const guide of CITY_GUIDES) {
     pages.push({ url: `${siteUrl}/flights-from/${guide.slug}`, lastModified: new Date(`${guide.checked}T00:00:00Z`), changeFrequency: "monthly", priority: 0.7 });
   }
-  // Milestone 75: destination pages.
+  // Milestones 75/78: destinations hub and destination pages.
+  pages.push({ url: `${siteUrl}/destinations`, lastModified, changeFrequency: "weekly", priority: 0.8 });
   for (const d of DESTINATIONS) {
     pages.push({ url: `${siteUrl}/destinations/${d.slug}`, lastModified: new Date(`${d.checked}T00:00:00Z`), changeFrequency: "monthly", priority: 0.7 });
   }

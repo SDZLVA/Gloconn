@@ -15,13 +15,9 @@ const SECTION_LINKS = [
   { href: "/?mode=hotels", label: "Hotels" },
 ] as const;
 
-function SoonPill() {
-  return <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[11px] font-semibold text-sky-700">Soon</span>;
-}
-
 /**
  * Navbar — Milestone 32 redesign: logo left; Packages, Flights, Hotels,
- * Destinations (soon) in the middle; My Trips and a dark "Sign in" right.
+ * Destinations in the middle; My Trips and a dark "Sign in" right.
  * Mobile: logo + menu button (and the bottom tab bar in MobileTabBar).
  */
 export function Navbar() {
@@ -43,9 +39,9 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <span className="flex items-center gap-2 px-3.5 py-2 text-sm font-semibold text-slate-400" aria-disabled="true">
-            Destinations <SoonPill />
-          </span>
+          <Link href="/destinations" className={cn("rounded-lg px-3.5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900", focusRing)}>
+            Destinations
+          </Link>
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
@@ -79,8 +75,10 @@ export function Navbar() {
                 </Link>
               </li>
             ))}
-            <li className="flex items-center gap-2 px-4 py-3 text-base font-semibold text-slate-400">
-              Destinations <SoonPill />
+            <li>
+              <Link href="/destinations" onClick={close} className="block rounded-xl px-4 py-3 text-base font-semibold text-slate-800 hover:bg-slate-50">
+                Destinations
+              </Link>
             </li>
             <li>
               <Link href="/my-trips" onClick={close} className="block rounded-xl px-4 py-3 text-base font-semibold text-slate-800 hover:bg-slate-50">
