@@ -8,6 +8,7 @@ import { addDays } from "@/features/routePrices/parse";
 import { findGuide } from "@/lib/cityGuides/data";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import { photoUrl } from "@/lib/blog/photos";
+import { destinationDetails } from "@/lib/destinations/details";
 import { destinationPhoto } from "@/lib/destinations/photos";
 import { getAppConfig } from "@/lib/config";
 import { DESTINATIONS, findDestination } from "@/lib/destinations/data";
@@ -60,6 +61,8 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
   const hotelsRoute: FlightRoute = { slug: `${city.slug}`, from: city, to: city };
   const region = REGIONS.find((r) => r.id === d.region);
   const best = monthsPhrase(d.bestMonths);
+  const details = destinationDetails(d.slug);
+  const faq = [...d.faq, ...(details?.extraFaq ?? [])];
   const guide = findGuide(d.slug);
   const posts = postsAbout(d, BLOG_POSTS);
   const related = relatedDestinations(d, DESTINATIONS, month, 4);
@@ -74,7 +77,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
             { name: "Destinations", path: "/destinations" },
             { name: `${d.name} travel guide`, path: `/destinations/${d.slug}` },
           ]),
-          faqJsonLd(d.faq),
+          faqJsonLd(faq),
           ...destinationJsonLd(siteUrl, d, photo ? photoUrl(photo.id, 1200, 630) : undefined),
         ]}
       />
@@ -158,6 +161,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         {[
           ["attractions", "Things to see"],
           ["when", "Best time to go"],
+          ...(details ? [["getting-around", "Getting around"], ["stay", "Where to stay"], ["costs", "Costs"]] : []),
           ["book", "Flights and hotels"],
           ["tips", "Checklist"],
           ["faq", "Questions"],
@@ -208,6 +212,46 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         ))}
       </section>
 
+      {details && (
+        <>
+          <section aria-labelledby="getting-around" className="scroll-mt-24 space-y-3">
+            <h2 id="getting-around" className="text-xl font-bold text-slate-900">
+              Getting to and around {d.name}
+            </h2>
+            {details.gettingAround.map((p) => (
+              <p key={p} className="leading-relaxed text-slate-700">
+                {p}
+              </p>
+            ))}
+          </section>
+
+          <section aria-labelledby="stay" className="scroll-mt-24 space-y-3">
+            <h2 id="stay" className="text-xl font-bold text-slate-900">
+              Where to stay in {d.name}
+            </h2>
+            <ul className="space-y-3">
+              {details.whereToStay.map((a) => (
+                <li key={a.area} className="rounded-2xl border border-slate-200 bg-white p-4">
+                  <h3 className="font-semibold text-slate-900">{a.area}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-slate-700">{a.text}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section aria-labelledby="costs" className="scroll-mt-24 space-y-3">
+            <h2 id="costs" className="text-xl font-bold text-slate-900">
+              What a trip to {d.name} costs
+            </h2>
+            {details.costs.map((p) => (
+              <p key={p} className="leading-relaxed text-slate-700">
+                {p}
+              </p>
+            ))}
+          </section>
+        </>
+      )}
+
       <section aria-labelledby="book" className="scroll-mt-24 space-y-3">
         <h2 id="book" className="text-xl font-bold text-slate-900">
           Find flights and hotels for {d.name}
@@ -253,7 +297,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
           Questions about visiting {d.name}
         </h2>
         <dl className="space-y-3">
-          {d.faq.map((item) => (
+          {faq.map((item) => (
             <div key={item.q} className="rounded-2xl border border-slate-200 bg-white p-4">
               <dt className="font-semibold text-slate-900">{item.q}</dt>
               <dd className="mt-1 text-sm leading-relaxed text-slate-700">{item.a}</dd>
@@ -297,7 +341,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
         </p>
       </section>
 
-      <p className="text-xs text-slate-500">Information checked {d.checked}. Seasons, opening hours and prices change, so confirm before you book.</p>
+      <p className="text-xs text-slate-500">Information checked {details && details.checked > d.checked ? details.checked : d.checked}. Seasons, opening hours and prices change, so confirm before you book.</p>
     </article>
   );
 }
