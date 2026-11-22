@@ -4,6 +4,7 @@ import { DestinationCard } from "@/components/destinations/DestinationCard";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getAppConfig } from "@/lib/config";
 import { DESTINATIONS, TOP_PER_REGION, destinationsInRegion, hotDestinations } from "@/lib/destinations/data";
+import { itemListJsonLd } from "@/lib/destinations/seo";
 import { REGIONS } from "@/lib/destinations/types";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 
@@ -14,7 +15,7 @@ import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 
 export const revalidate = 43200;
 
-const TITLE = "Travel destinations by region: top places in Africa, Asia, Europe and more";
+const TITLE = "Top travel destinations by continent";
 const DESCRIPTION = "Browse the most-visited travel destinations on every continent. Open a place for sights, the best time to go, and a live search for flights and hotels.";
 
 export const metadata: Metadata = {
@@ -39,6 +40,10 @@ export default function DestinationsPage() {
             { name: "Home", path: "/" },
             { name: "Destinations", path: "/destinations" },
           ]),
+          itemListJsonLd(
+            siteUrl,
+            DESTINATIONS.map((d) => ({ name: `${d.name} travel guide`, path: `/destinations/${d.slug}` })),
+          ),
         ]}
       />
       <header className="space-y-3">
