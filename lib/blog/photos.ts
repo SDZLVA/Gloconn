@@ -8,12 +8,18 @@ export type BlogPhoto = {
   id: string;
   alt: string;
   by: string;
-  /** The photo's Unsplash page, for the credit link. */
+  /** The photo's Unsplash (or Wikimedia Commons) page, for the credit link. */
   page: string;
+  /** Only for Wikimedia Commons photos (id starts with "wm:"): the licence that must be shown next to the photo. */
+  license?: { name: string; url: string };
 };
 
 /** Unsplash CDN link, cropped to w × h (the CDN resizes on the fly). */
 export function photoUrl(id: string, w: number, h: number = Math.round((w * 9) / 16)): string {
+  // Wikimedia Commons photo: "wm:File name.jpg". Commons resizes by width only (CSS object-cover does the crop).
+  if (id.startsWith("wm:")) {
+    return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(id.slice(3))}?width=${w}`;
+  }
   return `https://images.unsplash.com/${id}?w=${w}&h=${h}&fit=crop&auto=format&q=75`;
 }
 

@@ -1,7 +1,7 @@
 import { PHOTOS, type BlogPhoto } from "@/lib/blog/photos";
 
 /**
- * Milestone 78 — photos for the /destinations pages (Unsplash, "Free to use under the Unsplash
+ * Milestone 78 — photos for the /destinations pages (mostly Unsplash, "Free to use under the Unsplash
  * License"). Keyed by destination slug. A destination with no entry here and none in the blog
  * PHOTOS shows a plain coloured card instead of a photo.
  */
@@ -34,6 +34,9 @@ export const DEST_PHOTOS: Record<string, BlogPhoto> = {
   fiji: { id: "photo-1788052191673-0717c1115f38", alt: "A yellow boat anchored in turquoise water off a white sand beach with palm trees, Monuriki Island, Fiji", by: "Adam Young", page: `${U}ZJyv8SWiEDQ` },
   "antarctic-peninsula": { id: "photo-1551415923-a2297c7fda79", alt: "Chinstrap penguins on snow at Two Hummock Island off the Antarctic Peninsula", by: "Derek Oyen", page: `${U}3Xd5j9-drDA` },
   "weddell-sea": { id: "photo-1585247174031-7ff21755972c", alt: "A tabular iceberg rising from the Weddell Sea, Antarctica", by: "66 north", page: `${U}NaQMJ-xNDWI` },
+  "port-lockroy": { id: "wm:Port Lockroy, Antarctica.jpg", alt: "The red-doored Bransfield House hut at Port Lockroy with penguins on the rocks around it", by: "Liam Quinn", page: `https://commons.wikimedia.org/wiki/File:Port_Lockroy,_Antarctica.jpg`, license: { name: "CC BY-SA 2.0", url: "https://creativecommons.org/licenses/by-sa/2.0/" } },
+  "paradise-bay": { id: "wm:Paradise Harbour, Antarctica.jpg", alt: "Glaciers and snow-covered mountains reflected in the calm water of Paradise Harbour, Antarctica", by: "Liam Quinn", page: `https://commons.wikimedia.org/wiki/File:Paradise_Harbour,_Antarctica.jpg`, license: { name: "CC BY-SA 2.0", url: "https://creativecommons.org/licenses/by-sa/2.0/" } },
+  "deception-island": { id: "wm:Antarctica(js) 41.jpg", alt: "Dark volcanic cliffs and mountains along the coast of Deception Island, Antarctica", by: "Jerzy Strzelecki", page: `https://commons.wikimedia.org/wiki/File:Antarctica(js)_41.jpg`, license: { name: "CC BY-SA 3.0", url: "https://creativecommons.org/licenses/by-sa/3.0/" } },
 };
 
 export function destinationPhoto(key: string): BlogPhoto | null {
