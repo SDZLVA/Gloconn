@@ -120,8 +120,18 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
               Photo by{" "}
               <a href={photo.page} rel="noopener noreferrer" className="underline">
                 {photo.by}
-              </a>{" "}
-              on Unsplash
+              </a>
+              {photo.license ? (
+                <>
+                  ,{" "}
+                  <a href={photo.license.url} rel="noopener noreferrer license" className="underline">
+                    {photo.license.name}
+                  </a>
+                  , via Wikimedia Commons
+                </>
+              ) : (
+                " on Unsplash"
+              )}
             </figcaption>
           </figure>
         )}
