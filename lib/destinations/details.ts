@@ -212,6 +212,96 @@ export const DETAILS: Record<string, DestinationDetails> = {
     ],
     checked: CHECKED,
   },
+  bangkok: {
+    gettingAround: [
+      "From Suvarnabhumi (BKK) the Airport Rail Link runs from the basement level to Phaya Thai in about 26 to 30 minutes for 45 baht, from 05:30 to midnight. Phaya Thai connects to the BTS Skytrain, and Makkasan connects to the MRT. A taxi or Grab to Sukhumvit or Silom usually takes 45 to 60 minutes, longer in rush hour, and airport taxis add a 50 baht surcharge plus road tolls.",
+      "Bangkok's BTS and MRT are separate systems, so changing between them normally means paying a new fare. BTS fares run from 17 to about 65 baht, and MRT Blue Line fares run from 17 to 44 baht after a fare change on 3 July 2026. One guide reports a common rail fare of 17 to 45 baht from 1 January 2027, so check before you travel.",
+    ],
+    whereToStay: [
+      { area: "Sukhumvit", text: "The most common first-time choice, with BTS access, shopping, food and nightlife, and hotels at many price levels." },
+      { area: "Silom and Sathorn", text: "A central base between the Old City and Sukhumvit, close to Lumphini Park." },
+      { area: "Old Town (Rattanakosin)", text: "Near the Grand Palace and Wat Pho. Khao San Road has the cheapest beds, and guides suggest staying near it rather than on it." },
+      { area: "Riverside", text: "Quieter, with luxury hotels on the Chao Phraya River and boat access to the temples." },
+      { area: "Siam", text: "The shopping district, which guides often suggest for families." },
+    ],
+    costs: [
+      "Guides give different ranges. One 2026 comparison lists hostels at about 10 to 30 pounds a night and budget hotels at 30 to 70 pounds, with riverside luxury far higher. Khao San is the cheapest area and Sukhumvit has few options below three stars.",
+      "The best time to visit is November to February, and Rough Guides recommends booking ahead then because some guesthouses only take cash deposits. Taxi fares to Pattaya, Ayutthaya and other day trips are quoted in the thousands of baht, so a train or tour can be cheaper.",
+    ],
+    extraFaq: [
+      { q: "How do I get from Suvarnabhumi airport to central Bangkok?", a: "Take the Airport Rail Link from the basement level. It reaches Phaya Thai in about 26 to 30 minutes for 45 baht, and connects to the BTS and MRT. A taxi takes 45 to 60 minutes and adds a 50 baht airport surcharge plus tolls." },
+      { q: "Where should I stay in Bangkok for the first time?", a: "Most guides name Sukhumvit as the easiest first base. Old Town suits temples, Silom is central, and Khao San has the cheapest beds." },
+    ],
+    checked: CHECKED,
+  },
+  istanbul: {
+    gettingAround: [
+      "Istanbul Airport (IST) is on the European side, about 40 to 45 km northwest of the old city. The cheapest route is the M11 metro to Gayrettepe, about 30 minutes, then the M2 line on. One 2026 guide gives the M11 as about 38 lira with an Istanbulkart and another gives city rides as about 35 lira, so expect roughly that and check the current price. The M11 does not run all night.",
+      "Havaist buses leave from floor -2 on about 11 routes, including Taksim, Aksaray and Kadıköy, and no longer take cash. One guide lists Taksim at around 470 lira and a fixed-fare taxi at roughly 2,100 to 3,000 lira. Lira prices move fast with inflation, so treat these as a 2026 baseline. Sabiha Gökçen (SAW) on the Asian side is served by the M4 metro.",
+      "Buy an Istanbulkart, which works on metros, trams, buses and ferries. The T1 tram runs through Sultanahmet and Eminönü, and ferries cross to Kadıköy and Üsküdar.",
+    ],
+    whereToStay: [
+      { area: "Sultanahmet", text: "The Old City, with Hagia Sophia and the Blue Mosque within walking distance. Several guides pick it for first-timers." },
+      { area: "Beyoğlu, Taksim and Galata", text: "Nightlife, meze, rooftop bars and the Galata Tower, reached by the T1 tram, the Tünel funicular and ferries." },
+      { area: "Karaköy", text: "A stylish waterfront area and a useful transport hub, often named as a budget-friendly base." },
+      { area: "Beşiktaş", text: "A lived-in Bosphorus neighbourhood that Rough Guides suggests for families." },
+      { area: "Kadıköy", text: "On the Asian side, with local life, lower prices and a ferry ride instead of a tram." },
+    ],
+    costs: [
+      "One 2026 guide puts mid-range travel at about 2,500 to 3,500 lira a day (roughly 60 to 85 dollars) and budget travel at 2,000 to 2,800 lira, including a bed. Another puts budget rooms at about 40 to 80 euros and good mid-range boutiques at 90 to 150 euros.",
+      "A museum pass only pays off if you visit several paid sights quickly. One guide notes that the Istanbul Museum Pass does not cover Hagia Sophia or the Harem, so check what it includes before you buy. Prices climb in the spring and autumn peaks.",
+    ],
+    extraFaq: [
+      { q: "How do I get from Istanbul Airport to Sultanahmet or Taksim?", a: "The Havaist bus is the easiest with luggage, and the M11 metro to Gayrettepe plus the M2 line is the cheapest. A taxi is quickest but costs far more. Allow 45 to 90 minutes depending on traffic." },
+      { q: "Do I need an Istanbulkart?", a: "It is the easiest way to pay on metros, trams, buses and ferries, and Havaist buses no longer take cash. You can buy one from machines at the airport." },
+    ],
+    checked: CHECKED,
+  },
+  lisbon: {
+    gettingAround: [
+      "Lisbon airport is only about 7 km from the centre and sits on the red metro line. A trip to the centre takes roughly 20 to 35 minutes. A single metro ride is about 1.90 euros plus a 0.50 euro reusable Navegante card, which replaced the old Viva Viagem card. Loading credit onto the card makes rides slightly cheaper, at about 1.70 euros.",
+      "The Aerobus no longer runs, although old guides still mention it. Carris buses 744 and 783 also serve the airport at normal city fares, and a taxi usually costs about 10 to 15 euros. A 24-hour Carris and Metro pass is 7.25 euros.",
+      "Lisbon is hilly. Baixa is the flattest area, while Alfama and Bairro Alto involve serious climbing, and trams and funiculars help with the slopes.",
+    ],
+    whereToStay: [
+      { area: "Baixa and Chiado", text: "The flat, central heart of the city with the Baixa-Chiado metro, and the usual first-time pick." },
+      { area: "Alfama", text: "Old Lisbon and the home of fado, with narrow, hilly streets." },
+      { area: "Bairro Alto and Cais do Sodré", text: "The nightlife areas. Bairro Alto can be noisy until the early hours." },
+      { area: "Príncipe Real", text: "Boutique shops and restaurants, quieter than Bairro Alto and a short walk from it." },
+      { area: "Saldanha, Estrela and Campo de Ourique", text: "One guide says these offer noticeably better value than Baixa or Chiado for similar quality." },
+    ],
+    costs: [
+      "Estimates vary. One 2026 guide puts the daily budget at about 75 euros for a solo budget traveller and up to 240 euros for mid-range comfort. Central mid-range hotels are listed at roughly 120 to 220 euros a night, and a hostel dorm bed from about 20 to 40 euros.",
+      "Lisbon adds a municipal tourist tax per night on top of the room rate, so include it in your total. Summer rooms cost noticeably more than in February or the shoulder months.",
+    ],
+    extraFaq: [
+      { q: "How do I get from Lisbon airport to the city centre?", a: "Take the red metro line from the airport. It reaches central stations in about 20 to 35 minutes for about 1.90 euros plus a 0.50 euro Navegante card. A taxi usually costs about 10 to 15 euros." },
+      { q: "Is there an Aerobus from Lisbon airport?", a: "No, it was permanently cancelled in 2022. Use the metro, a Carris bus or a taxi." },
+    ],
+    checked: CHECKED,
+  },
+  athens: {
+    gettingAround: [
+      "Athens airport (ATH) is about 33 km east of the centre. The metro takes about 40 minutes to Syntagma and costs 9 euros, and an airport ticket is separate from the standard city metro ticket. The X95 express bus to Syntagma costs 5.50 euros, runs all day and night and takes about an hour. You can tap a contactless card on the bus.",
+      "Official airport taxis charge a flat 40 euros to central Athens from 05:00 to midnight and about 55 euros from midnight to 05:00, including tolls and standard luggage. Trips outside the centre are metered. One source lists a 3-day tourist ticket at 20 euros that includes a return airport trip.",
+    ],
+    whereToStay: [
+      { area: "Plaka", text: "Atmospheric streets at the foot of the Acropolis. It is also one of the more expensive areas." },
+      { area: "Koukaki", text: "A residential, leafy area about five minutes from the Acropolis Museum, with good cafés and the best value near the sights." },
+      { area: "Monastiraki and Psyrri", text: "Markets, bars and food, with easy metro links." },
+      { area: "Syntagma", text: "Central, close to the metro and the airport bus." },
+      { area: "Exarchia", text: "More local and alternative, with lower prices. Check your route back after dark." },
+    ],
+    costs: [
+      "Guides disagree. One 2026 budget guide gives a daily range of about 52 euros for a budget solo traveller to 420 euros for luxury, while another suggests about 150 to 200 euros a day for mid-range travel. One guide quotes a combined ticket for seven archaeological sites at about 30 euros.",
+      "Greece adds a Climate Resilience Fee per room per night, from about 0.50 to 15 euros depending on the season and type of accommodation. July and August bring the biggest crowds, the highest prices and temperatures above 35 degrees Celsius.",
+    ],
+    extraFaq: [
+      { q: "How do I get from Athens airport to the city centre?", a: "The metro takes about 40 minutes to Syntagma and costs 9 euros. The X95 bus costs 5.50 euros and runs all night. A taxi has a flat fare of 40 euros by day and about 55 euros at night." },
+      { q: "Where should I stay in Athens for the first time?", a: "Plaka for atmosphere or Koukaki for a calmer base near the Acropolis. Monastiraki and Psyrri suit food and nightlife, and Syntagma is central for transport." },
+    ],
+    checked: CHECKED,
+  },
 };
 
 export function destinationDetails(slug: string): DestinationDetails | null {
