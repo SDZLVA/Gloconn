@@ -120,6 +120,98 @@ export const DETAILS: Record<string, DestinationDetails> = {
     ],
     checked: CHECKED,
   },
+  tokyo: {
+    gettingAround: [
+      "Haneda (HND) is the closest airport. The Tokyo Monorail and the Keikyu line both reach central Tokyo in roughly 13 to 20 minutes for under 550 yen. Narita (NRT) is in Chiba, about an hour from the centre by the fastest train.",
+      "From Narita, the Keisei Skyliner takes about 40 minutes to Ueno and costs about 2,470 yen. The JR Narita Express costs from about 3,140 yen. Foreign passport holders can buy a Narita Express round trip for 5,200 yen. A fixed-rate taxi from Haneda to Chiyoda Ward is about 7,600 yen from April 2026, and more to Shibuya or Shinjuku.",
+      "Load a Suica or Pasmo card, or the visitor-only Welcome Suica, and tap through every train, subway and bus gate. Stay within a short walk of a JR Yamanote Line station, because that loop links Shinjuku, Shibuya, Tokyo Station and Ueno.",
+    ],
+    whereToStay: [
+      { area: "Shinjuku", text: "The most common first-time base, with trains, food, shopping and late-night options within walking distance." },
+      { area: "Shibuya", text: "A younger, busier area for shopping and nightlife, close to Shibuya Crossing." },
+      { area: "Tokyo Station and Marunouchi", text: "A practical choice if your trip includes the Shinkansen bullet train." },
+      { area: "Asakusa and Ueno", text: "Usually the cheapest areas. Asakusa has an older, quieter feel around Senso-ji, and Ueno is handy for Narita." },
+      { area: "Ginza", text: "A calmer, more upmarket base for shopping and dining." },
+    ],
+    costs: [
+      "Guides give different figures. One 2026 guide puts hostels in Asakusa or Ueno from about 3,500 yen a night and hotels from about 8,000 yen. Another gives 6,000 to 10,000 yen for budget rooms and 14,000 to 25,000 yen for mid-range rooms in Asakusa.",
+      "Public transport is cheap compared with the room, and a Tokyo Subway 24-hour ticket combined with the Skyliner costs 2,890 yen after the March 2026 fare change. Flight prices to Haneda can be a little higher than to Narita, but the shorter and cheaper trip into town often makes up for it.",
+    ],
+    extraFaq: [
+      { q: "Should I fly into Haneda or Narita for Tokyo?", a: "Haneda is much closer, with trains reaching central Tokyo in about 13 to 20 minutes. Narita is about an hour away but has many international and budget flights, so compare the total of the flight and the transfer." },
+      { q: "Where should I stay in Tokyo for the first time?", a: "Most guides suggest Shinjuku for the easiest all-round base, Shibuya for nightlife, and Asakusa or Ueno for lower prices. Stay close to a Yamanote Line station." },
+    ],
+    checked: CHECKED,
+  },
+  barcelona: {
+    gettingAround: [
+      "Barcelona airport (BCN) is about 15 km from the centre. The Aerobus runs between the airport and the city about every 5 to 10 minutes and takes around 35 minutes. A single ticket costs roughly 7 euros, and sources quote slightly different prices, so check the operator's site.",
+      "The L9 Sud metro needs a special Airport ticket at about 5.90 euros in 2026. The ordinary single ticket and the T-casual card are not accepted at the airport metro stations. The R2 Nord train from Terminal 2 and bus 46 do accept the T-casual.",
+      "In the city a T-casual with 10 journeys costs about 13 euros, which works out at about 1.30 euros a trip, and a single zone 1 ticket is about 2.90 euros. Most sights are in zone 1. Taxis from the airport start at about 21 euros including supplements and usually reach 30 to 45 euros for the centre.",
+    ],
+    whereToStay: [
+      { area: "Gothic Quarter", text: "The usual first-time choice, with narrow medieval lanes, the Cathedral and La Rambla close by." },
+      { area: "Eixample", text: "A grid of wide streets with Gaudí buildings and Passeig de Gràcia, and good metro coverage." },
+      { area: "El Born", text: "Known for bars, boutiques and the Picasso Museum, a good choice for couples." },
+      { area: "Gràcia", text: "A calmer, village-like neighbourhood that guides often suggest for families." },
+      { area: "Barceloneta", text: "The closest area to the beach, though several guides warn it is touristy for dining." },
+    ],
+    costs: [
+      "One 2026 guide puts a typical visitor at 80 to 220 euros a day, from about 80 euros for budget travellers to 150 to 180 euros mid-range. Staying in Gràcia, Poble-sec, Sant Antoni or Poblenou instead of the Gothic Quarter can cut accommodation costs by roughly 20 to 40 percent.",
+      "Catalonia roughly doubled its tourist accommodation tax from 1 April 2026. It is charged per person per night on top of the room rate and depends on the type of stay. Guides list figures from about 8 to 15 euros per night for 4 and 5 star hotels, so check the amount for your booking.",
+    ],
+    extraFaq: [
+      { q: "How do I get from Barcelona airport to the city centre?", a: "The Aerobus takes about 35 minutes to the centre for about 7 euros. The R2 Nord train and bus 46 accept a T-casual card, while the L9 metro needs a special Airport ticket at about 5.90 euros." },
+      { q: "Can I use a T-casual card at Barcelona airport?", a: "Not on the L9 metro airport stations. It does work on the R2 Nord train and on bus 46, and it is the cheapest way to ride the city's metro, bus and tram." },
+    ],
+    checked: CHECKED,
+  },
+  dubai: {
+    gettingAround: [
+      "Dubai International (DXB) has Metro stations at Terminals 1 and 3, and the Red Line runs from the airport through Downtown to the Marina. Terminal 2, used by budget airlines such as flydubai and Air Arabia, is not on the Metro, so you need a taxi or ride-hailing app there.",
+      "You need a nol card to ride. A Silver nol card costs 25 dirhams including 19 dirhams of credit, and a paper Red ticket costs 2 dirhams. Silver fares are 3 dirhams for one zone, 5 for two zones and 7.50 for three or more, so the airport to Downtown is about 7.50 dirhams. The metro runs from about 5am to midnight, later on Fridays and starting at 8am on Sundays.",
+      "Airport taxis start at about 25 dirhams on the meter, and waiting time and Salik tolls are added. The same nol card also works on trams, buses and water transport.",
+    ],
+    whereToStay: [
+      { area: "Downtown Dubai", text: "The first-time pick, beside the Burj Khalifa and Dubai Mall, with the metro nearby." },
+      { area: "Dubai Marina and JBR", text: "The choice for beach, restaurants and nightlife. These areas get crowded on Thursday and Friday." },
+      { area: "Deira and Bur Dubai", text: "The older districts on either side of the Creek, with the cheapest rooms and the souks, and good metro links." },
+      { area: "Business Bay", text: "Close to Downtown, often at lower prices." },
+      { area: "Palm Jumeirah and Jumeirah", text: "Luxury beach resorts. There is no metro station on the Palm itself." },
+    ],
+    costs: [
+      "Guides disagree. One 2026 estimate gives a budget day of about 73 dollars and mid-range of about 339 dollars per person, while another gives mid-range as about 175 dollars. Hotel prices matter most: two and three star rooms in Deira and Bur Dubai are listed from about 150 to 350 dirhams a night, against several hundred or more in Downtown and the Marina.",
+      "Published hotel rates often leave out extras. Dubai adds a Tourism Dirham fee of about 7 to 20 dirhams per room per night depending on the hotel class, and many hotels add service charges and a municipality fee. Public transport is cheap and Dubai is best visited between about November and March.",
+    ],
+    extraFaq: [
+      { q: "How do I get from Dubai airport to the city by metro?", a: "Use the Red Line from Terminal 1 or 3 with a nol card. A fare to Downtown costs about 7.50 dirhams and takes about 30 minutes. Terminal 2 has no metro station." },
+      { q: "Do I need a nol card in Dubai?", a: "Yes for the metro, tram and buses, because cash is not accepted at the gates. A Silver card costs 25 dirhams with 19 dirhams of credit, and you can buy it at airport metro stations." },
+    ],
+    checked: CHECKED,
+  },
+  bali: {
+    gettingAround: [
+      "Bali's only commercial airport is Ngurah Rai (DPS). It is closer to Kuta, Seminyak and Jimbaran than to the capital Denpasar. Look for the official airport taxi counter and the Grab and Gojek lounges rather than accepting offers from drivers inside the terminal.",
+      "Official counter taxis and apps cost roughly 100,000 to 150,000 rupiah to Kuta or Seminyak and 150,000 to 250,000 to Canggu in one 2026 guide, while another gives wider ranges for the same trips. Seminyak is only about 9 to 11 km away but the trip can take 20 to 45 minutes in traffic. Ubud is much longer.",
+      "Public transport is limited. Most visitors use Grab or Gojek, taxis, a private driver for the day, or a rented scooter if they are experienced and have the right licence.",
+    ],
+    whereToStay: [
+      { area: "Seminyak", text: "Beach clubs, restaurants and shops, popular for a first visit." },
+      { area: "Ubud", text: "Rice fields, temples, yoga and wellness, inland and away from the beach." },
+      { area: "Canggu", text: "A surf and café area, popular with remote workers." },
+      { area: "Sanur", text: "A calmer beach town that works well for longer, quieter stays." },
+      { area: "Uluwatu", text: "Cliffs and surf on the southern peninsula, and busy at sunset." },
+    ],
+    costs: [
+      "Every foreign tourist pays a one-time tourist levy of 150,000 rupiah (about 10 US dollars) per person, including children, paid once through the official Love Bali website before or on arrival. It is separate from any visa fee.",
+      "One 2026 guide puts hotels at about 30 to 65 dollars a night in popular areas and food at about 10 to 20 dollars a day. Budget guesthouses in Canggu and Ubud can cost far less. Staying in one area for a few days keeps transport costs down.",
+    ],
+    extraFaq: [
+      { q: "Do I have to pay a tourist tax in Bali?", a: "Yes. Foreign visitors pay a one-time Bali tourist levy of 150,000 rupiah, about 10 US dollars, per person. You pay online through the official Love Bali portal and show the QR voucher on arrival." },
+      { q: "How do I get from Bali airport to Seminyak or Canggu?", a: "Use the official airport taxi counter or the Grab and Gojek pickup areas. Expect roughly 100,000 to 150,000 rupiah to Seminyak and a bit more to Canggu, with travel time depending on traffic." },
+    ],
+    checked: CHECKED,
+  },
 };
 
 export function destinationDetails(slug: string): DestinationDetails | null {
