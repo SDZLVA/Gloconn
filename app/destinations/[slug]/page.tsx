@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { DestinationCard } from "@/components/destinations/DestinationCard";
 import { DestinationSearch } from "@/components/destinations/DestinationSearch";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { addDays } from "@/features/routePrices/parse";
+import { monthlyPrices } from "@/features/routePrices/client";
+import { addDays, monthLabel, searchDatesFor } from "@/features/routePrices/parse";
+import { formatMoney } from "@/lib/money";
 import { findGuide } from "@/lib/cityGuides/data";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import { photoUrl } from "@/lib/blog/photos";
@@ -58,6 +60,15 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
   const month = now.getUTCMonth() + 1;
   const dates = { departureDate: addDays(today, 45), returnDate: addDays(today, 52) };
   const priced = LISTED_ROUTES.filter((r) => r.to.code === d.cityCode).slice(0, 6);
+  // "From €X" box: cheapest round trip travellers found recently from Milan (Travelpayouts cache,
+  // refreshed every 12 h). Hidden for the Antarctic pages (gateway city, no scheduled flights),
+  // for Milan itself, and whenever there is no price data.
+  const fromCity = ROUTE_CITIES.MIL;
+  const fromRoute: FlightRoute = { slug: `${fromCity.slug}-to-${city.slug}`, from: fromCity, to: city };
+  const fromPrices = d.gatewayNote || city.code === fromCity.code ? [] : (await monthlyPrices(fromCity.code, city.code)).slice(0, 12);
+  const fromCheapest = fromPrices.length > 0 ? fromPrices.reduce((a, b) => (b.price < a.price ? b : a)) : null;
+  const fromDates = fromCheapest ? searchDatesFor(fromCheapest, today) : null;
+  const fromListed = LISTED_ROUTES.some((r) => r.slug === fromRoute.slug);
   const hotelsRoute: FlightRoute = { slug: `${city.slug}`, from: city, to: city };
   const region = REGIONS.find((r) => r.id === d.region);
   const best = monthsPhrase(d.bestMonths);
@@ -134,6 +145,27 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
               )}
             </figcaption>
           </figure>
+        )}
+        {fromCheapest && fromDates && (
+          <p className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-slate-800">
+            <strong className="text-emerald-900">
+              Flights from {fromCity.name} to {d.name}: from {formatMoney(fromCheapest.price, "EUR")}
+            </strong>{" "}
+            round trip, cheapest recently found for {monthLabel(fromCheapest.month)}. Prices change often, so{" "}
+            <Link href={routeSearchUrl(fromRoute, fromDates, "flights")} className="font-semibold text-brand-700 underline hover:text-brand-900">
+              check live prices
+            </Link>
+            {fromListed && (
+              <>
+                {" "}
+                or see{" "}
+                <Link href={`/flights/${fromRoute.slug}`} className="font-semibold text-brand-700 underline hover:text-brand-900">
+                  prices by month
+                </Link>
+              </>
+            )}
+            .
+          </p>
         )}
         {d.gatewayNote && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">{d.gatewayNote}</p>}
         <p className="rounded-2xl bg-brand-50 p-4 text-slate-800 ring-1 ring-brand-100">
