@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import { relatedPostsForRoute } from "@/lib/blog/related";
 import { getAppConfig } from "@/lib/config";
+import { destinationForCity } from "@/lib/destinations/data";
 import { breadcrumbJsonLd, faqJsonLd } from "@/lib/seo/jsonld";
 import { monthlyPrices } from "@/features/routePrices/client";
 import { monthLabel, searchDatesFor, type MonthPrice } from "@/features/routePrices/parse";
@@ -107,6 +108,7 @@ export default async function FlightRoutePage({ params }: { params: Promise<{ ro
   const related = relatedRoutes(route);
   const faq = faqItems(route, months);
   const guides = relatedPostsForRoute(route, BLOG_POSTS);
+  const destination = destinationForCity(route.to.code);
   const { siteUrl } = getAppConfig().app;
 
   return (
@@ -212,6 +214,16 @@ export default async function FlightRoutePage({ params }: { params: Promise<{ ro
           </Link>
         </div>
       </section>
+
+      {destination && (
+        <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700">
+          Deciding when to go? Read our{" "}
+          <Link href={`/destinations/${destination.slug}`} className="font-semibold text-brand-700 hover:text-brand-900">
+            {destination.name} travel guide
+          </Link>
+          : best time to visit, where to stay, getting around and what a trip costs.
+        </p>
+      )}
 
       <Faq route={route} items={faq} />
 

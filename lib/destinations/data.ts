@@ -367,6 +367,14 @@ export function findDestination(slug: string): Destination | null {
   return DESTINATIONS.find((d) => d.slug === slug) ?? null;
 }
 
+/**
+ * The destination page for a flight-search city, if there is one. Antarctic pages use Ushuaia as
+ * a gateway, so they never count as "the page for Ushuaia".
+ */
+export function destinationForCity(code: string): Destination | null {
+  return DESTINATIONS.find((d) => d.cityCode === code && !d.gatewayNote) ?? null;
+}
+
 /** Destinations of one region, best-ranked first. */
 export function destinationsInRegion(region: RegionId): Destination[] {
   return DESTINATIONS.filter((d) => d.region === region).sort((a, b) => a.rank - b.rank);
