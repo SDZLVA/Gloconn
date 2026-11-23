@@ -26,6 +26,16 @@ export type BlogPostMeta = {
 
 export const BLOG_POSTS: readonly BlogPostMeta[] = [
   {
+    slug: "edinburgh-christmas-hogmanay-2026",
+    title: "Edinburgh Christmas and Hogmanay 2026: dates, what to try and how to get there",
+    description:
+      "Edinburgh's Christmas runs 14 Nov to 3 Jan; Hogmanay 29 Dec to 1 Jan. Dates, what to eat and see, how to get there from London, Paris, Amsterdam and New York.",
+    published: "2026-11-22",
+    readMinutes: 5,
+    tags: ["Christmas markets", "Hogmanay", "Edinburgh", "Scotland", "Winter"],
+    photo: "edinburghNight",
+  },
+  {
     slug: "dolomites-ski-season-2026-world-cup",
     title: "Dolomites ski season 2026/27: opening dates, World Cup and how to get there",
     description:
