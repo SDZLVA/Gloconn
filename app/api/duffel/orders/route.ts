@@ -22,7 +22,10 @@ export async function POST(request: Request) {
 
   let body: { offerId?: unknown; passengers?: unknown; email?: unknown; phone?: unknown; services?: unknown };
   try {
-    body = (await request.json()) as typeof body;
+    // The header can be missing (chunked uploads) or wrong, so also cap the real body size.
+    const text = await request.text();
+    if (text.length > 20_000) return json({ ok: false, message: "Request too large." }, 400);
+    body = JSON.parse(text) as typeof body;
   } catch {
     return json({ ok: false, message: "Invalid request." }, 400);
   }
