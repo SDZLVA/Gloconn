@@ -6,6 +6,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { addDays } from "@/features/routePrices/parse";
 import { CITY_GUIDES, findGuide } from "@/lib/cityGuides/data";
 import { getAppConfig } from "@/lib/config";
+import { destinationForCity } from "@/lib/destinations/data";
 import { ROUTE_CITIES, LISTED_ROUTES, cityLabel, routeSearchUrl, type FlightRoute } from "@/lib/routes/catalog";
 import { breadcrumbJsonLd, faqJsonLd } from "@/lib/seo/jsonld";
 
@@ -42,11 +43,12 @@ export default async function CityGuidePage({ params }: { params: Promise<{ city
   const { siteUrl } = getAppConfig().app;
   const today = new Date().toISOString().slice(0, 10);
   const dates = { departureDate: addDays(today, 45), returnDate: addDays(today, 52) };
-  const destinations = guide.destinations.map((code): { route: FlightRoute; priced: boolean } => {
+  const destinations = guide.destinations.map((code): { route: FlightRoute; priced: boolean; guideSlug: string | null } => {
     const to = ROUTE_CITIES[code];
     const route: FlightRoute = { slug: `${from.slug}-to-${to.slug}`, from, to };
-    return { route, priced: LISTED_ROUTES.some((r) => r.slug === route.slug) };
+    return { route, priced: LISTED_ROUTES.some((r) => r.slug === route.slug), guideSlug: destinationForCity(code)?.slug ?? null };
   });
+  const ownDestination = destinationForCity(guide.cityCode);
 
   return (
     <article className="mx-auto max-w-3xl space-y-8">
@@ -75,6 +77,16 @@ export default async function CityGuidePage({ params }: { params: Promise<{ city
           </p>
         ))}
       </header>
+
+      {ownDestination && (
+        <p className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700">
+          Visiting {from.name} instead of leaving it? See the{" "}
+          <Link href={`/destinations/${ownDestination.slug}`} className="font-semibold text-brand-700 hover:text-brand-900">
+            {ownDestination.name} travel guide
+          </Link>{" "}
+          for the best time to go, where to stay and what a trip costs.
+        </p>
+      )}
 
       <RouteSearchBox origin={cityLabel(from)} originId={`city-${from.code}`} destination="" destinationId="" />
 
@@ -105,16 +117,23 @@ export default async function CityGuidePage({ params }: { params: Promise<{ city
           Popular flights from {from.name}
         </h2>
         <ul className="grid gap-2 sm:grid-cols-2">
-          {destinations.map(({ route, priced }) => (
+          {destinations.map(({ route, priced, guideSlug }) => (
             <li key={route.slug} className="flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm">
               <Link href={routeSearchUrl(route, dates, "flights")} className="font-semibold text-slate-800 hover:text-brand-700">
                 {from.name} → {route.to.name}
               </Link>
-              {priced && (
-                <Link href={`/flights/${route.slug}`} className="text-xs font-semibold text-brand-700 hover:text-brand-900">
-                  Prices by month ›
-                </Link>
-              )}
+              <span className="flex shrink-0 flex-col items-end gap-0.5">
+                {priced && (
+                  <Link href={`/flights/${route.slug}`} className="text-xs font-semibold text-brand-700 hover:text-brand-900">
+                    Prices by month ›
+                  </Link>
+                )}
+                {guideSlug && (
+                  <Link href={`/destinations/${guideSlug}`} className="text-xs font-semibold text-brand-700 hover:text-brand-900">
+                    {route.to.name} guide ›
+                  </Link>
+                )}
+              </span>
             </li>
           ))}
         </ul>
