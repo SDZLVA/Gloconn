@@ -18,12 +18,12 @@ export const REGION_NAMES_IT: Record<string, string> = {
   antarctica: "Antartide",
 };
 
-/** "da aprile a giugno e da settembre a ottobre" */
+/** "da aprile a giugno e da settembre a ottobre"; "ad" before aprile and agosto. */
 export function monthsPhraseIt(months: readonly number[]): string {
   const parts = monthRuns(months).map((run) => {
     const first = MONTH_NAMES_IT[run[0] - 1];
     const last = MONTH_NAMES_IT[run[run.length - 1] - 1];
-    return run.length === 1 ? first : `da ${first} a ${last}`;
+    return run.length === 1 ? first : `da ${first} ${last.startsWith("a") ? "ad" : "a"} ${last}`;
   });
   if (parts.length <= 1) return parts[0] ?? "";
   return `${parts.slice(0, -1).join(", ")} e ${parts[parts.length - 1]}`;
