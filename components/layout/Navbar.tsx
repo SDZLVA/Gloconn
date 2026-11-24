@@ -81,6 +81,11 @@ export function Navbar() {
               </Link>
             </li>
             <li>
+              <Link href="/it/destinazioni" onClick={close} hrefLang="it" className="block rounded-xl px-4 py-3 text-base font-semibold text-slate-800 hover:bg-slate-50">
+                Italiano
+              </Link>
+            </li>
+            <li>
               <Link href="/my-trips" onClick={close} className="block rounded-xl px-4 py-3 text-base font-semibold text-slate-800 hover:bg-slate-50">
                 My Trips
               </Link>
