@@ -17,7 +17,7 @@ export const POSTS: Record<
 > = {
   "dubai-shopping-festival-2026-27": {
     Body: DubaiShoppingFestival2026,
-    Hero: (props) => <Photo photo={PHOTOS.dubai} {...props} />,
+    Hero: (props) => <Photo photo={PHOTOS.dubaiFireworks} {...props} />,
   },
   "edinburgh-christmas-hogmanay-2026": {
     Body: EdinburghChristmasHogmanay2026,

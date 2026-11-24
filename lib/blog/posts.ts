@@ -33,7 +33,7 @@ export const BLOG_POSTS: readonly BlogPostMeta[] = [
     published: "2026-11-24",
     readMinutes: 4,
     tags: ["Dubai", "Shopping", "Winter sun", "Festival", "UAE"],
-    photo: "dubai",
+    photo: "dubaiFireworks",
   },
   {
     slug: "edinburgh-christmas-hogmanay-2026",
