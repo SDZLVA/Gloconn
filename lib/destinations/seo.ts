@@ -18,7 +18,7 @@ export function seoTitle(d: Pick<Destination, "name">): string {
 }
 
 /** Groups months (1–12) into runs of consecutive months; December and January join into one run. */
-function monthRuns(months: readonly number[]): number[][] {
+export function monthRuns(months: readonly number[]): number[][] {
   const sorted = [...new Set(months)].sort((a, b) => a - b);
   const runs: number[][] = [];
   for (const m of sorted) {
@@ -76,8 +76,14 @@ export function postsAbout<T extends PostLike>(d: Pick<Destination, "name">, pos
 const abs = (siteUrl: string, path: string) => `${siteUrl.replace(/\/$/, "")}${path}`;
 
 /** schema.org TouristDestination (the place) plus a WebPage with its last-checked date. */
-export function destinationJsonLd(siteUrl: string, d: Destination, image?: string): JsonLdObject[] {
-  const url = abs(siteUrl, `/destinations/${d.slug}`);
+export function destinationJsonLd(
+  siteUrl: string,
+  d: Destination,
+  image?: string,
+  /** Italian pages (milestone 90) pass their own path and language. */
+  opts: { path?: string; lang?: string } = {},
+): JsonLdObject[] {
+  const url = abs(siteUrl, opts.path ?? `/destinations/${d.slug}`);
   return [
     {
       "@context": "https://schema.org",
@@ -96,7 +102,7 @@ export function destinationJsonLd(siteUrl: string, d: Destination, image?: strin
       description: d.description,
       url,
       dateModified: d.checked,
-      inLanguage: "en",
+      inLanguage: opts.lang ?? "en",
       about: { "@id": `${url}#place` },
       isPartOf: { "@type": "WebSite", name: "Glooconn", url: abs(siteUrl, "") },
     },

@@ -11,6 +11,7 @@ import { findGuide } from "@/lib/cityGuides/data";
 import { BLOG_POSTS } from "@/lib/blog/posts";
 import { photoUrl } from "@/lib/blog/photos";
 import { destinationDetails } from "@/lib/destinations/details";
+import { italianFor } from "@/lib/destinations/it/content";
 import { destinationPhoto } from "@/lib/destinations/photos";
 import { getAppConfig } from "@/lib/config";
 import { DESTINATIONS, findDestination } from "@/lib/destinations/data";
@@ -42,7 +43,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: seoTitle(d),
     description: d.description,
-    alternates: { canonical: `/destinations/${d.slug}` },
+    alternates: {
+      canonical: `/destinations/${d.slug}`,
+      // Milestone 90: tell Google when an Italian version exists.
+      ...(italianFor(d.slug)
+        ? { languages: { en: `/destinations/${d.slug}`, it: `/it/destinazioni/${italianFor(d.slug)?.itSlug}`, "x-default": `/destinations/${d.slug}` } }
+        : {}),
+    },
     openGraph: { type: "article", title: d.title, description: d.description, url: `/destinations/${d.slug}`, modifiedTime: d.checked, ...(image && photo ? { images: [{ url: image, width: 1200, height: 630, alt: photo.alt }] } : {}) },
     twitter: { card: image ? "summary_large_image" : "summary", title: d.title, description: d.description, ...(image ? { images: [image] } : {}) },
   };
@@ -150,6 +157,13 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
               )}
             </figcaption>
           </figure>
+        )}
+        {italianFor(d.slug) && (
+          <p className="text-sm">
+            <Link href={`/it/destinazioni/${italianFor(d.slug)?.itSlug}`} hrefLang="it" className={link}>
+              Leggi questa guida in italiano →
+            </Link>
+          </p>
         )}
         {fromCheapest && fromDates && (
           <p className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-slate-800">
