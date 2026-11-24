@@ -14,7 +14,7 @@ test("italian pages: each one belongs to a real English destination and is compl
     assert.match(it.itSlug, /^[a-z0-9-]+$/);
     assert.ok(it.description.length <= 160, `${it.slug} description too long`);
     assert.ok(seoTitleIt(it.name).length <= 49, `${it.slug} seo title`);
-    assert.ok(it.intro.length >= 2, `${it.slug} intro`);
+    assert.equal(it.intro.length, en.intro.length, `${it.slug} intro`);
     assert.equal(it.attractions.length, en.attractions.length, `${it.slug} attractions`);
     assert.ok(it.bestTime.length >= 1 && it.tips.length >= 4, `${it.slug} bestTime/tips`);
     assert.equal(it.faq.length, en.faq.length, `${it.slug} faq`);

@@ -36,6 +36,6 @@ export type FooterSection = {
 /** Footer columns built from the same links as the navbar, plus legal pages. */
 export const FOOTER_SECTIONS: readonly FooterSection[] = [
   // Milestone 62: the route pages, linked from every page so search engines find them.
-  { title: "Explore", links: [...pickNavLinks("/my-trips"), { href: "/flights", label: "Popular flight routes" }, { href: "/blog", label: "Travel blog" }] },
+  { title: "Explore", links: [...pickNavLinks("/my-trips"), { href: "/flights", label: "Popular flight routes" }, { href: "/blog", label: "Travel blog" }, { href: "/it/destinazioni", label: "Italiano" }] },
   { title: "Legal", links: LEGAL_LINKS },
 ];
