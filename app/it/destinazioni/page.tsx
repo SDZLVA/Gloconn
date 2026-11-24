@@ -5,7 +5,7 @@ import { photoUrl } from "@/lib/blog/photos";
 import { getAppConfig } from "@/lib/config";
 import { findDestination } from "@/lib/destinations/data";
 import { destinationPhoto } from "@/lib/destinations/photos";
-import { IT_DESTINATIONS, IT_HUB_MIN_PAGES } from "@/lib/destinations/it/content";
+import { IT_DESTINATIONS, IT_HUB_MIN_PAGES, atIt } from "@/lib/destinations/it/content";
 import { itemListJsonLd } from "@/lib/destinations/seo";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 
@@ -35,7 +35,7 @@ export default function ItalianHubPage() {
             { name: "Home", path: "/" },
             { name: "Destinazioni", path: "/it/destinazioni" },
           ]),
-          itemListJsonLd(siteUrl, IT_DESTINATIONS.map((d) => ({ name: `Guida di viaggio a ${d.name}`, path: `/it/destinazioni/${d.itSlug}` }))),
+          itemListJsonLd(siteUrl, IT_DESTINATIONS.map((d) => ({ name: `Guida di viaggio ${atIt(d)}`, path: `/it/destinazioni/${d.itSlug}` }))),
         ]}
       />
       <header className="space-y-2">

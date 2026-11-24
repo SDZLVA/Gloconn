@@ -8,7 +8,7 @@ import { addDays, searchDatesFor } from "@/features/routePrices/parse";
 import { photoUrl } from "@/lib/blog/photos";
 import { getAppConfig } from "@/lib/config";
 import { findDestination } from "@/lib/destinations/data";
-import { IT_DESTINATIONS, findItDestination } from "@/lib/destinations/it/content";
+import { IT_DESTINATIONS, atIt, findItDestination } from "@/lib/destinations/it/content";
 import { REGION_NAMES_IT, monthCellsIt, monthLabelIt, monthsPhraseIt, seoTitleIt, shortDayIt } from "@/lib/destinations/it/ui";
 import { destinationPhoto } from "@/lib/destinations/photos";
 import { destinationJsonLd } from "@/lib/destinations/seo";
@@ -83,7 +83,7 @@ export default async function ItalianDestinationPage({ params }: { params: Promi
           breadcrumbJsonLd(siteUrl, [
             { name: "Home", path: "/" },
             { name: "Destinazioni", path: "/it/destinazioni" },
-            { name: `Guida di viaggio a ${it.name}`, path },
+            { name: `Guida di viaggio ${atIt(it)}`, path },
           ]),
           faqJsonLd(faq),
           ...destinationJsonLd(siteUrl, { ...en, name: it.name, country: it.country, title: it.title, description: it.description, checked: it.checked }, photo ? photoUrl(photo.id, 1200, 630) : undefined, { path, lang: "it" }),
@@ -143,7 +143,7 @@ export default async function ItalianDestinationPage({ params }: { params: Promi
         {fromCheapest && fromDates && (
           <p className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-slate-800">
             <strong className="text-emerald-900">
-              Voli da {fromCity.name} a {it.name}: da {formatMoney(fromCheapest.price, "EUR")}
+              Voli da {fromCity.name} {atIt(it)}: da {formatMoney(fromCheapest.price, "EUR")}
             </strong>{" "}
             andata e ritorno
             {fromCheapest.departureDate && fromCheapest.returnDate
@@ -167,8 +167,9 @@ export default async function ItalianDestinationPage({ params }: { params: Promi
           </p>
         )}
         <p className="rounded-2xl bg-brand-50 p-4 text-slate-800 ring-1 ring-brand-100">
-          <strong className="text-brand-900">Quando andare a {it.name}:</strong> {best}. {it.tagline}.
+          <strong className="text-brand-900">Quando andare {atIt(it)}:</strong> {best}. {it.tagline}.
         </p>
+        {it.gatewayNote && <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900 ring-1 ring-amber-200">{it.gatewayNote}</p>}
         {it.intro.map((p) => (
           <p key={p} className="text-slate-600">
             {p}
@@ -216,7 +217,7 @@ export default async function ItalianDestinationPage({ params }: { params: Promi
 
       <section aria-labelledby="attractions" className="scroll-mt-24 space-y-3">
         <h2 id="attractions" className="text-xl font-bold text-slate-900">
-          Cosa vedere a {it.name}
+          Cosa vedere {atIt(it)}
         </h2>
         <ul className="space-y-3">
           {it.attractions.map((a) => (
@@ -230,7 +231,7 @@ export default async function ItalianDestinationPage({ params }: { params: Promi
 
       <section aria-labelledby="when" className="scroll-mt-24 space-y-3">
         <h2 id="when" className="text-xl font-bold text-slate-900">
-          Quando andare a {it.name}
+          Quando andare {atIt(it)}
         </h2>
         <div>
           <ol className="grid grid-cols-6 gap-1.5 sm:grid-cols-12" aria-label={`Mesi in cui ${it.name} è al meglio: ${best}`}>
@@ -256,7 +257,7 @@ export default async function ItalianDestinationPage({ params }: { params: Promi
 
       <section aria-labelledby="getting-around" className="scroll-mt-24 space-y-3">
         <h2 id="getting-around" className="text-xl font-bold text-slate-900">
-          Come arrivare e muoversi a {it.name}
+          Come arrivare e muoversi {atIt(it)}
         </h2>
         {it.details.gettingAround.map((p) => (
           <p key={p} className="leading-relaxed text-slate-700">
@@ -267,7 +268,7 @@ export default async function ItalianDestinationPage({ params }: { params: Promi
 
       <section aria-labelledby="stay" className="scroll-mt-24 space-y-3">
         <h2 id="stay" className="text-xl font-bold text-slate-900">
-          Dove dormire a {it.name}
+          Dove dormire {atIt(it)}
         </h2>
         <ul className="space-y-3">
           {it.details.whereToStay.map((a) => (
@@ -281,7 +282,7 @@ export default async function ItalianDestinationPage({ params }: { params: Promi
 
       <section aria-labelledby="costs" className="scroll-mt-24 space-y-3">
         <h2 id="costs" className="text-xl font-bold text-slate-900">
-          Quanto costa un viaggio a {it.name}
+          Quanto costa un viaggio {atIt(it)}
         </h2>
         {it.details.costs.map((p) => (
           <p key={p} className="leading-relaxed text-slate-700">
@@ -294,11 +295,11 @@ export default async function ItalianDestinationPage({ params }: { params: Promi
         <h2 id="book" className="text-xl font-bold text-slate-900">
           Cerca voli e hotel per {it.name}
         </h2>
-        <DestinationSearch destination={cityLabel(city)} destinationId={`city-${city.code}`} flightsTitle={`Voli per ${it.name}`} hotelsTitle={`Hotel a ${it.name}`} />
+        <DestinationSearch destination={cityLabel(city)} destinationId={`city-${city.code}`} flightsTitle={`Voli per ${it.name}`} hotelsTitle={`Hotel ${atIt(it)}`} />
         <p className="text-sm text-slate-600">
           Link rapidi:{" "}
           <Link href={routeSearchUrl(hotelsRoute, dates, "hotels")} className={link}>
-            hotel a {it.name} il mese prossimo
+            hotel {atIt(it)} il mese prossimo
           </Link>
         </p>
       </section>
@@ -316,7 +317,7 @@ export default async function ItalianDestinationPage({ params }: { params: Promi
 
       <section aria-labelledby="faq" className="scroll-mt-24 space-y-3">
         <h2 id="faq" className="text-xl font-bold text-slate-900">
-          Domande su un viaggio a {it.name}
+          Domande su un viaggio {atIt(it)}
         </h2>
         <dl className="space-y-3">
           {faq.map((item) => (
@@ -337,7 +338,7 @@ export default async function ItalianDestinationPage({ params }: { params: Promi
             {others.map((d) => (
               <li key={d.itSlug}>
                 <Link href={`/it/destinazioni/${d.itSlug}`} className={link}>
-                  Guida di viaggio a {d.name}
+                  Guida di viaggio {atIt(d)}
                 </Link>
               </li>
             ))}
