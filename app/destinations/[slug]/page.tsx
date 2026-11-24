@@ -48,6 +48,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+/** "2026-12-16" -> "16 Dec" */
+function shortDay(date: string): string {
+  return new Date(`${date}T00:00:00Z`).toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+}
+
 export default async function DestinationPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const d = findDestination(slug);
@@ -151,7 +156,11 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
             <strong className="text-emerald-900">
               Flights from {fromCity.name} to {d.name}: from {formatMoney(fromCheapest.price, "EUR")}
             </strong>{" "}
-            round trip, cheapest recently found for {monthLabel(fromCheapest.month)}. Prices change often, so{" "}
+            round trip
+            {fromCheapest.departureDate && fromCheapest.returnDate
+              ? ` (for example ${shortDay(fromCheapest.departureDate)} to ${shortDay(fromCheapest.returnDate)}), the cheapest recently found for ${monthLabel(fromCheapest.month)}`
+              : `, the cheapest recently found for ${monthLabel(fromCheapest.month)}`}
+            . Fares like this are often for short trips and change often, so{" "}
             <Link href={routeSearchUrl(fromRoute, fromDates, "flights")} className="font-semibold text-brand-700 underline hover:text-brand-900">
               check live prices
             </Link>
