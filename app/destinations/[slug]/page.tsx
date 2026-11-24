@@ -80,6 +80,10 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
   const fromPrices = d.gatewayNote || city.code === fromCity.code ? [] : (await monthlyPrices(fromCity.code, city.code)).slice(0, 12);
   const fromCheapest = fromPrices.length > 0 ? fromPrices.reduce((a, b) => (b.price < a.price ? b : a)) : null;
   const fromDates = fromCheapest ? searchDatesFor(fromCheapest, today) : null;
+  const isShortTrip =
+    !!fromCheapest?.departureDate &&
+    !!fromCheapest.returnDate &&
+    (Date.parse(fromCheapest.returnDate) - Date.parse(fromCheapest.departureDate)) / 86_400_000 <= 3;
   const fromListed = LISTED_ROUTES.some((r) => r.slug === fromRoute.slug);
   const hotelsRoute: FlightRoute = { slug: `${city.slug}`, from: city, to: city };
   const region = REGIONS.find((r) => r.id === d.region);
@@ -174,7 +178,7 @@ export default async function DestinationPage({ params }: { params: Promise<{ sl
             {fromCheapest.departureDate && fromCheapest.returnDate
               ? ` (for example ${shortDay(fromCheapest.departureDate)} to ${shortDay(fromCheapest.returnDate)}), the cheapest recently found for ${monthLabel(fromCheapest.month)}`
               : `, the cheapest recently found for ${monthLabel(fromCheapest.month)}`}
-            . Fares like this are often for short trips and change often, so{" "}
+            . {isShortTrip ? "Fares like this are often for short trips and change often, so" : "Prices change often, so"}{" "}
             <Link href={routeSearchUrl(fromRoute, fromDates, "flights")} className="font-semibold text-brand-700 underline hover:text-brand-900">
               check live prices
             </Link>
