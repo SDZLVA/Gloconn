@@ -67,6 +67,8 @@ export const PHOTOS = {
   dolomitesSanMartino: { id: "photo-1614093643263-7ebf3d099724", alt: "Snow-covered pine trees and mountains near San Martino di Castrozza in the Dolomites", by: "Cristina Gottardi", page: `${U}Tr55sj841Fg` },
   // Blog post dubai-shopping-festival-2026-27 (checked 2026-11-24: Free to use under the Unsplash License).
   dubaiCreek: { id: "photo-1785671366882-5bfc92da8b13", alt: "A traditional wooden boat crossing Dubai Creek, black and white, with the old waterfront behind", by: "Michael Shtern", page: `${U}lVXtqTEg28M` },
+  dubaiFireworks: { id: "photo-1736108911766-579091058cf5", alt: "New Year fireworks bursting around the Burj Khalifa at night in Downtown Dubai", by: "Nejc Soklič", page: `${U}JxjMFyzaiZM` },
+  dubaiLights: { id: "photo-1688892403567-79e6cd43d8cd", alt: "A giant dragon made of fairy lights between light-wrapped palm trees in Downtown Dubai at night", by: "Sven", page: `${U}0t4khaDMGzU` },
 } satisfies Record<string, BlogPhoto>;
 
 export type PhotoKey = keyof typeof PHOTOS;

@@ -180,7 +180,7 @@ export function DubaiShoppingFestival2026({ today }: { today: string }) {
       </section>
 
       <section id="where-to-stay" aria-labelledby="stay-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-        <Photo photo={PHOTOS.dubai} />
+        <Photo photo={PHOTOS.dubaiLights} />
         <div className="p-5 sm:p-7">
           <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Where to stay</p>
           <h2 id="stay-title" className="mt-1 text-2xl font-extrabold text-slate-900">
