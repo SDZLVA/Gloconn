@@ -1,4 +1,5 @@
 import { PHOTOS, Photo } from "@/components/blog/Photo";
+import { DubaiShoppingFestival2026 } from "@/components/blog/posts/DubaiShoppingFestival2026";
 import { EdinburghChristmasHogmanay2026 } from "@/components/blog/posts/EdinburghChristmasHogmanay2026";
 import { TromsoPolarNight2026 } from "@/components/blog/posts/TromsoPolarNight2026";
 import { BudapestChristmasMarkets2026 } from "@/components/blog/posts/BudapestChristmasMarkets2026";
@@ -14,6 +15,10 @@ export const POSTS: Record<
   string,
   { Body: (props: { today: string }) => React.ReactNode; Hero?: (props: { priority?: boolean; credit?: boolean }) => React.ReactNode }
 > = {
+  "dubai-shopping-festival-2026-27": {
+    Body: DubaiShoppingFestival2026,
+    Hero: (props) => <Photo photo={PHOTOS.dubai} {...props} />,
+  },
   "edinburgh-christmas-hogmanay-2026": {
     Body: EdinburghChristmasHogmanay2026,
     Hero: (props) => <Photo photo={PHOTOS.edinburghNight} {...props} />,

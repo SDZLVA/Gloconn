@@ -26,6 +26,16 @@ export type BlogPostMeta = {
 
 export const BLOG_POSTS: readonly BlogPostMeta[] = [
   {
+    slug: "dubai-shopping-festival-2026-27",
+    title: "Dubai Shopping Festival 2026/27: dates, what to try and how to get there",
+    description:
+      "Dubai Shopping Festival's 32nd edition runs 4 Dec to 17 Jan. Opening concerts, light shows, what to eat and how to fly in from London, Mumbai, Delhi and Paris.",
+    published: "2026-11-24",
+    readMinutes: 4,
+    tags: ["Dubai", "Shopping", "Winter sun", "Festival", "UAE"],
+    photo: "dubai",
+  },
+  {
     slug: "edinburgh-christmas-hogmanay-2026",
     title: "Edinburgh Christmas and Hogmanay 2026: dates, what to try and how to get there",
     description:
