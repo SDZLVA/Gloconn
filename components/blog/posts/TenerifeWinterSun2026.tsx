@@ -96,6 +96,15 @@ function Bullets({ items }: { items: string[] }) {
   );
 }
 
+const TRANSPORT = [
+  { icon: "✈️", title: "From the airports", text: "Tenerife South (TFS) serves the resorts like Los Cristianos, Playa de las Américas and Costa Adeje. Tenerife North (TFN) is near Santa Cruz and La Laguna. Bus line 343 links the two airports and Puerto de la Cruz, and the north airport has Aeroexpress 20 to Santa Cruz and La Laguna." },
+  { icon: "🚆", title: "By train", text: "There is no railway on the island. A tram (Metrotenerife) links Santa Cruz and La Laguna, but it does not reach the south coast or Puerto de la Cruz." },
+  { icon: "🚌", title: "By bus (TITSA)", text: "TITSA buses reach almost every town. Line 111 and line 10 run from the south airport to Santa Cruz, and the Santa Cruz Intercambiador is the main hub. Lines 342 and 348 go to Teide National Park, but only a few times a day." },
+  { icon: "🚗", title: "By car", text: "A rental car is the most flexible way to see the island and Teide. The road in the national park has a 70 km/h limit, and the climb is slow and winding." },
+  { icon: "🅿️", title: "Where to park", text: "At Teide there are car parks near the cable car and the viewpoints, and the cable car car park has about 220 spaces, so arrive early. In towns, use paid street or garage parking." },
+  { icon: "⚠️", title: "Limits for private vehicles", text: "The cable car ticket does not include the summit permit, which is needed to walk to the crater. Time limits for cars in the national park are planned, so check before you go." },
+];
+
 export function TenerifeWinterSun2026({ today }: { today: string }) {
   // First Friday–Sunday weekend from tomorrow, before the pre-Christmas rush.
   const weekend = weekendIn("2026-12", today) ?? weekendIn("2026-11", today);
@@ -212,6 +221,31 @@ export function TenerifeWinterSun2026({ today }: { today: string }) {
             </div>
           </div>
         )}
+      </section>
+
+      <section id="getting-around" aria-labelledby="around-title" className="scroll-mt-24 space-y-4">
+        <h2 id="around-title" className="text-2xl font-extrabold text-slate-900">
+          {"Getting around in Tenerife: how to reach the main places"}
+        </h2>
+        <p className="text-sm text-slate-600">{"Tenerife has two airports about 60 km apart, so check which one you fly into. Most visitors arrive in the south. Prices are indicative, so check them on the day."}</p>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {TRANSPORT.map((t) => (
+            <li key={t.title} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="font-bold text-slate-900">
+                <span aria-hidden="true" className="mr-2">
+                  {t.icon}
+                </span>
+                {t.title}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">{t.text}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Easiest way</p>
+          <p className="mt-1 text-sm text-slate-800">{"Easiest overall: rent a car at the airport for the south and Teide, and use the bus for Santa Cruz or Puerto de la Cruz. Without a car, take TITSA line 342 or 348 to Teide, leaving early."}</p>
+          <p className="mt-3 text-xs text-slate-500">{"Indicative costs: Puerto de la Cruz to Santa Cruz is about €5 by bus, or €3.30 with a bus pass. Puerto de la Cruz to the south airport is about €13, or €9.20 with a pass. The Metrotenerife tram is about €1.10 to €1.35, and the Teide cable car is about €42 return. Prices change, so check TITSA and the cable car site."}</p>
+        </div>
       </section>
 
       <section id="where-to-stay" aria-labelledby="stay-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
