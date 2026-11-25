@@ -5,6 +5,7 @@ import { TromsoPolarNight2026 } from "@/components/blog/posts/TromsoPolarNight20
 import { BudapestChristmasMarkets2026 } from "@/components/blog/posts/BudapestChristmasMarkets2026";
 import { TenerifeWinterSun2026 } from "@/components/blog/posts/TenerifeWinterSun2026";
 import { DolomitesSkiSeason2026 } from "@/components/blog/posts/DolomitesSkiSeason2026";
+import { NurembergChristkindlesmarkt2026 } from "@/components/blog/posts/NurembergChristkindlesmarkt2026";
 import { CheapWeekendTripsFromMilanWinter } from "@/components/blog/posts/CheapWeekendTripsFromMilanWinter";
 import { PragueChristmasMarkets2026 } from "@/components/blog/posts/PragueChristmasMarkets2026";
 import { ViennaChristmasMarkets2026 } from "@/components/blog/posts/ViennaChristmasMarkets2026";
@@ -15,6 +16,10 @@ export const POSTS: Record<
   string,
   { Body: (props: { today: string }) => React.ReactNode; Hero?: (props: { priority?: boolean; credit?: boolean }) => React.ReactNode }
 > = {
+  "nuremberg-christkindlesmarkt-2026": {
+    Body: NurembergChristkindlesmarkt2026,
+    Hero: (props) => <Photo photo={PHOTOS.nurembergNight} {...props} />,
+  },
   "dubai-shopping-festival-2026-27": {
     Body: DubaiShoppingFestival2026,
     Hero: (props) => <Photo photo={PHOTOS.dubaiFireworks} {...props} />,
