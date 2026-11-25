@@ -89,6 +89,15 @@ function Bullets({ items }: { items: string[] }) {
   );
 }
 
+const TRANSPORT = [
+  { icon: "✈️", title: "From Dubai airport (DXB)", text: "The Red Line metro serves Terminals 1 and 3. Ride to Burj Khalifa/Dubai Mall station, which takes about 25 minutes. A taxi takes about 12 minutes." },
+  { icon: "🚆", title: "By metro and tram", text: "Burj Khalifa/Dubai Mall is on the Red Line. A covered, air-conditioned walkway (the Metro Link Bridge) leads from the station to the mall, and the walk takes about 10 to 15 minutes." },
+  { icon: "🚌", title: "By bus and coach", text: "Bus 27 also serves Dubai Mall. For long-distance or intercity coaches, check the RTA website for the stop, then change to the metro." },
+  { icon: "🚗", title: "By car", text: "Dubai Mall has more than 13,000 parking spaces. Roads in Dubai use Salik tolls, so a hire car may carry small toll charges." },
+  { icon: "🅿️", title: "Where to park", text: "Zabeel and Fountain Views car parks are free. Fashion and Cinema car parks are paid under the Salik system, with 4 hours free from Monday to Thursday and 6 hours free from Friday to Sunday." },
+  { icon: "⚠️", title: "Limits for private vehicles", text: "Paid car parks at the mall use Salik, so you may need to register or pay online if you have no account. Streets near Downtown are very busy on festival evenings." },
+];
+
 export function DubaiShoppingFestival2026({ today }: { today: string }) {
   // First Friday–Sunday weekend of December (4–6 Dec is the opening weekend); stays inside the festival.
   const weekend = weekendIn("2026-12", today);
@@ -176,6 +185,31 @@ export function DubaiShoppingFestival2026({ today }: { today: string }) {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section id="getting-around" aria-labelledby="around-title" className="scroll-mt-24 space-y-4">
+        <h2 id="around-title" className="text-2xl font-extrabold text-slate-900">
+          {"Getting around in Dubai: how to reach Dubai Mall and Downtown"}
+        </h2>
+        <p className="text-sm text-slate-600">{"Dubai Mall and the Burj Khalifa are in Downtown Dubai, and the metro is the cheapest and most reliable way to get there. Prices are indicative, so check them on the day."}</p>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {TRANSPORT.map((t) => (
+            <li key={t.title} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="font-bold text-slate-900">
+                <span aria-hidden="true" className="mr-2">
+                  {t.icon}
+                </span>
+                {t.title}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">{t.text}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Easiest way</p>
+          <p className="mt-1 text-sm text-slate-800">{"Easiest overall: the Red Line metro to Burj Khalifa/Dubai Mall and the covered bridge to the mall. By car, use a free car park such as Zabeel or Fountain Views, which is also easy."}</p>
+          <p className="mt-3 text-xs text-slate-500">{"Indicative costs: a metro journey from the airport to Dubai Mall is about AED 5 to 8 with a Nol card. A Nol Silver card costs AED 25, including AED 19 of credit. A taxi from the airport is about AED 35 to 45. Parking is free for the first 4 to 6 hours in the paid zones. Prices change, so check the RTA site."}</p>
         </div>
       </section>
 
