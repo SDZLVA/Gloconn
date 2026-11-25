@@ -93,6 +93,15 @@ function Bullets({ items }: { items: string[] }) {
   );
 }
 
+const TRANSPORT = [
+  { icon: "✈️", title: "From Strasbourg airport", text: "The airport is at Entzheim, about 10 km from the centre. A TER train links it to Strasbourg station in about 9 minutes, up to 4 times an hour. From the station you walk or take a tram." },
+  { icon: "🚆", title: "From the main station", text: "The old centre is about a 10-minute walk from the station along rue du Maire Kuss. Trams A and D leave from the underground level of the station, and tram C from the north hall. Get off at Ancienne Synagogue–Les Halles or Faubourg de Saverne for the markets." },
+  { icon: "🚌", title: "From the coach station", text: "International coaches stop at Parc de l'Étoile. The Étoile-Bourse tram stop is right next to it, with trams A and D into the centre. Petite France is also reachable on foot over the Pont Émile Matthis and the Ponts Couverts." },
+  { icon: "🚗", title: "By car", text: "The city asks drivers to have a Crit'Air sticker, which you can order online before you travel. Cars are not welcome on the Grande-Île, and the shared CITIZ cars are banned there during the market." },
+  { icon: "🅿️", title: "Where to park", text: "Use the park-and-ride (P+R) car parks beside the tram lines, which have more than 15,000 spaces. On weekends the Zénith P+R includes a shuttle to the Hôtel d'Alsace–Petite France stop, a 2-minute walk from the Ponts Couverts. From the Rhéna Clinic car park you take tram D from Port du Rhin." },
+  { icon: "⚠️", title: "Limits for private vehicles", text: "Motorhomes can use all car parks except those with a height limit, and the city suggests the Elsau tram P+R in the daytime. Without a Crit'Air sticker you risk a fine if pollution rules are active." },
+];
+
 export function StrasbourgChristmasMarket2026({ today }: { today: string }) {
   // First Friday–Sunday weekend from tomorrow, before the pre-Christmas rush.
   const weekend = weekendIn("2026-12", today) ?? weekendIn("2026-11", today);
@@ -201,6 +210,31 @@ export function StrasbourgChristmasMarket2026({ today }: { today: string }) {
               ) : null;
             })}
           </div>
+        </div>
+      </section>
+
+      <section id="getting-around" aria-labelledby="around-title" className="scroll-mt-24 space-y-4">
+        <h2 id="around-title" className="text-2xl font-extrabold text-slate-900">
+          {"Getting around in Strasbourg: how to reach the markets"}
+        </h2>
+        <p className="text-sm text-slate-600">{"The markets sit on the Grande-Île, the historic island in the centre, so the last part is on foot or by tram. Prices are indicative, so check them on the day."}</p>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {TRANSPORT.map((t) => (
+            <li key={t.title} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="font-bold text-slate-900">
+                <span aria-hidden="true" className="mr-2">
+                  {t.icon}
+                </span>
+                {t.title}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">{t.text}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Easiest way</p>
+          <p className="mt-1 text-sm text-slate-800">{"Easiest overall: arrive by train and walk the 10 minutes to the centre, or take the airport TER and then tram A or D. By car, park at a tram P+R and ride in. It avoids the closed centre and the limited parking."}</p>
+          <p className="mt-3 text-xs text-slate-500">{"Indicative costs: the weekend P+R rate with shuttle was €4.20 per car in recent years, covering everyone in the car. The airport train and the tram are on the local CTS and TER fares, so check the current price at the machine or in the CTS app."}</p>
         </div>
       </section>
 
