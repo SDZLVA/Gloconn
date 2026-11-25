@@ -83,6 +83,15 @@ function Bullets({ items }: { items: string[] }) {
   );
 }
 
+const TRANSPORT = [
+  { icon: "✈️", title: "From Prague airport", text: "Bus 119 runs from outside arrivals to Nádraží Veleslavín, the end of metro line A, in about 15 minutes. From there, metro A goes to Malostranská, Staroměstská (Old Town Square), Můstek and Muzeum (Wenceslas Square). The whole trip takes about 30 to 40 minutes." },
+  { icon: "🚆", title: "From the main station (Hlavní nádraží)", text: "The station has metro line C underneath. Wenceslas Square is a short walk from the station, and the Old Town Square is about 15 minutes on foot, or one change to metro A or B." },
+  { icon: "🚌", title: "From the long-distance bus station (Florenc)", text: "Most international and long-distance coaches stop at Florenc, which is on metro lines B and C. Take line B to Můstek for the squares, or walk about 15 to 20 minutes." },
+  { icon: "🚗", title: "By car", text: "The Old Town is almost entirely pedestrianised, and many hotels have no parking. Plan to leave the car in a paid car park outside the centre or at a hotel that offers a space." },
+  { icon: "🅿️", title: "Where to park", text: "The simplest idea is a park-and-ride at the edge of the city, then metro in. If your hotel is in the Old Town, ask it for a garage space or a nearby paid car park before you arrive." },
+  { icon: "⚠️", title: "Limits for private vehicles", text: "Streets around the squares are closed to normal traffic and have narrow, cobbled lanes. Large vans and coaches cannot drive into the pedestrian area." },
+];
+
 export function PragueChristmasMarkets2026({ today }: { today: string }) {
   // First Friday–Sunday weekend of December (inside the market dates, before the Christmas rush).
   const weekend = weekendIn("2026-12", today);
@@ -194,6 +203,31 @@ export function PragueChristmasMarkets2026({ today }: { today: string }) {
               "Bus numbers and fares changed recently and local guides disagree — read the sign and the ticket machine at the stop.",
             ]}
           />
+        </div>
+      </section>
+
+      <section id="getting-around" aria-labelledby="around-title" className="scroll-mt-24 space-y-4">
+        <h2 id="around-title" className="text-2xl font-extrabold text-slate-900">
+          {"Getting around in Prague: how to reach the Old Town markets"}
+        </h2>
+        <p className="text-sm text-slate-600">{"The Old Town Square and Wenceslas Square are in a mostly pedestrian area, so the best way in is by metro. Prices are indicative, so check them on the day."}</p>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {TRANSPORT.map((t) => (
+            <li key={t.title} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="font-bold text-slate-900">
+                <span aria-hidden="true" className="mr-2">
+                  {t.icon}
+                </span>
+                {t.title}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">{t.text}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Easiest way</p>
+          <p className="mt-1 text-sm text-slate-800">{"Easiest overall: bus 119 and metro A from the airport, or metro C or B from the train and coach stations. By car, park outside the centre and use the metro. You will avoid the pedestrian streets and the search for a space."}</p>
+          <p className="mt-3 text-xs text-slate-500">{"Indicative costs: a 90-minute public-transport ticket (bus, tram and metro) is from about 40 CZK, and a 30-minute ticket is from about 30 CZK. Airport tickets can cost a little more, so check the machine or the PID site."}</p>
         </div>
       </section>
 
