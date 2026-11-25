@@ -69,6 +69,10 @@ export const PHOTOS = {
   dubaiCreek: { id: "photo-1785671366882-5bfc92da8b13", alt: "A traditional wooden boat crossing Dubai Creek, black and white, with the old waterfront behind", by: "Michael Shtern", page: `${U}lVXtqTEg28M` },
   dubaiFireworks: { id: "photo-1736108911766-579091058cf5", alt: "New Year fireworks bursting around the Burj Khalifa at night in Downtown Dubai", by: "Nejc Soklič", page: `${U}JxjMFyzaiZM` },
   dubaiLights: { id: "photo-1688892403567-79e6cd43d8cd", alt: "A giant dragon made of fairy lights between light-wrapped palm trees in Downtown Dubai at night", by: "Sven", page: `${U}0t4khaDMGzU` },
+  // Blog buffer post nuremberg-christkindlesmarkt-2026 (checked 2026-11-21: Free to use under the Unsplash License).
+  nurembergNight: { id: "photo-1716202382114-3c52c916afdb", alt: "Crowd walking through Nuremberg's old town at night during the Christmas market season", by: "Winston Tjia", page: `${U}7kdO2mjKtCM` },
+  nurembergTower: { id: "photo-1716202382033-fedea38507ed", alt: "Gothic church tower with a clock in Nuremberg's old town", by: "Winston Tjia", page: `${U}n19K6TvUi4I` },
+  nurembergStreet: { id: "photo-1705684863546-4caf75c675cc", alt: "Cobblestone street lined with half-timbered houses and Christmas decorations in Nuremberg", by: "Alexandra", page: `${U}uXTKV398FX0` },
 } satisfies Record<string, BlogPhoto>;
 
 export type PhotoKey = keyof typeof PHOTOS;

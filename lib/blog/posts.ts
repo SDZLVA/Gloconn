@@ -26,6 +26,16 @@ export type BlogPostMeta = {
 
 export const BLOG_POSTS: readonly BlogPostMeta[] = [
   {
+    slug: "nuremberg-christkindlesmarkt-2026",
+    title: "Nuremberg Christkindlesmarkt 2026: dates, how to reach the market and where to park",
+    description:
+      "Nuremberg's Christmas market runs 27 Nov to 24 Dec 2026. Hours, what to eat, and how to reach it from the airport, station or by car, with parking.",
+    published: "2026-11-25",
+    readMinutes: 7,
+    tags: ["Christmas markets", "Nuremberg", "Germany", "City break"],
+    photo: "nurembergNight",
+  },
+  {
     slug: "dubai-shopping-festival-2026-27",
     title: "Dubai Shopping Festival 2026/27: dates, what to try and how to get there",
     description:
