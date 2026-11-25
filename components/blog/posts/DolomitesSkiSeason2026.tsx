@@ -100,6 +100,15 @@ function Bullets({ items }: { items: string[] }) {
   );
 }
 
+const TRANSPORT = [
+  { icon: "✈️", title: "From the airports", text: "Bolzano is about 30 km away but has limited flights. Innsbruck is about 130 km, Treviso about 170 km, Venice about 180 km, Verona about 230 km and Munich about 330 km. Shuttle buses run from several airports to the valleys." },
+  { icon: "🚆", title: "From the train station", text: "Take a train to Bolzano or to Chiusa (Klausen) or Bressanone, then a bus. For Val Gardena, bus 350 runs from Bolzano in about an hour. Brunico is about 30 km from Alta Badia." },
+  { icon: "🚌", title: "By long-distance bus", text: "FlixBus and Alto Adige Bus link Innsbruck, Munich and Bolzano with the valleys. The valleys also have Südtirol Transfer shuttles and taxis for the last part." },
+  { icon: "🚗", title: "By car", text: "Val Gardena is one of the easier Dolomites resorts to reach by car, and the Chiusa/Val Gardena exit is the usual way. From Innsbruck it is about 2 hours in winter. From Venice it can take around 3 hours on mountain roads." },
+  { icon: "🅿️", title: "Where to park", text: "Many hotels have their own car park, and several lift stations have car parks too, so ask your hotel before you arrive. Many guests leave the car for the week and use the ski buses and the lifts." },
+  { icon: "⚠️", title: "Limits for private vehicles", text: "From 15 November to 15 April, cars in the Dolomites need winter tyres or snow chains on board. Police checks are common, and a hire car should come with them. Four-wheel drive helps on the mountain roads." },
+];
+
 export function DolomitesSkiSeason2026({ today }: { today: string }) {
   // First Friday–Sunday weekend from tomorrow, before the pre-Christmas rush.
   const weekend = weekendIn("2026-12", today) ?? weekendIn("2026-11", today);
@@ -216,6 +225,31 @@ export function DolomitesSkiSeason2026({ today }: { today: string }) {
             </div>
           </div>
         )}
+      </section>
+
+      <section id="getting-around" aria-labelledby="around-title" className="scroll-mt-24 space-y-4">
+        <h2 id="around-title" className="text-2xl font-extrabold text-slate-900">
+          {"Getting around in the Dolomites: how to reach the ski areas"}
+        </h2>
+        <p className="text-sm text-slate-600">{"The main ski areas, like Val Gardena and Alta Badia, are in the mountains, so you usually fly, then take a bus, train or car. Prices are indicative, so check them on the day."}</p>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {TRANSPORT.map((t) => (
+            <li key={t.title} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="font-bold text-slate-900">
+                <span aria-hidden="true" className="mr-2">
+                  {t.icon}
+                </span>
+                {t.title}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">{t.text}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Easiest way</p>
+          <p className="mt-1 text-sm text-slate-800">{"Easiest overall: fly to Innsbruck or Bolzano and take a shuttle or bus to your valley, then use the ski bus. By car, make sure you have winter tyres or chains, and park once."}</p>
+          <p className="mt-3 text-xs text-slate-500">{"Indicative costs: local bus tickets are low, but fares and shuttle prices vary by operator and season. No fixed price is shown here, so check Südtirol Mobil and the shuttle company before you travel."}</p>
+        </div>
       </section>
 
       <section id="where-to-stay" aria-labelledby="stay-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">

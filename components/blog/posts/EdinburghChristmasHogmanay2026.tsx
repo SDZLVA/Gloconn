@@ -90,6 +90,15 @@ function Bullets({ items }: { items: string[] }) {
   );
 }
 
+const TRANSPORT = [
+  { icon: "✈️", title: "From Edinburgh airport", text: "The tram takes about 30 to 35 minutes to St Andrew Square, from about £7.90 single. The Airlink 100 bus runs 24 hours to Waverley Bridge in about 30 minutes, from about £6.00. A city-zone ticket of about £2.40 does not cover the airport." },
+  { icon: "🚆", title: "From the train station", text: "Waverley station is in the middle of the city, next to Princes Street Gardens, and the market area is a short walk. Haymarket is at the west end of Princes Street, and the tram stops there too." },
+  { icon: "🚌", title: "From the long-distance bus station", text: "Edinburgh Bus Station is a short walk from the St Andrew Square tram stop. From there Princes Street is a few minutes away on foot." },
+  { icon: "🚗", title: "By car", text: "The airport has car hire, and the city centre is hard to park in during events. Edinburgh has a Low Emission Zone in the centre, so check that your car meets the rules." },
+  { icon: "🅿️", title: "Where to park", text: "Use a park-and-ride at the edge of the city, such as Ingliston, which is on the tram line, then ride in. Central car parks fill quickly in December." },
+  { icon: "⚠️", title: "Limits for private vehicles", text: "Some central streets are closed or restricted for events, and the Low Emission Zone can bring a fine for older vehicles." },
+];
+
 export function EdinburghChristmasHogmanay2026({ today }: { today: string }) {
   // First Friday–Sunday weekend of December: inside the Christmas run, before the pre-Christmas rush.
   const weekend = weekendIn("2026-12", today);
@@ -202,6 +211,31 @@ export function EdinburghChristmasHogmanay2026({ today }: { today: string }) {
               "Get off at West End – Princes Street or St Andrew Square for the markets.",
             ]}
           />
+        </div>
+      </section>
+
+      <section id="getting-around" aria-labelledby="around-title" className="scroll-mt-24 space-y-4">
+        <h2 id="around-title" className="text-2xl font-extrabold text-slate-900">
+          {"Getting around in Edinburgh: how to reach the markets and Princes Street"}
+        </h2>
+        <p className="text-sm text-slate-600">{"The Christmas market and Hogmanay events are in the city centre around Princes Street Gardens and the Old Town, which is easy to reach on public transport. Prices are indicative, so check them on the day."}</p>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {TRANSPORT.map((t) => (
+            <li key={t.title} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="font-bold text-slate-900">
+                <span aria-hidden="true" className="mr-2">
+                  {t.icon}
+                </span>
+                {t.title}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">{t.text}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Easiest way</p>
+          <p className="mt-1 text-sm text-slate-800">{"Easiest overall: the Airlink 100 or the tram from the airport, then walk. By train, Waverley puts you next to the gardens. By car, use a park-and-ride and take the tram in."}</p>
+          <p className="mt-3 text-xs text-slate-500">{"Indicative costs: airport bus about £6.00 single, airport tram about £7.90 single and a city-zone single about £2.40. Tap-on tap-off fares are capped daily. Parking prices change by car park, so check the sign or the operator site."}</p>
         </div>
       </section>
 
