@@ -95,6 +95,15 @@ function Bullets({ items }: { items: string[] }) {
   );
 }
 
+const TRANSPORT = [
+  { icon: "✈️", title: "From Tromsø airport", text: "The airport is only about 4 km from the centre. The Flybussen airport express takes about 15 to 20 minutes and stops at several city hotels, from about 125 NOK single. City bus 40 or 42 also runs to the centre in about 15 to 20 minutes, from about 40 NOK." },
+  { icon: "🚆", title: "From the train station", text: "Tromsø has no passenger railway. Arrivals come by air, by coach or by the coastal ship, so there is no station to plan around." },
+  { icon: "🚌", title: "From the long-distance bus station", text: "Regional and long-distance buses leave from Prostneset, the main bus terminal in the centre. From there the main street Storgata and the harbour are a short walk." },
+  { icon: "🚗", title: "By car", text: "A car helps only if you plan day trips out of town. Fuel is expensive and central parking is hard to find, so the city is better without a car. If you drive in winter, use winter tyres and expect icy roads." },
+  { icon: "🅿️", title: "Where to park", text: "Use a paid car park or garage in the centre, and check the sign for the hourly price. The airport car park is about 40 NOK per hour." },
+  { icon: "⚠️", title: "Limits for private vehicles", text: "Pavements can be icy in winter, and some streets are narrow with snow banks. Aurora tours usually pick you up at the hotel, so you rarely need your own car for them." },
+];
+
 export function TromsoPolarNight2026({ today }: { today: string }) {
   // First Friday–Sunday weekend from tomorrow, before the pre-Christmas rush.
   const weekend = weekendIn("2026-12", today) ?? weekendIn("2026-11", today);
@@ -211,6 +220,31 @@ export function TromsoPolarNight2026({ today }: { today: string }) {
             </div>
           </div>
         )}
+      </section>
+
+      <section id="getting-around" aria-labelledby="around-title" className="scroll-mt-24 space-y-4">
+        <h2 id="around-title" className="text-2xl font-extrabold text-slate-900">
+          {"Getting around in Tromsø: how to reach the city and the lights"}
+        </h2>
+        <p className="text-sm text-slate-600">{"The centre of Tromsø is small and walkable, so the airport bus and your feet get you most places. Prices are indicative, so check them on the day."}</p>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {TRANSPORT.map((t) => (
+            <li key={t.title} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="font-bold text-slate-900">
+                <span aria-hidden="true" className="mr-2">
+                  {t.icon}
+                </span>
+                {t.title}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">{t.text}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Easiest way</p>
+          <p className="mt-1 text-sm text-slate-800">{"Easiest overall: take the Flybussen or bus 40 or 42 from the airport, stay in the centre and walk. For the northern lights, book a tour with hotel pickup. This avoids driving on icy roads in the dark."}</p>
+          <p className="mt-3 text-xs text-slate-500">{"Indicative costs: bus 40 or 42 is from about 40 NOK, the Flybussen from about 125 NOK single, and airport parking is about 40 NOK per hour. Buy bus tickets in the Svipper app, at a machine or at the kiosk, and check the current prices."}</p>
+        </div>
       </section>
 
       <section id="where-to-stay" aria-labelledby="stay-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">

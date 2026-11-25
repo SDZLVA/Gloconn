@@ -97,6 +97,15 @@ function Bullets({ items }: { items: string[] }) {
   );
 }
 
+const TRANSPORT = [
+  { icon: "✈️", title: "From Budapest airport", text: "The 100E Airport Express runs around the clock to Kálvin tér, Astoria and Deák Ferenc tér, in about 40 minutes. It needs a special airport ticket, and normal city tickets and passes are not valid. You can pay by bank card on the bus." },
+  { icon: "🚆", title: "From the main stations", text: "Keleti, Nyugati and Déli stations all have metro connections. From Deák Ferenc tér the Vörösmarty tér market is a short walk, and three metro lines meet there." },
+  { icon: "🚌", title: "From the long-distance bus station", text: "Many international coaches stop at Népliget, on metro line M3. Take M3 to Deák Ferenc tér for the centre. Some operators use other stops, so check your ticket." },
+  { icon: "🚗", title: "By car", text: "A car is not needed in the centre, and the inner districts have paid parking zones. Use a garage or a park-and-ride at the edge and take the metro." },
+  { icon: "🅿️", title: "Where to park", text: "Paid street parking zones cover the centre and are limited in time. A hotel garage or a public garage is the safer choice for a longer stay, so ask your hotel before you arrive." },
+  { icon: "⚠️", title: "Limits for private vehicles", text: "The market streets around Vörösmarty tér are pedestrian, and tall vans may not fit in older garages." },
+];
+
 export function BudapestChristmasMarkets2026({ today }: { today: string }) {
   // First Friday–Sunday weekend from tomorrow, before the pre-Christmas rush.
   const weekend = weekendIn("2026-12", today) ?? weekendIn("2026-11", today);
@@ -213,6 +222,31 @@ export function BudapestChristmasMarkets2026({ today }: { today: string }) {
             </div>
           </div>
         )}
+      </section>
+
+      <section id="getting-around" aria-labelledby="around-title" className="scroll-mt-24 space-y-4">
+        <h2 id="around-title" className="text-2xl font-extrabold text-slate-900">
+          {"Getting around in Budapest: how to reach the markets"}
+        </h2>
+        <p className="text-sm text-slate-600">{"The main markets, like Vörösmarty tér and the Basilica, are in the centre near Deák Ferenc tér, which is the best hub to aim for. Prices are indicative, so check them on the day."}</p>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {TRANSPORT.map((t) => (
+            <li key={t.title} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="font-bold text-slate-900">
+                <span aria-hidden="true" className="mr-2">
+                  {t.icon}
+                </span>
+                {t.title}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">{t.text}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Easiest way</p>
+          <p className="mt-1 text-sm text-slate-800">{"Easiest overall: the 100E from the airport to Deák Ferenc tér, then walk to the market. From stations and coaches use the metro. By car, park outside the centre and ride in."}</p>
+          <p className="mt-3 text-xs text-slate-500">{"Indicative costs: the 100E airport single ticket is 2,500 HUF. City tickets and day passes are cheaper, so check the BKK site for the current price. Parking prices change by zone, so check the sign."}</p>
+        </div>
       </section>
 
       <section id="where-to-stay" aria-labelledby="stay-title" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
