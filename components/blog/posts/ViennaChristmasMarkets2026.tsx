@@ -72,6 +72,15 @@ function ButtonLink({ href, children, external = false, primary = false }: { hre
   );
 }
 
+const TRANSPORT = [
+  { icon: "✈️", title: "From Vienna airport", text: "The S7 train is the cheapest way and runs to Wien Mitte, with a single ticket from about €4.40. The ÖBB Railjet reaches the main station (Wien Hauptbahnhof) in about 15 minutes. The City Airport Train (CAT) takes about 16 minutes to Wien Mitte, from about €14.90 single, and is sometimes replaced by a CAT bus during works." },
+  { icon: "🚆", title: "From the main station (Hauptbahnhof)", text: "Take the U1 to Karlsplatz or Stephansplatz for the old centre. Wien Mitte is on metro U3 and U4, and Westbahnhof is on U3 and U6." },
+  { icon: "🚌", title: "From the long-distance bus station", text: "Airport buses (Vienna Airport Lines) also run from the airport to Schwedenplatz (U1, U4), Westbahnhof (U3, U6) and Donauzentrum (U1), from about €8. For other coaches, check which station your operator uses and take the nearest U-Bahn line to the Ring." },
+  { icon: "🚗", title: "By car", text: "The A4 motorway leads to the airport, and the city is reached by the Autobahn network. The first district is a dense, partly pedestrian area, and most of the centre has paid short-stay parking." },
+  { icon: "🅿️", title: "Where to park", text: "Use a garage or a park-and-ride at the edge of the city, then take the metro. Short-stay zones on the street are paid and limited in time, so avoid them for a long visit." },
+  { icon: "⚠️", title: "Limits for private vehicles", text: "Pedestrian zones in the first district are closed to normal cars, and tall vans may not fit in older garages. Check the height limit at the entrance." },
+];
+
 export function ViennaChristmasMarkets2026({ today }: { today: string }) {
   // First Friday–Sunday weekend from tomorrow, before the pre-Christmas rush.
   const weekend = weekendIn("2026-12", today) ?? weekendIn("2026-11", today);
@@ -211,6 +220,31 @@ export function ViennaChristmasMarkets2026({ today }: { today: string }) {
               ) : null;
             })}
           </div>
+        </div>
+      </section>
+
+      <section id="getting-around" aria-labelledby="around-title" className="scroll-mt-24 space-y-4">
+        <h2 id="around-title" className="text-2xl font-extrabold text-slate-900">
+          {"Getting around in Vienna: how to reach the markets"}
+        </h2>
+        <p className="text-sm text-slate-600">{"Most big markets, like the one at Rathausplatz, are inside or near the Ring, so metro, tram and walking are the easiest ways. Prices are indicative, so check them on the day."}</p>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {TRANSPORT.map((t) => (
+            <li key={t.title} className="rounded-2xl border border-slate-200 bg-white p-4">
+              <p className="font-bold text-slate-900">
+                <span aria-hidden="true" className="mr-2">
+                  {t.icon}
+                </span>
+                {t.title}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">{t.text}</p>
+            </li>
+          ))}
+        </ul>
+        <div className="rounded-2xl border border-brand-200 bg-brand-50 p-5">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-700">Easiest way</p>
+          <p className="mt-1 text-sm text-slate-800">{"Easiest overall: S7 or Railjet from the airport, then the metro to the Ring. By car, park at the edge and ride in. It saves you the paid short-stay zones and the crowds near the markets."}</p>
+          <p className="mt-3 text-xs text-slate-500">{"Indicative costs: S7 from the airport is from about €4.40, the Vienna Airport Lines bus from about €8, and the CAT from about €14.90. A city single ticket is cheaper than the airport tickets, so check Wiener Linien and ÖBB for the current price."}</p>
         </div>
       </section>
 
