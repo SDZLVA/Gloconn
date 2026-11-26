@@ -73,6 +73,10 @@ export const PHOTOS = {
   nurembergNight: { id: "photo-1716202382114-3c52c916afdb", alt: "Crowd walking through Nuremberg's old town at night during the Christmas market season", by: "Winston Tjia", page: `${U}7kdO2mjKtCM` },
   nurembergTower: { id: "photo-1716202382033-fedea38507ed", alt: "Gothic church tower with a clock in Nuremberg's old town", by: "Winston Tjia", page: `${U}n19K6TvUi4I` },
   nurembergStreet: { id: "photo-1705684863546-4caf75c675cc", alt: "Cobblestone street lined with half-timbered houses and Christmas decorations in Nuremberg", by: "Alexandra", page: `${U}uXTKV398FX0` },
+  // Blog post brussels-winter-wonders-2026 (checked 2026-11-26: Free to use under the Unsplash License).
+  brusselsMontDesArts: { id: "photo-1575845664732-ee40fdc525a3", alt: "Sunset over the Mont des Arts gardens in Brussels at Christmas time", by: "François Genon", page: `${U}TUthZjfR3Ps` },
+  brusselsGrandPlace: { id: "photo-1582124534218-f7bf8b908f2d", alt: "The ornate guild house facades of the Grand-Place in Brussels", by: "Jonathan Ricci", page: `${U}vs-tu3Pw6Go` },
+  brusselsTownHall: { id: "photo-1568471060904-3f623b573607", alt: "The Hôtel de Ville (town hall) on the Grand-Place in Brussels", by: "Gabriel Rambaud", page: `${U}33-rO8DLung` },
 } satisfies Record<string, BlogPhoto>;
 
 export type PhotoKey = keyof typeof PHOTOS;

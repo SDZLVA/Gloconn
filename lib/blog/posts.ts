@@ -26,6 +26,16 @@ export type BlogPostMeta = {
 
 export const BLOG_POSTS: readonly BlogPostMeta[] = [
   {
+    slug: "brussels-winter-wonders-2026",
+    title: "Brussels Winter Wonders 2026: dates, what to try and how to reach the Grand-Place",
+    description:
+      "Brussels Winter Wonders runs 27 Nov to 3 Jan, free to walk. Light show, big wheel, food to try, and how to reach the Grand-Place by train, metro or car.",
+    published: "2026-11-26",
+    readMinutes: 7,
+    tags: ["Christmas markets", "Brussels", "Belgium", "City break"],
+    photo: "brusselsMontDesArts",
+  },
+  {
     slug: "nuremberg-christkindlesmarkt-2026",
     title: "Nuremberg Christkindlesmarkt 2026: dates, how to reach the market and where to park",
     description:
